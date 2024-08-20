@@ -45,6 +45,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+    // .env
+    implementation 'io.github.cdimascio:dotenv-java:2.2.4'
+
     /* 임시 */
     runtimeOnly 'com.h2database:h2'
 }

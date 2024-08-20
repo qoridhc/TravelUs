@@ -1,6 +1,7 @@
 spring:
   application:
     name: backend
+
   profiles:
     active: dev
 
@@ -19,24 +20,16 @@ spring:
       max-lifetime: 1800000
       auto-commit: true
 
+
   # JPA 설정  
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
         default_batch_fetch_size: 100 #fetch join 후 지연로딩하는 entity을 in 절로 미리 영속성 컨텍스트에 저장
-
-  # 소셜 로그인 설정
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: google-client-id
-            client-secret: google-client-secret
 
 # Log 출력 설정
 logging:
@@ -46,18 +39,12 @@ logging:
         SQL: debug
         type: trace
 
-# 카카오, 네이버 api key
-social:
-  client:
-    kakao:
-      grant-type: authorization_code
-      grant-type-refresh: refresh_token
-      client-id: id
-      redirect-uri: re
-      client-secret: cs
-    naver:
-      grant-type: authorization_code
-      grant-type-refresh: refresh_token
-      client_id: id
-      redirect-uri: re
-      client_secret: cs
+
+jwt:
+  secret: { JWT_SECRET_KEY }
+  expiration-time: 108000000
+
+server:
+  front:
+    url: http://localhost:3000
+

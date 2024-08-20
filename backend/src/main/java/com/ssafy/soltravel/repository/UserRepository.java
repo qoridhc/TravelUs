@@ -20,4 +20,11 @@ public class UserRepository {
                 .getResultList();
         return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
+
+    public Optional<User> findByEmail(String email) {
+        List<User> result = em.createQuery("select u from User u where u.email = :email", User.class)
+                .setParameter("email", email)
+                .getResultList();
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
+    }
 }
