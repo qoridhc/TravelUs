@@ -7,9 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExchangeRateResponseDto {
+public class ExchangeRateDto {
 
+    private int id;
     private String currency;
     private String exchangeRate;
     private String exchangeMin;
+    private String created;
 }

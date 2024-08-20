@@ -1,11 +1,16 @@
 package com.ssafy.soltravel.controller;
 
+import com.ssafy.soltravel.dto.exchange.ExchangeRateDto;
+import com.ssafy.soltravel.dto.exchange.ExchangeRateRequestDto;
 import com.ssafy.soltravel.dto.exchange.ExchangeRateResponseDto;
 import com.ssafy.soltravel.service.exchange.ExchangeService;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,10 +24,16 @@ public class ExchangeController {
   private final ExchangeService exchangeService;
 
   /**
-   * 현재 환율 조회하는 메서드
+   * 실시간 환율 조회
    */
-  public ResponseEntity<List<ExchangeRateResponseDto>> getExchangeRate() {
+  @GetMapping
+  public ResponseEntity<ExchangeRateResponseDto> getExchangeRate(@RequestBody ExchangeRateRequestDto requestDto) {
 
-    return ResponseEntity.ok(exchangeService.getExchangeRate());
+    return ResponseEntity.ok(exchangeService.getExchangeRate(requestDto.getCurrency()));
   }
+
+  /**
+   * TODO: 최근 3개월 환율 조회 -> 수출입 은행 API
+   */
+
 }

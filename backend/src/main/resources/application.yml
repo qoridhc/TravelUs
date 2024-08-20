@@ -61,7 +61,3 @@ social:
       client_id: id
       redirect-uri: re
       client_secret: cs
-
-# 환율 api key
-exchange:
-  api-key: KIkE1P03HFTcAptnmNOM327iCuQ0l2OM
