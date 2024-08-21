@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class ExchangeRateResponseDto {
 
     private String currency;
-    private String exchangeRate;
-    private String exchangeMin;
+    private Float exchangeRate;
+    private Long exchangeMin;
 }

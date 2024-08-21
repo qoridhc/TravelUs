@@ -3,6 +3,7 @@ package com.ssafy.soltravel.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
@@ -13,10 +14,11 @@ public class ExchangeRate {
     private String currency;
 
     @Column(name = "exchange_rate")
-    private String exchangeRate;
+    private Float exchangeRate;
 
     @Column(name = "exchange_min")
-    private String exchangeMin;
+    private Long exchangeMin;
 
-    private String created;
+    @Column
+    private LocalDateTime created;
 }
