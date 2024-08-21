@@ -38,7 +38,8 @@ public class SecurityConfig {
         .csrf(AbstractHttpConfigurer::disable)           //csrf 비활성화
         .authorizeHttpRequests(requests -> requests      //특정 uri만 허용하고 나머지는 인증받아야함
             .requestMatchers("/", "/login", "/join").permitAll()
-            .anyRequest().authenticated()
+            //.anyRequest().authenticated()
+            .anyRequest().permitAll()
         ).formLogin(form -> form
             .defaultSuccessUrl("/", true)
             .permitAll()

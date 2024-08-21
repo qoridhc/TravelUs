@@ -48,6 +48,11 @@ dependencies {
     // .env
     implementation 'io.github.cdimascio:dotenv-java:2.2.4'
 
+    // JWT
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
+
     /* 임시 */
     runtimeOnly 'com.h2database:h2'
 }
