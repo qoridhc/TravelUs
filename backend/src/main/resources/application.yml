@@ -1,4 +1,8 @@
 spring:
+  mvc:
+    servlet:
+      path: /api/v1
+
   application:
     name: backend
 
@@ -35,6 +39,8 @@ spring:
 logging:
   level:
     org:
+      springframework:
+        security: DEBUG
       hibernate:
         SQL: debug
         type: trace
