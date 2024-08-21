@@ -5,10 +5,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.util.FileCopyUtils;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -22,7 +27,7 @@ public class ApiKeyConfig {
     @Value("${team.private.key}")
     private String privateKey;
 
-    private final Map<String, String> apiKeys = new HashMap<String, String>();
+    private final Map<String, String> apiKeys = new HashMap<>();
 
     @Bean
     public Map<String, String> apiKeys() {
@@ -37,27 +42,35 @@ public class ApiKeyConfig {
             BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
             String line;
 
-            while((line = reader.readLine()) != null){
-                if(line.isEmpty()) continue;
-                line = decrypt(line.trim());
+            FileSystemResource outputResource = new FileSystemResource("src/main/resources/api-key.txt");
+            BufferedWriter writer = new BufferedWriter(new FileWriter(outputResource.getFile(), StandardCharsets.UTF_8));
 
-                String[] parts = line.split(":", 2);
-                if(parts.length != 2) continue;
+            while ((line = reader.readLine()) != null) {
+                if (line.isEmpty()) continue;
+                String decryptedLine = decrypt(line.trim());
+
+                String[] parts = decryptedLine.split(":", 2);
+                if (parts.length != 2) continue;
 
                 parts[0] = parts[0].trim();
                 parts[1] = parts[1].trim();
                 apiKeys.put(parts[0], parts[1]);
+
+                writer.write(decryptedLine);
             }
+
+            // Close the writer after finishing writing
+            writer.close();
         } catch (IOException e) {
             throw new RuntimeException("Failed to load API keys", e);
         }
 
-        for(String apiKey : apiKeys.keySet()){
-            System.out.println(apiKey + ": "+apiKeys.get(apiKey));
+        for (String apiKey : apiKeys.keySet()) {
+            System.out.println(apiKey + ": " + apiKeys.get(apiKey));
         }
     }
 
-    private String decrypt(String encrypted){
+    private String decrypt(String encrypted) {
         try {
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             SecretKeySpec keySpec = new SecretKeySpec(privateKey.getBytes(StandardCharsets.UTF_8), "AES");
