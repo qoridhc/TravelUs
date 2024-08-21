@@ -27,7 +27,7 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
         default_batch_fetch_size: 100 #fetch join 후 지연로딩하는 entity을 in 절로 미리 영속성 컨텍스트에 저장
 
@@ -39,12 +39,12 @@ logging:
         SQL: debug
         type: trace
 
-
+# JWT 설정
 jwt:
   secret: { JWT_SECRET_KEY }
   expiration-time: 108000000
 
+# 프론트엔드 프로젝트 관련 환경 변수
 server:
   front:
     url: http://localhost:3000
-
