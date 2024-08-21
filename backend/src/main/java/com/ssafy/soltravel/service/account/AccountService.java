@@ -2,10 +2,13 @@ package com.ssafy.soltravel.service.account;
 
 import com.ssafy.soltravel.common.Header;
 import com.ssafy.soltravel.domain.GeneralAccount;
+import com.ssafy.soltravel.dto.account.AccountDto;
 import com.ssafy.soltravel.dto.account.response.CreateAccountResponseDto;
 import com.ssafy.soltravel.dto.account.response.DeleteAccountResponseDto;
 import com.ssafy.soltravel.repository.GeneralAccountRepository;
+import com.ssafy.soltravel.util.LogUtil;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -47,8 +50,6 @@ public class AccountService {
         // 현재는 유저 구현 안되서 임시로 처리함
         Header header = Header.builder()
             .apiName(API_NAME)
-            .institutionCode("00100")
-            .fintechAppNo("001")
             .apiServiceCode(API_NAME)
             .apiKey(API_KEY)
             .userKey(USER_KEY)
@@ -88,6 +89,50 @@ public class AccountService {
         }
     }
 
+    public ResponseEntity<List<AccountDto>> getAllByUserId(Long userId) {
+        String API_NAME = "inquireDemandDepositAccountList";
+        String API_URL = BASE_URL + "/" + API_NAME;
+
+        Header header = Header.builder()
+            .apiName(API_NAME)
+            .apiServiceCode(API_NAME)
+            .apiKey(API_KEY)
+            .userKey(USER_KEY)
+            .build();
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("Header", header);
+
+        try {
+            ResponseEntity<Map<String, Object>> response = webClient.post()
+                .uri(API_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(body)
+                .retrieve()
+                .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
+                })
+                .block();
+
+            // REC 부분을 Object 타입으로 받기
+            Object recObject = response.getBody().get("REC");
+
+            ModelMapper modelMapper = new ModelMapper();
+
+            LogUtil.info("recObject", recObject);
+
+//            // REC 데이터를 GeneralAccount 엔티티로 변환
+//            List<AccountDto> responseDto = modelMapper.map(recObject, DeleteAccountResponseDto.class);
+//
+//            generalAccountRepository.deleteByAccountNo(accountNo);
+//
+//            return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+            return null;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+
     public ResponseEntity<DeleteAccountResponseDto> deleteAccount(String accountNo) {
 
         String API_NAME = "deleteDemandDepositAccount";
@@ -95,8 +140,6 @@ public class AccountService {
 
         Header header = Header.builder()
             .apiName(API_NAME)
-            .institutionCode("00100")
-            .fintechAppNo("001")
             .apiServiceCode(API_NAME)
             .apiKey(API_KEY)
             .userKey(USER_KEY)
@@ -131,5 +174,6 @@ public class AccountService {
             throw e;
         }
     }
+
 
 }
