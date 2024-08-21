@@ -28,8 +28,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ExchangeService {
 
-    @Value("${external.api.key}")
-    private String API_KEY;
+    private final Map<String, String> apiKeys;
 
     private final WebClient webClient;
     private final ModelMapper modelMapper;
@@ -49,7 +48,7 @@ public class ExchangeService {
                 .institutionCode("00100")
                 .fintechAppNo("001")
                 .apiServiceCode(API_NAME)
-                .apiKey(API_KEY)
+                .apiKey(apiKeys.get("API_KEY"))
                 .build();
 
         Map<String, Object> body = new HashMap<>();

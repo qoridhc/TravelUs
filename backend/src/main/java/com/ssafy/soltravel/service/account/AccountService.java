@@ -7,6 +7,7 @@ import com.ssafy.soltravel.dto.account.response.CreateAccountResponseDto;
 import com.ssafy.soltravel.dto.account.response.DeleteAccountResponseDto;
 import com.ssafy.soltravel.repository.GeneralAccountRepository;
 import com.ssafy.soltravel.util.LogUtil;
+import jakarta.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,15 +26,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 @RequiredArgsConstructor
 public class AccountService {
 
-    @Value("${external.api.key}")
-    private String API_KEY;
-
-    @Value("${external.user.key}")
-    private String USER_KEY;
-
-    @Value("${external.account.uniqueNo}")
-    private String ACCOUNT_UNIQUE_NO;
-
+    private final Map<String, String> apiKeys;
     private final WebClient webClient;
     private final ModelMapper modelMapper;
 
@@ -51,13 +44,13 @@ public class AccountService {
         Header header = Header.builder()
             .apiName(API_NAME)
             .apiServiceCode(API_NAME)
-            .apiKey(API_KEY)
-            .userKey(USER_KEY)
+            .apiKey(apiKeys.get("API_KEY"))
+            .userKey(apiKeys.get("USER_KEY"))
             .build();
 
         Map<String, Object> body = new HashMap<>();
         body.put("Header", header);
-        body.put("accountTypeUniqueNo", ACCOUNT_UNIQUE_NO);
+        body.put("accountTypeUniqueNo", apiKeys.get("ACCOUNT_UNIQUE_NO"));
 
         try {
             // 일반 계좌 DB 저장 로직 유저 완성 시 추가
@@ -96,8 +89,8 @@ public class AccountService {
         Header header = Header.builder()
             .apiName(API_NAME)
             .apiServiceCode(API_NAME)
-            .apiKey(API_KEY)
-            .userKey(USER_KEY)
+            .apiKey(apiKeys.get("API_KEY"))
+            .userKey(apiKeys.get("USER_KEY"))
             .build();
 
         Map<String, Object> body = new HashMap<>();
@@ -141,8 +134,8 @@ public class AccountService {
         Header header = Header.builder()
             .apiName(API_NAME)
             .apiServiceCode(API_NAME)
-            .apiKey(API_KEY)
-            .userKey(USER_KEY)
+            .apiKey(apiKeys.get("API_KEY"))
+            .userKey(apiKeys.get("USER_KEY"))
             .build();
 
         Map<String, Object> body = new HashMap<>();
