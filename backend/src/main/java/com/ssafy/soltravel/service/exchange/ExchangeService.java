@@ -10,6 +10,7 @@ import com.ssafy.soltravel.dto.exchange.ExchangeRequestDto;
 import com.ssafy.soltravel.dto.exchange.ExchangeResponseDto;
 import com.ssafy.soltravel.repository.ExchangeRateRepository;
 import com.ssafy.soltravel.repository.redis.PreferenceRateRepository;
+import com.ssafy.soltravel.service.NotificationService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ public class ExchangeService {
 
   private final ExchangeRateRepository exchangeRateRepository;
   private final PreferenceRateRepository preferenceRateRepository;
+  private final NotificationService notificationService;
 
   /**
    * 실시간 환율 받아오는 메서드 매시 0분, 10분, 20분, 30분, 40분, 50분에 data 가져온다
@@ -125,6 +127,8 @@ public class ExchangeService {
             for (long accountId : preferenceRate.getAccounts()) {
               log.info("{} 통장의 환전을 시작합니다.", accountId);
 
+              //Notification test용
+              notificationService.notifyMessage("2번한테보내");
 //              executeExchange();
             }
           }
@@ -187,6 +191,9 @@ public class ExchangeService {
       // REC 부분을 Object 타입으로 받기
       ModelMapper modelMapper = new ModelMapper();
       ExchangeResponseDto responseDto = modelMapper.map(recObject, ExchangeResponseDto.class);
+
+      //TODO: 환전 알림 구현
+      notificationService.notifyMessage("account명들어가야함");
 
       return responseDto;
     } catch (WebClientResponseException e) {
