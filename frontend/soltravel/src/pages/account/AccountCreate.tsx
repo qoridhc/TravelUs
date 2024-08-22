@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
+import SecurityKeyboard from "../../components/Account/SecurityKeyboard";
 
 const AccountCreate = () => {
   const userName = "허동원";
+  const [isKeyboard, setIsKeyboard] = useState(false);
+
+  const handlePasswordKeyboard = () => {
+    setIsKeyboard(true);
+  };
 
   return (
     <div className="h-full flex flex-col justify-between">
@@ -67,10 +73,12 @@ const AccountCreate = () => {
             </label>
             <form autoComplete="off">
               <input
-                className="w-full p-4 text-[#565656] bg-[#F8F9FC] border rounded-lg outline-none"
+                className="w-full p-4 text-[#565656] bg-[#F8F9FC] border rounded-lg outline-none caret-transparent"
                 type="text"
                 id="name"
+                inputMode="none"
                 placeholder="4자리 숫자 입력"
+                onTouchStart={() => handlePasswordKeyboard()}
               />
             </form>
           </div>
@@ -80,6 +88,14 @@ const AccountCreate = () => {
       <div className="px-5 py-10">
         <button className="w-full py-3 text-white bg-[#0471E9] rounded-lg">완료</button>
       </div>
+
+      {isKeyboard ? (
+        <div className="w-full fixed bottom-0">
+          <SecurityKeyboard />
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
