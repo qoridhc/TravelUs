@@ -1,11 +1,8 @@
 import React from "react";
-import { LuDot } from "react-icons/lu";
 import { IoIosArrowBack } from "react-icons/io";
-import { TextField } from "@mui/material";
 
 const AccountCreate = () => {
   const userName = "허동원";
-  const userPassword = "";
 
   return (
     <div>
