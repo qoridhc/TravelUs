@@ -1,22 +1,15 @@
 package com.ssafy.soltravel.domain;
 
-import com.ssafy.soltravel.domain.Enum.AccountType;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,29 +18,20 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Entity
 @Data
+@Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class GeneralAccount {
+public class Participant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "general_account_id")
+    @Column(name = "participant_id")
     private Long id;
 
-    private int bankCode;
-
-    private String accountNo;
-
-    private Long balance;
-
-    private int countryId;
-
-    @Enumerated(EnumType.STRING)
-    private AccountType accountType;
+    private boolean isMaster;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -55,13 +39,13 @@ public class GeneralAccount {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "generalAccount", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Participant> participants;
-
-    @OneToOne(mappedBy = "generalAccount")
-    private ForeignAccount foreignAccount;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "general_account_id")
+    private GeneralAccount generalAccount;
+
+
 }
