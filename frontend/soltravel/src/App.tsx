@@ -19,7 +19,6 @@ function App() {
                 <Header />
                 <Routes>
                   <Route path="/" element={<MainPage />} />
-                  <Route path="/accountcreate" element={<AccountCreate />}></Route>
                 </Routes>
                 <Footer />
               </>
@@ -27,6 +26,7 @@ function App() {
           />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/accountcreate" element={<AccountCreate />}></Route>
         </Routes>
       </BrowserRouter>
     </div>
