@@ -44,7 +44,7 @@ if (!accountInfo) return <div>Loading...</div>
     <div className='p-4 max-w-md mx-auto bg-gray-100'>
       <div className='p-4 mb-4 rounded-lg bg-white '>
         <div className='mb-2 flex items-center'>
-          <div className='w-8 h-8 mr-2 bg-blue-500 rounded-full'></div>
+          <div className='w-8 h-8 mr-2 bg-[#0046FF] rounded-full'></div>
           <div className='ml-3'>
             <p className='font-semibold'>{accountInfo.bankName}</p>
             <p className='font-semibold'>{accountInfo.accountType}</p>
@@ -55,8 +55,8 @@ if (!accountInfo) return <div>Loading...</div>
       </div>
 
       <div className="mb-4 flex space-x-2">
-        <button className='py-2 flex-1 bg-blue-500 text-white rounded'>이체</button>
-        <button className='py-2 flex-1 bg-blue-500 text-white rounded'>계좌 관리</button>
+        <button className='py-2 flex-1 bg-[#0046FF] text-white rounded'>이체</button>
+        <button className='py-2 flex-1 bg-[#0046FF] text-white rounded'>계좌 관리</button>
       </div>
 
       <div className='p-4 bg-white rounded-lg'>
@@ -74,7 +74,7 @@ if (!accountInfo) return <div>Loading...</div>
                 <p>{transaction.description}</p>
               </div>
               <div className='text-right'>
-                <p className={`font-semibold ${transaction.type === 'deposit' ? 'text-blue-500' : 'text-red-500'}`}>
+                <p className={`font-semibold ${transaction.type === 'deposit' ? 'text-red-500' : 'text-[#0046FF]'}`}>
                   {transaction.type ===  'deposit' ? '+' : '-'}{Math.abs(transaction.amount).toLocaleString()} 원
                 </p>
                 <p className='text-sm text-gray-500'>잔액 {transaction.balance.toLocaleString()} 원</p>

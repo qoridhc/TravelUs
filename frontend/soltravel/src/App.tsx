@@ -10,6 +10,7 @@ import ViewAccount from "./pages/viewaccount/ViewAccount";
 import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
 import AccountCreate from "./pages/account/AccountCreate";
+import Exchange from "./pages/exchange/Exchange";
 
 
 
@@ -25,6 +26,7 @@ function App() {
                 <Header />
                 <Routes>
                   <Route path="/" element={<MainPage />} />
+                  <Route path="/exchange" element={<Exchange />} />
                 </Routes>
                 <Footer />
               </>

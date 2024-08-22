@@ -24,7 +24,7 @@ const AccountCard: React.FC<{ account: Account }> = ({ account }) => {
   return (
     <div className={`p-4 mb-4 bg-white rounded-lg shadow ${isAllInOne ? 'py-12 px-5' : ''}`}>
       <div className="mb-2 flex items-center">
-        <div className="w-8 h-8 mr-2 bg-blue-500 rounded-full"></div>
+        <div className="w-8 h-8 mr-2 bg-[#0046FF] rounded-full"></div>
         <div>
           <p className="font-semibold">{account.name}</p>
           <p className="text-xs text-gray-500">{account.accountNumber}</p>
@@ -33,9 +33,9 @@ const AccountCard: React.FC<{ account: Account }> = ({ account }) => {
       <p className="mb-2 text-xl text-right font-bold">{account.balance.toLocaleString()} 원</p>
       <div className="flex space-x-2">
         {isAllInOne && (
-          <button className="flex-1 bg-blue-500 text-white py-2 rounded text-sm">입금</button>
+          <button className="flex-1 bg-[#0046FF] text-white py-2 rounded text-sm">입금</button>
         )}
-        <button className="flex-1 bg-blue-500 text-white py-2 rounded text-sm" onClick={handleDetailView}>
+        <button className="flex-1 bg-[#0046FF] text-white py-2 rounded text-sm" onClick={handleDetailView}>
           상세 보기
         </button>
       </div>
