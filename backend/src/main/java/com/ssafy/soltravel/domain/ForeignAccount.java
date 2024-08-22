@@ -53,4 +53,5 @@ public class ForeignAccount {
     @JoinColumn(name = "general_account_id")
     private GeneralAccount generalAccount;
 
+
 }
