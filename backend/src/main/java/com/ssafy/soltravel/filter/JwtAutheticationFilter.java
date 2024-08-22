@@ -52,8 +52,9 @@ public class JwtAutheticationFilter extends OncePerRequestFilter {
       }
 
       // 추출한 user id로 UserEntity 조회
-      User user = userRepository.findByUserId(userId)
-          .orElseThrow(() -> new UserNotFoundException(userId));
+      User user = userRepository.findByUserId(userId).orElseThrow(
+          () -> new UserNotFoundException(userId)
+      );
       String role = String.valueOf(user.getRole());
 
       // 사용자 역할을 GrantedAuthority 리스트(여러개 role 가질수도 있으므로)에 추가
@@ -79,9 +80,12 @@ public class JwtAutheticationFilter extends OncePerRequestFilter {
 
     } catch (ExpiredJwtException e) {
       LogUtil.error("Expired JWT token");
-      
+
     } catch (InvalidTokenException e) {
-      LogUtil.error("Invalid JWT token", e.getToken());
+      LogUtil.warn("Invalid JWT token", e.getToken());
+
+    } catch (UserNotFoundException e) {
+      LogUtil.error("User Not Exist", e.getUserId());
 
     } finally {
       filterChain.doFilter(request, response);

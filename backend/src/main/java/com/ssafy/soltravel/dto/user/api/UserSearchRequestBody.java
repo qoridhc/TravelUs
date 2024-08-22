@@ -1,5 +1,4 @@
-package com.ssafy.soltravel.dto.user;
-
+package com.ssafy.soltravel.dto.user.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserLoginRequestDto {
+public class UserSearchRequestBody {
 
-  private String email;
-  private String password;
+  private String apiKey;
+  private String userId;
 }

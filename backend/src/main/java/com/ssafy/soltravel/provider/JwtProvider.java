@@ -31,10 +31,10 @@ public class JwtProvider {
     Date expiredDate = Date.from(Instant.now().plus(days, ChronoUnit.DAYS));
     String jwt = Jwts.builder()
         .signWith(getKey(), SignatureAlgorithm.HS256) // 암호화 알고리즘
-        .setSubject(String.valueOf(userId)) // 토큰의 subject 필드에 사용자 ID 설정
-        .setIssuedAt(new Date()) // 토큰 발생 시간
-        .setExpiration(expiredDate) // 토큰 만료 시간
-        .compact(); // 토큰을 압축하여 문자열로 반환
+        .setSubject(String.valueOf(userId))           // 토큰의 subject 필드에 사용자 ID 설정
+        .setIssuedAt(new Date())                      // 토큰 발생 시간
+        .setExpiration(expiredDate)                   // 토큰 만료 시간
+        .compact();                                   // 토큰을 압축하여 문자열로 반환
 
     return jwt;
   }
