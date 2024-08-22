@@ -18,7 +18,11 @@ const Login = () => {
               <input className="focus:outline-none text-zinc-800" type="password" />
               <hr className="bg-zinc-800" />
             </div>
-            <button className="w-[92%] h-12 rounded-md bg-[#0046FF] font-bold text-white text-sm">로그인</button>
+            <button
+              onClick={() => {
+                navigate("/")
+              }}
+              className="w-[92%] h-12 rounded-md bg-[#0046FF] font-bold text-white text-sm">로그인</button>
           </div>
 
           <div className="w-[90%] h-[18%] flex items-center justify-around rounded-xl bg-white shadow-sm">
