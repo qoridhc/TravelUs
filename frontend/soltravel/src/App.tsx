@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import MainPage from "../src/pages/MainPage";
 import Login from "./pages/user/Login";
 import SignUp from "./pages/user/SignUp";
-import PersonalAccount from "./pages/viewaccount/PersonalAccount";
+import MyAccount from "./pages/viewaccount/MyAccount";
 import GeneralAccount from "./pages/viewaccount/GeneralAccount";
 import ForeignAccount from "./pages/viewaccount/ForeignAccount";
 import ViewAccount from "./pages/viewaccount/ViewAccount";
@@ -21,7 +21,7 @@ function App() {
           <Route path="/" element={<MainPage />}></Route>
           <Route path="/login" element={<Login />}></Route>
           <Route path="/signup" element={<SignUp />}></Route>
-          <Route path="/personalaccount" element={<PersonalAccount />}></Route>
+          <Route path="/myaccount" element={<MyAccount />}></Route>
           <Route path="/generalaccount" element={<GeneralAccount />}></Route>
           <Route path="/foreignaccount" element={<ForeignAccount />}></Route>
           <Route path="/account" element={<ViewAccount />}></Route>
