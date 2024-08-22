@@ -33,6 +33,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/accountcreate" element={<AccountCreate />}></Route>
+          <Route path="/myaccount" element={<MyAccount />}></Route>
+          <Route path="/generalaccount" element={<GeneralAccount />}></Route>
+          <Route path="/foreignaccount" element={<ForeignAccount />}></Route>
+          <Route path="/account" element={<ViewAccount />}></Route>
         </Routes>
       </BrowserRouter>
     </div>
