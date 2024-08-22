@@ -44,6 +44,6 @@ public class GeneralAccount {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "generalAccount", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "generalAccount")
     private ForeignAccount foreignAccount;
 }

@@ -1,8 +1,6 @@
 package com.ssafy.soltravel.service.account;
 
 import com.ssafy.soltravel.common.Header;
-import com.ssafy.soltravel.domain.Currency;
-import com.ssafy.soltravel.domain.CurrencyType;
 import com.ssafy.soltravel.domain.ForeignAccount;
 import com.ssafy.soltravel.domain.GeneralAccount;
 import com.ssafy.soltravel.dto.account.AccountDto;
@@ -10,30 +8,26 @@ import com.ssafy.soltravel.dto.account.CreateAccountDto;
 import com.ssafy.soltravel.dto.account.request.CreateAccountRequestDto;
 import com.ssafy.soltravel.dto.account.response.CreateAccountResponseDto;
 import com.ssafy.soltravel.dto.account.response.DeleteAccountResponseDto;
-import com.ssafy.soltravel.dto.currency.CurrencyDto;
 import com.ssafy.soltravel.mapper.AccountMapper;
 import com.ssafy.soltravel.repository.ForeignAccountRepository;
 import com.ssafy.soltravel.repository.GeneralAccountRepository;
-import com.ssafy.soltravel.util.LogUtil;
-import jakarta.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.objectweb.asm.TypeReference;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AccountService {
 
