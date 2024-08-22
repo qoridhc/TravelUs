@@ -11,4 +11,6 @@ public interface GeneralAccountRepository extends JpaRepository<GeneralAccount, 
     @Transactional
     void deleteByAccountNo(String accountNo);
 
+    GeneralAccount findByAccountNo(String accountNo);
+
 }

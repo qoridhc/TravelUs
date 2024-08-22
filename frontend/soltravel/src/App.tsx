@@ -4,18 +4,29 @@ import MainPage from "../src/pages/MainPage";
 import Login from "./pages/user/Login";
 import SignUp from "./pages/user/SignUp";
 import Header from "./components/common/Header";
+import Footer from "./components/common/Footer";
 import AccountCreate from "./pages/account/AccountCreate";
 
 function App() {
   return (
     <div className="h-full">
       <BrowserRouter>
-        <Header></Header>
         <Routes>
-          <Route path="/" element={<MainPage />}></Route>
-          <Route path="/login" element={<Login />}></Route>
-          <Route path="/signup" element={<SignUp />}></Route>
-          <Route path="/accountcreate" element={<AccountCreate />}></Route>
+          <Route
+            path="/*"
+            element={
+              <>
+                <Header />
+                <Routes>
+                  <Route path="/" element={<MainPage />} />
+                  <Route path="/accountcreate" element={<AccountCreate />}></Route>
+                </Routes>
+                <Footer />
+              </>
+            }
+          />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
         </Routes>
       </BrowserRouter>
     </div>
