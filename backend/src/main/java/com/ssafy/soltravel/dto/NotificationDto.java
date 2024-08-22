@@ -8,6 +8,6 @@ import lombok.Data;
 public class NotificationDto {
 
   private String accountNo;
-  private float exchangeRate;
+  private Double exchangeRate;
   private String message;
 }
