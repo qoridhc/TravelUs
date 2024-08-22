@@ -191,7 +191,7 @@ const SignUp = () => {
             value={inputs.birthday}
             onChange={handleChange}
             error={errors.birthday}
-            helperText={errors.birthday ? "생년월일은 YYYYMMDD 형식으로 입력해주세요." : ""}
+            helperText={errors.birthday ? "YYYYMMDD 형식으로 입력해주세요." : ""}
             sx={{
               "& .MuiOutlinedInput-root": {
                 backgroundColor: "white",
@@ -207,7 +207,7 @@ const SignUp = () => {
             value={inputs.phone}
             onChange={handleChange}
             error={errors.phone}
-            helperText={errors.phone ? "휴대폰 번호는 숫자만 입력해주세요." : ""}
+            helperText={errors.phone ? "숫자만 입력해주세요." : ""}
             sx={{
               "& .MuiOutlinedInput-root": {
                 backgroundColor: "white",
