@@ -33,8 +33,8 @@ public class UserRepository {
   }
 
   public Optional<User> findByUserId(Long userId) {
-    List<User> result = em.createQuery("select u from User u where u.id = :id", User.class)
-        .setParameter("id", userId)
+    List<User> result = em.createQuery("select u from User u where u.userId = :userId", User.class)
+        .setParameter("userId", userId)
         .getResultList();
     return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
   }
@@ -43,22 +43,38 @@ public class UserRepository {
     em.persist(user);
   }
 
-  public List<User> findAll(UserSearchRequestDto searchDto) {
+  public Optional<List<User>> findAll(UserSearchRequestDto searchDto) {
     QUser qUser = new QUser("u");
-
-    return queryFactory
+    List<User> list = queryFactory
         .selectFrom(qUser)
         .where(
-            quizIdEq(qUser, searchDto.getUserId())
+            userIdEq(qUser, searchDto.getUserId()),
+            userNameLike(qUser, searchDto.getName()),
+            userEmailEq(qUser, searchDto.getEmail())
         )
         .limit(1000)
         .fetch();
+    return Optional.of(list);
   }
 
-  private BooleanExpression quizIdEq(QUser user, Long userIdCond) {
+  private BooleanExpression userIdEq(QUser user, Long userIdCond) {
     if (userIdCond == null) {
       return null;
     }
-    return user.id.eq(userIdCond);
+    return user.userId.eq(userIdCond);
+  }
+
+  private BooleanExpression userNameLike(QUser user, String userNameCond) {
+    if (userNameCond == null) {
+      return null;
+    }
+    return user.name.like(userNameCond);
+  }
+
+  private BooleanExpression userEmailEq(QUser user, String userEmailCond) {
+    if (userEmailCond == null) {
+      return null;
+    }
+    return user.email.eq(userEmailCond);
   }
 }

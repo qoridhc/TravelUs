@@ -7,12 +7,16 @@ import com.ssafy.soltravel.dto.user.UserDetailDto;
 import com.ssafy.soltravel.dto.user.UserLoginRequestDto;
 import com.ssafy.soltravel.dto.user.UserLoginResponseDto;
 import com.ssafy.soltravel.dto.user.UserSearchRequestDto;
+import com.ssafy.soltravel.dto.user.UserSearchResponseDto;
 import com.ssafy.soltravel.dto.user.api.UserCreateRequestBody;
+import com.ssafy.soltravel.exception.UserNotFoundException;
 import com.ssafy.soltravel.repository.UserRepository;
 import com.ssafy.soltravel.util.LogUtil;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
@@ -100,9 +104,22 @@ public class UserService implements UserDetailsService {
     userRepository.save(user);
   }
 
-  // 계정 조회
-  public void searchUser(UserSearchRequestDto searchDto) {
-    List<User> list = userRepository.findAll(searchDto);
+  // 사용자 계정 검색(리스트)
+  public List<UserSearchResponseDto> searchAllUser(UserSearchRequestDto searchDto) {
+    List<User> list = userRepository.findAll(searchDto).orElseThrow(
+        () -> new UserNotFoundException(searchDto)
+    );
+
+    return list.stream().map(this::convertUserToSearchResponseDto).collect(Collectors.toList());
+  }
+
+  // 사용자 계정 검색(단건, userId)
+  public UserSearchResponseDto searchOneUser(Long userId) {
+    User user = userRepository.findByUserId(userId).orElseThrow(
+        () -> new UserNotFoundException(userId)
+    );
+
+    return convertUserToSearchResponseDto(user);
   }
 
 
@@ -115,7 +132,7 @@ public class UserService implements UserDetailsService {
     User user = userRepository.findByEmail(email).orElse(createTestUserIfNotExists());
 
     return UserDetailDto.builder()
-        .id(user.getId())
+        .id(user.getUserId())
         .name(user.getName())
         .email(user.getEmail())
         .password(user.getPassword())
@@ -131,8 +148,23 @@ public class UserService implements UserDetailsService {
         dto.getEmail(),
         dto.getPhone(),
         dto.getAddress(),
+        dto.getBirth(),
         userKey
     );
+  }
+
+  // 유저 엔티티를 조회 응답 DTO로 변환
+  private UserSearchResponseDto convertUserToSearchResponseDto(User user) {
+    return UserSearchResponseDto.builder()
+        .userId(user.getUserId())
+        .name(user.getName())
+        .email(user.getEmail())
+        .phone(user.getPhone())
+        .address(user.getAddress())
+        .birth(user.getBirth())
+        .registerAt(user.getRegisterAt())
+        .isExit(user.getIsExit())
+        .build();
   }
 
 
@@ -148,6 +180,7 @@ public class UserService implements UserDetailsService {
             "test@email.com",
             "010-1111-1111",
             "testAddress",
+            LocalDate.now(),
             "test"
         ));
     return user;

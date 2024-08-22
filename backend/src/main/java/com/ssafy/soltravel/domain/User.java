@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,7 @@ public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "user_id")
-  private Long id;
+  private Long userId;
 
   @Column
   private String name;
@@ -37,8 +38,11 @@ public class User {
   @Column
   private String address;
 
+  @Column
+  private LocalDate birth;
+
   @Column(name = "register_at")
-  private LocalDate registerAt;
+  private LocalDateTime registerAt;
 
   @Column(name = "is_exit")
   private Boolean isExit;
@@ -54,14 +58,15 @@ public class User {
    * 생성 메서드
    */
   public static User createUser(String name, String password, String email, String phone,
-      String address, String userKey) {
+      String address, LocalDate birth, String userKey) {
     User user = new User();
     user.name = name;
     user.password = password;
     user.email = email;
     user.phone = phone;
     user.address = address;
-    user.registerAt = LocalDate.now();
+    user.birth = birth;
+    user.registerAt = LocalDateTime.now();
     user.role = Role.USER;
     user.isExit = false;
     user.userKey = userKey;
