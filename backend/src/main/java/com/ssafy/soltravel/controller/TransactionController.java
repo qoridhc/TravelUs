@@ -29,5 +29,15 @@ public class TransactionController {
         return response;
     }
 
+    // 계좌 출금
+    @PostMapping("/{accountNo}/withdraw")
+    public ResponseEntity<DepositResponseDto> postAccountWithdrawal(
+        @PathVariable String accountNo,
+        @RequestBody TransactionRequestDto requestDto
+    ) {
+        ResponseEntity<DepositResponseDto> response = transactionService.postAccountWithdrawal(accountNo, requestDto);
+
+        return response;
+    }
 
 }

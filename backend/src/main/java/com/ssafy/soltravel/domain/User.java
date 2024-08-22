@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.domain;
 
+import com.ssafy.soltravel.domain.Enum.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
