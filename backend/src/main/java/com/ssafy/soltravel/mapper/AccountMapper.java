@@ -1,7 +1,7 @@
 package com.ssafy.soltravel.mapper;
 
 import com.ssafy.soltravel.domain.Currency;
-import com.ssafy.soltravel.domain.CurrencyType;
+import com.ssafy.soltravel.domain.Enum.CurrencyType;
 import com.ssafy.soltravel.domain.ForeignAccount;
 import com.ssafy.soltravel.domain.GeneralAccount;
 import com.ssafy.soltravel.dto.account.CreateAccountDto;

@@ -1,6 +1,6 @@
 package com.ssafy.soltravel.dto.user;
 
-import com.ssafy.soltravel.domain.Role;
+import com.ssafy.soltravel.domain.Enum.Role;
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.AllArgsConstructor;
