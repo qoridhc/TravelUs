@@ -3,7 +3,9 @@ package com.ssafy.soltravel.controller;
 import com.ssafy.soltravel.dto.transaction.TransactionHistoryDto;
 import com.ssafy.soltravel.dto.transaction.request.TransactionHistoryRequestDto;
 import com.ssafy.soltravel.dto.transaction.request.TransactionRequestDto;
+import com.ssafy.soltravel.dto.transaction.request.TransferRequestDto;
 import com.ssafy.soltravel.dto.transaction.response.DepositResponseDto;
+import com.ssafy.soltravel.dto.transaction.response.TransferHistoryResponseDto;
 import com.ssafy.soltravel.service.transaction.TransactionService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,18 @@ public class TransactionController {
         return response;
     }
 
+    // 계좌 이체
+    @PostMapping("/{accountNo}/transfer")
+    public ResponseEntity<List<TransferHistoryResponseDto>> postAccountTransfer(
+        @PathVariable String accountNo,
+        @RequestBody TransferRequestDto requestDto
+    ) {
+        ResponseEntity<List<TransferHistoryResponseDto>> response = transactionService.postAccountTransfer(accountNo, requestDto);
+
+        return response;
+    }
+
+
     // 거래 내역 조회
     @GetMapping("/{accountNo}/history")
     public ResponseEntity<List<TransactionHistoryDto>> getHistoryByAccountNo(
@@ -55,5 +69,6 @@ public class TransactionController {
 
         return response;
     }
+
 
 }

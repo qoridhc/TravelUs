@@ -4,7 +4,9 @@ import com.ssafy.soltravel.common.Header;
 import com.ssafy.soltravel.dto.transaction.TransactionHistoryDto;
 import com.ssafy.soltravel.dto.transaction.request.TransactionHistoryRequestDto;
 import com.ssafy.soltravel.dto.transaction.request.TransactionRequestDto;
+import com.ssafy.soltravel.dto.transaction.request.TransferRequestDto;
 import com.ssafy.soltravel.dto.transaction.response.DepositResponseDto;
+import com.ssafy.soltravel.dto.transaction.response.TransferHistoryResponseDto;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,6 +102,45 @@ public class TransactionService {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
+
+    public ResponseEntity<List<TransferHistoryResponseDto>> postAccountTransfer(String accountNo, TransferRequestDto requestDto) {
+
+        String API_NAME = "updateDemandDepositAccountTransfer";
+        String API_URL = BASE_URL + "/" + API_NAME;
+
+        Header header = Header.builder()
+            .apiName(API_NAME)
+            .apiServiceCode(API_NAME)
+            .apiKey(apiKeys.get("API_KEY"))
+            .userKey(apiKeys.get("USER_KEY"))
+            .build();
+
+        Map<String, Object> body = new HashMap<>();
+
+        body.put("Header", header);
+        body.put("depositAccountNo", requestDto.getDepositAccountNo());
+        body.put("depositTransactionSummary", requestDto.getDepositTransactionSummary());
+        body.put("transactionBalance", requestDto.getTransactionBalance());
+        body.put("withdrawalAccountNo", accountNo);
+        body.put("withdrawalTransactionSummary", requestDto.getWithdrawalTransactionSummary());
+
+        ResponseEntity<Map<String, Object>> response = webClient.post()
+            .uri(API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(body)
+            .retrieve()
+            .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
+            })
+            .block();
+
+        List<Object> recObject = (List<Object>) response.getBody().get("REC");
+
+        List<TransferHistoryResponseDto> responseDto = recObject.stream()
+            .map(value -> modelMapper.map(value, TransferHistoryResponseDto.class))
+            .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
 
     public ResponseEntity<List<TransactionHistoryDto>> getHistoryByAccountNo(String accountNo, TransactionHistoryRequestDto requestDto) {
 
