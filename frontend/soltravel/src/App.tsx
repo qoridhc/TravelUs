@@ -10,13 +10,22 @@ function App() {
   return (
     <div className="h-full">
       <BrowserRouter>
-        <Header></Header>
         <Routes>
-          <Route path="/" element={<MainPage />}></Route>
-          <Route path="/login" element={<Login />}></Route>
-          <Route path="/signup" element={<SignUp />}></Route>
+          <Route
+            path="/*"
+            element={
+              <>
+                <Header />
+                <Routes>
+                  <Route path="/" element={<MainPage />} />
+                </Routes>
+                <Footer />
+              </>
+            }
+          />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
         </Routes>
-        <Footer></Footer>
       </BrowserRouter>
     </div>
   );
