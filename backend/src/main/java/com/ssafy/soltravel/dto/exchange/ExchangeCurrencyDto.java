@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class ExchangeCurrencyDto {
 
-  private String amount;
-  private String exchangeRate;
+  private Double amount;
+  private Double exchangeRate;
   private String currency;
   private String currencyName;
 }

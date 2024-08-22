@@ -16,6 +16,6 @@ import org.springframework.data.redis.core.RedisHash;
 public class PreferenceRate {
 
   @Id
-  private String id;//"USD:1437.8"
+  private String id;//"USD(1437.8)"
   private List<Long> accounts;
 }

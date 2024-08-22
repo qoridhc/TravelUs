@@ -1,6 +1,8 @@
 package com.ssafy.soltravel.service;
 
 import com.ssafy.soltravel.dto.NotificationDto;
+import com.ssafy.soltravel.dto.exchange.ExchangeResponseDto;
+import com.ssafy.soltravel.util.LogUtil;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,9 +45,10 @@ public class NotificationService {
   /**
    * 해당 모임 계좌 모임원에게 알림 전송
    */
-  public void notifyMessage(String accountNo) {
+  public void notifyMessage(ExchangeResponseDto exchangeResponseDto) {
 
     //TODO: 모임원 검색 후 각각 알림 전송
+    String accountNo=exchangeResponseDto.getAccountInfoDto().getAccountNo();
     Long userId = 2L;
 
     if (emitters.containsKey(userId)) {
@@ -53,11 +56,12 @@ public class NotificationService {
 
       //알림 전송
       try {
-        String message = String.format("고객님의 모임계좌[%s]에 자동환전이 실행되었습니다.", "accountNo");
+        String message = String.format("고객님의 모임계좌[%s]에 자동환전이 실행되었습니다.", accountNo);
+        LogUtil.info(message);
 
-        log.info("알림전송:{}", message);
-        NotificationDto dto = new NotificationDto("계좌번호", 1333.20F, message);
-        sseEmitterReceiver.send(SseEmitter.event().name("addMessage").data(dto));
+        NotificationDto dto = new NotificationDto(accountNo, exchangeResponseDto.getExchangeCurrencyDto()
+            .getExchangeRate(), message);
+        sseEmitterReceiver.send(SseEmitter.event().name("Notification").data(dto));
       } catch (Exception e) {
         emitters.remove(userId);
       }
