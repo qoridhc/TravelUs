@@ -1,10 +1,14 @@
 package com.ssafy.soltravel.controller;
 
+import com.ssafy.soltravel.dto.transaction.TransactionHistoryDto;
+import com.ssafy.soltravel.dto.transaction.request.TransactionHistoryRequestDto;
 import com.ssafy.soltravel.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.dto.transaction.response.DepositResponseDto;
 import com.ssafy.soltravel.service.transaction.TransactionService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +40,18 @@ public class TransactionController {
         @RequestBody TransactionRequestDto requestDto
     ) {
         ResponseEntity<DepositResponseDto> response = transactionService.postAccountWithdrawal(accountNo, requestDto);
+
+        return response;
+    }
+
+    // 거래 내역 조회
+    @GetMapping("/{accountNo}/history")
+    public ResponseEntity<List<TransactionHistoryDto>> getHistoryByAccountNo(
+        @PathVariable String accountNo,
+        @RequestBody TransactionHistoryRequestDto requestDto
+    ) {
+
+        ResponseEntity<List<TransactionHistoryDto>> response = transactionService.getHistoryByAccountNo(accountNo, requestDto);
 
         return response;
     }
