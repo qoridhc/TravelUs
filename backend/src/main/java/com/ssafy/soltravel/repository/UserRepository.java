@@ -18,6 +18,10 @@ public class UserRepository {
   private final EntityManager em;
   private final JPAQueryFactory queryFactory;
 
+  public void save(User user) {
+    em.persist(user);
+  }
+
   public Optional<User> findByName(String name) {
     List<User> result = em.createQuery("select u from User u where u.name = :name", User.class)
         .setParameter("name", name)
@@ -39,8 +43,14 @@ public class UserRepository {
     return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
   }
 
-  public void save(User user) {
-    em.persist(user);
+  public Optional<User> findByEmailAndPwd(String email, String password) {
+    List<User> result =
+        em.createQuery("select u from User u "
+                + "where u.email = :email and u.password = :password", User.class)
+            .setParameter("email", email)
+            .setParameter("password", password)
+            .getResultList();
+    return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
   }
 
   public Optional<List<User>> findAll(UserSearchRequestDto searchDto) {

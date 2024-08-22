@@ -1,6 +1,7 @@
 package com.ssafy.soltravel.handler;
 
 import com.ssafy.soltravel.dto.ResponseDto;
+import com.ssafy.soltravel.exception.InvalidCredentialsException;
 import com.ssafy.soltravel.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,5 +34,14 @@ public class GlobalExceptionHandler {
         String.format("DB에 해당 유저가 없습니다: %d", e.getUserId())
     );
     return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(InvalidCredentialsException.class)
+  public ResponseEntity<ResponseDto> handleUserNotFoundException(InvalidCredentialsException e) {
+    ResponseDto errorResponse = new ResponseDto(
+        "UNAUTHORIZED",
+        String.format("아이디 또는 비밀번호가 틀렸습니다.", e.getEmail())
+    );
+    return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
   }
 }
