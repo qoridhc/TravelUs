@@ -7,9 +7,15 @@ const AccountCreate = () => {
   return (
     <div className="h-full flex flex-col justify-between">
       <div>
-        <div className="p-5 flex items-center space-x-2">
-          <IoIosArrowBack className="text-2xl" />
-          <p className="text-lg font-semibold">입출금통장 개설</p>
+        <div className="flex justify-between">
+          <div className="p-5 flex items-center space-x-2">
+            <IoIosArrowBack className="text-2xl" />
+            <p className="text-lg font-semibold">입출금통장 개설</p>
+          </div>
+
+          <div className="p-5 flex items-center">
+            <button className="text-[#0471E9] text-sm font-semibold">취소</button>
+          </div>
         </div>
 
         <div className="bg-[#F8F9FC]">
