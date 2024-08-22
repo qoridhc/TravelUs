@@ -24,7 +24,7 @@ const Footer = () => {
   };
 
   return (
-    <div className="w-full h-16 p-3 bg-white fixed bottom-0 flex justify-around items-center">
+    <div className="w-full h-16 p-3 bg-white border-t fixed bottom-0 flex justify-around items-center">
       <button
         className={`flex flex-col items-center ${currentMenu === "홈" ? "" : "text-[#9E9E9E]"} duration-200`}
         onClick={() => handleMenuHome()}>
