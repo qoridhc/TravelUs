@@ -1,14 +1,16 @@
 package com.ssafy.soltravel.exception;
 
 import com.ssafy.soltravel.dto.user.UserSearchRequestDto;
+import lombok.Getter;
 
+@Getter
 public class UserNotFoundException extends RuntimeException {
 
   private final Long userId;
 
   public UserNotFoundException(UserSearchRequestDto dto) {
-    super(String.format("User Not Found about: %s", dto.toString()));
-    this.userId = 0L;
+    super(String.format("User Not Found: %s", dto.toString()));
+    this.userId = dto.getUserId();
   }
 
   public UserNotFoundException(Long userId) {
@@ -16,7 +18,8 @@ public class UserNotFoundException extends RuntimeException {
     this.userId = userId;
   }
 
-  public Long getUserId() {
-    return userId;
+  public UserNotFoundException(String email) {
+    super(String.format("User Not Found: %s", email));
+    userId = 0L;
   }
 }

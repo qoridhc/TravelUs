@@ -4,14 +4,13 @@ package com.ssafy.soltravel.service.user;
 import com.ssafy.soltravel.domain.User;
 import com.ssafy.soltravel.dto.user.UserCreateRequestDto;
 import com.ssafy.soltravel.dto.user.UserDetailDto;
-import com.ssafy.soltravel.dto.user.UserLoginRequestDto;
-import com.ssafy.soltravel.dto.user.UserLoginResponseDto;
 import com.ssafy.soltravel.dto.user.UserSearchRequestDto;
 import com.ssafy.soltravel.dto.user.UserSearchResponseDto;
 import com.ssafy.soltravel.dto.user.api.UserCreateRequestBody;
 import com.ssafy.soltravel.exception.UserNotFoundException;
 import com.ssafy.soltravel.repository.UserRepository;
 import com.ssafy.soltravel.util.LogUtil;
+import com.ssafy.soltravel.util.PasswordEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
@@ -73,16 +72,6 @@ public class UserService implements UserDetailsService {
   }
 
 
-  //로그인
-  public UserLoginResponseDto loginUser(UserLoginRequestDto request) {
-    LogUtil.info(request.getCode());
-    return UserLoginResponseDto.builder()
-        .accessToken("testAccessToken")
-        .refreshToken("testRefreshToken")
-        .build();
-  }
-
-
   // 회원가입
   public void createUser(UserCreateRequestDto createDto) {
 
@@ -100,6 +89,7 @@ public class UserService implements UserDetailsService {
 
     // 결과를 전달받은 매개변수와 함께 저장
     String userKey = response.getBody().get("userKey").toString();
+    createDto.setPassword(PasswordEncoder.encrypt(createDto.getEmail(), createDto.getPassword()));
     User user = convertCreateDtoToUserWithUserKey(createDto, userKey);
     userRepository.save(user);
   }
