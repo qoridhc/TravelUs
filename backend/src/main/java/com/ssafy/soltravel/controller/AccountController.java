@@ -1,20 +1,16 @@
 package com.ssafy.soltravel.controller;
 
-import com.ssafy.soltravel.domain.GeneralAccount;
+import com.ssafy.soltravel.dto.ResponseDto;
 import com.ssafy.soltravel.dto.account.AccountDto;
 import com.ssafy.soltravel.dto.account.request.CreateAccountRequestDto;
 import com.ssafy.soltravel.dto.account.response.CreateAccountResponseDto;
 import com.ssafy.soltravel.dto.account.response.DeleteAccountResponseDto;
+import com.ssafy.soltravel.dto.participants.request.AddParticipantRequestDto;
 import com.ssafy.soltravel.service.account.AccountService;
-import com.ssafy.soltravel.util.LogUtil;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+@Transactional
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/account")
@@ -32,8 +29,9 @@ public class AccountController {
 
     private final AccountService accountService;
 
+    // ========= 계좌 CRUD =========
+
     // 계좌 생성
-    @Transactional
     @PostMapping("/{userId}")
     public ResponseEntity<CreateAccountResponseDto> createAccount(
         @PathVariable Long userId,
@@ -68,6 +66,17 @@ public class AccountController {
         return responseEntity;
     }
 
+    // ========= 참가자 CRUD =========
+    @PostMapping("/{accountId}/participants")
+    public ResponseEntity<ResponseDto> addParticipant(
+        @PathVariable Long accountId,
+        @RequestBody AddParticipantRequestDto requestDto
+    ) {
+
+        ResponseEntity<ResponseDto> response = accountService.addParticipant(accountId, requestDto);
+
+        return response;
+    }
 
     // 편하게 계좌 지우는용 -> 쓰지마세용
     @DeleteMapping("/all")

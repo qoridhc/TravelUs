@@ -1,4 +1,4 @@
-package com.ssafy.soltravel.domain;
+package com.ssafy.soltravel.domain.Enum;
 
 public enum CurrencyType {
     USD("USD", "달러"),
