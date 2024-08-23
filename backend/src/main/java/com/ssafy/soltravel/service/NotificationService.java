@@ -1,9 +1,12 @@
 package com.ssafy.soltravel.service;
 
+import com.ssafy.soltravel.domain.Participant;
 import com.ssafy.soltravel.dto.NotificationDto;
 import com.ssafy.soltravel.dto.exchange.ExchangeResponseDto;
+import com.ssafy.soltravel.service.account.AccountService;
 import com.ssafy.soltravel.util.LogUtil;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +20,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class NotificationService {
 
   public static Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
-
+  private final AccountService accountService;
   /**
    * 메시지 알림 구독
    */
@@ -49,21 +52,25 @@ public class NotificationService {
 
     //TODO: 모임원 검색 후 각각 알림 전송
     String accountNo=exchangeResponseDto.getAccountInfoDto().getAccountNo();
-    Long userId = 2L;
 
-    if (emitters.containsKey(userId)) {
-      SseEmitter sseEmitterReceiver = emitters.get(userId);
+    List<Long> participants=accountService.findUserIdsByGeneralAccountId(exchangeResponseDto.getAccountInfoDto().getAccountId());
 
-      //알림 전송
-      try {
-        String message = String.format("고객님의 모임계좌[%s]에 자동환전이 실행되었습니다.", accountNo);
-        LogUtil.info(message);
+    for(long userId:participants){
 
-        NotificationDto dto = new NotificationDto(accountNo, exchangeResponseDto.getExchangeCurrencyDto()
-            .getExchangeRate(), message);
-        sseEmitterReceiver.send(SseEmitter.event().name("Notification").data(dto));
-      } catch (Exception e) {
-        emitters.remove(userId);
+      if (emitters.containsKey(userId)) {
+        SseEmitter sseEmitterReceiver = emitters.get(userId);
+
+        //알림 전송
+        try {
+          String message = String.format("고객님의 모임계좌[%s]에 환전이 실행되었습니다.", accountNo);
+          LogUtil.info(message);
+
+          NotificationDto dto = new NotificationDto(exchangeResponseDto.getAccountInfoDto().getAccountId(),accountNo, exchangeResponseDto.getExchangeCurrencyDto()
+              .getExchangeRate(), message);
+          sseEmitterReceiver.send(SseEmitter.event().name("Notification").data(dto));
+        } catch (Exception e) {
+          emitters.remove(userId);
+        }
       }
     }
   }

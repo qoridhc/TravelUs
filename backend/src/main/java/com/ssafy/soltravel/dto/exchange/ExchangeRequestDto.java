@@ -5,7 +5,8 @@ import lombok.Data;
 @Data
 public class ExchangeRequestDto {
 
+  private long accountId;
   private String accountNo;
   private String exchangeCurrency;
-  private Double exchangeAmount;
+  private String exchangeAmount;
 }
