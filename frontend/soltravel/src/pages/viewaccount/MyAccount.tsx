@@ -73,7 +73,7 @@ const PersonalAccount: React.FC = () => {
       {/* 거래 내역 섹션 */}
       <div className='bg-white rounded-lg p-4'>
         <div className='flex items-center justify-between mb-4'>
-          <span className='text-lg font-semibold'>최근 · 전체 · 최신순</span>
+          <span className='text-lg font-semibold'>최신순</span>
           <div className='flex items-center'>
             <span className='mr-2'>잔액보기</span>
             <button
