@@ -13,7 +13,9 @@ import AccountCreate from "./pages/account/AccountCreate";
 import ExchangeRate from "./pages/exchange/ExchangeRate";
 import Exchange from "./pages/exchange/Exchange";
 import SelectAccount from "./pages/exchange/SelectAccount";
-import Adjustment from "./pages/adjustment/Adujstment";
+import SettleStart from "./pages/settle/SettleStart";
+import Settlement from "./pages/settle/Settlement";
+import SettleExchange from "./pages/settle/SettleExchange";
 
 
 function App() {
@@ -43,7 +45,9 @@ function App() {
           <Route path="/account" element={<ViewAccount />}></Route>
           <Route path="/exchange" element={<Exchange />}></Route>
           <Route path="/selectaccount" element={<SelectAccount />}></Route>
-          <Route path="/adjustment" element={<Adjustment />}></Route>
+          <Route path="/settlestart" element={<SettleStart />}></Route>
+          <Route path="/settlement" element={<Settlement />}></Route>
+          <Route path="/settleexchange" element={<SettleExchange />}></Route>
         </Routes>
       </BrowserRouter>
     </div>
