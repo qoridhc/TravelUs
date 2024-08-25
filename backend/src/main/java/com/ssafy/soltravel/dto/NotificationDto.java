@@ -7,6 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class NotificationDto {
 
+  private long accountId;
   private String accountNo;
   private Double exchangeRate;
   private String message;

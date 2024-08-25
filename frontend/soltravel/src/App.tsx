@@ -20,7 +20,7 @@ import SettleExchange from "./pages/settle/SettleExchange";
 
 function App() {
   return (
-    <div className="h-full">
+    <div>
       <BrowserRouter>
         <Routes>
           <Route

@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.controller;
 
+import com.ssafy.soltravel.domain.Participant;
 import com.ssafy.soltravel.dto.ResponseDto;
 import com.ssafy.soltravel.dto.account.AccountDto;
 import com.ssafy.soltravel.dto.account.request.CreateAccountRequestDto;
@@ -66,6 +67,8 @@ public class AccountController {
         return responseEntity;
     }
 
+
+
     // ========= 참가자 CRUD =========
     @PostMapping("/{accountId}/participants")
     public ResponseEntity<ResponseDto> addParticipant(
@@ -78,6 +81,14 @@ public class AccountController {
         return response;
     }
 
+    /**
+     *모임통장 참여자 조회 :: test용 입니다.
+     */
+    @GetMapping("/participants/{accountId}")
+    public ResponseEntity<List<Long>> getParticipantsByAccountNo(@PathVariable Long accountId) {
+
+        return ResponseEntity.ok().body(accountService.findUserIdsByGeneralAccountId(accountId));
+    }
     // 편하게 계좌 지우는용 -> 쓰지마세용
     @DeleteMapping("/all")
     public void deleteAll() {
