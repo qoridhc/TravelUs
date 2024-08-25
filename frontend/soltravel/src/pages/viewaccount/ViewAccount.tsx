@@ -1,12 +1,12 @@
-import React, { useState, useEffect, } from 'react';
-import { useNavigate } from 'react-router';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-// 백에 맞게 수정 필요
 interface Account {
   type: string;
   name: string;
   accountNumber: string;
   balance: number;
+  currency?: string; // 통화 정보 추가
 }
 
 const AccountCard: React.FC<{ account: Account }> = ({ account }) => {
@@ -21,21 +21,37 @@ const AccountCard: React.FC<{ account: Account }> = ({ account }) => {
     }
   };
 
+  // 통화에 따른 금액 표시 함수
+  const formatCurrency = (amount: number, currency: string = 'KRW') => {
+    switch (currency) {
+      case 'USD':
+        return `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      case 'JPY':
+        return `¥${amount.toLocaleString('ja-JP', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+      case 'EUR':
+        return `€${amount.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      default:
+        return `${amount.toLocaleString()} 원`;
+    }
+  };
+
   return (
     <div className={`p-4 mb-4 bg-white rounded-lg shadow ${isAllInOne ? 'py-12 px-5' : ''}`}>
       <div className="mb-2 flex items-center">
-        <div className="w-8 h-8 mr-2 bg-blue-500 rounded-full"></div>
+        <div className="w-8 h-8 mr-2 bg-[#0046FF] rounded-full"></div>
         <div>
           <p className="font-semibold">{account.name}</p>
           <p className="text-xs text-gray-500">{account.accountNumber}</p>
         </div>
       </div>
-      <p className="mb-2 text-xl text-right font-bold">{account.balance.toLocaleString()} 원</p>
+      <p className="mb-2 text-xl text-right font-bold">
+        {formatCurrency(account.balance, account.currency)}
+      </p>
       <div className="flex space-x-2">
         {isAllInOne && (
-          <button className="flex-1 bg-blue-500 text-white py-2 rounded text-sm">입금</button>
+          <button className="flex-1 bg-[#0046FF] text-white py-2 rounded text-sm">입금</button>
         )}
-        <button className="flex-1 bg-blue-500 text-white py-2 rounded text-sm" onClick={handleDetailView}>
+        <button className="flex-1 bg-[#0046FF] text-white py-2 rounded text-sm" onClick={handleDetailView}>
           상세 보기
         </button>
       </div>
@@ -43,68 +59,39 @@ const AccountCard: React.FC<{ account: Account }> = ({ account }) => {
   );
 };
 
-const ViewAccount = () => {
-  const [accounts, setAccounts] = useState<(Account[])>([]);
-  const [isLoading, setIsLoading] = useState<(boolean)>(true);
-  // const [error, setError] = useState<string | null>(null);
+const ViewAccount: React.FC = () => {
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // 백에서 데이터 요청하기
-    // const fetchAccounts = async () => {
-    //   setIsLoading(true);
-    //   setError(null);
-
-    //   const response = await fetch('/api/accounts').catch(() => null);
-
-    //   if (!response || !response.ok) {
-    //     setError('계좌 정보를 불러오는데 실패했습니다.');
-    //     setIsLoading(false);
-    //     return;
-    //   }
-
-    //   const data = await response.json().catch(() => null);
-
-    //   if (!data) {
-    //     setError('데이터를 불러오는데 실패했습니다.');
-    //     setIsLoading(false);
-    //     return;
-    //   }
-
-    //   setAccounts(data);
-    //   setIsLoading(false);
     const tempAccounts: Account[] = [
       {
         type: '올인원 모임 통장',
         name: '올인원 모임 통장',
         accountNumber: '110-455-247307',
         balance: 3000000,
+        currency: 'KRW',
       },
       {
         type: '올인원 외화 모임 통장',
         name: '트래블 박스',
         accountNumber: '110-455-247307',
-        balance: 3000000,
+        balance: 2000000,
+        currency: 'JPY', // 예시로 USD 설정
       },
     ];
 
     const timer = setTimeout(() => {
       setAccounts(tempAccounts);
       setIsLoading(false);
-    }, 500)
+    }, 500);
 
     return () => clearTimeout(timer);
   }, []);
 
-  //   fetchAccounts();
-  // }, []);
-
   if (isLoading) {
     return <div className='py-4 text-center'>Loading...</div>
   }
-
-  // if (error) {
-  //   return <div className='py-4 text-center text-red-500'>{error}</div>
-  // }
 
   return (
     <div className='p-4 max-w-md mx-auto bg-gray-100 h-screen'>

@@ -10,6 +10,13 @@ import ViewAccount from "./pages/viewaccount/ViewAccount";
 import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
 import AccountCreate from "./pages/account/AccountCreate";
+import ExchangeRate from "./pages/exchange/ExchangeRate";
+import Exchange from "./pages/exchange/Exchange";
+import SelectAccount from "./pages/exchange/SelectAccount";
+import SettleStart from "./pages/settle/SettleStart";
+import Settlement from "./pages/settle/Settlement";
+import SettleExchange from "./pages/settle/SettleExchange";
+
 
 function App() {
   return (
@@ -21,11 +28,10 @@ function App() {
             element={
               <>
                 <Header />
-                <div>
-                  <Routes>
-                    <Route path="/" element={<MainPage />} />
-                  </Routes>
-                </div>
+                <Routes>
+                  <Route path="/" element={<MainPage />} />
+                  <Route path="/exchangerate" element={<ExchangeRate />} />
+                </Routes>
                 <Footer />
               </>
             }
@@ -37,6 +43,11 @@ function App() {
           <Route path="/generalaccount" element={<GeneralAccount />}></Route>
           <Route path="/foreignaccount" element={<ForeignAccount />}></Route>
           <Route path="/account" element={<ViewAccount />}></Route>
+          <Route path="/exchange" element={<Exchange />}></Route>
+          <Route path="/selectaccount" element={<SelectAccount />}></Route>
+          <Route path="/settlestart" element={<SettleStart />}></Route>
+          <Route path="/settlement" element={<Settlement />}></Route>
+          <Route path="/settleexchange" element={<SettleExchange />}></Route>
         </Routes>
       </BrowserRouter>
     </div>
