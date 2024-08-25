@@ -11,11 +11,9 @@ import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
 import AccountCreate from "./pages/account/AccountCreate";
 
-
-
 function App() {
   return (
-    <div className="h-full">
+    <div>
       <BrowserRouter>
         <Routes>
           <Route
@@ -23,9 +21,11 @@ function App() {
             element={
               <>
                 <Header />
-                <Routes>
-                  <Route path="/" element={<MainPage />} />
-                </Routes>
+                <div>
+                  <Routes>
+                    <Route path="/" element={<MainPage />} />
+                  </Routes>
+                </div>
                 <Footer />
               </>
             }
