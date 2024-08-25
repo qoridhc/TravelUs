@@ -5,7 +5,9 @@ const MainPage = () => {
   return (
     <div className="w-full h-full bg-[#EFEFF5]">
       <div className="w-full p-5 flex flex-col items-center space-y-4">
-        <div className="w-full p-5 flex flex-col space-y-5 rounded-xl bg-white shadow-md">
+
+        {/* 모임통장 신청 */}
+        <div className="w-full p-6 flex flex-col space-y-5 rounded-xl bg-white shadow-md">
           <div className="flex justify-between items-center">
             <div className="flex flex-col space-y-2">
               <p className="text-sm">모임통장과 외화통장을 한 번에</p>
@@ -22,26 +24,10 @@ const MainPage = () => {
           <button className="h-10 rounded-md bg-[#0046FF] font-bold text-white text-sm">신청하기</button>{" "}
         </div>
 
-        <div className="w-full grid grid-cols-2 gap-5">
-          <div className="w-full h-40 p-5 rounded-xl bg-white shadow-md flex flex-col justify-between items-start space-y-8">
-            <img className="w-12" src="/assets/exchangeMoneyIcon.png" alt="환전아이콘" />
-            <div>
-              <p className="font-bold">수수료 없는</p>
-              <p className="font-bold">환전하기</p>
-            </div>
-          </div>
-
-          <div className="w-full h-40 p-5 rounded-xl bg-white shadow-md flex flex-col items-start space-y-8">
-            <img className="w-12" src="/assets/creditCardIcon.png" alt="카드아이콘" />
-            <div>
-              <p className="font-bold">카드 신청하기</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="w-full p-5 flex flex-col rounded-xl bg-white shadow-md">
+        {/* 환율 표시 */}
+        <div className="w-full p-6 flex flex-col rounded-xl bg-white shadow-md">
           <div className="flex items-center space-x-1">
-            <p className="text-lg font-bold flex justify-start">환율</p>
+            <p className="text-md font-bold flex justify-start">환율</p>
             <IoIosArrowForward className="text-[#565656]" />
           </div>
           <div className="flex justify-end">
@@ -73,19 +59,41 @@ const MainPage = () => {
           <button className="h-10 rounded-md bg-[#EAEAEA] font-bold text-sm">환전신청</button>{" "}
         </div>
 
-        {/* <div className="w-full h-40 p-5 rounded-xl bg-white shadow-md flex flex-col items-start space-y-8">
-            <img className="w-12" src="/assets/exchangeRateIcon.png" alt="환율아이콘" />
+        {/* 가계부 */}
+        <div className="w-full p-6 flex flex-col space-y-3 rounded-xl bg-blue-500 shadow-md">
+          <div className="flex items-center space-x-1">
+            <p className="text-md text-white font-bold flex justify-start">가계부</p>
+            <IoIosArrowForward className="text-white" />
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-8">
+              <img className="w-12" src="/assets/budgetIcon.png" alt="가계부아이콘" />
+              <div className="flex flex-col">
+                <p className="text-zinc-200 font-semibold text-sm">이번 여행</p>
+                <p className="text-zinc-200 font-semibold text-sm">가계부 확인하기</p>
+              </div>
+            </div>
+            <IoIosArrowForward className="text-white" />
+          </div>
+        </div>
+
+        {/* 환전, 카드 신청 */}
+        <div className="w-full grid grid-cols-2 gap-5">
+          <div className="w-full h-40 p-5 rounded-xl bg-white shadow-md flex flex-col justify-between items-start space-y-8">
+            <img className="w-12" src="/assets/exchangeMoneyIcon.png" alt="환전아이콘" />
             <div>
-              <p className="font-bold">환율 조회</p>
+              <p className="font-bold">수수료 없는</p>
+              <p className="font-bold">환전하기</p>
             </div>
           </div>
 
           <div className="w-full h-40 p-5 rounded-xl bg-white shadow-md flex flex-col items-start space-y-8">
-            <img className="w-12" src="/assets/budgetIcon.png" alt="가계부아이콘" />
+            <img className="w-12" src="/assets/creditCardIcon.png" alt="카드아이콘" />
             <div>
-              <p className="font-bold">가계부 조회</p>
+              <p className="font-bold">카드 신청하기</p>
             </div>
-          </div> */}
+          </div>
+        </div>
       </div>
     </div>
   );
