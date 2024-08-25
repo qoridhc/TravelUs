@@ -6,6 +6,7 @@ import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { useNavigate } from 'react-router-dom';
 
+// 환율 관련 정보 백에서 받아올 준비 interface로 type 설정
 interface Currency {
   code: string;
   name: string;
@@ -17,6 +18,7 @@ interface TimeSlot {
   name: string;
 }
 
+// 선택 박스 설정 (이것도 백에서 주는거 확인 해야 함)
 const currencies: Currency[] = [
   { code: 'JPY', name: '일본 엔', amount: 100 },
   { code: 'USD', name: '미국 달러', amount: 1 },
@@ -50,6 +52,7 @@ const ExchangeRateComponent: React.FC = () => {
     fetchExchangeRate();
   }, [selectedCurrency]);
 
+  // 달력 선택
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
       setSelectedDate(date);
@@ -57,16 +60,19 @@ const ExchangeRateComponent: React.FC = () => {
     }
   };
 
+  // 통화 선택
   const handleCurrencySelect = (currency: Currency) => {
     setSelectedCurrency(currency);
     setShowCurrencyDropdown(false);
   };
 
+  // 회차 선택
   const handleTimeSlotSelect = (timeSlot: TimeSlot) => {
     setSelectedTimeSlot(timeSlot);
     setShowTimeSlotDropdown(false);
   };
 
+  // 데이터 받아오는 로직 (백으로 요청)
   const fetchExchangeRate = async () => {
     setIsLoading(true);
     setError(null);
@@ -86,6 +92,7 @@ const ExchangeRateComponent: React.FC = () => {
     }
   };
 
+  // 환전하기 페이지로 이동
   const handleExchange = () => {
     navigate('/exchange');
   };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
+// 백에서 받아올 데이터를 interface로 type 설정 현재는 예시들
 interface Account {
   id: string;
   name: string;
@@ -22,6 +23,7 @@ interface ExchangeRate {
   usdConversionRate: number;
 }
 
+// 환전 요청
 const Exchange: React.FC = () => {
   const { accountId } = useParams<{ accountId: string }>();
   const [account, setAccount] = useState<Account | null>(null);
@@ -61,6 +63,7 @@ const Exchange: React.FC = () => {
     fetchAccountInfo();
   }, [accountId]);
 
+  // 환전할 돈을 입력한 후 취소 했을 때, NaN이 뜨지 않도록 하기
   const handleExchangeAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const amount = e.target.value;
     setExchangeAmount(amount);
@@ -75,6 +78,7 @@ const Exchange: React.FC = () => {
     }
   };
 
+  // 환전하기 버튼 (백으로 요청 보내는 로직 필요) : 여기서 계산을 하는건지, 백에서 계산을 한 값을 던져주는 건지?
   const handleExchange = () => {
     // 실제 환전 로직 구현 필요
     console.log('환전 실행:', accountId, exchangeAmount, expectedExchange);

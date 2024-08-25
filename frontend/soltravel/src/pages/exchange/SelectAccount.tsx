@@ -2,6 +2,7 @@ import React from 'react';
 import { ChevronDown, ArrowDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+// 백에서 받아올 데이터들 interface로 type 설정
 interface Account {
   id: string;
   type: string;
@@ -11,6 +12,7 @@ interface Account {
   currency: string;
 }
 
+// 에시 데이터들, axios로 백에서 데이터 받아와야 함
 const SelectAccount: React.FC = () => {
   const navigate = useNavigate();
   const accounts: Account[] = [
@@ -32,9 +34,10 @@ const SelectAccount: React.FC = () => {
     }
   ];
 
-  const handleAccountSelect = (accountId: string) => {
-    navigate(`/exchange`);
-  };
+//   해당 계좌에 Id가 있을 경우 사용
+//   const handleAccountSelect = (accountId: string) => {
+//     navigate(`/exchange`);
+//   };
 
   return (
     <div className="p-4 max-w-md mx-auto bg-gray-100 min-h-screen">
@@ -76,7 +79,7 @@ const SelectAccount: React.FC = () => {
       </div>
       <button
         className="w-full bg-[#0046FF] text-white py-3 rounded-lg mt-4"
-        onClick={() => handleAccountSelect(accounts[0].id)}
+        // onClick={() => handleAccountSelect(accounts[0].id)}
       >
         환전하기
       </button>
