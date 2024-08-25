@@ -1,11 +1,30 @@
 import React from "react";
 import { IoIosArrowForward } from "react-icons/io";
+import { PiAirplaneTiltFill } from "react-icons/pi";
 
 const MainPage = () => {
-  return (
-    <div className="w-full h-full bg-[#EFEFF5]">
-      <div className="w-full p-5 flex flex-col items-center space-y-4">
+  const userDetail = [
+    {
+      userId: 1,
+      userName: "허동원",
+      userSavingAccount: {
+        accountNumber: "217-473928-13289",
+        accountMoney: "3,481,900",
+      },
+      usermeetingAccount: {
+        accountNumber: "217-879928-13289",
+        accountMoney: "4,734,910",
+        travelBox: {
+          boxMoney: "113,890",
+          currencyType: "￥",
+        },
+      },
+    },
+  ];
 
+  return (
+    <div className="w-full pb-16 bg-[#EFEFF5]">
+      <div className="w-full p-5 flex flex-col items-center space-y-4">
         {/* 모임통장 신청 */}
         <div className="w-full p-6 flex flex-col space-y-5 rounded-xl bg-white shadow-md">
           <div className="flex justify-between items-center">
@@ -23,6 +42,69 @@ const MainPage = () => {
           </div>
           <button className="h-10 rounded-md bg-[#0046FF] font-bold text-white text-sm">신청하기</button>{" "}
         </div>
+
+        {/* 입출금 통장 있을 시 표시 */}
+        {userDetail[0].userSavingAccount && (
+          <div className="w-full py-5 px-5 flex flex-col rounded-xl bg-white shadow-md">
+            <div className="flex flex-col space-y-3">
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col">
+                  <p className="font-bold">올인원머니통장</p>
+                  <p className="text-sm text-zinc-500">입출금 {userDetail[0].userSavingAccount.accountNumber}</p>
+                </div>
+              </div>
+              <div className="flex items-center">
+                <p className="text-[1.3rem] font-semibold">{userDetail[0].userSavingAccount.accountMoney}</p>
+                <p className="text-[1rem]">원</p>
+              </div>
+              <hr />
+            </div>
+            <div className="flex justify-end mt-3">
+              <button className="h-8 w-14 rounded-3xl bg-[#0046FF] font-bold text-white text-sm">이체</button>
+            </div>
+          </div>
+        )}
+
+        {/* 모임 통장 있을 시 표시 */}
+        {userDetail[0].usermeetingAccount && (
+          <div className="w-full py-5 px-5 flex flex-col rounded-xl bg-[rgb(186,203,238)] shadow-md">
+            <div className="flex flex-col space-y-3">
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col">
+                  <div className="flex items-center space-x-1">
+                    <div className="w-6 h-6 bg-[#8da5d6] rounded-full flex justify-center items-center">
+                      <PiAirplaneTiltFill className="text-zinc-50" />
+                    </div>
+                    <p className="font-bold">해외여행 올인원모임통장</p>
+                  </div>
+                  <p className="text-sm text-zinc-500">{userDetail[0].usermeetingAccount.accountNumber}</p>
+                </div>
+              </div>
+              <div className="flex items-center">
+                <p className="text-[1.3rem] font-semibold">{userDetail[0].usermeetingAccount.accountMoney}</p>
+                <p className="text-[1rem]">원</p>
+              </div>
+              <div className="flex justify-end">
+                <button className="h-8 w-14 rounded-3xl bg-[#a4b6db] font-bold text-zinc-700 text-sm">이체</button>
+              </div>
+              <hr className="bg-[#0e1b38]" />
+              <div className="flex justify-between items-center">
+                <p className="text-sm font-bold">트래블박스</p>
+                {/* 트래블박스 가입했을 시 */}
+                {userDetail[0].usermeetingAccount.travelBox ? (
+                  <div className="flex items-center">
+                    <p className="font-semibold">{userDetail[0].usermeetingAccount.travelBox.boxMoney}</p>
+                    <p>{userDetail[0].usermeetingAccount.travelBox.currencyType}</p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-sm font-bold text-zinc-500">시작하기</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* 환율 표시 */}
         <div className="w-full p-6 flex flex-col rounded-xl bg-white shadow-md">
