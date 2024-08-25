@@ -14,7 +14,10 @@ const MainPage = () => {
       usermeetingAccount: {
         accountNumber: "217-879928-13289",
         accountMoney: "4,734,910",
-        travelBox: null,
+        travelBox: {
+          boxMoney: "113,890",
+          currencyType: "￥",
+        },
       },
     },
   ];
@@ -65,7 +68,7 @@ const MainPage = () => {
         {/* 모임 통장 있을 시 표시 */}
         {userDetail[0].usermeetingAccount && (
           <div className="w-full py-5 px-5 flex flex-col rounded-xl bg-[rgb(186,203,238)] shadow-md">
-            <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-3">
               <div className="flex justify-between items-center">
                 <div className="flex flex-col">
                   <div className="flex items-center space-x-1">
@@ -87,7 +90,17 @@ const MainPage = () => {
               <hr className="bg-[#0e1b38]" />
               <div className="flex justify-between items-center">
                 <p className="text-sm font-bold">트래블박스</p>
-                <p className="text-sm font-bold text-zinc-500">시작하기</p>
+                {/* 트래블박스 가입했을 시 */}
+                {userDetail[0].usermeetingAccount.travelBox ? (
+                  <div className="flex items-center">
+                    <p className="font-semibold">{userDetail[0].usermeetingAccount.travelBox.boxMoney}</p>
+                    <p>{userDetail[0].usermeetingAccount.travelBox.currencyType}</p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-sm font-bold text-zinc-500">시작하기</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
