@@ -228,16 +228,18 @@ const SignUp = () => {
               }}
             />
             <Button
-              className="h-14 w-20"
+              className="h-14 w-20 flex flex-col"
               variant="contained"
               sx={{
-                backgroundColor: "#0046FF", // 버튼의 배경색
+                backgroundColor: "#1A73E8", // 버튼의 배경색
                 color: "white", // 텍스트 색상
-                "&:hover": {
-                  backgroundColor: "#0036D4", // hover 상태에서의 배경색
-                },
+                padding: "4px",
+                // "&:hover": {
+                //   backgroundColor: "#0036D4", // hover 상태에서의 배경색
+                // },
               }}>
-              휴대폰 인증
+              <p className="text-xs font-semibold">인증번호</p>
+              <p className="text-xs font-semibold">발송</p>
             </Button>
           </div>
 
@@ -259,9 +261,11 @@ const SignUp = () => {
           />
           <button
             onClick={() => {
-              navigate("/")
+              navigate("/");
             }}
-            className="w-full h-12 rounded-md bg-[#0046FF] font-bold text-white text-sm">가입</button>
+            className="w-full h-12 rounded-md bg-[#0046FF] font-bold text-white text-sm">
+            가입
+          </button>
           <div className="w-full h-20 flex items-center justify-center space-x-2">
             <p className="text-sm font-bold">계정이 있으신가요?</p>
             <button
