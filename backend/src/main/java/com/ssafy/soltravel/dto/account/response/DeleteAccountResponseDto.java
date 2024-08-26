@@ -19,6 +19,6 @@ public class DeleteAccountResponseDto {
     private String refundAccountNo;
 
     @Schema(description = "환불된 금액", example = "1000000")
-    private String accountBalance;
+    private long accountBalance;
 
 }

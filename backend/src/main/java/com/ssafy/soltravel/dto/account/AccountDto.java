@@ -46,5 +46,5 @@ public class AccountDto {
     private String currency;
 
     @Schema(description = "계좌 잔액", example = "1000000")
-    private String accountBalance;
+    private long accountBalance;
 }
