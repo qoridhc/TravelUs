@@ -11,7 +11,7 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/soltravel?serverTimezone=Asia/Seoul&useUniCode=yes&characterEncoding=UTF-8
+    url: jdbc:mysql://mysql:3306/soltravel?serverTimezone=Asia/Seoul&useUniCode=yes&characterEncoding=UTF-8
     username: root
     password: 1234
     hikari:
@@ -26,7 +26,7 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: redis
       port: 6379
 
 
@@ -59,3 +59,13 @@ jwt:
 server:
   front:
     url: http://localhost:3000
+
+# S3 설정
+cloud:
+  aws:
+    s3:
+      bucket: my-s3-mingyu
+    stack:
+      auto: false
+    region:
+      static: ap-southeast-2

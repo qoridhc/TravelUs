@@ -46,7 +46,7 @@ public class JwtAutheticationFilter extends OncePerRequestFilter {
       }
 
       //유효성 검사
-      Long userId = jwtProvider.validateAccessToken(token);
+      Long userId = jwtProvider.validateToken(token);
       if (userId == null) {
         throw new InvalidTokenException(token);
       }

@@ -13,6 +13,8 @@ encrypt.py
 
 .env
 
+api-key.txt
+
 ### STS ###
 .apt_generated
 .classpath

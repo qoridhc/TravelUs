@@ -2,7 +2,9 @@ package com.ssafy.soltravel.service.exchange;
 
 import com.ssafy.soltravel.common.Header;
 import com.ssafy.soltravel.domain.ExchangeRate;
+import com.ssafy.soltravel.domain.ForeignAccount;
 import com.ssafy.soltravel.domain.redis.PreferenceRate;
+import com.ssafy.soltravel.dto.exchange.Account;
 import com.ssafy.soltravel.dto.exchange.AccountInfoDto;
 import com.ssafy.soltravel.dto.exchange.ExchangeCurrencyDto;
 import com.ssafy.soltravel.dto.exchange.ExchangeRateDto;
@@ -10,15 +12,21 @@ import com.ssafy.soltravel.dto.exchange.ExchangeRateRegisterRequestDto;
 import com.ssafy.soltravel.dto.exchange.ExchangeRateResponseDto;
 import com.ssafy.soltravel.dto.exchange.ExchangeRequestDto;
 import com.ssafy.soltravel.dto.exchange.ExchangeResponseDto;
+import com.ssafy.soltravel.domain.LatestRate;
+import com.ssafy.soltravel.dto.transaction.request.ForeignTransactionRequestDto;
+import com.ssafy.soltravel.dto.transaction.request.TransactionRequestDto;
+import com.ssafy.soltravel.exception.InvalidAmountException;
 import com.ssafy.soltravel.repository.ExchangeRateRepository;
+import com.ssafy.soltravel.repository.LatestRateRepository;
 import com.ssafy.soltravel.repository.redis.PreferenceRateRepository;
 import com.ssafy.soltravel.service.NotificationService;
 import com.ssafy.soltravel.service.account.AccountService;
+import com.ssafy.soltravel.service.transaction.TransactionService;
+import com.ssafy.soltravel.util.LogUtil;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,7 +37,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -53,6 +60,8 @@ public class ExchangeService {
   private final PreferenceRateRepository preferenceRateRepository;
   private final NotificationService notificationService;
   private final AccountService accountService;
+  private final TransactionService transactionService;
+  private final LatestRateRepository latestRateRepository;
 
   /**
    * 실시간 환율 받아오는 메서드 매시 0분, 10분, 20분, 30분, 40분, 50분에 data 가져온다
@@ -89,6 +98,18 @@ public class ExchangeService {
   }
 
   /**
+   * 현재 환율 전체 조회
+   */
+  public List<ExchangeRate> getExchangeRateAll() {
+
+    List<ExchangeRate> rateEntity = exchangeRateRepository.findAll();
+
+    LogUtil.info(rateEntity.toString());
+    return rateEntity;
+  }
+
+
+  /**
    * 현재 환율 조회
    */
   public ExchangeRateResponseDto getExchangeRate(String currency) {
@@ -100,6 +121,14 @@ public class ExchangeService {
     responseDto.setExchangeRate(rateEntity.getExchangeRate());
     responseDto.setExchangeMin(rateEntity.getExchangeMin());
     return responseDto;
+  }
+
+  /**
+   * 최근 환율 조회
+   */
+  public List<LatestRate> getLatestExchangeRate(String currency) {
+
+    return latestRateRepository.findLatestRatesByCurrencyId(currency);
   }
 
   /**
@@ -122,7 +151,6 @@ public class ExchangeService {
 
       double updatedRate = getDoubleExchangeRate(dto.getExchangeRate());
 
-      //변동된 환율을 DB에 저장
       rate = rate.toBuilder()
           .exchangeRate(updatedRate)
           .exchangeMin(Double.parseDouble(dto.getExchangeMin()))
@@ -130,6 +158,7 @@ public class ExchangeService {
           .build();
       exchangeRateRepository.save(rate);
 
+      LogUtil.info(rate.toString());
       /**
        * 환율이 변동되었다 -> 자동 환전
        */
@@ -140,20 +169,18 @@ public class ExchangeService {
 
         if (exchangeOpt.isPresent()) {
           PreferenceRate preferenceRate = exchangeOpt.get();
-          log.info("{}의 환율이 달라졌어요", dto.getCurrency());
 
-          for (long accountId : preferenceRate.getAccounts()) {
-            log.info("{} 통장의 환전을 시작합니다.", accountId);
+          for (Account account : preferenceRate.getAccounts()) {
+            //TODO: 현재 계좌 잔액에서 가져와야합니다.(Line:156)
+            ExchangeRequestDto exchangeRequestDto = ExchangeRequestDto.builder()
+                .exchangeCurrency(dto.getCurrency())
+                .accountId(account.getAccountId())
+                .accountNo(account.getAccountNo())
+                .exchangeAmount(3000L)//TODO:이 곳 입니다.
+                .exchangeRate(updatedRate)
+                .build();
 
-            //환전 실행
-            ExchangeRequestDto exchangeRequestDto = new ExchangeRequestDto();
-            exchangeRequestDto.setExchangeCurrency(dto.getCurrency());
-            //TODO: preferenceRateRepository id를 통해 계좌번호 얻어올 것.
-            exchangeRequestDto.setAccountNo("0883473075115544");
-
-
-            //TODO: 얼마를 환전할 것인지 설정할 것.
-            exchangeRequestDto.setExchangeAmount("3000");
+            LogUtil.info(exchangeRequestDto.toString());
             executeExchange(exchangeRequestDto);
           }
         }
@@ -164,7 +191,7 @@ public class ExchangeService {
   /**
    * 환전 선호 금액 설정
    */
-  public void setPreferenceRate(ExchangeRateRegisterRequestDto dto) {
+  public void setPreferenceRate(String accountNo, ExchangeRateRegisterRequestDto dto) {
 
     String id = makeId(dto.getCurrency(), dto.getExchangeRate());
     Optional<PreferenceRate> exchangeOpt = preferenceRateRepository.findById(id);
@@ -176,70 +203,94 @@ public class ExchangeService {
       preference = new PreferenceRate(id, new HashSet<>());
     }
 
-    preference.getAccounts().add(dto.getGeneralAccountId());
+    preference.getAccounts().add(new Account(dto.getGeneralAccountId(), accountNo));
     preferenceRateRepository.save(preference);
   }
 
   /**
-   * 환전 api 호출
+   * 환전
    */
   public ExchangeResponseDto executeExchange(ExchangeRequestDto dto) {
 
-    String API_NAME = "updateDemandDepositAccountWithdrawal";
-    String API_URL = BASE_URL + "/exchange";
+    long krw=dto.getExchangeAmount();
+    if (dto.getExchangeAmount() % 10 != 0)
+      dto.setExchangeAmount(krw - krw % 10);
 
-    Header header = Header.builder()
-        .apiName(API_NAME)
-        .apiServiceCode(API_NAME)
-        .apiKey(apiKeys.get("API_KEY"))
-        .userKey(apiKeys.get("USER_KEY"))
+    dto.setExchangeRate(
+        exchangeRateRepository.findByCurrency(dto.getExchangeCurrency()).getExchangeRate());
+
+    /**
+     * 원화 -> 달러
+     */
+    double amount = convertKrwToUsdWithoutFee(dto.getExchangeAmount(), dto.getExchangeRate());
+
+    // 2. 최소 환전 금액 설정
+    double minimumAmount = getMinimumAmount(dto.getExchangeCurrency());
+    if (amount < minimumAmount) {
+      throw new InvalidAmountException(minimumAmount, dto.getExchangeCurrency());
+    }
+
+    TransactionRequestDto withdrawal = new TransactionRequestDto();
+    withdrawal.setTransactionBalance(dto.getExchangeAmount());//원화
+    withdrawal.setTransactionSummary("환전 출금");
+    transactionService.postAccountWithdrawal(dto.getAccountNo(), withdrawal);
+
+    ForeignAccount foreignAccount = accountService.getForeignAccount(dto.getAccountId());
+    ForeignTransactionRequestDto deposit = new ForeignTransactionRequestDto();
+    deposit.setTransactionBalance(amount);//외화임
+    deposit.setTransactionSummary("환전 입금");
+    transactionService.postForeignDeposit(foreignAccount.getAccountNo(), deposit);
+
+    ExchangeCurrencyDto exchangeCurrencyDto = ExchangeCurrencyDto.builder()
+        .currency(dto.getExchangeCurrency())
+        .exchangeRate(dto.getExchangeRate())//환율
+        .amount(dto.getExchangeAmount())//원화
         .build();
 
-    Map<String, Object> body = new HashMap<>();
-    body.put("Header", header);
-    body.put("accountNo", dto.getAccountNo());
-    body.put("exchangeCurrency", dto.getExchangeCurrency());
-//    body.put("exchangeAmount", String.valueOf(dto.getExchangeAmount()));
-    body.put("exchangeAmount", "3000");
+    long balance = accountService.getBalanceByAccountId(dto.getAccountId());
 
-    ResponseEntity<Map<String, Object>> response = webClient.post()
-        .uri(API_URL)
-        .contentType(MediaType.APPLICATION_JSON)
-        .bodyValue(body).retrieve()
-        .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
-        }).block();
+    AccountInfoDto accountInfoDto = AccountInfoDto.builder()
+        .accountId(dto.getAccountId())
+        .accountNo(dto.getAccountNo())
+        .amount(amount)//변경된 금액
+        .balance(balance - dto.getExchangeAmount())//원래 계좌 잔액에서 amount뺀것.
+        .build();
 
-    // REC 부분을 Object 타입으로 받기 -> List<Map<String, Object>>로 변환
-    Object recObject = response.getBody().get("REC");
-    Map<String, Object> recList = (Map<String, Object>) recObject;
-
-    ModelMapper modelMapper = new ModelMapper();
-
-// recObject를 Map<String, Object>로 변환
-    Map<String, Object> recMap = (Map<String, Object>) recObject;
-
-// exchangeCurrency와 accountInfo를 각각 DTO로 변환
-    ExchangeCurrencyDto exchangeCurrencyDto = modelMapper.map(recMap.get("exchangeCurrency"),
-        ExchangeCurrencyDto.class);
-    AccountInfoDto accountInfoDto = modelMapper.map(recMap.get("accountInfo"),
-        AccountInfoDto.class);
-
-// DTO를 ExchangeResponseDto에 설정
     ExchangeResponseDto responseDto = new ExchangeResponseDto();
     responseDto.setExchangeCurrencyDto(exchangeCurrencyDto);
-    accountInfoDto.setAccountId(dto.getAccountId());
     responseDto.setAccountInfoDto(accountInfoDto);
-    responseDto.setExecuted_at(RFC1123toLocalDateTime(response.getHeaders().getFirst(HttpHeaders.DATE)));
+    responseDto.setExecuted_at(LocalDateTime.now());
 
-    //TODO: 환전 log 저장
-
-
-    //TODO: 환전 알림 구현, accountId 넘길것.
     notificationService.notifyMessage(responseDto);
 
     return responseDto;
   }
 
+  /**
+   * 환전된 금액 반환하는 메서드
+   */
+  public double convertKrwToUsdWithoutFee(long krwAmount, double exchangeRate) {
+    if (exchangeRate <= 0) {
+      throw new IllegalArgumentException("환율은 0보다 커야 합니다.");
+    }
+
+    double usdAmount = krwAmount / exchangeRate;
+    return Math.round(usdAmount * 100.0) / 100.0; // 소수점 두 자리까지 반올림
+  }
+
+  /**
+   * 최소 환전 금액을 반환하는 메서드
+   */
+  private double getMinimumAmount(String currency) {
+    switch (currency) {
+      case "USD":
+        return 100;
+      case "JPY":
+        return 100;
+      default:
+        throw new IllegalArgumentException("지원하지 않는 통화 유형입니다: " + currency);
+    }
+  }
 
   /**
    * 아래부터는 형 변환 메서드 모음
@@ -257,16 +308,5 @@ public class ExchangeService {
 
   public String makeId(String currency, double rate) {
     return String.format("%s(%.2f)", currency, rate);
-  }
-  public LocalDateTime RFC1123toLocalDateTime(String str) throws DateTimeParseException {
-    // RFC 1123 형식의 Date 문자열을 파싱
-    DateTimeFormatter rfc1123Formatter = DateTimeFormatter.RFC_1123_DATE_TIME;
-    ZonedDateTime zonedDateTime = ZonedDateTime.parse(str, rfc1123Formatter);
-
-    // 한국 시간대 (Asia/Seoul)로 변환
-    ZonedDateTime seoulZonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
-
-    // ZonedDateTime을 LocalDateTime으로 변환하여 반환
-    return seoulZonedDateTime.toLocalDateTime();
   }
 }

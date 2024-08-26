@@ -55,13 +55,13 @@ public class GeneralAccount {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "generalAccount", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Participant> participants;
-
-    @OneToOne(mappedBy = "generalAccount")
-    private ForeignAccount foreignAccount;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "generalAccount", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Participant> participants;
+
+    @OneToOne(mappedBy = "generalAccount", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ForeignAccount foreignAccount;
 }
