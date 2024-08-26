@@ -6,7 +6,7 @@ import SignUp from "./pages/user/SignUp";
 import MyAccount from "./pages/viewaccount/MyAccount";
 import GeneralAccount from "./pages/viewaccount/GeneralAccount";
 import ForeignAccount from "./pages/viewaccount/ForeignAccount";
-import ViewAccount from "./pages/viewaccount/ViewAccount";
+import ViewAccount from "./pages/viewaccount/Account";
 import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
 import AccountCreate from "./pages/account/AccountCreate";
