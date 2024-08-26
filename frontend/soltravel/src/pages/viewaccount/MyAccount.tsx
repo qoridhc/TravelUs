@@ -1,3 +1,5 @@
+// 이 페이지 필요 없을수도?
+
 import React, { useState, useEffect } from 'react';
 // import { AccountInfo } from '../types/account';
 
