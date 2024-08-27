@@ -1,19 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RiHome5Line } from "react-icons/ri";
+import { GoDotFill } from "react-icons/go";
 import { useSelector, useDispatch } from "react-redux";
-import { setIsKeyboard } from "../../redux/accountSlice";
+import { setIsKeyboard, setAccountPassword } from "../../redux/accountSlice";
 import { RootState } from "../../redux/store";
 import SecurityKeyboard from "../../components/Account/SecurityKeyboard";
 import { TextField } from "@mui/material";
 
 const AccountCreate = () => {
-  const { isKeyboard } = useSelector((state: RootState) => state.account);
+  const { isKeyboard, accountPassword } = useSelector((state: RootState) => state.account);
   const dispatch = useDispatch();
 
   const [step, setStep] = useState(0);
   const stepList = ["이름을", "주민등록번호를", "계좌 비밀번호를"];
   const [name, setName] = useState("");
   const [residentNumber, setResidentNumber] = useState("");
+  const [maskedPassword, setMaskedPassword] = useState("");
+
+  useEffect(() => {
+    if (accountPassword !== undefined) {
+      setMaskedPassword("●".repeat(accountPassword.length));
+    }
+  }, [accountPassword]);
 
   const handleNameChange = (name: string) => {
     setName(name);
@@ -35,8 +43,11 @@ const AccountCreate = () => {
     if (number.length === 14) {
       // 하이픈 포함
       setStep(2);
+      dispatch(setIsKeyboard(true));
     }
   };
+
+  const handlePasswordChange = (passsword: string) => {};
 
   const handlePasswordKeyboard = () => {
     dispatch(setIsKeyboard(true));
@@ -57,7 +68,48 @@ const AccountCreate = () => {
             <p>{stepList[step]}</p>
             <p>입력해주세요</p>
           </div>
+
           <div className="grid gap-3">
+            <div
+              className={`transition-transform duration-300 ease-in-out ${
+                step > 1 ? "translate-y-[3px]" : "translate-y-0"
+              }`}
+              onClick={() => handlePasswordKeyboard()}>
+              {step > 1 && (
+                <TextField
+                  sx={{
+                    width: "100%",
+                    "& .MuiInputBase-root": {
+                      backgroundColor: "white",
+                    },
+                    "& .MuiInputBase-input": {
+                      backgroundColor: "white",
+                      fontSize: "20px",
+                      fontWeight: "bold",
+                      border: "1px solid #9E9E9E",
+                      borderRadius: "10px",
+                    },
+                    "& .MuiInputLabel-root": {
+                      color: "#9E9E9E",
+                      fontSize: "20px",
+                    },
+                    "& .MuiInputLabel-shrink": {
+                      fontSize: "16px",
+                    },
+                    "& .MuiFilledInput-underline:before, & .MuiFilledInput-underline:after": {
+                      display: "none",
+                    },
+                  }}
+                  id="filled-basic"
+                  label="계좌비밀번호"
+                  variant="filled"
+                  value={maskedPassword}
+                  onChange={(e) => handlePasswordChange(e.target.value)}
+                  inputProps={{ maxLength: 4, readOnly: true }}
+                />
+              )}
+            </div>
+
             <div
               className={`transition-transform duration-300 ease-in-out ${
                 step > 0 ? "translate-y-[3px]" : "translate-y-0"
