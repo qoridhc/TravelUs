@@ -58,6 +58,9 @@ public class User {
     @Column(name = "user_key")
     private String userKey;
 
+    @Column(name = "profile")
+    private String profile;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GeneralAccount> generalAccounts = new ArrayList<>();
 
@@ -67,8 +70,11 @@ public class User {
     /*
      * 생성 메서드
      */
-    public static User createUser(String name, String password, String email, String phone,
-        String address, LocalDate birth, String userKey) {
+    public static User createUser(
+        String name, String password, String email, String phone,
+        String address, LocalDate birth, String profileImageUrl, String userKey
+    ) {
+
         User user = new User();
         user.name = name;
         user.password = password;
@@ -79,7 +85,28 @@ public class User {
         user.registerAt = LocalDateTime.now();
         user.role = Role.USER;
         user.isExit = false;
+
+        user.profile = profileImageUrl;
         user.userKey = userKey;
+        return user;
+    }
+    public static User createUser(
+        String name, String password, String email, String phone,
+        String address, LocalDate birth, String profileImageUrl
+    ) {
+
+        User user = new User();
+        user.name = name;
+        user.password = password;
+        user.email = email;
+        user.phone = phone;
+        user.address = address;
+        user.birth = birth;
+        user.registerAt = LocalDateTime.now();
+        user.role = Role.USER;
+        user.isExit = false;
+        user.profile = profileImageUrl;
+        user.userKey = "";
         return user;
     }
 }

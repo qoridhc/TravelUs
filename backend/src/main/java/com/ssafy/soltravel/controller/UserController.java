@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,15 +40,28 @@ public class UserController {
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
     @PostMapping("/join")
-    public ResponseEntity<ResponseDto> createUser(
-        @RequestBody UserCreateRequestDto joinDto) {
+    public ResponseEntity<ResponseDto> createUser(@ModelAttribute UserCreateRequestDto joinDto)
+        throws IOException {
 
         LogUtil.info("requested", joinDto.toString());
         userService.createUser(joinDto);
-
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto());
     }
 
+    @Operation(summary = "회원가입 테스트", description = "새로운 사용자를 등록합니다.(신한 api 사용하지 않는 버전)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "회원 가입 성공", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @PostMapping("/join/test")
+    public ResponseEntity<ResponseDto> createUserWithoutAPI(@ModelAttribute UserCreateRequestDto joinDto)
+        throws IOException {
+
+        LogUtil.info("requested", joinDto.toString());
+        userService.createUserWithoutAPI(joinDto);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto());
+    }
 
     @Operation(summary = "단일 사용자 조회", description = "사용자 ID로 단일 사용자 정보를 조회합니다.")
     @ApiResponses(value = {

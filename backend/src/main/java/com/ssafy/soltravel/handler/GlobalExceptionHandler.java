@@ -3,6 +3,7 @@ package com.ssafy.soltravel.handler;
 import com.ssafy.soltravel.dto.ResponseDto;
 import com.ssafy.soltravel.exception.InvalidAuthCodeException;
 import com.ssafy.soltravel.exception.InvalidCredentialsException;
+import com.ssafy.soltravel.exception.RefundAccountNotFoundException;
 import com.ssafy.soltravel.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ public class GlobalExceptionHandler {
         ResponseDto errorResponseDto = new ResponseDto();
         errorResponseDto.setStatus("INTERNAL_SERVER_ERROR");
         errorResponseDto.setMessage(e.getMessage());
+        e.printStackTrace();
 
         return new ResponseEntity<>(errorResponseDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -48,13 +50,22 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
-  @ExceptionHandler(InvalidAuthCodeException.class)
-  public ResponseEntity<ResponseDto> handleInvalidAuthCodeException(
-      InvalidAuthCodeException e) {
-    ResponseDto errorResponse = new ResponseDto(
-        "BAD REQUEST",
-        e.getMessage()
-    );
-    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-  }
+    @ExceptionHandler(InvalidAuthCodeException.class)
+    public ResponseEntity<ResponseDto> handleInvalidAuthCodeException(
+        InvalidAuthCodeException e) {
+        ResponseDto errorResponse = new ResponseDto(
+            "BAD REQUEST",
+            e.getMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RefundAccountNotFoundException.class)
+    public ResponseEntity<ResponseDto> handleRefundAccountNotFoundException(RefundAccountNotFoundException e) {
+        ResponseDto errorResponse = new ResponseDto(
+            "BAD REQUEST",
+            e.getMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 }

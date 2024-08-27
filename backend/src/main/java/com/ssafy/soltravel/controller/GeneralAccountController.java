@@ -2,6 +2,7 @@ package com.ssafy.soltravel.controller;
 
 import com.ssafy.soltravel.dto.account.AccountDto;
 import com.ssafy.soltravel.dto.account.request.CreateAccountRequestDto;
+import com.ssafy.soltravel.dto.account.request.DeleteAccountRequestDto;
 import com.ssafy.soltravel.dto.account.response.CreateAccountResponseDto;
 import com.ssafy.soltravel.dto.account.response.DeleteAccountResponseDto;
 import com.ssafy.soltravel.service.account.AccountService;
@@ -100,11 +101,12 @@ public class GeneralAccountController {
     })
     @DeleteMapping("/{accountNo}")
     public ResponseEntity<DeleteAccountResponseDto> deleteAccount(
-        @Parameter(description = "사용자의 일반 계좌 AccountNo(계좌번호)", example = "0889876543210")
-        @PathVariable String accountNo
+        @Parameter(description = "사용자의 일반 계좌 AccountNo(계좌번호). 해지 계좌 잔액 보유 시 환불 계좌 필수", example = "0889876543210")
+        @PathVariable String accountNo,
+        @RequestBody(required = false) DeleteAccountRequestDto dto
     ) {
 
-        ResponseEntity<DeleteAccountResponseDto> responseEntity = accountService.deleteAccount(accountNo, false);
+        ResponseEntity<DeleteAccountResponseDto> responseEntity = accountService.deleteAccount(accountNo, false, dto);
 
         return responseEntity;
     }

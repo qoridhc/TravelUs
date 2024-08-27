@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ssafy.soltravel.domain.Enum.AccountType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -42,7 +43,7 @@ public class GeneralAccount {
 
     private String accountNo;
 
-    private Long balance;
+    private Double balance;
 
     private int countryId;
 
@@ -63,5 +64,6 @@ public class GeneralAccount {
     private List<Participant> participants;
 
     @OneToOne(mappedBy = "generalAccount", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private ForeignAccount foreignAccount;
 }

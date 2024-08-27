@@ -10,7 +10,7 @@ public class AccountDto {
     private String bankCode;
 
     @Schema(description = "일일 이체 한도", example = "50000000")
-    private String dailyTransferLimit;
+    private Long dailyTransferLimit;
 
     @Schema(description = "계좌 이름", example = "신한은행 모임통장")
     private String accountName;
@@ -31,7 +31,7 @@ public class AccountDto {
     private String userName;
 
     @Schema(description = "1회 이체 한도", example = "100000000")
-    private String oneTimeTransferLimit;
+    private Long oneTimeTransferLimit;
 
     @Schema(description = "계좌 생성일", example = "20240819")
     private String accountCreatedDate;
@@ -46,5 +46,5 @@ public class AccountDto {
     private String currency;
 
     @Schema(description = "계좌 잔액", example = "1000000")
-    private long accountBalance;
+    private Long accountBalance;
 }

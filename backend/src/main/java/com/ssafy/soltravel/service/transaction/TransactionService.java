@@ -1,6 +1,8 @@
 package com.ssafy.soltravel.service.transaction;
 
 import com.ssafy.soltravel.common.Header;
+import com.ssafy.soltravel.domain.ForeignAccount;
+import com.ssafy.soltravel.domain.GeneralAccount;
 import com.ssafy.soltravel.domain.User;
 import com.ssafy.soltravel.dto.transaction.TransactionHistoryDto;
 import com.ssafy.soltravel.dto.transaction.request.ForeignTransactionRequestDto;
@@ -9,8 +11,9 @@ import com.ssafy.soltravel.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.dto.transaction.request.TransferRequestDto;
 import com.ssafy.soltravel.dto.transaction.response.DepositResponseDto;
 import com.ssafy.soltravel.dto.transaction.response.TransferHistoryResponseDto;
+import com.ssafy.soltravel.repository.ForeignAccountRepository;
+import com.ssafy.soltravel.repository.GeneralAccountRepository;
 import com.ssafy.soltravel.repository.UserRepository;
-import com.ssafy.soltravel.util.LogUtil;
 import com.ssafy.soltravel.util.SecurityUtil;
 import java.util.HashMap;
 import java.util.List;
@@ -35,14 +38,20 @@ public class TransactionService {
     private final WebClient webClient;
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
+    private final GeneralAccountRepository generalAccountRepository;
 
     private final String BASE_URL = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit";
+    private final ForeignAccountRepository foreignAccountRepository;
 
+    // 일반 계좌 입금
     public ResponseEntity<DepositResponseDto> postAccountDeposit(String accountNo, TransactionRequestDto requestDto) {
 
         Long userId = SecurityUtil.getCurrentUserId();
         User user = userRepository.findByUserId(userId)
             .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
+
+        GeneralAccount generalAccount = generalAccountRepository.findByAccountNo(accountNo)
+            .orElseThrow(() -> new IllegalArgumentException("The accountNo does not exist: " + accountNo));
 
         String API_NAME = "updateDemandDepositAccountDeposit";
         String API_URL = BASE_URL + "/" + API_NAME;
@@ -74,14 +83,27 @@ public class TransactionService {
 
         DepositResponseDto depositResponseDto = modelMapper.map(recObject, DepositResponseDto.class);
 
+        Double currentBalance = generalAccount.getBalance();
+
+        generalAccount.setBalance(currentBalance + requestDto.getTransactionBalance());
+
+        generalAccountRepository.save(generalAccount);
+
         return ResponseEntity.status(HttpStatus.OK).body(depositResponseDto);
     }
 
-    public ResponseEntity<DepositResponseDto> postAccountWithdrawal(String accountNo, TransactionRequestDto requestDto) {
+    // 일반 계좌 출금
+    public ResponseEntity<DepositResponseDto> postAccountWithdrawal(
+        String accountNo,
+        TransactionRequestDto requestDto) {
 
         Long userId = SecurityUtil.getCurrentUserId();
+
         User user = userRepository.findByUserId(userId)
             .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
+
+        GeneralAccount generalAccount = generalAccountRepository.findByAccountNo(accountNo)
+            .orElseThrow(() -> new IllegalArgumentException("The accountNo does not exist: " + accountNo));
 
         String API_NAME = "updateDemandDepositAccountWithdrawal";
         String API_URL = BASE_URL + "/" + API_NAME;
@@ -113,15 +135,30 @@ public class TransactionService {
 
         DepositResponseDto responseDto = modelMapper.map(recObject, DepositResponseDto.class);
 
+        Double currentBalance = generalAccount.getBalance();
+        generalAccount.setBalance(currentBalance - requestDto.getTransactionBalance());
+
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
-
-    public ResponseEntity<List<TransferHistoryResponseDto>> postAccountTransfer(String accountNo, TransferRequestDto requestDto) {
+    public ResponseEntity<List<TransferHistoryResponseDto>> postAccountTransfer(
+        String accountNo,
+        TransferRequestDto requestDto
+    ) {
 
         Long userId = SecurityUtil.getCurrentUserId();
+
         User user = userRepository.findByUserId(userId)
             .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
+
+        // 출금할 계좌
+        GeneralAccount withDrawalAccount = generalAccountRepository.findByAccountNo(accountNo)
+            .orElseThrow(() -> new IllegalArgumentException("The accountNo does not exist: " + accountNo));
+
+        // 입금할 계좌
+        GeneralAccount depositAccount = generalAccountRepository.findByAccountNo(requestDto.getDepositAccountNo())
+            .orElseThrow(() -> new IllegalArgumentException(
+                "The accountNo does not exist: " + requestDto.getDepositAccountNo()));
 
         String API_NAME = "updateDemandDepositAccountTransfer";
         String API_URL = BASE_URL + "/" + API_NAME;
@@ -157,10 +194,19 @@ public class TransactionService {
             .map(value -> modelMapper.map(value, TransferHistoryResponseDto.class))
             .collect(Collectors.toList());
 
+        withDrawalAccount.setBalance(withDrawalAccount.getBalance() - requestDto.getTransactionBalance());
+        depositAccount.setBalance(depositAccount.getBalance() + requestDto.getTransactionBalance());
+
+        generalAccountRepository.save(withDrawalAccount);
+        generalAccountRepository.save(depositAccount);
+
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
-    public ResponseEntity<List<TransactionHistoryDto>> getHistoryByAccountNo(String accountNo, TransactionHistoryRequestDto requestDto) {
+    public ResponseEntity<List<TransactionHistoryDto>> getHistoryByAccountNo(
+        String accountNo,
+        TransactionHistoryRequestDto requestDto
+    ) {
 
         Long userId = SecurityUtil.getCurrentUserId();
         User user = userRepository.findByUserId(userId)
@@ -213,6 +259,9 @@ public class TransactionService {
         User user = userRepository.findByUserId(userId)
             .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
 
+        ForeignAccount foreignAccount = foreignAccountRepository.findByAccountNo(accountNo)
+            .orElseThrow(() -> new IllegalArgumentException("The AccountNo Does Not Exist" + accountNo));
+
         String API_NAME = "updateForeignCurrencyDemandDepositAccountDeposit";
         String API_URL = BASE_URL + "/foreignCurrency/" + API_NAME;
 
@@ -243,13 +292,21 @@ public class TransactionService {
 
         DepositResponseDto depositResponseDto = modelMapper.map(recObject, DepositResponseDto.class);
 
+        Double currentBalance = foreignAccount.getBalance();
+
+        foreignAccount.setBalance(currentBalance + requestDto.getTransactionBalance());
+
+        foreignAccountRepository.save(foreignAccount);
+
         return depositResponseDto;
 
     }
+
     /**
      * 외화 통장 거래 내역 조회
      */
-    public List<TransactionHistoryDto> getForeignHistoryByAccountNo(String accountNo, TransactionHistoryRequestDto requestDto) {
+    public List<TransactionHistoryDto> getForeignHistoryByAccountNo(String accountNo,
+        TransactionHistoryRequestDto requestDto) {
 
         Long userId = SecurityUtil.getCurrentUserId();
         User user = userRepository.findByUserId(userId)

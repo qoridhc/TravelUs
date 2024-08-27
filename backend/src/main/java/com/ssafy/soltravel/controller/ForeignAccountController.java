@@ -1,6 +1,7 @@
 package com.ssafy.soltravel.controller;
 
 import com.ssafy.soltravel.dto.account.AccountDto;
+import com.ssafy.soltravel.dto.account.request.DeleteAccountRequestDto;
 import com.ssafy.soltravel.dto.account.response.DeleteAccountResponseDto;
 import com.ssafy.soltravel.service.account.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -78,10 +80,11 @@ public class ForeignAccountController {
     @DeleteMapping("/{accountNo}")
     public ResponseEntity<DeleteAccountResponseDto> deleteForeignAccount(
         @Parameter(description = "사용자의 외화 계좌 AccountNo(계좌번호)", example = "0889876543210")
-        @PathVariable String accountNo
+        @PathVariable String accountNo,
+        @RequestBody(required = false) DeleteAccountRequestDto dto
     ) {
 
-        ResponseEntity<DeleteAccountResponseDto> responseEntity = accountService.deleteAccount(accountNo, true);
+        ResponseEntity<DeleteAccountResponseDto> responseEntity = accountService.deleteAccount(accountNo, true, dto);
 
         return responseEntity;
     }

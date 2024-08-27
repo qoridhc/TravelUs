@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class CreateAccountRequestDto {
 
-    @Schema(description = "계좌 유형 (개인 : INDIVISUAL, 그룹 : GROUP)", example = "GROUP")
+    @Schema(description = "계좌 유형 (개인 : INDIVIDUAL, 그룹 : GROUP)", example = "GROUP")
     private AccountType accountType;
 
     @Schema(description = "통화 코드 (예: KRW, USD)", example = "USD")

@@ -13,6 +13,7 @@ import com.ssafy.soltravel.dto.exchange.ExchangeRateResponseDto;
 import com.ssafy.soltravel.dto.exchange.ExchangeRequestDto;
 import com.ssafy.soltravel.dto.exchange.ExchangeResponseDto;
 import com.ssafy.soltravel.domain.LatestRate;
+import com.ssafy.soltravel.dto.exchange.LatestRateRequestDto;
 import com.ssafy.soltravel.dto.transaction.request.ForeignTransactionRequestDto;
 import com.ssafy.soltravel.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.exception.InvalidAmountException;
@@ -126,9 +127,9 @@ public class ExchangeService {
   /**
    * 최근 환율 조회
    */
-  public List<LatestRate> getLatestExchangeRate(String currency) {
+  public List<LatestRate> getLatestExchangeRate(LatestRateRequestDto requestDto) {
 
-    return latestRateRepository.findLatestRatesByCurrencyId(currency);
+    return latestRateRepository.findLatestRatesByCurrencyAndDateRange(requestDto.getCurrency(),requestDto.getStartDate(),requestDto.getEndDate());
   }
 
   /**

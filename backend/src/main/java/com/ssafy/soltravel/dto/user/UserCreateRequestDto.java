@@ -8,13 +8,19 @@ import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserCreateRequestDto {
+
+    @Schema(description = "사용자의 프로필 이미지", example = "file")
+    MultipartFile file;
 
     @NotNull
     @NotBlank
@@ -33,7 +39,7 @@ public class UserCreateRequestDto {
 
     @NotNull
     @NotBlank
-    @Schema(description = "사용자의 전화번호", example = "010-1234-5678")
+    @Schema(description = "사용자의 전화번호", example = "01012345678")
     private String phone;
 
     @NotNull
@@ -44,5 +50,4 @@ public class UserCreateRequestDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Schema(description = "사용자의 생년월일", example = "1990-01-01")
     private LocalDate birth;
-
 }
