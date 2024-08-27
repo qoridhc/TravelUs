@@ -20,6 +20,9 @@ const AccountCreate = () => {
   useEffect(() => {
     if (accountPassword !== undefined) {
       setMaskedPassword("●".repeat(accountPassword.length));
+      if (accountPassword.length === 4) {
+        setStep(3);
+      }
     }
   }, [accountPassword]);
 
@@ -31,7 +34,7 @@ const AccountCreate = () => {
   };
 
   const handleResidentNumberChange = (number: string) => {
-    if (13 - number.length < 6) {
+    if (14 - number.length <= 6) {
       let temp = number.substring(0, 8);
       temp += "*".repeat(number.length - 8);
       number = temp;
@@ -50,6 +53,7 @@ const AccountCreate = () => {
   const handlePasswordChange = (passsword: string) => {};
 
   const handlePasswordKeyboard = () => {
+    dispatch(setAccountPassword(""));
     dispatch(setIsKeyboard(true));
   };
 
@@ -190,8 +194,12 @@ const AccountCreate = () => {
 
       <div className="px-5 py-10">
         <button
-          className={`w-full py-3 text-white bg-[#0471E9] rounded-lg ${step < 3 ? "opacity-40" : ""}`}
-          disabled={step < 3}>
+          className={`w-full py-3 text-white bg-[#0471E9] rounded-lg ${
+            step !== 3 || name.length < 2 || residentNumber.length !== 14 || maskedPassword.length !== 4
+              ? "opacity-40"
+              : ""
+          }`}
+          disabled={step !== 3 || name.length < 2 || residentNumber.length !== 14 || maskedPassword.length !== 4}>
           완료
         </button>
       </div>
