@@ -5,6 +5,7 @@ import com.ssafy.soltravel.dto.NotificationDto;
 import com.ssafy.soltravel.dto.exchange.ExchangeResponseDto;
 import com.ssafy.soltravel.service.account.AccountService;
 import com.ssafy.soltravel.util.LogUtil;
+import com.ssafy.soltravel.util.SecurityUtil;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,9 @@ public class NotificationService {
   /**
    * 메시지 알림 구독
    */
-  public SseEmitter subscribe(Long userId) {
+  public SseEmitter subscribe() {
+
+    Long userId = SecurityUtil.getCurrentUserId();
 
     //sseEmitter 객체 생성
     SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
@@ -50,7 +53,6 @@ public class NotificationService {
    */
   public void notifyMessage(ExchangeResponseDto exchangeResponseDto) {
 
-    //TODO: 모임원 검색 후 각각 알림 전송
     String accountNo=exchangeResponseDto.getAccountInfoDto().getAccountNo();
 
     List<Long> participants=accountService.findUserIdsByGeneralAccountId(exchangeResponseDto.getAccountInfoDto().getAccountId());
@@ -66,7 +68,7 @@ public class NotificationService {
           LogUtil.info(message);
 
           NotificationDto dto = new NotificationDto(exchangeResponseDto.getAccountInfoDto().getAccountId(),accountNo, exchangeResponseDto.getExchangeCurrencyDto()
-              .getExchangeRate(), message);
+              .getExchangeRate().toString(), message);
           sseEmitterReceiver.send(SseEmitter.event().name("Notification").data(dto));
         } catch (Exception e) {
           emitters.remove(userId);
