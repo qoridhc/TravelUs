@@ -82,12 +82,12 @@ const MainPage = () => {
         {userDetail[0].usermeetingAccount && (
           <div
             onClick={() => {
-              navigate("/generalaccount");
+              navigate("/account");
             }}
             className="w-full py-5 px-5 flex flex-col rounded-xl bg-white shadow-md">
             <div className="flex flex-col space-y-4">
               <div className="flex items-center space-x-1 mb-1">
-                <div className="w-6 h-6 bg-[#9bb0da] rounded-full flex justify-center items-center">
+                <div className="w-6 h-6 bg-[#638ee4] rounded-full flex justify-center items-center">
                   <PiAirplaneTiltFill className="text-zinc-50" />
                 </div>
                 <p className="font-bold">모히또에서 몰디브 한 잔하는 모임</p>
