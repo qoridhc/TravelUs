@@ -1,5 +1,5 @@
 import React from 'react';
-import { Transaction } from '../types/account';
+import { Transaction } from '../../types/account';
 
 type TransactionHistoryProps = {
   transactions: Transaction[];
@@ -7,7 +7,7 @@ type TransactionHistoryProps = {
   setShowBalance: (show: boolean) => void;
 };
 
-const TransactionHistory = ({ transactions, showBalance, setShowBalance }: TransactionHistoryProps): JSX.Element => {
+const TransactionHistory = ({ transactions, showBalance, setShowBalance }: TransactionHistoryProps): React.ReactElement => {
   const groupedTransactions = transactions.reduce((groups, transaction) => {
     const date = transaction.transactionDate;
     if (!groups[date]) {
@@ -18,8 +18,8 @@ const TransactionHistory = ({ transactions, showBalance, setShowBalance }: Trans
   }, {} as Record<string, Transaction[]>);
 
   return (
-    <div className='bg-white rounded-lg p-4'>
-      <div className='flex items-center justify-between mb-4'>
+    <div className='p-4 bg-white rounded-lg'>
+      <div className='mb-4 flex items-center justify-between'>
         <span className='text-lg font-semibold'>최신순</span>
         <div className='flex items-center'>
           <span className='mr-2'>잔액보기</span>
@@ -33,8 +33,8 @@ const TransactionHistory = ({ transactions, showBalance, setShowBalance }: Trans
       </div>
 
       {Object.entries(groupedTransactions).map(([date, dayTransactions], groupIndex, groupArray) => (
-        <div key={date} className={`mb-6 ${groupIndex !== groupArray.length - 1 ? 'border-b border-gray-200 pb-6' : ''}`}>
-          <h3 className='text-lg font-semibold mb-4'>{date}</h3>
+        <div key={date} className={`mb-6 ${groupIndex !== groupArray.length - 1 ? 'pb-6 border-b border-gray-200' : ''}`}>
+          <h3 className='mb-4 text-lg font-semibold'>{date}</h3>
           {dayTransactions.map((transaction, index) => (
             <div key={index} className='mb-4 last:mb-0'>
               <div className='flex justify-between items-start'>

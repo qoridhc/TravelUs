@@ -13,7 +13,7 @@ export interface AccountInfo {
   lastTransactionDate: string;
   accountNo: string;
   currency: string;
-  accountBalance: string;
+  accountBalance: number;
 }
 
 // 거래 내역 조회
