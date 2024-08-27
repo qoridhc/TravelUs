@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,6 +63,23 @@ public class ParticipantController {
     ) {
 
         ResponseEntity<ParticipantListResponseDto> response = accountService.getParticipants(accountId);
+
+        return response;
+    }
+
+    @Operation(summary = "참가자 모임통장 탈퇴", description = "모임통장에서 참여자를 탈퇴시키는 API.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+        @ApiResponse(responseCode = "404", description = "참가자를 찾을 수 없음", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @DeleteMapping("/{participantId}/participants")
+    public ResponseEntity<ResponseDto> deleteParticipant(
+        @Parameter(description = "탈퇴하려는 사용자의 참여 ID(participantId)", example = "1")
+        @PathVariable Long participantId
+    ) {
+
+        ResponseEntity<ResponseDto> response = accountService.deleteParticipants(participantId);
 
         return response;
     }
