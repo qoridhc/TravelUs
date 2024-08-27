@@ -51,8 +51,6 @@ const SecurityKeyboard = () => {
 
   const shuffleNums = useCallback(
     (num: number) => (e: MouseEvent) => {
-      let nums_random = Array.from({ length: 10 }, (v, k) => k);
-      setNums(shuffle(nums_random));
       handlePasswordChange(num);
     },
     [handlePasswordChange]
@@ -68,6 +66,11 @@ const SecurityKeyboard = () => {
       handleKeyboardClose();
     }
   }, [password]);
+
+  // 키보드가 열릴 때마다 배열을 무작위로 설정
+  useEffect(() => {
+    setNums(shuffle(Array.from({ length: 10 }, (v, k) => k)));
+  }, []);
 
   return (
     <div className="bg-[#EFEFF5] rounded-3xl relative flex flex-col">
