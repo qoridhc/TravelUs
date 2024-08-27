@@ -1,11 +1,18 @@
 package com.ssafy.soltravel.dto.user;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
 public class UserSearchRequestDto {
 
-  private Long userId;
-  private String name;
-  private String email;
+    @Schema(description = "사용자 ID", example = "1")
+    private Long userId;
+
+    @Schema(description = "사용자 이름", example = "홍길동")
+    private String name;
+
+    @Schema(description = "사용자 이메일 주소", example = "hong@google.com")
+    private String email;
+
 }

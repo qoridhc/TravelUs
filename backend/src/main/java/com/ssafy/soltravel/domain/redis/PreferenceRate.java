@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.domain.redis;
 
+import com.ssafy.soltravel.dto.exchange.Account;
 import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -18,5 +19,5 @@ public class PreferenceRate {
 
   @Id
   private String id;//"USD(1437.8)"
-  private Set<Long> accounts;
+  private Set<Account> accounts;
 }

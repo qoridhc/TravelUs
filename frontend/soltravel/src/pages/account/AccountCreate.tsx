@@ -188,6 +188,20 @@ const AccountCreate = () => {
               />
             </div>
           </div>
+
+          <div className="flex flex-col space-y-2">
+            <label className="font-semibold" htmlFor="name">
+              계좌 비밀번호 설정
+            </label>
+            <form autoComplete="off">
+              <input
+                className="w-full p-4 text-[#565656] bg-[#F8F9FC] border rounded-lg outline-none"
+                type="text"
+                id="name"
+                placeholder="4자리 숫자 입력"
+              />
+            </form>
+          </div>
         </div>
       </div>
 
@@ -202,14 +216,6 @@ const AccountCreate = () => {
           완료
         </button>
       </div>
-
-      {isKeyboard ? (
-        <div className="w-full fixed bottom-0">
-          <SecurityKeyboard />
-        </div>
-      ) : (
-        <></>
-      )}
     </div>
   );
 };

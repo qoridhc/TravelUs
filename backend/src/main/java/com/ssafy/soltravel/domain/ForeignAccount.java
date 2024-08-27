@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,7 +38,7 @@ public class ForeignAccount {
 
     private String accountNo;
 
-    private Long balance;
+    private Double balance;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -45,13 +46,12 @@ public class ForeignAccount {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "currency_id")
     private Currency currency;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "general_account_id")
+    @JsonIgnore
     private GeneralAccount generalAccount;
-
-
 }
