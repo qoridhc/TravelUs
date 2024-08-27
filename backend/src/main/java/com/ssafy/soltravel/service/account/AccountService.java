@@ -408,6 +408,13 @@ public class AccountService {
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto());
     }
 
+    public ResponseEntity<ResponseDto> deleteParticipants(Long participantId) {
+
+        participantRepository.deleteById(participantId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto());
+    }
+
     public ResponseEntity<ParticipantListResponseDto> getParticipants(Long accountId) {
 
         List<Participant> participants = participantRepository.findAllByGeneralAccountId(accountId);
