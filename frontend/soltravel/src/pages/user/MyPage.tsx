@@ -55,7 +55,7 @@ const MyPage = () => {
       </div>
       <hr className="border-2" />
       <div className="p-5 flex justify-center">
-        <button className="w-full p-3 border rounded-md border-zinc-300">정보 수정</button>
+        <button onClick={()=>{navigate("/userupdate")}} className="w-full p-3 border rounded-md border-zinc-300">정보 수정</button>
       </div>
     </div>
   );
