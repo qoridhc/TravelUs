@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
+import { useSelector, useDispatch } from "react-redux";
+import { setIsKeyboard } from "../../redux/accountSlice";
+import { RootState } from "../../redux/store";
 import SecurityKeyboard from "../../components/Account/SecurityKeyboard";
 
 const AccountCreate = () => {
+  const { isKeyboard } = useSelector((state: RootState) => state.account);
+  const dispatch = useDispatch();
+
   const userName = "허동원";
-  const [isKeyboard, setIsKeyboard] = useState(false);
 
   const handlePasswordKeyboard = () => {
-    setIsKeyboard(true);
+    dispatch(setIsKeyboard(true));
   };
 
   return (
@@ -84,11 +89,9 @@ const AccountCreate = () => {
           </div>
         </div>
       </div>
-
       <div className="px-5 py-10">
         <button className="w-full py-3 text-white bg-[#0471E9] rounded-lg">완료</button>
       </div>
-
       {isKeyboard ? (
         <div className="w-full fixed bottom-0">
           <SecurityKeyboard />

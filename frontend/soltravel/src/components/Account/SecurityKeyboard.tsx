@@ -1,6 +1,8 @@
 import React, { useState, MouseEvent, useCallback } from "react";
 import { LuDelete } from "react-icons/lu";
 import { IoCloseOutline } from "react-icons/io5";
+import { useDispatch } from "react-redux";
+import { setIsKeyboard } from "../../redux/accountSlice";
 
 const PASSWORD_MAX_LENGTH = 4; // 비밀번호 입력길이 제한 설정
 
@@ -49,9 +51,14 @@ const SecurityKeyboard = () => {
     [handlePasswordChange]
   );
 
+  const dispatch = useDispatch();
+  const handleKeyboardClose = () => {
+    dispatch(setIsKeyboard(false));
+  };
+
   return (
     <div className="bg-[#EFEFF5] rounded-3xl relative flex flex-col">
-      <IoCloseOutline className="text-3xl absolute top-5 left-5" />
+      <IoCloseOutline className="text-3xl absolute top-5 left-5" onClick={() => handleKeyboardClose()} />
       <div className="py-14 flex flex-col space-y-3">
         <p className="text-lg text-center font-semibold">비밀번호 입력</p>
         <input className="text-center bg-[#EFEFF5]" type="password" value={password}></input>
