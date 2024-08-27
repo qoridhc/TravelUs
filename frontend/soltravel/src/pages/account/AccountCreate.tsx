@@ -20,9 +20,6 @@ const AccountCreate = () => {
   useEffect(() => {
     if (accountPassword !== undefined) {
       setMaskedPassword("●".repeat(accountPassword.length));
-      if (accountPassword.length === 4) {
-        setStep(3);
-      }
     }
   }, [accountPassword]);
 
@@ -197,11 +194,11 @@ const AccountCreate = () => {
       <div className="px-5 py-10">
         <button
           className={`w-full py-3 text-white bg-[#0471E9] rounded-lg ${
-            step !== 3 || name.length < 2 || residentNumber.length !== 14 || maskedPassword.length !== 4
+            step !== 2 || name.length < 2 || residentNumber.length !== 14 || maskedPassword.length !== 4
               ? "opacity-40"
               : ""
           }`}
-          disabled={step !== 3 || name.length < 2 || residentNumber.length !== 14 || maskedPassword.length !== 4}>
+          disabled={step === 2 || name.length < 2 || residentNumber.length !== 14 || maskedPassword.length !== 4}>
           완료
         </button>
       </div>
