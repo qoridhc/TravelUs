@@ -3,11 +3,9 @@ package com.ssafy.soltravel.common;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
 
-@Getter
-@ToString
+@Data
 public class Header {
 
     private String apiName;

@@ -50,7 +50,7 @@ public class JwtProvider {
   }
 
   // Jwt 유효성 검증 (서명 유효성, 조작 검사, 만료 검사) -> JWT 토큰을 입력받아 검증하고  userId를 반환
-  public Long validateAccessToken(String jwt) throws InvalidTokenException, ExpiredJwtException {
+  public Long validateToken(String jwt) throws InvalidTokenException, ExpiredJwtException {
     try {
       Claims claims = Jwts.parserBuilder()  // JWT parser 빌더를 사용하여 JWT parser 생성
           .setSigningKey(getKey())          // 서명 키 설정

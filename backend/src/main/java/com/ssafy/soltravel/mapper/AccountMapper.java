@@ -12,7 +12,7 @@ import org.modelmapper.ModelMapper;
 
 public class AccountMapper {
 
-    public static CreateAccountDto toCreateAccountDto(GeneralAccount generalAccount){
+    public static CreateAccountDto toCreateAccountDto(GeneralAccount generalAccount) {
 
         CurrencyDto currencyDto = new CurrencyDto("KRW", "원화");
 
@@ -25,7 +25,7 @@ public class AccountMapper {
         return accountDto;
     }
 
-    public static CreateAccountDto toCreateAccountDto(ForeignAccount foreignAccount){
+    public static CreateAccountDto toCreateAccountDto(ForeignAccount foreignAccount) {
 
         CurrencyDto currencyDto = new CurrencyDto(
             foreignAccount.getCurrency().getCurrencyCode(),
@@ -42,10 +42,10 @@ public class AccountMapper {
     }
 
     public static ForeignAccount toForeignAccountEntitiy(
-        Map<String,String> recObject,
+        Map<String, String> recObject,
         GeneralAccount generalAccount,
         CreateAccountRequestDto requestDto
-    ){
+    ) {
         ModelMapper modelMapper = new ModelMapper();
 
         CurrencyType currencyType = CurrencyType.fromCode(requestDto.getCurrencyCode());
@@ -58,7 +58,7 @@ public class AccountMapper {
         ForeignAccount foreignAccount = ForeignAccount.builder()
             .bankCode(Integer.parseInt(recObject.get("bankCode")))
             .accountNo(recObject.get("accountNo"))
-            .balance(0L)
+            .balance(0.0)
             .generalAccount(generalAccount)
             .currency(currency)
             .build();

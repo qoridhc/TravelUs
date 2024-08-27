@@ -1,18 +1,22 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import { RiHome5Line } from "react-icons/ri";
-import { MdCurrencyExchange } from "react-icons/md";
+import { IoPeople } from "react-icons/io5";
 import { MdOutlineEventNote } from "react-icons/md";
-import { RiWechatLine } from "react-icons/ri";
+import { BsThreeDots } from "react-icons/bs";
 
 const Footer = () => {
+  const navigate = useNavigate();
   const [currentMenu, setCurrentMenu] = useState("홈");
 
   const handleMenuHome = () => {
+    navigate("/");
     setCurrentMenu("홈");
   };
 
   const handleMenuExchange = () => {
-    setCurrentMenu("환전");
+    navigate("/meetingaccountlist");
+    setCurrentMenu("모임통장");
   };
 
   const handleMenuAccountDiary = () => {
@@ -20,7 +24,7 @@ const Footer = () => {
   };
 
   const handleMenuConversation = () => {
-    setCurrentMenu("회화");
+    setCurrentMenu("전체");
   };
 
   return (
@@ -32,10 +36,10 @@ const Footer = () => {
         <p className="text-sm font-medium">홈</p>
       </button>
       <button
-        className={`flex flex-col items-center ${currentMenu === "환전" ? "" : "text-[#9E9E9E]"} duration-200`}
+        className={`flex flex-col items-center ${currentMenu === "모임통장" ? "" : "text-[#9E9E9E]"} duration-200`}
         onClick={() => handleMenuExchange()}>
-        <MdCurrencyExchange className="text-2xl" />
-        <p className="text-sm font-medium">환전</p>
+        <IoPeople className="text-2xl" />
+        <p className="text-sm font-medium">모임통장</p>
       </button>
       <button
         className={`flex flex-col items-center ${currentMenu === "가계부" ? "" : "text-[#9E9E9E]"} duration-200`}
@@ -44,10 +48,10 @@ const Footer = () => {
         <p className="text-sm font-medium">가계부</p>
       </button>
       <button
-        className={`flex flex-col items-center ${currentMenu === "회화" ? "" : "text-[#9E9E9E]"} duration-200`}
+        className={`flex flex-col items-center ${currentMenu === "전체" ? "" : "text-[#9E9E9E]"} duration-200`}
         onClick={() => handleMenuConversation()}>
-        <RiWechatLine className="text-2xl" />
-        <p className="text-sm font-medium">회화</p>
+        <BsThreeDots className="text-2xl" />
+        <p className="text-sm font-medium">전체</p>
       </button>
     </div>
   );

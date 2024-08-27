@@ -3,7 +3,9 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import MainPage from "../src/pages/MainPage";
 import Login from "./pages/user/Login";
 import SignUp from "./pages/user/SignUp";
-// import MyPage from "./pages/user/MyPage";
+import MyPage from "./pages/user/MyPage";
+import UserUpdate from "./pages/user/UserUpdate";
+import MeetingAccountList from "./pages/account/MeetingAccountList";
 import MyAccount from "./pages/viewaccount/MyAccount";
 import GeneralAccount from "./pages/viewaccount/GeneralAccount";
 import ForeignAccount from "./pages/viewaccount/ForeignAccount";
@@ -20,10 +22,9 @@ import SettleExchange from "./pages/settle/SettleExchange";
 import Detail from "./pages/viewaccount/Detail";
 import GroupAccountPage from "./pages/viewaccount/ViewAccount";
 
-
 function App() {
   return (
-    <div>
+    <div className="h-full">
       <BrowserRouter>
         <Routes>
           <Route
@@ -33,6 +34,7 @@ function App() {
                 <Header />
                 <Routes>
                   <Route path="/" element={<MainPage />} />
+                  <Route path="/meetingaccountlist" element={<MeetingAccountList />} />
                   <Route path="/exchangerate" element={<ExchangeRate />} />
                   <Route path="/account/:userId" element={<GroupAccountPage />} />
                 </Routes>
@@ -42,7 +44,8 @@ function App() {
           />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          {/* <Route path="/mypage" element={<MyPage />} /> */}
+          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/userupdate" element={<UserUpdate />} />
           <Route path="/accountcreate" element={<AccountCreate />}></Route>
           <Route path="/myaccount" element={<MyAccount />}></Route>
           <Route path="/generalaccount" element={<GeneralAccount />}></Route>

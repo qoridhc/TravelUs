@@ -10,6 +10,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ParticipantRepository extends JpaRepository<Participant, Long> {
 
-  @Query("SELECT p.user.userId FROM Participant p WHERE p.generalAccount.id = :generalAccountId")
-  List<Long> findUserIdsByGeneralAccountId(@Param("generalAccountId") Long generalAccountId);
+    Participant findByGeneralAccountId(Long accoutId);
+
+    List<Participant> findAllByGeneralAccountId(Long accoutId);
+
+    @Query("SELECT p.user.userId FROM Participant p WHERE p.generalAccount.id = :generalAccountId")
+    List<Long> findUserIdsByGeneralAccountId(@Param("generalAccountId") Long generalAccountId);
 }

@@ -24,4 +24,8 @@ public class TokenService {
     return new UserLoginResponseDto(userId, accessToken, refreshToken);
   }
 
+  public Long getUserIdFromRefreshToken(String refreshToken) {
+    return jwtProvider.validateToken(refreshToken);
+  }
+
 }

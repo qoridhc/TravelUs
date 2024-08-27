@@ -8,13 +8,17 @@ import com.ssafy.soltravel.dto.user.UserSearchRequestDto;
 import com.ssafy.soltravel.dto.user.UserSearchResponseDto;
 import com.ssafy.soltravel.dto.user.api.UserCreateRequestBody;
 import com.ssafy.soltravel.exception.UserNotFoundException;
+import com.ssafy.soltravel.mapper.UserMapper;
 import com.ssafy.soltravel.repository.UserRepository;
+import com.ssafy.soltravel.service.AwsFileService;
 import com.ssafy.soltravel.util.LogUtil;
 import com.ssafy.soltravel.util.PasswordEncoder;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
@@ -26,6 +30,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
@@ -37,6 +42,7 @@ public class UserService implements UserDetailsService {
 
   private final String API_URI = "/member";
   private final UserRepository userRepository;
+  private final AwsFileService fileService;
   private final Map<String, String> apiKeys;
   private final WebClient webClient;
 
@@ -72,8 +78,10 @@ public class UserService implements UserDetailsService {
   }
 
 
-  // 회원가입
-  public void createUser(UserCreateRequestDto createDto) {
+  /*
+  * 회원가입
+  */ 
+  public void createUser(UserCreateRequestDto createDto) throws IOException {
 
     // 외부 API 요청용 Body 생성
     UserCreateRequestBody body = UserCreateRequestBody.builder()
@@ -87,14 +95,26 @@ public class UserService implements UserDetailsService {
         API_URI, body, UserCreateRequestBody.class
     );
 
-    // 결과를 전달받은 매개변수와 함께 저장
+    // 외부 API 결과 저장(api key) 및 비밀번호 암호화
     String userKey = response.getBody().get("userKey").toString();
     createDto.setPassword(PasswordEncoder.encrypt(createDto.getEmail(), createDto.getPassword()));
-    User user = convertCreateDtoToUserWithUserKey(createDto, userKey);
+
+    // 프로필 이미지 저장
+    MultipartFile profile = createDto.getFile();
+    String profileImageUrl = apiKeys.get("DEFAULT_PROFILE_URL");
+    if(profile != null && !profile.isEmpty()) {
+      profileImageUrl = fileService.saveProfileImage(profile);
+    }
+
+    // 저장할 수 있게 변환 후 저장
+    User user = UserMapper.convertCreateDtoToUserWithUserKey(createDto, profileImageUrl, userKey);
     userRepository.save(user);
   }
 
-  // 사용자 계정 검색(리스트)
+
+  /*
+  * 사용자 계정 검색(리스트) 
+  */
   public List<UserSearchResponseDto> searchAllUser(UserSearchRequestDto searchDto) {
     List<User> list = userRepository.findAll(searchDto).orElseThrow(
         () -> new UserNotFoundException(searchDto)
@@ -103,7 +123,10 @@ public class UserService implements UserDetailsService {
     return list.stream().map(this::convertUserToSearchResponseDto).collect(Collectors.toList());
   }
 
-  // 사용자 계정 검색(단건, userId)
+
+  /*
+  * 사용자 계정 검색(단건, userId) 
+  */
   public UserSearchResponseDto searchOneUser(Long userId) {
     User user = userRepository.findByUserId(userId).orElseThrow(
         () -> new UserNotFoundException(userId)
@@ -113,13 +136,14 @@ public class UserService implements UserDetailsService {
   }
 
 
+  /*
+  * 스프링 시큐리티 용
+  */
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-//    User user = userRepository.findByEmail(email).orElseThrow(
-//        () -> new RuntimeException(String.format("loadUserByUsername Failed: %s", email))
-//    );
-
-    User user = userRepository.findByEmail(email).orElse(createTestUserIfNotExists());
+    User user = userRepository.findByEmail(email).orElseThrow(
+        () -> new RuntimeException(String.format("loadUserByUsername Failed: %s", email))
+    );
 
     return UserDetailDto.builder()
         .id(user.getUserId())
@@ -130,17 +154,25 @@ public class UserService implements UserDetailsService {
         .build();
   }
 
-  // 회원가입 요청 DTO를 유저 엔티티로 변환
-  private User convertCreateDtoToUserWithUserKey(UserCreateRequestDto dto, String userKey) {
-    return User.createUser(
-        dto.getName(),
-        dto.getPassword(),
-        dto.getEmail(),
-        dto.getPhone(),
-        dto.getAddress(),
-        dto.getBirth(),
-        userKey
-    );
+  /*
+   * 신한 API 사용하지 않는 회원가입
+   */
+  public void createUserWithoutAPI(UserCreateRequestDto createDto) throws IOException {
+    
+    // 비밀번호 암호화
+    createDto.setPassword(PasswordEncoder.encrypt(createDto.getEmail(), createDto.getPassword()));
+
+    // 프로필 이미지 저장
+    MultipartFile profile = createDto.getFile();
+    String profileImageUrl = null;
+    if(profile != null && !profile.isEmpty()) {
+      profileImageUrl = fileService.saveProfileImage(profile);
+    }else {
+      profileImageUrl = apiKeys.get("DEFAULT_PROFILE_URL");
+    }
+
+    User user = UserMapper.convertCreateDtoToUserWithUserKey(createDto, profileImageUrl);
+    userRepository.save(user);
   }
 
   // 유저 엔티티를 조회 응답 DTO로 변환
@@ -155,24 +187,5 @@ public class UserService implements UserDetailsService {
         .registerAt(user.getRegisterAt())
         .isExit(user.getIsExit())
         .build();
-  }
-
-
-  /*
-   *  Test용 메서드
-   */
-  //유저가 존재하지 않으면 임의로 테스트 유저 생성
-  private User createTestUserIfNotExists() {
-    User user = userRepository.findByEmail("test@email.com").orElse(
-        User.createUser(
-            "test",
-            "pass",
-            "test@email.com",
-            "010-1111-1111",
-            "testAddress",
-            LocalDate.now(),
-            "test"
-        ));
-    return user;
   }
 }
