@@ -17,40 +17,37 @@ import SettleStart from "./pages/settle/SettleStart";
 import Settlement from "./pages/settle/Settlement";
 import SettleExchange from "./pages/settle/SettleExchange";
 
-
 function App() {
   return (
-    <div>
-      <BrowserRouter>
-        <Routes>
-          <Route
-            path="/*"
-            element={
-              <>
-                <Header />
-                <Routes>
-                  <Route path="/" element={<MainPage />} />
-                  <Route path="/exchangerate" element={<ExchangeRate />} />
-                </Routes>
-                <Footer />
-              </>
-            }
-          />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/accountcreate" element={<AccountCreate />}></Route>
-          <Route path="/myaccount" element={<MyAccount />}></Route>
-          <Route path="/generalaccount" element={<GeneralAccount />}></Route>
-          <Route path="/foreignaccount" element={<ForeignAccount />}></Route>
-          <Route path="/account" element={<ViewAccount />}></Route>
-          <Route path="/exchange" element={<Exchange />}></Route>
-          <Route path="/selectaccount" element={<SelectAccount />}></Route>
-          <Route path="/settlestart" element={<SettleStart />}></Route>
-          <Route path="/settlement" element={<Settlement />}></Route>
-          <Route path="/settleexchange" element={<SettleExchange />}></Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/*"
+          element={
+            <>
+              <Header />
+              <Routes>
+                <Route path="/" element={<MainPage />} />
+                <Route path="/exchangerate" element={<ExchangeRate />} />
+              </Routes>
+              <Footer />
+            </>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/accountcreate" element={<AccountCreate />}></Route>
+        <Route path="/myaccount" element={<MyAccount />}></Route>
+        <Route path="/generalaccount" element={<GeneralAccount />}></Route>
+        <Route path="/foreignaccount" element={<ForeignAccount />}></Route>
+        <Route path="/account" element={<ViewAccount />}></Route>
+        <Route path="/exchange" element={<Exchange />}></Route>
+        <Route path="/selectaccount" element={<SelectAccount />}></Route>
+        <Route path="/settlestart" element={<SettleStart />}></Route>
+        <Route path="/settlement" element={<Settlement />}></Route>
+        <Route path="/settleexchange" element={<SettleExchange />}></Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
