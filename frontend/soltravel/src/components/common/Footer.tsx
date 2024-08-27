@@ -1,17 +1,21 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import { RiHome5Line } from "react-icons/ri";
 import { IoPeople } from "react-icons/io5";
 import { MdOutlineEventNote } from "react-icons/md";
 import { BsThreeDots } from "react-icons/bs";
 
 const Footer = () => {
+  const navigate = useNavigate();
   const [currentMenu, setCurrentMenu] = useState("홈");
 
   const handleMenuHome = () => {
+    navigate("/");
     setCurrentMenu("홈");
   };
 
   const handleMenuExchange = () => {
+    navigate("/meetingaccountlist");
     setCurrentMenu("모임통장");
   };
 
