@@ -83,7 +83,7 @@ const AccountCreate = () => {
                 id="name"
                 inputMode="none"
                 placeholder="4자리 숫자 입력"
-                onTouchStart={() => handlePasswordKeyboard()}
+                onClick={() => handlePasswordKeyboard()}
               />
             </form>
           </div>
