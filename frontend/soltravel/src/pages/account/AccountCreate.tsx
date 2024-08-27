@@ -23,9 +23,17 @@ const AccountCreate = () => {
   };
 
   const handleResidentNumberChange = (number: string) => {
+    if (13 - number.length < 6) {
+      let temp = number.substring(0, 8);
+      temp += "*".repeat(number.length - 8);
+      number = temp;
+    }
+
     let masking = number.replace(/^(\d{0,6})(\d{0,7})$/g, "$1-$2").replace(/\-{1}$/g, "");
     setResidentNumber(masking);
-    if (number.length === 13) {
+
+    if (number.length === 14) {
+      // 하이픈 포함
       setStep(2);
     }
   };
@@ -84,9 +92,11 @@ const AccountCreate = () => {
                   variant="filled"
                   value={residentNumber}
                   onChange={(e) => handleResidentNumberChange(e.target.value)}
+                  inputProps={{ maxLength: 14 }}
                 />
               )}
             </div>
+
             <div
               className={`transition-transform duration-300 ease-in-out ${
                 step === 0 ? "translate-y-0" : "translate-y-[3px]"
@@ -128,8 +138,8 @@ const AccountCreate = () => {
 
       <div className="px-5 py-10">
         <button
-          className={`w-full py-3 text-white bg-[#0471E9] rounded-lg ${step < 2 ? "opacity-40" : ""}`}
-          disabled={step < 2}>
+          className={`w-full py-3 text-white bg-[#0471E9] rounded-lg ${step < 3 ? "opacity-40" : ""}`}
+          disabled={step < 3}>
           완료
         </button>
       </div>
