@@ -4,7 +4,7 @@ import { GoDotFill } from "react-icons/go";
 import { useSelector, useDispatch } from "react-redux";
 import { setIsKeyboard, setAccountPassword } from "../../redux/accountSlice";
 import { RootState } from "../../redux/store";
-import SecurityKeyboard from "../../components/Account/SecurityKeyboard";
+import SecurityKeyboard from "../../components/account/SecurityKeyboard";
 import { TextField } from "@mui/material";
 
 const AccountCreate = () => {
