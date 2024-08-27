@@ -3,6 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface AccountState {
   isKeyboard?: boolean;
+  accountPassword?: string;
   meetingAccountList: Array<{
     MeetingAccountName: string;
     MeetingAccountIcon: string;
@@ -20,6 +21,7 @@ export interface AccountState {
 
 const initialState: AccountState = {
   isKeyboard: false,
+  accountPassword: "",
   meetingAccountList: [
     {
       MeetingAccountName: "모히또에서 몰디브 한 잔하는 모임",
@@ -57,12 +59,15 @@ export const userSilce = createSlice({
     setIsKeyboard: (state, action: PayloadAction<boolean>) => {
       state.isKeyboard = action.payload;
     },
+    setAccountPassword: (state, action: PayloadAction<string>) => {
+      state.accountPassword = action.payload;
+    },
     updateMeetingAccountList: (state, action: PayloadAction<typeof initialState.meetingAccountList>) => {
       state.meetingAccountList = action.payload;
     },
   },
 });
 
-export const { setIsKeyboard, updateMeetingAccountList } = userSilce.actions;
+export const { setIsKeyboard, updateMeetingAccountList, setAccountPassword } = userSilce.actions;
 
 export default userSilce.reducer;
