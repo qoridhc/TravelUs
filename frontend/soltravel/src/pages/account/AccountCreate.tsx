@@ -149,6 +149,7 @@ const AccountCreate = () => {
                   value={residentNumber}
                   onChange={(e) => handleResidentNumberChange(e.target.value)}
                   inputProps={{ maxLength: 14 }}
+                  autoComplete="off"
                 />
               )}
             </div>
@@ -186,6 +187,7 @@ const AccountCreate = () => {
                 variant="filled"
                 value={name}
                 onChange={(e) => handleNameChange(e.target.value)}
+                autoComplete="off"
               />
             </div>
           </div>
