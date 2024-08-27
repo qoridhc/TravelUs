@@ -4,6 +4,7 @@ import MainPage from "../src/pages/MainPage";
 import Login from "./pages/user/Login";
 import SignUp from "./pages/user/SignUp";
 import MyPage from "./pages/user/MyPage";
+import UserUpdate from "./pages/user/UserUpdate";
 import MyAccount from "./pages/viewaccount/MyAccount";
 import GeneralAccount from "./pages/viewaccount/GeneralAccount";
 import ForeignAccount from "./pages/viewaccount/ForeignAccount";
@@ -39,6 +40,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/userupdate" element={<UserUpdate />} />
           <Route path="/accountcreate" element={<AccountCreate />}></Route>
           <Route path="/myaccount" element={<MyAccount />}></Route>
           <Route path="/generalaccount" element={<GeneralAccount />}></Route>
