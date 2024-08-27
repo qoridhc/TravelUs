@@ -82,47 +82,42 @@ const MainPage = () => {
         {userDetail[0].usermeetingAccount && (
           <div
             onClick={() => {
-              navigate("/generalaccount");
+              navigate("/account");
             }}
-            className="w-full py-5 px-5 flex flex-col rounded-xl bg-[rgb(186,203,238)] shadow-md">
-            <div className="flex flex-col space-y-3">
-              <div className="flex justify-between items-center">
-                <div className="flex flex-col">
-                  <div className="flex items-center space-x-1">
-                    <div className="w-6 h-6 bg-[#8da5d6] rounded-full flex justify-center items-center">
-                      <PiAirplaneTiltFill className="text-zinc-50" />
-                    </div>
-                    <p className="font-bold">해외여행 올인원모임통장</p>
-                  </div>
+            className="w-full py-5 px-5 flex flex-col rounded-xl bg-white shadow-md">
+            <div className="flex flex-col space-y-4">
+              <div className="flex items-center space-x-1 mb-1">
+                <div className="w-6 h-6 bg-[#638ee4] rounded-full flex justify-center items-center">
+                  <PiAirplaneTiltFill className="text-zinc-50" />
+                </div>
+                <p className="font-bold">모히또에서 몰디브 한 잔하는 모임</p>
+              </div>
+              <div className="rounded-md flex justify-between">
+                <div>
+                  <p className="text-sm font-bold">올인원 일반모임통장</p>
                   <p className="text-sm text-zinc-500">{userDetail[0].usermeetingAccount.accountNumber}</p>
                 </div>
+                <div className="flex items-center">
+                  <p className="text-[1.3rem] font-semibold">{userDetail[0].usermeetingAccount.accountMoney}</p>
+                  <p className="text-[1rem]">원</p>
+                </div>
               </div>
-              <div className="flex items-center">
-                <p className="text-[1.3rem] font-semibold">{userDetail[0].usermeetingAccount.accountMoney}</p>
-                <p className="text-[1rem]">원</p>
-              </div>
-              <div className="flex justify-end">
-                <button className="h-8 w-14 rounded-3xl bg-[#a4b6db] font-bold text-zinc-700 text-sm">이체</button>
-              </div>
-              <hr className="bg-[#0e1b38]" />
+              <hr />
               <div
                 onClick={(e) => {
                   e.stopPropagation();
                   navigate("/foreignaccount");
                 }}
-                className="flex justify-between items-center">
-                <p className="text-sm font-bold">트래블월렛</p>
-                {/* 트래블박스 가입했을 시 */}
-                {userDetail[0].usermeetingAccount.travelBox ? (
-                  <div className="flex items-center">
-                    <p className="font-semibold">{userDetail[0].usermeetingAccount.travelBox.boxMoney}</p>
-                    <p>{userDetail[0].usermeetingAccount.travelBox.currencyType}</p>
-                  </div>
-                ) : (
-                  <div>
-                    <p className="text-sm font-bold text-zinc-500">시작하기</p>
-                  </div>
-                )}
+                className="rounded-md flex justify-between">
+                <div className="flex flex-col">
+                  <p className="text-sm font-bold">올인원 외화모임통장</p>
+                  <p className="text-sm text-zinc-500">{userDetail[0].usermeetingAccount.accountNumber}</p>
+                </div>
+
+                <div className="flex items-center">
+                  <p className="text-[1.3rem] font-semibold">{userDetail[0].usermeetingAccount.travelBox.boxMoney}</p>
+                  <p className="text-[1rem]">{userDetail[0].usermeetingAccount.travelBox.currencyType}</p>
+                </div>
               </div>
             </div>
           </div>
