@@ -5,6 +5,7 @@ import Login from "./pages/user/Login";
 import SignUp from "./pages/user/SignUp";
 import MyPage from "./pages/user/MyPage";
 import UserUpdate from "./pages/user/UserUpdate";
+import MeetingAccountList from "./pages/account/MeetingAccountList";
 import MyAccount from "./pages/viewaccount/MyAccount";
 import GeneralAccount from "./pages/viewaccount/GeneralAccount";
 import ForeignAccount from "./pages/viewaccount/ForeignAccount";
@@ -31,6 +32,7 @@ function App() {
                 <Header />
                 <Routes>
                   <Route path="/" element={<MainPage />} />
+                  <Route path="/meetingaccountlist" element={<MeetingAccountList />} />
                   <Route path="/exchangerate" element={<ExchangeRate />} />
                 </Routes>
                 <Footer />
