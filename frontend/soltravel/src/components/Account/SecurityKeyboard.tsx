@@ -26,6 +26,8 @@ const SecurityKeyboard = () => {
 
   const handlePasswordChange = useCallback(
     (num: number) => {
+      let nums_random = Array.from({ length: 10 }, (v, k) => k);
+      setNums(shuffle(nums_random));
       setPassword((prevPassword) => {
         if (prevPassword.length === PASSWORD_MAX_LENGTH) {
           return prevPassword;
@@ -51,6 +53,8 @@ const SecurityKeyboard = () => {
 
   const shuffleNums = useCallback(
     (num: number) => (e: MouseEvent) => {
+      let nums_random = Array.from({ length: 10 }, (v, k) => k);
+      setNums(shuffle(nums_random));
       handlePasswordChange(num);
     },
     [handlePasswordChange]
