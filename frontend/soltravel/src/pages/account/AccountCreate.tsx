@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { RiHome5Line } from "react-icons/ri";
 import { GoDotFill } from "react-icons/go";
 import { useSelector, useDispatch } from "react-redux";
@@ -17,11 +17,21 @@ const AccountCreate = () => {
   const [residentNumber, setResidentNumber] = useState("");
   const [maskedPassword, setMaskedPassword] = useState("");
 
+  const residentNumberRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (accountPassword !== undefined) {
       setMaskedPassword("●".repeat(accountPassword.length));
     }
   }, [accountPassword]);
+
+  useEffect(() => {
+    if (step === 2) {
+      if (residentNumberRef.current) {
+        residentNumberRef.current.blur();
+      }
+    }
+  }, [step]);
 
   const handleNameChange = (name: string) => {
     setName(name);
@@ -147,6 +157,7 @@ const AccountCreate = () => {
                   onChange={(e) => handleResidentNumberChange(e.target.value)}
                   inputProps={{ maxLength: 14 }}
                   autoComplete="off"
+                  inputRef={residentNumberRef}
                 />
               )}
             </div>
@@ -198,7 +209,7 @@ const AccountCreate = () => {
               ? "opacity-40"
               : ""
           }`}
-          disabled={step === 2 || name.length < 2 || residentNumber.length !== 14 || maskedPassword.length !== 4}>
+          disabled={step !== 2 || name.length < 2 || residentNumber.length !== 14 || maskedPassword.length !== 4}>
           완료
         </button>
       </div>
