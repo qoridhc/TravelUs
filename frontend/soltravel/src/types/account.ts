@@ -35,3 +35,18 @@ export interface DepositRequest {
   transactionBalance: number;
   transactionSummary: string;
 }
+
+// 모임통장 목록 조회 정보
+export interface MeetingAccount {
+  MeetingAccountName: string;
+  MeetingAccountIcon: string;
+  normalMeetingAccount: {
+    accountNumber: string;
+    accountMoney: string;
+  };
+  foreignMeetingAccount: {
+    accountNumber: string;
+    accountMoney: string;
+    currencyType: string;
+  };
+}
