@@ -64,7 +64,7 @@ const ForeignMeetingAccountCreate = () => {
     //   })
     // );
 
-    navigate("/");
+    navigate("/accountcreatecomplete");
   };
 
   return (
@@ -133,28 +133,26 @@ const ForeignMeetingAccountCreate = () => {
       </div>
 
       <div className="px-5 py-10">
-        {/* <button
+        <button
           className={`w-full py-3 text-white bg-[#0471E9] rounded-lg ${
-            step !== 4 ||
-            meetingName.length < 1 ||
-            meetingType === "" ||
-            name.length < 2 ||
-            residentNumber.length !== 14 ||
-            maskedPassword.length !== 4
+            step !== 2 ||
+            currencyType === "" ||
+            exchangeRate === 0 ||
+            travelSchedule.startDate === null ||
+            travelSchedule.endDate === null
               ? "opacity-40"
               : ""
           }`}
-          onClick={() => setStep(5)}
+          onClick={() => handleNext()}
           disabled={
-            step !== 4 ||
-            meetingName.length < 1 ||
-            meetingType === "" ||
-            name.length < 2 ||
-            residentNumber.length !== 14 ||
-            maskedPassword.length !== 4
+            step !== 2 ||
+            currencyType === "" ||
+            exchangeRate === 0 ||
+            travelSchedule.startDate === null ||
+            travelSchedule.endDate === null
           }>
           다음
-        </button> */}
+        </button>
       </div>
     </div>
   );
