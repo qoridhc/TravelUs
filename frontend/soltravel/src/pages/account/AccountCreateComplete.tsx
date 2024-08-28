@@ -11,7 +11,7 @@ const AccountCreateComplete = () => {
 
         <p className="text-lg font-semibold">계좌 개설 완료되었습니다.</p>
 
-        <div className="w-full p-5 bg-[#EFEFF5] flex justify-between">
+        <div className="w-full p-5 bg-[#EFEFF5] rounded-md flex justify-between">
           <p className="text-sm text-[#565656]">계좌번호</p>
           <p className="text-sm font-semibold">{"372849-382-1979387"}</p>
         </div>
