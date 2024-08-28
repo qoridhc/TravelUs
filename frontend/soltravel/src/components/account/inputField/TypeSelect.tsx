@@ -3,11 +3,13 @@ import React from "react";
 import Select from "@mui/material/Select";
 
 interface TypeInputProps {
-  meetingType: string;
+  label: string;
+  menuList: Array<{ text: string; value: string }>;
+  selectedType: string;
   onChange: (meetingType: string) => void;
 }
 
-const MeetingTypeSelect: React.FC<TypeInputProps> = ({ meetingType, onChange }) => {
+const TypeSelect: React.FC<TypeInputProps> = ({ label, menuList, selectedType, onChange }) => {
   return (
     <FormControl
       variant="filled"
@@ -37,18 +39,20 @@ const MeetingTypeSelect: React.FC<TypeInputProps> = ({ meetingType, onChange }) 
           borderRadius: "10px",
         },
       }}>
-      <InputLabel id="demo-simple-select-filled-label">모임종류</InputLabel>
+      <InputLabel id="demo-simple-select-filled-label">{label}</InputLabel>
       <Select
         labelId="demo-simple-select-filled-label"
         id="demo-simple-select-filled"
-        value={meetingType}
+        value={selectedType}
         onChange={(e) => onChange(e.target.value)}>
-        <MenuItem value="none">선택안함</MenuItem>
-        <MenuItem value="airplane">여행</MenuItem>
-        <MenuItem value="school">학교</MenuItem>
+        {menuList.map((menu, index) => (
+          <MenuItem value={menu.value} key={index}>
+            {menu.text}
+          </MenuItem>
+        ))}
       </Select>
     </FormControl>
   );
 };
 
-export default MeetingTypeSelect;
+export default TypeSelect;

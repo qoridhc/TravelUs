@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { RiHome5Line } from "react-icons/ri";
 import { useSelector, useDispatch } from "react-redux";
-import { setIsKeyboard, setAccountPassword } from "../../redux/accountSlice";
+import { setIsKeyboard, setAccountPassword, editGeneralMeetingAccountList } from "../../redux/accountSlice";
 import { RootState } from "../../redux/store";
 import SecurityKeyboard from "../../components/account/SecurityKeyboard";
 import { useNavigate } from "react-router";
 import NameInput from "../../components/account/inputField/NameInput";
 import ResidentNumberInput from "../../components/account/inputField/ResidentNumberInput";
 import PasswordInput from "../../components/account/inputField/PasswordInput";
-import MeetingTypeSelect from "../../components/account/inputField/MeetingTypeSelect";
+import MeetingTypeSelect from "../../components/account/inputField/TypeSelect";
 import MemberSelect from "../../components/account/inputField/MemberSelect";
 
 const MeetingAccountCreate = () => {
@@ -24,6 +24,11 @@ const MeetingAccountCreate = () => {
     "모임주 주민등록번호를",
     "계좌 비밀번호를",
     "모임원을",
+  ];
+  const menuList = [
+    { text: "선택안함", value: "none" },
+    { text: "여행", value: "airplane" },
+    { text: "학교", value: "school" },
   ];
   const [meetingName, setMeetingName] = useState("");
   const [meetingType, setMeetingType] = useState("");
@@ -95,7 +100,17 @@ const MeetingAccountCreate = () => {
   };
 
   const handleNext = () => {
-    // dispatch()
+    dispatch(
+      editGeneralMeetingAccountList({
+        generalMeetingAccountName: meetingName,
+        generalMeetingAccountIcon: meetingType,
+        generalMeetingAccountUserName: name,
+        generalMeetingAccountUserResidentNumber: residentNumber,
+        generalMeetingAccountPassword: accountPassword,
+        generalMeetingAccountMemberList: memberList,
+      })
+    );
+
     navigate("/foreignmeetingaccountcreate");
   };
 
@@ -158,7 +173,14 @@ const MeetingAccountCreate = () => {
                   className={`transition-transform duration-300 ease-in-out ${
                     step > 0 ? "translate-y-0" : "translate-y-[3px]"
                   }`}>
-                  {step > 0 && <MeetingTypeSelect meetingType={meetingType} onChange={handleMeetingTypeChange} />}
+                  {step > 0 && (
+                    <MeetingTypeSelect
+                      label="모임종류"
+                      menuList={menuList}
+                      selectedType={meetingType}
+                      onChange={handleMeetingTypeChange}
+                    />
+                  )}
                 </div>
 
                 <div

@@ -25,6 +25,7 @@ import GroupAccountPage from "./pages/viewaccount/ViewAccount";
 import AccountCreateComplete from "./pages/account/AccountCreateComplete";
 import GeneralMeetingAccountCreate from "./pages/account/GeneralMeetingAccountCreate";
 import MeetingAccountCreatePrepare from "./pages/account/MeetingAccountCreatePrepare";
+import ForeignMeetingAccountCreate from "./pages/account/ForeignMeetingAccountCreate";
 
 function App() {
   return (
@@ -66,6 +67,7 @@ function App() {
           <Route path="/accountcreate" element={<AccountCreate />}></Route>
           <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />}></Route>
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />}></Route>
+          <Route path="/foreignmeetingaccountcreate" element={<ForeignMeetingAccountCreate />}></Route>
           <Route path="/accountcreatecomplete" element={<AccountCreateComplete />}></Route>
           <Route path="/myaccount" element={<MyAccount />}></Route>
           <Route path="/generalaccount" element={<GeneralAccount />}></Route>

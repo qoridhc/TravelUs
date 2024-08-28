@@ -23,7 +23,6 @@ const initialState: AccountState = {
   },
 };
 
-
 export const userSilce = createSlice({
   name: "account",
   initialState,
@@ -37,9 +36,12 @@ export const userSilce = createSlice({
     editMeetingAccountList: (state, action: PayloadAction<Array<MeetingAccountListDetail>>) => {
       state.meetingAccountList = action.payload;
     },
+    editGeneralMeetingAccountList: (state, action: PayloadAction<GeneralMeetingAccountDetail>) => {
+      state.generalMeetingAccountDetail = action.payload;
+    },
   },
 });
 
-export const { setIsKeyboard, setAccountPassword, editMeetingAccountList } = userSilce.actions;
+export const { setIsKeyboard, setAccountPassword, editMeetingAccountList, editGeneralMeetingAccountList } = userSilce.actions;
 
 export default userSilce.reducer;
