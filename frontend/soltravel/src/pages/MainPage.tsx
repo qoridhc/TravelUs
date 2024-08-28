@@ -89,7 +89,7 @@ const MainPage = () => {
           <button
             className="h-10 rounded-md bg-[#0046FF] font-bold text-white text-sm"
             onClick={() => {
-              navigate("/accountcreate");
+              navigate("/generalmeetingaccountcreate");
             }}>
             신청하기
           </button>
