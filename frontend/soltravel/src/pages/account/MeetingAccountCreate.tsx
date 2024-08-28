@@ -23,6 +23,11 @@ const MeetingAccountCreate = () => {
   const [maskedPassword, setMaskedPassword] = useState("");
 
   useEffect(() => {
+    // redux store의 기존 저장되어있던 정보 제거
+    dispatch(setAccountPassword(""));
+  }, []);
+
+  useEffect(() => {
     if (accountPassword !== undefined) {
       setMaskedPassword("●".repeat(accountPassword.length));
     }
