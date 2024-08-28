@@ -6,6 +6,8 @@ import { RiHome5Line } from "react-icons/ri";
 import TypeSelect from "../../components/account/inputField/TypeSelect";
 import { currencyTypeList } from "../../types/exchange";
 import ExchangeRateInput from "../../components/account/inputField/ExchangeRateInput";
+import TravleDateRangePicker from "../../components/account/inputField/TravelDateRangePicker";
+import { Dayjs } from "dayjs";
 
 const ForeignMeetingAccountCreate = () => {
   // const {} = useSelector((state: RootState) => state.account);
@@ -16,6 +18,10 @@ const ForeignMeetingAccountCreate = () => {
   const stepList = ["통화를", "희망 환율을", "여행 일정을"];
   const [currencyType, setCurrencyType] = useState("");
   const [exchangeRate, setExchangeRate] = useState(0);
+  const [travelSchedule, setTravelSchedule] = useState<{ startDate: Dayjs | null; endDate: Dayjs | null }>({
+    startDate: null,
+    endDate: null,
+  });
 
   const handleCurrencyTypeChange = (currencyType: string) => {
     setCurrencyType(currencyType);
@@ -30,6 +36,20 @@ const ForeignMeetingAccountCreate = () => {
     if (exchangeRate > 0) {
       setStep(2);
     }
+  };
+
+  const handleTravelStartDate = (startDate: Dayjs) => {
+    setTravelSchedule((prevSchedule) => ({
+      ...prevSchedule,
+      startDate,
+    }));
+  };
+
+  const handleTravelEndDate = (endDate: Dayjs) => {
+    setTravelSchedule((prevSchedule) => ({
+      ...prevSchedule,
+      endDate,
+    }));
   };
 
   const handleNext = () => {
@@ -71,12 +91,18 @@ const ForeignMeetingAccountCreate = () => {
           </div>
 
           <div className="grid gap-3">
-            {/* <div
+            <div
               className={`transition-transform duration-300 ease-in-out ${
                 step > 1 ? "translate-y-0" : "translate-y-[3px]"
               }`}>
-              {step > 1 && <NameInput labelName="모임주" name={name} onChange={handleNameChange} />}
-            </div> */}
+              {step > 1 && (
+                <TravleDateRangePicker
+                  schedule={travelSchedule}
+                  onStartChange={handleTravelStartDate}
+                  onEndChange={handleTravelEndDate}
+                />
+              )}
+            </div>
 
             <div
               className={`transition-transform duration-300 ease-in-out ${
