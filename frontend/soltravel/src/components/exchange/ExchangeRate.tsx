@@ -14,9 +14,10 @@ export const currencyNames: { [key: string]: string } = {
 
 interface ExchangeRateInfoProps {
   onExchangeClick?: () => void;
+  onCurrencyChange: (currency: string) => void;
 }
 
-const ExchangeRateInfo = ({ onExchangeClick }: ExchangeRateInfoProps): React.ReactElement => {
+const ExchangeRateInfo = ({ onExchangeClick, onCurrencyChange }: ExchangeRateInfoProps): React.ReactElement => {
   const [currencies, setCurrencies] = useState<ExchangeRateInfoType[]>([]);
   const [selectedCurrency, setSelectedCurrency] = useState<ExchangeRateInfoType | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -42,13 +43,19 @@ const ExchangeRateInfo = ({ onExchangeClick }: ExchangeRateInfoProps): React.Rea
     return currencyNames[code] || code;
   };
 
+  const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newCurrency = e.target.value;
+    setSelectedCurrency(currencies.find(c => c.currency === newCurrency) || null);
+    onCurrencyChange(newCurrency);
+  };
+
   return (
     <div className="space-y-4">
       <div>
         <h2 className="text-sm font-semibold mb-1">통화</h2>
         <select
           className="w-full border rounded p-2"
-          onChange={(e) => setSelectedCurrency(currencies.find(c => c.currency === e.target.value) || null)}
+          onChange={handleCurrencyChange}
           value={selectedCurrency?.currency || ''}
         >
           {currencies.map((currency) => (

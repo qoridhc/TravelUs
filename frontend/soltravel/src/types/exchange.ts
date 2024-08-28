@@ -6,6 +6,25 @@ export interface ExchangeRateInfo {
   created: string;
 }
 
+// 환율 그래프를 위한 타입
+export interface ExchangeRateHistoryRequest {
+  currency: string;
+  startDate: string;
+  endDate: string;
+}
+
+export interface ExchangeRateHistoryResponse {
+  id: number;
+  postAt: string;
+  dealBasR: number;
+  ttb: number;
+  tts: number;
+  cashBuying: number;
+  cashSelling: number;
+  tcBuying: number;
+}
+
+
 // 환전 요청 타입
 export interface ExchangeRequest {
   accountid: number;

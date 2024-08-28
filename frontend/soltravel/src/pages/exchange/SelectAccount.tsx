@@ -84,7 +84,7 @@ const SelectAccount = (): React.ReactElement => {
       {selectedAccount && (
         <div className="space-y-4">
           <div className="bg-white rounded-lg p-4 shadow">
-            <h2 className="font-bold mb-2">모임 통장</h2>
+            <h2 className="font-bold mb-2">일반모임통장</h2>
             <div className="flex items-center mb-2">
               <div className="w-8 h-8 bg-[#0046FF] rounded-full mr-2"></div>
               <div>
@@ -102,7 +102,7 @@ const SelectAccount = (): React.ReactElement => {
           
           {foreignAccounts.length > 0 && (
             <div className="bg-white rounded-lg p-4 shadow">
-              <h2 className="font-bold mb-2">트래블 박스</h2>
+              <h2 className="font-bold mb-2">외화모임통장</h2>
               <div className="flex items-center mb-2">
                 <div className="w-8 h-8 bg-[#0046FF] rounded-full mr-2"></div>
                 <div>

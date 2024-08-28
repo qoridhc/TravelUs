@@ -22,7 +22,7 @@ const GroupAccount = (): React.ReactElement => {
             accountApi.fetchAccountInfo(userId),
             accountApi.fetchForeignAccountInfo(userId)
           ]);
-          console.log(generalAccount, foreignAccount)
+          // console.log(generalAccount, foreignAccount)
           setGeneralAccounts(generalAccount);
           setForeignAccounts(foreignAccount);
         } catch (error) {
@@ -53,6 +53,7 @@ const GroupAccount = (): React.ReactElement => {
         <>
           <h2 className="text-xl font-semibold mb-2">개인계좌 & 일반모임통장</h2>
           <AccountList 
+            key="general"
             accounts={generalAccounts} 
             onSelectAccount={handleAccountSelect}
           />
@@ -63,6 +64,7 @@ const GroupAccount = (): React.ReactElement => {
         <>
           <h2 className="text-xl font-semibold mb-2 mt-4">외화모임통장</h2>
           <AccountList
+            key="foreign"
             accounts={foreignAccounts} 
             onSelectAccount={handleAccountSelect}
           />

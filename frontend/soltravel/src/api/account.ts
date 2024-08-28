@@ -4,13 +4,14 @@ import { AccountInfo } from "../types/account";
 
 export const accountApi = {
     // 일반 계좌 정보 가져오기
-    fetchAccountInfo: (userId: string): Promise<AccountInfo[]> => {
-      return api.get(`/account/general/${userId}/all`)
+    fetchAccountInfo: async (userId: string): Promise<AccountInfo[]> => {
+      const response = await api.get(`/account/general/${userId}/all`)
+      return response.data
     },
   
     // 외화 계좌 정보 가져오기
-    fetchForeignAccountInfo: (userId: string): Promise<AccountInfo[]> => {
-      return api.get(`/account/foreign/${userId}/all`)
+    fetchForeignAccountInfo: async (userId: string): Promise<AccountInfo[]> => {
+      const response = await api.get(`/account/foreign/${userId}/all`)
+      return response.data
     }
 };
-
