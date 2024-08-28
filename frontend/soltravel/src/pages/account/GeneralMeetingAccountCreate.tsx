@@ -8,9 +8,8 @@ import { useNavigate } from "react-router";
 import NameInput from "../../components/account/inputField/NameInput";
 import ResidentNumberInput from "../../components/account/inputField/ResidentNumberInput";
 import PasswordInput from "../../components/account/inputField/PasswordInput";
-import MeetingType from "../../components/account/inputField/MeetingTypeSelect";
 import MeetingTypeSelect from "../../components/account/inputField/MeetingTypeSelect";
-import { LuDot } from "react-icons/lu";
+import MemberSelect from "../../components/account/inputField/MemberSelect";
 
 const MeetingAccountCreate = () => {
   const { isKeyboard, accountPassword } = useSelector((state: RootState) => state.account);
@@ -18,12 +17,20 @@ const MeetingAccountCreate = () => {
   const navigate = useNavigate();
 
   const [step, setStep] = useState(0);
-  const stepList = ["모임 이름을", "어떤 모임인지를", "모임주 이름을", "모임주 주민등록번호를", "계좌 비밀번호를"];
+  const stepList = [
+    "모임 이름을",
+    "어떤 모임인지를",
+    "모임주 이름을",
+    "모임주 주민등록번호를",
+    "계좌 비밀번호를",
+    "모임원을",
+  ];
   const [meetingName, setMeetingName] = useState("");
   const [meetingType, setMeetingType] = useState("");
   const [name, setName] = useState("");
   const [residentNumber, setResidentNumber] = useState("");
   const [maskedPassword, setMaskedPassword] = useState("");
+  const [memberList, setMemberList] = useState<Array<string>>(["허동원"]);
 
   useEffect(() => {
     // redux store의 기존 저장되어있던 정보 제거
@@ -79,6 +86,19 @@ const MeetingAccountCreate = () => {
     dispatch(setIsKeyboard(true));
   };
 
+  const handleMemberListChange = (addMember: string) => {
+    setMemberList((prev) => [...prev, addMember]);
+  };
+
+  const handleMemberDelete = (deleteMember: number) => {
+    setMemberList((prev) => prev.filter((_, index) => index !== deleteMember));
+  };
+
+  const handleNext = () => {
+    // dispatch()
+    navigate("/foreignmeetingaccountcreate");
+  };
+
   return (
     <div className="h-full flex flex-col justify-between">
       <div className="flex flex-col space-y-5">
@@ -103,73 +123,101 @@ const MeetingAccountCreate = () => {
           </div>
 
           <div className="grid gap-3">
-            <div
-              className={`transition-transform duration-300 ease-in-out ${
-                step > 3 ? "translate-y-[3px]" : "translate-y-0"
-              }`}>
-              {step > 3 && <PasswordInput maskedPassword={maskedPassword} onKeyboardOpen={handlePasswordKeyboard} />}
-            </div>
+            {step < 5 ? (
+              <>
+                <div
+                  className={`transition-transform duration-300 ease-in-out ${
+                    step > 3 ? "translate-y-[3px]" : "translate-y-0"
+                  }`}>
+                  {step > 3 && (
+                    <PasswordInput maskedPassword={maskedPassword} onKeyboardOpen={handlePasswordKeyboard} />
+                  )}
+                </div>
 
-            <div
-              className={`transition-transform duration-300 ease-in-out ${
-                step > 2 ? "translate-y-[3px]" : "translate-y-0"
-              }`}>
-              {step > 2 && (
-                <ResidentNumberInput
-                  stepInfo={{ currentStep: step, closeStep: 4 }}
-                  residentNumber={residentNumber}
-                  onChange={handleResidentNumberChange}
-                />
-              )}
-            </div>
+                <div
+                  className={`transition-transform duration-300 ease-in-out ${
+                    step > 2 ? "translate-y-[3px]" : "translate-y-0"
+                  }`}>
+                  {step > 2 && (
+                    <ResidentNumberInput
+                      stepInfo={{ currentStep: step, closeStep: 4 }}
+                      residentNumber={residentNumber}
+                      onChange={handleResidentNumberChange}
+                    />
+                  )}
+                </div>
 
-            <div
-              className={`transition-transform duration-300 ease-in-out ${
-                step > 1 ? "translate-y-0" : "translate-y-[3px]"
-              }`}>
-              {step > 1 && <NameInput labelName="모임주" name={name} onChange={handleNameChange} />}
-            </div>
+                <div
+                  className={`transition-transform duration-300 ease-in-out ${
+                    step > 1 ? "translate-y-0" : "translate-y-[3px]"
+                  }`}>
+                  {step > 1 && <NameInput labelName="모임주" name={name} onChange={handleNameChange} />}
+                </div>
 
-            <div
-              className={`transition-transform duration-300 ease-in-out ${
-                step > 0 ? "translate-y-0" : "translate-y-[3px]"
-              }`}>
-              {step > 0 && <MeetingTypeSelect meetingType={meetingType} onChange={handleMeetingTypeChange} />}
-            </div>
+                <div
+                  className={`transition-transform duration-300 ease-in-out ${
+                    step > 0 ? "translate-y-0" : "translate-y-[3px]"
+                  }`}>
+                  {step > 0 && <MeetingTypeSelect meetingType={meetingType} onChange={handleMeetingTypeChange} />}
+                </div>
 
-            <div
-              className={`transition-transform duration-300 ease-in-out ${
-                step === 0 ? "translate-y-0" : "translate-y-[3px]"
-              }`}>
-              <NameInput labelName="모임명" name={meetingName} onChange={handleMeetingNameChange} />
-            </div>
+                <div
+                  className={`transition-transform duration-300 ease-in-out ${
+                    step === 0 ? "translate-y-0" : "translate-y-[3px]"
+                  }`}>
+                  <NameInput labelName="모임명" name={meetingName} onChange={handleMeetingNameChange} />
+                </div>
+              </>
+            ) : (
+              <div
+                className={`transition-transform duration-300 ease-in-out ${
+                  step > 4 ? "translate-y-[3px]" : "translate-y-0"
+                }`}>
+                {step > 4 && (
+                  <MemberSelect
+                    memberList={memberList}
+                    onChange={handleMemberListChange}
+                    onDelete={handleMemberDelete}
+                  />
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       <div className="px-5 py-10">
-        <button
-          className={`w-full py-3 text-white bg-[#0471E9] rounded-lg ${
-            step !== 4 ||
-            meetingName.length < 1 ||
-            meetingType === "" ||
-            name.length < 2 ||
-            residentNumber.length !== 14 ||
-            maskedPassword.length !== 4
-              ? "opacity-40"
-              : ""
-          }`}
-          onClick={() => navigate("")}
-          disabled={
-            step !== 4 ||
-            meetingName.length < 1 ||
-            meetingType === "" ||
-            name.length < 2 ||
-            residentNumber.length !== 14 ||
-            maskedPassword.length !== 4
-          }>
-          다음
-        </button>
+        {step < 5 ? (
+          <button
+            className={`w-full py-3 text-white bg-[#0471E9] rounded-lg ${
+              step !== 4 ||
+              meetingName.length < 1 ||
+              meetingType === "" ||
+              name.length < 2 ||
+              residentNumber.length !== 14 ||
+              maskedPassword.length !== 4
+                ? "opacity-40"
+                : ""
+            }`}
+            onClick={() => setStep(5)}
+            disabled={
+              step !== 4 ||
+              meetingName.length < 1 ||
+              meetingType === "" ||
+              name.length < 2 ||
+              residentNumber.length !== 14 ||
+              maskedPassword.length !== 4
+            }>
+            다음
+          </button>
+        ) : (
+          <button
+            className={`w-full py-3 text-white bg-[#0471E9] rounded-lg ${memberList.length < 2 ? "opacity-40" : ""}`}
+            onClick={() => handleNext()}
+            disabled={memberList.length < 2}>
+            다음
+          </button>
+        )}
       </div>
 
       {isKeyboard ? (
