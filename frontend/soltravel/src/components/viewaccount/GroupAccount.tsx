@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { accountApi } from '../../api/account';
 import { AccountInfo } from '../../types/account';
-import AccountDetails from './AccountList';
+import AccountList from './AccountList';
 
 const GroupAccount = (): React.ReactElement => {
   const [generalAccounts, setGeneralAccounts] = useState<AccountInfo[]>([]);
@@ -18,12 +18,13 @@ const GroupAccount = (): React.ReactElement => {
       if (userId) {
         try {
           setIsLoading(true);
-          const [generalAccountsData, foreignAccountsData] = await Promise.all([
+          const [generalAccount, foreignAccount] = await Promise.all([
             accountApi.fetchAccountInfo(userId),
             accountApi.fetchForeignAccountInfo(userId)
           ]);
-          setGeneralAccounts(generalAccountsData);
-          setForeignAccounts(foreignAccountsData);
+          // console.log(generalAccount, foreignAccount)
+          setGeneralAccounts(generalAccount);
+          setForeignAccounts(foreignAccount);
         } catch (error) {
           setError('계좌 정보를 불러오는 데 실패했습니다.');
           console.error('Error fetching account data:', error);
@@ -50,8 +51,9 @@ const GroupAccount = (): React.ReactElement => {
       
       {generalAccounts.length > 0 && (
         <>
-          <h2 className="text-xl font-semibold mb-2">일반 모임통장</h2>
-          <AccountDetails 
+          <h2 className="text-xl font-semibold mb-2">개인계좌 & 일반모임통장</h2>
+          <AccountList 
+            key="general"
             accounts={generalAccounts} 
             onSelectAccount={handleAccountSelect}
           />
@@ -60,8 +62,9 @@ const GroupAccount = (): React.ReactElement => {
       
       {foreignAccounts.length > 0 && (
         <>
-          <h2 className="text-xl font-semibold mb-2 mt-4">외화 모임통장</h2>
-          <AccountDetails 
+          <h2 className="text-xl font-semibold mb-2 mt-4">외화모임통장</h2>
+          <AccountList
+            key="foreign"
             accounts={foreignAccounts} 
             onSelectAccount={handleAccountSelect}
           />

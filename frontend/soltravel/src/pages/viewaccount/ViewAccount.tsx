@@ -11,7 +11,7 @@ const GroupAccountPage = (): React.ReactElement => {
 
   return (
     <div className='px-4 mx-auto container'>
-      <h1 className='mb-4 text-2xl font-bold'>계좌 정보</h1>
+      <h1 className='mt-4 mb-4 text-2xl font-bold'>계좌 정보</h1>
       <GroupAccount />
     </div>
   );

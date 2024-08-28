@@ -1,149 +1,205 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+// import React, { useState, useEffect } from 'react';
+// import { useParams } from 'react-router-dom';
+// import { accountApi } from '../../api/account';
+// import { exchangeApi } from '../../api/exchange';
+// import { AccountInfo } from '../../types/account';
+// import { ExchangeRateInfo, ExchangeRequest } from '../../types/exchange';
 
-// 백에서 받아올 데이터를 interface로 type 설정 현재는 예시들
-interface Account {
-  id: string;
-  name: string;
-  accountNumber: string;
-  balance: number;
-  currency: string;
+// const Exchange: React.FC = () => {
+//   const { userId } = useParams<{ userId: string }>();
+//   const [accounts, setAccounts] = useState<AccountInfo[]>([]);
+//   const [selectedAccount, setSelectedAccount] = useState<AccountInfo | null>(null);
+//   const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[]>([]);
+//   const [exchangeAmount, setExchangeAmount] = useState<string>('');
+//   const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
+//   const [expectedExchange, setExpectedExchange] = useState<string>('0');
+//   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const [fetchedAccounts, rates] = await Promise.all([
+//           accountApi.fetchAccountInfo(userId),
+//           exchangeApi.getExchangeRates()
+//         ]);
+//         setAccounts(fetchedAccounts);
+//         if (fetchedAccounts.length > 0) {
+//           setSelectedAccount(fetchedAccounts[0]);
+//         }
+//         setExchangeRates(rates);
+//         if (rates.length > 0) {
+//           setSelectedCurrency(rates[0].currencyCode);
+//         }
+//       } catch (error) {
+//         console.error('Error fetching data:', error);
+//         alert('데이터를 불러오는 데 실패했습니다.');
+//       }
+//     };
+
+//     fetchData();
+//   }, [userId]);
+
+//   useEffect(() => {
+//     if (exchangeAmount && exchangeRates.length > 0) {
+//       const rate = exchangeRates.find(r => r.currencyCode === selectedCurrency)?.exchangeRate;
+//       if (rate) {
+//         const expected = (parseFloat(exchangeAmount) * rate).toFixed(2);
+//         setExpectedExchange(expected);
+//       }
+//     } else {
+//       setExpectedExchange('0');
+//     }
+//   }, [exchangeAmount, selectedCurrency, exchangeRates]);
+
+//   const handleAccountChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+//     const account = accounts.find(acc => acc.accountNo === e.target.value);
+//     if (account) {
+//       setSelectedAccount(account);
+//     }
+//   };
+
+//   const handleExchangeAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     setExchangeAmount(e.target.value);
+//   };
+
+//   const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+//     setSelectedCurrency(e.target.value);
+//   };
+
+//   const handleExchange = async () => {
+//     if (!selectedAccount) return;
+
+//     const numAmount = parseFloat(exchangeAmount);
+//     if (isNaN(numAmount) || numAmount <= 0) {
+//       alert('유효한 환전 금액을 입력해주세요.');
+//       return;
+//     }
+
+//     if (numAmount > selectedAccount.accountBalance) {
+//       alert('계좌 잔액이 부족합니다.');
+//       return;
+//     }
+
+//     const selectedRate = exchangeRates.find(r => r.currencyCode === selectedCurrency);
+//     if (!selectedRate) {
+//       alert('선택한 통화의 환율 정보를 찾을 수 없습니다.');
+//       return;
+//     }
+
+//     if (numAmount < selectedRate.exchangeMin) {
+//       alert(`최소 환전 금액은 ${selectedRate.exchangeMin} ${selectedAccount.currency}입니다.`);
+//       return;
+//     }
+
+//     const exchangeRequest: ExchangeRequest = {
+//       accountid: parseInt(selectedAccount.accountNo),
+//       accountNo: selectedAccount.accountNo,
+//       exchangeCurrency: selectedCurrency,
+//       exchangeAmount: numAmount,
+//       exchangeRate: selectedRate.exchangeRate
+//     };
+
+//     setIsLoading(true);
+//     try {
+//       const response = await exchangeApi.requestExchange(exchangeRequest);
+//       console.log('환전 완료:', response);
+//       alert(`환전이 완료되었습니다. 환전된 금액: ${response.exchangeCurrencyDto.amount} ${response.exchangeCurrencyDto.currency}`);
+//       // 환전 후 계좌 정보 업데이트
+//       setAccounts(accounts.map(acc => 
+//         acc.accountNo === selectedAccount.accountNo 
+//           ? { ...acc, accountBalance: response.accountInfoDto.balance }
+//           : acc
+//       ));
+//       setSelectedAccount({
+//         ...selectedAccount,
+//         accountBalance: response.accountInfoDto.balance,
+//       });
+//       setExchangeAmount('');
+//       setExpectedExchange('0');
+//     } catch (error) {
+//       console.error('환전 중 오류 발생:', error);
+//       alert('환전 중 오류가 발생했습니다. 다시 시도해주세요.');
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   if (accounts.length === 0 || !selectedAccount || exchangeRates.length === 0) {
+//     return <div>Loading...</div>;
+//   }
+
+//   return (
+//     <div className="p-4 max-w-md mx-auto bg-gray-100 min-h-screen">
+//       <h1 className="text-xl font-bold mb-4">환전하기</h1>
+//       <div className="bg-white rounded-lg p-4 shadow mb-4">
+//         <label htmlFor="account-select" className="block text-sm font-medium text-gray-700 mb-2">
+//           계좌 선택
+//         </label>
+//         <select
+//           id="account-select"
+//           className="w-full p-2 border rounded mb-2"
+//           value={selectedAccount.accountNo}
+//           onChange={handleAccountChange}
+//         >
+//           {accounts.map(account => (
+//             <option key={account.accountNo} value={account.accountNo}>
+//               {account.bankName} - {account.accountName} ({account.accountNo})
+//             </option>
+//           ))}
+//         </select>
+//       </div>
+//       <h2 className="font-bold mb-2">환전할 금액 입력</h2>
+//       <div className="bg-white rounded-lg p-4 shadow mb-4">
+//         <div className="flex items-center mb-2">
+//           <div className="w-8 h-8 bg-[#0046FF] rounded-full mr-2"></div>
+//           <div>
+//             <p className="font-semibold">{selectedAccount.accountName}</p>
+//             <p className="text-sm text-gray-500">{selectedAccount.bankName} {selectedAccount.accountNo}</p>
+//           </div>
+//         </div>
+//         <input
+//           type="number"
+//           className="w-full text-right text-2xl font-bold p-2 border rounded mb-2"
+//           value={exchangeAmount}
+//           onChange={handleExchangeAmountChange}
+//           placeholder="0"
+//         />
+//         <select
+//           className="w-full p-2 border rounded mb-2"
+//           value={selectedCurrency}
+//           onChange={handleCurrencyChange}
+//         >
+//           {exchangeRates.map(rate => (
+//             <option key={rate.currencyCode} value={rate.currencyCode}>{rate.currencyCode}</option>
+//           ))}
+//         </select>
+//         <p className="text-right text-sm text-gray-500">최대 {selectedAccount.accountBalance.toLocaleString()} {selectedAccount.currency} 가능</p>
+//         <p className="text-right text-sm text-gray-500">
+//           최소 {exchangeRates.find(r => r.currencyCode === selectedCurrency)?.exchangeMin.toLocaleString()} {selectedAccount.currency} 이상
+//         </p>
+//       </div>
+//       <div className="bg-white rounded-lg p-4 shadow mb-4">
+//         <p className="font-bold mb-2">예상 환전 금액</p>
+//         <p className="text-2xl font-bold">
+//           {parseFloat(expectedExchange) > 0 ? parseFloat(expectedExchange).toLocaleString() : '0'} {selectedCurrency}
+//         </p>
+//         <p className="text-sm text-gray-500">
+//           적용 환율: 1 {selectedAccount.currency} = {exchangeRates.find(r => r.currencyCode === selectedCurrency)?.exchangeRate.toFixed(2)} {selectedCurrency}
+//         </p>
+//       </div>
+//       <button
+//         className={`w-full bg-[#0046FF] text-white py-3 rounded-lg mt-4 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+//         onClick={handleExchange}
+//         disabled={isLoading}
+//       >
+//         {isLoading ? '환전 중...' : '환전하기'}
+//       </button>
+//     </div>
+//   );
+// };
+
+const Exchange = () => {
+  return <div>ㅎㅎ ㅈㅅ</div>
 }
-
-interface ExchangeRate {
-  currency: string;
-  date: string;
-  time: string;
-  round: string;
-  sendRate: number;
-  receiveRate: number;
-  buyRate: number;
-  sellRate: number;
-  baseRate: number;
-  usdConversionRate: number;
-}
-
-// 환전 요청
-const Exchange: React.FC = () => {
-  const { accountId } = useParams<{ accountId: string }>();
-  const [account, setAccount] = useState<Account | null>(null);
-  const [exchangeRate, setExchangeRate] = useState<ExchangeRate | null>(null);
-  const [exchangeAmount, setExchangeAmount] = useState<string>('');
-  const [expectedExchange, setExpectedExchange] = useState<string>('0');
-
-  useEffect(() => {
-    // 실제 구현에서는 API 호출로 대체해야 합니다.
-    const fetchAccountInfo = async () => {
-      // 예시 데이터
-      const mockAccount: Account = {
-        id: accountId || '',
-        name: '신한은행 올인원머니통장',
-        accountNumber: '신한 110-455-247307',
-        balance: 3000000,
-        currency: 'USD', // 예시로 USD 사용
-      };
-      setAccount(mockAccount);
-
-      // 예시 환율 데이터
-      const mockExchangeRate: ExchangeRate = {
-        currency: 'USD',
-        date: '2024.07.30',
-        time: '23:02:23',
-        round: '194',
-        sendRate: 1398.20,
-        receiveRate: 1371.80,
-        buyRate: 1409.23,
-        sellRate: 1360.77,
-        baseRate: 1383.00,
-        usdConversionRate: 1.0000,
-      };
-      setExchangeRate(mockExchangeRate);
-    };
-
-    fetchAccountInfo();
-  }, [accountId]);
-
-  // 환전할 돈을 입력한 후 취소 했을 때, NaN이 뜨지 않도록 하기
-  const handleExchangeAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const amount = e.target.value;
-    setExchangeAmount(amount);
-    if (account && exchangeRate) {
-      const numAmount = parseFloat(amount);
-      if (!isNaN(numAmount) && numAmount > 0) {
-        const exchanged = (numAmount / exchangeRate.baseRate).toFixed(2);
-        setExpectedExchange(exchanged);
-      } else {
-        setExpectedExchange('0');
-      }
-    }
-  };
-
-  // 환전하기 버튼 (백으로 요청 보내는 로직 필요) : 여기서 계산을 하는건지, 백에서 계산을 한 값을 던져주는 건지?
-  const handleExchange = () => {
-    // 실제 환전 로직 구현 필요
-    console.log('환전 실행:', accountId, exchangeAmount, expectedExchange);
-  };
-
-  if (!account || !exchangeRate) {
-    return <div>Loading...</div>;
-  }
-
-  return (
-    <div className="p-4 max-w-md mx-auto bg-gray-100 min-h-screen">
-      <h1 className="text-xl font-bold mb-4">환전하기</h1>
-      <h2 className="font-bold mb-2">환전할 금액 입력</h2>
-      <div className="bg-white rounded-lg p-4 shadow mb-4">
-        <div className="flex items-center mb-2">
-          <div className="w-8 h-8 bg-[#0046FF] rounded-full mr-2"></div>
-          <div>
-            <p className="font-semibold">{account.name}</p>
-            <p className="text-sm text-gray-500">{account.accountNumber}</p>
-          </div>
-        </div>
-        <input
-          type="number"
-          className="w-full text-right text-2xl font-bold p-2 border rounded"
-          value={exchangeAmount}
-          onChange={handleExchangeAmountChange}
-          placeholder="0"
-        />
-        <p className="text-right text-sm text-gray-500">최대 {account.balance.toLocaleString()} 원 가능</p>
-      </div>
-      <div className="bg-white rounded-lg p-4 shadow mb-4">
-        <p className="font-bold mb-2">예상 환전 금액</p>
-        <p className="text-2xl font-bold">
-          {parseFloat(expectedExchange) > 0 ? parseFloat(expectedExchange).toLocaleString() : '0'} {account.currency}
-        </p>
-      </div>
-      <div className="bg-white rounded-lg p-4 shadow">
-        <h3 className="font-bold mb-2">{exchangeRate.currency}</h3>
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <p>기준일</p>
-          <p className="text-right">{exchangeRate.date}</p>
-          <p>고시시간/회차</p>
-          <p className="text-right">{exchangeRate.time} / {exchangeRate.round}회차</p>
-          <p>송금 보낼 때</p>
-          <p className="text-right">{exchangeRate.sendRate.toFixed(2)} 원</p>
-          <p>송금 받을 때</p>
-          <p className="text-right">{exchangeRate.receiveRate.toFixed(2)} 원</p>
-          <p>현찰 살 때</p>
-          <p className="text-right">{exchangeRate.buyRate.toFixed(2)} 원</p>
-          <p>현찰 팔 때</p>
-          <p className="text-right">{exchangeRate.sellRate.toFixed(2)} 원</p>
-          <p>매매기준율</p>
-          <p className="text-right">{exchangeRate.baseRate.toFixed(2)} 원</p>
-          <p>대미환산율</p>
-          <p className="text-right">{exchangeRate.usdConversionRate.toFixed(4)}</p>
-        </div>
-      </div>
-      <button
-        className="w-full bg-[#0046FF] text-white py-3 rounded-lg mt-4"
-        onClick={handleExchange}
-      >
-        환전하기
-      </button>
-    </div>
-  );
-};
 
 export default Exchange;
