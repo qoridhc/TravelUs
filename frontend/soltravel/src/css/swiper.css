@@ -1,8 +1,13 @@
-.swiper {
+.mainSwiper {
   width: 100%;
   height: 242px;
 }
 
-.swiper-slide {
+.mainSwiper .swiper-slide {
   padding: 0 2px;
+}
+
+.userSwiper {
+  width: 100%;
+  height: 100%;
 }

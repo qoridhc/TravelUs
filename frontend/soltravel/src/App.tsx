@@ -6,6 +6,7 @@ import SignUp from "./pages/user/SignUp";
 import MyPage from "./pages/user/MyPage";
 import UserUpdate from "./pages/user/UserUpdate";
 import MeetingAccountList from "./pages/account/MeetingAccountList";
+import MeetingAccountDetail from "./pages/account/MeetingAccountDetail";
 import MyAccount from "./pages/viewaccount/MyAccount";
 import GeneralAccount from "./pages/viewaccount/GeneralAccount";
 import ForeignAccount from "./pages/viewaccount/ForeignAccount";
@@ -27,6 +28,7 @@ function App() {
     <div className="h-full">
       <BrowserRouter>
         <Routes>
+          {/* 페이지에 Header와 Footer가 모두 포함된 경로 */}
           <Route
             path="/*"
             element={
@@ -42,6 +44,18 @@ function App() {
               </>
             }
           />
+
+          {/* 페이지에 Footer만 포함된 경로 */}
+          <Route
+            path="/meetingaccount/:id"
+            element={
+              <>
+                <MeetingAccountDetail />
+                <Footer />
+              </>
+            }
+          />
+
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/mypage" element={<MyPage />} />

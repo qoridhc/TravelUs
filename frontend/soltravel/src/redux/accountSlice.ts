@@ -5,6 +5,7 @@ export interface AccountState {
   isKeyboard?: boolean;
   accountPassword?: string;
   meetingAccountList: Array<{
+    id: number;
     MeetingAccountName: string;
     MeetingAccountIcon: string;
     normalMeetingAccount: {
@@ -24,6 +25,7 @@ const initialState: AccountState = {
   accountPassword: "",
   meetingAccountList: [
     {
+      id: 1,
       MeetingAccountName: "모히또에서 몰디브 한 잔하는 모임",
       MeetingAccountIcon: "airplane",
       normalMeetingAccount: {
@@ -37,6 +39,7 @@ const initialState: AccountState = {
       },
     },
     {
+      id: 2,
       MeetingAccountName: "신암고 1-3반 동창회",
       MeetingAccountIcon: "school",
       normalMeetingAccount: {

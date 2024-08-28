@@ -19,7 +19,6 @@ const MeetingAccountList = () => {
               총 <span className="text-blue-500">{meetingAccountList.length}</span>개
             </p>
           </div>
-
           {/* 모임 통장 있을 시 표시 */}
           {meetingAccountList.length > 0 ? (
             meetingAccountList.map((account, index) => <MeetingAccount account={account} />)
