@@ -1,19 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { MeetingAccountListDetail } from "../types/account";
+import { MeetingAccountListDetail, MeetingAccountDetail } from "../types/account";
 
 export interface AccountState {
-  isKeyboard?: boolean;
-  accountPassword?: string;
+  isKeyboard: boolean;
+  accountPassword: string;
   meetingAccountList: Array<MeetingAccountListDetail>;
+  meetingAccountDetail: MeetingAccountDetail;
 }
 
 const initialState: AccountState = {
   isKeyboard: false,
   accountPassword: "",
-  meetingAccountList: [
-  ],
+  meetingAccountList: [],
+  meetingAccountDetail: {
+    meetingAccountName: "",
+    meetingAccountIcon: "",
+    meetingAccountUserName: "",
+    meetingAccountUserResidentNumber: "",
+    meetingAccountPassword: "",
+    meetingAccountMemberList: [],
+  },
 };
+
 
 export const userSilce = createSlice({
   name: "account",
@@ -31,6 +40,6 @@ export const userSilce = createSlice({
   },
 });
 
-export const { setIsKeyboard, editMeetingAccountList, setAccountPassword } = userSilce.actions;
+export const { setIsKeyboard, setAccountPassword, editMeetingAccountList } = userSilce.actions;
 
 export default userSilce.reducer;

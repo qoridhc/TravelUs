@@ -53,5 +53,10 @@ export interface MeetingAccountListDetail {
 
 // 모임통장 개설 정보
 export interface MeetingAccountDetail {
-
+  meetingAccountName: string;
+  meetingAccountIcon: string;
+  meetingAccountUserName: string;
+  meetingAccountUserResidentNumber: string;
+  meetingAccountPassword: string;
+  meetingAccountMemberList: Array<string>;
 }

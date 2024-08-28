@@ -92,7 +92,7 @@ const AccountCreate = () => {
               className={`transition-transform duration-300 ease-in-out ${
                 step === 0 ? "translate-y-0" : "translate-y-[3px]"
               }`}>
-              <NameInput name={name} onChange={handleNameChange} />
+              <NameInput labelName="이름" name={name} onChange={handleNameChange} />
             </div>
           </div>
         </div>

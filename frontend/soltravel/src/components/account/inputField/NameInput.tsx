@@ -2,11 +2,12 @@ import React from "react";
 import { TextField } from "@mui/material";
 
 interface NameInputProps {
+  labelName: string;
   name: string;
   onChange: (name: string) => void;
 }
 
-const NameInput: React.FC<NameInputProps> = ({ name, onChange }) => {
+const NameInput: React.FC<NameInputProps> = ({ labelName, name, onChange }) => {
   return (
     <TextField
       sx={{
@@ -33,7 +34,7 @@ const NameInput: React.FC<NameInputProps> = ({ name, onChange }) => {
         },
       }}
       id="filled-basic"
-      label="이름"
+      label={labelName}
       variant="filled"
       value={name}
       onChange={(e) => onChange(e.target.value)}
