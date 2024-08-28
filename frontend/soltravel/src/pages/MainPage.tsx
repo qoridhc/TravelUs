@@ -87,7 +87,7 @@ const MainPage = () => {
           </div>
         )}
 
-        <div className="w-full flex flex-col items-center">
+        <div className="w-full flex flex-col items-center space-y-2">
           {/* 모임 통장 있을 시 표시 */}
           {userDetail[0].usermeetingAccount && (
             <>

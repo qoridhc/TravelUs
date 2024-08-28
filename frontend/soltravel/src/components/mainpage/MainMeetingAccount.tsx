@@ -20,7 +20,7 @@ interface Props {
   };
 }
 
-const MainMeetingAccount = ({account} : Props) => {
+const MainMeetingAccount = ({ account }: Props) => {
   const navigate = useNavigate();
 
   return (
