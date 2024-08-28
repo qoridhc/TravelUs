@@ -1,12 +1,13 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { RiHome5Line } from "react-icons/ri";
-import { GoDotFill } from "react-icons/go";
 import { useSelector, useDispatch } from "react-redux";
 import { setIsKeyboard, setAccountPassword } from "../../redux/accountSlice";
 import { RootState } from "../../redux/store";
 import SecurityKeyboard from "../../components/account/SecurityKeyboard";
-import { TextField } from "@mui/material";
 import { useNavigate } from "react-router";
+import NameInput from "../../components/account/inputField/NameInput";
+import ResidentNumberInput from "../../components/account/inputField/ResidentNumberInput";
+import PasswordInput from "../../components/account/inputField/PasswordInput";
 
 const AccountCreate = () => {
   const { isKeyboard, accountPassword } = useSelector((state: RootState) => state.account);
@@ -19,21 +20,11 @@ const AccountCreate = () => {
   const [residentNumber, setResidentNumber] = useState("");
   const [maskedPassword, setMaskedPassword] = useState("");
 
-  const residentNumberRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     if (accountPassword !== undefined) {
       setMaskedPassword("●".repeat(accountPassword.length));
     }
   }, [accountPassword]);
-
-  useEffect(() => {
-    if (step === 2) {
-      if (residentNumberRef.current) {
-        residentNumberRef.current.blur();
-      }
-    }
-  }, [step]);
 
   const handleNameChange = (name: string) => {
     setName(name);
@@ -58,8 +49,6 @@ const AccountCreate = () => {
       dispatch(setIsKeyboard(true));
     }
   };
-
-  const handlePasswordChange = (passsword: string) => {};
 
   const handlePasswordKeyboard = () => {
     dispatch(setAccountPassword(""));
@@ -86,41 +75,8 @@ const AccountCreate = () => {
             <div
               className={`transition-transform duration-300 ease-in-out ${
                 step > 1 ? "translate-y-[3px]" : "translate-y-0"
-              }`}
-              onClick={() => handlePasswordKeyboard()}>
-              {step > 1 && (
-                <TextField
-                  sx={{
-                    width: "100%",
-                    "& .MuiInputBase-root": {
-                      backgroundColor: "white",
-                    },
-                    "& .MuiInputBase-input": {
-                      backgroundColor: "white",
-                      fontSize: "20px",
-                      fontWeight: "bold",
-                      border: "1px solid #9E9E9E",
-                      borderRadius: "10px",
-                    },
-                    "& .MuiInputLabel-root": {
-                      color: "#9E9E9E",
-                      fontSize: "20px",
-                    },
-                    "& .MuiInputLabel-shrink": {
-                      fontSize: "16px",
-                    },
-                    "& .MuiFilledInput-underline:before, & .MuiFilledInput-underline:after": {
-                      display: "none",
-                    },
-                  }}
-                  id="filled-basic"
-                  label="계좌비밀번호"
-                  variant="filled"
-                  value={maskedPassword}
-                  onChange={(e) => handlePasswordChange(e.target.value)}
-                  inputProps={{ maxLength: 4, readOnly: true }}
-                />
-              )}
+              }`}>
+              {step > 1 && <PasswordInput maskedPassword={maskedPassword} onKeyboardOpen={handlePasswordKeyboard} />}
             </div>
 
             <div
@@ -128,39 +84,7 @@ const AccountCreate = () => {
                 step > 0 ? "translate-y-[3px]" : "translate-y-0"
               }`}>
               {step > 0 && (
-                <TextField
-                  sx={{
-                    width: "100%",
-                    "& .MuiInputBase-root": {
-                      backgroundColor: "white",
-                    },
-                    "& .MuiInputBase-input": {
-                      backgroundColor: "white",
-                      fontSize: "20px",
-                      fontWeight: "bold",
-                      border: "1px solid #9E9E9E",
-                      borderRadius: "10px",
-                    },
-                    "& .MuiInputLabel-root": {
-                      color: "#9E9E9E",
-                      fontSize: "20px",
-                    },
-                    "& .MuiInputLabel-shrink": {
-                      fontSize: "16px",
-                    },
-                    "& .MuiFilledInput-underline:before, & .MuiFilledInput-underline:after": {
-                      display: "none",
-                    },
-                  }}
-                  id="filled-basic"
-                  label="주민등록번호"
-                  variant="filled"
-                  value={residentNumber}
-                  onChange={(e) => handleResidentNumberChange(e.target.value)}
-                  inputProps={{ maxLength: 14 }}
-                  autoComplete="off"
-                  inputRef={residentNumberRef}
-                />
+                <ResidentNumberInput residentNumber={residentNumber} onChange={handleResidentNumberChange} />
               )}
             </div>
 
@@ -168,37 +92,7 @@ const AccountCreate = () => {
               className={`transition-transform duration-300 ease-in-out ${
                 step === 0 ? "translate-y-0" : "translate-y-[3px]"
               }`}>
-              <TextField
-                sx={{
-                  width: "100%",
-                  "& .MuiInputBase-root": {
-                    backgroundColor: "white",
-                  },
-                  "& .MuiInputBase-input": {
-                    backgroundColor: "white",
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    border: "1px solid #9E9E9E",
-                    borderRadius: "10px",
-                  },
-                  "& .MuiInputLabel-root": {
-                    color: "#9E9E9E",
-                    fontSize: "20px",
-                  },
-                  "& .MuiInputLabel-shrink": {
-                    fontSize: "16px",
-                  },
-                  "& .MuiFilledInput-underline:before, & .MuiFilledInput-underline:after": {
-                    display: "none",
-                  },
-                }}
-                id="filled-basic"
-                label="이름"
-                variant="filled"
-                value={name}
-                onChange={(e) => handleNameChange(e.target.value)}
-                autoComplete="off"
-              />
+              <NameInput name={name} onChange={handleNameChange} />
             </div>
           </div>
         </div>
