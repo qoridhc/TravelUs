@@ -8,7 +8,7 @@ import lombok.Data;
 public class LatestRateRequestDto {
 
   @Schema(description = "통화 코드 (USD, JPY)", example = "USD")
-  private String currency;
+  private String currencyCode;
 
   @Schema(description = "환율 조회의 시작 날짜", example = "2024-08-01")
   private LocalDate startDate;

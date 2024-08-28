@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class ExchangeRateResponseDto {
 
     @Schema(description = "환전할 통화 코드", example = "USD")
-    private String currency;
+    private String currencyCode;
 
     @Schema(description = "실시간 환율", example = "1333.40")
     private Double exchangeRate;

@@ -11,8 +11,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,7 +39,19 @@ public class ForeignAccount {
 
     private int bankCode;
 
+    private String accountName;
+
+    private String accountPassword;
+
     private String accountNo;
+
+    private String groupName;
+
+    private String iconName;
+
+    private LocalDate travelStartDate;
+
+    private LocalDate travelEndDate;
 
     private Double balance;
 
@@ -54,4 +69,7 @@ public class ForeignAccount {
     @JoinColumn(name = "general_account_id")
     @JsonIgnore
     private GeneralAccount generalAccount;
+
+//    @OneToMany(mappedBy = "foreignAccount", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<AccountBookHistory> accountBook;
 }

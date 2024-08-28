@@ -17,7 +17,8 @@ import lombok.NoArgsConstructor;
 public class ExchangeRate {
 
     @Id
-    private String currency;
+    @Column(name="currency_code")
+    private String currencyCode;
 
     @Column(name = "exchange_rate")
     private Double exchangeRate;

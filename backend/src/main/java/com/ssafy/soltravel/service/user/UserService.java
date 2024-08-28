@@ -2,6 +2,7 @@ package com.ssafy.soltravel.service.user;
 
 
 import com.ssafy.soltravel.domain.User;
+import com.ssafy.soltravel.dto.user.EmailValidationResponseDto;
 import com.ssafy.soltravel.dto.user.UserCreateRequestDto;
 import com.ssafy.soltravel.dto.user.UserDetailDto;
 import com.ssafy.soltravel.dto.user.UserSearchRequestDto;
@@ -187,5 +188,13 @@ public class UserService implements UserDetailsService {
         .registerAt(user.getRegisterAt())
         .isExit(user.getIsExit())
         .build();
+  }
+
+  public EmailValidationResponseDto findUserIdByEmail(String email) throws UsernameNotFoundException {
+    User user = userRepository.findByEmail(email).orElseThrow(
+        () -> new RuntimeException(String.format("loadUserByUsername Failed: %s", email))
+    );
+
+    return new EmailValidationResponseDto(user.getUserId());
   }
 }

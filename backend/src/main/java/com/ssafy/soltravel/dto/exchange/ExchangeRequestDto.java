@@ -19,7 +19,7 @@ public class ExchangeRequestDto {
   private String accountNo;
 
   @Schema(example = "USD", description = "환전할 외화 통화 코드")
-  private String exchangeCurrency;
+  private String currencyCode;
 
   @Schema(example = "1000", description = "환전할 원화 금액")
   private long exchangeAmount;

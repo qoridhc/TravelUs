@@ -10,7 +10,7 @@ public class ExchangeRateRegisterRequestDto {
   private Long generalAccountId;
 
   @Schema(description = "환전할 통화 코드", example = "USD")
-  private String currency;
+  private String currencyCode;
 
   @Schema(description = "희망 환율", example = "1333.40")
   private float exchangeRate;

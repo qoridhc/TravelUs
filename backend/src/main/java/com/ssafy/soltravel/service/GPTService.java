@@ -1,5 +1,7 @@
 package com.ssafy.soltravel.service;
 
+import com.ssafy.soltravel.util.LogUtil;
+import jakarta.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,13 +16,26 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class GPTService {
 
   private final WebClient openAiWebClient;
+  private Map<String, String> basePrompt = new HashMap<>();
+
+  @PostConstruct
+  public void init() {
+    basePrompt.put("role", "system");
+    basePrompt.put("content", "Receive the JSON receipt data and extract only the store name (store), "
+        + "list of purchased items (items), item names (item), prices (price), and payment amount (paid). "
+        + "Additionally, format the extracted information to ensure it becomes a complete JSON data."
+    );
+  }
 
   public String askChatGPT(String prompt) {
 
     Map<String, Object> requestBody = new HashMap<>();
-    requestBody.put("model", "gpt-4o-mini"); // 사용할 모델
-    requestBody.put("messages", List.of(Map.of("role", "user", "content", prompt))); // 'messages' 필드 사용
-    requestBody.put("max_tokens", 100); // 최대 토큰 수 설정
+    requestBody.put("model", "gpt-4o"); // 사용할 모델
+    requestBody.put("response_format", Map.of("type", "json_object"));
+    requestBody.put("messages", List.of(basePrompt, Map.of("role", "user", "content", prompt))); // 'messages' 필드 사용
+    requestBody.put("max_tokens", 2048); // 최대 토큰 수 설정
+
+    LogUtil.info(requestBody.toString());
 
     ResponseEntity<Map<String, Object>> response = openAiWebClient.post()
         .uri("/chat/completions")

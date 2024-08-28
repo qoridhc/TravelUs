@@ -3,6 +3,7 @@ package com.ssafy.soltravel.service.exchange;
 import com.ssafy.soltravel.common.Header;
 import com.ssafy.soltravel.domain.ExchangeRate;
 import com.ssafy.soltravel.domain.ForeignAccount;
+import com.ssafy.soltravel.domain.GeneralAccount;
 import com.ssafy.soltravel.domain.redis.PreferenceRate;
 import com.ssafy.soltravel.dto.exchange.Account;
 import com.ssafy.soltravel.dto.exchange.AccountInfoDto;
@@ -18,16 +19,15 @@ import com.ssafy.soltravel.dto.transaction.request.ForeignTransactionRequestDto;
 import com.ssafy.soltravel.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.exception.InvalidAmountException;
 import com.ssafy.soltravel.repository.ExchangeRateRepository;
+import com.ssafy.soltravel.repository.GeneralAccountRepository;
 import com.ssafy.soltravel.repository.LatestRateRepository;
 import com.ssafy.soltravel.repository.redis.PreferenceRateRepository;
 import com.ssafy.soltravel.service.NotificationService;
 import com.ssafy.soltravel.service.account.AccountService;
 import com.ssafy.soltravel.service.transaction.TransactionService;
 import com.ssafy.soltravel.util.LogUtil;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -63,6 +63,7 @@ public class ExchangeService {
   private final AccountService accountService;
   private final TransactionService transactionService;
   private final LatestRateRepository latestRateRepository;
+  private final GeneralAccountRepository generalAccountRepository;
 
   /**
    * 실시간 환율 받아오는 메서드 매시 0분, 10분, 20분, 30분, 40분, 50분에 data 가져온다
@@ -116,9 +117,9 @@ public class ExchangeService {
   public ExchangeRateResponseDto getExchangeRate(String currency) {
 
     ExchangeRateResponseDto responseDto = new ExchangeRateResponseDto();
-    ExchangeRate rateEntity = exchangeRateRepository.findByCurrency(currency);
+    ExchangeRate rateEntity = exchangeRateRepository.findByCurrencyCode(currency);
 
-    responseDto.setCurrency(currency);
+    responseDto.setCurrencyCode(currency);
     responseDto.setExchangeRate(rateEntity.getExchangeRate());
     responseDto.setExchangeMin(rateEntity.getExchangeMin());
     return responseDto;
@@ -129,7 +130,7 @@ public class ExchangeService {
    */
   public List<LatestRate> getLatestExchangeRate(LatestRateRequestDto requestDto) {
 
-    return latestRateRepository.findLatestRatesByCurrencyAndDateRange(requestDto.getCurrency(),requestDto.getStartDate(),requestDto.getEndDate());
+    return latestRateRepository.findLatestRatesByCurrencyAndDateRange(requestDto.getCurrencyCode(),requestDto.getStartDate(),requestDto.getEndDate());
   }
 
   /**
@@ -138,7 +139,7 @@ public class ExchangeService {
   public void updateExchangeRates(List<ExchangeRateDto> dtoList) {
     for (ExchangeRateDto dto : dtoList) {
 
-      ExchangeRate rate = exchangeRateRepository.findByCurrency(dto.getCurrency());
+      ExchangeRate rate = exchangeRateRepository.findByCurrencyCode(dto.getCurrency());
       double prevRate = -1D;
 
       if (rate != null) {
@@ -146,7 +147,7 @@ public class ExchangeService {
         prevRate = rate.getExchangeRate();
       } else {
         rate = ExchangeRate.builder()
-            .currency(dto.getCurrency())
+            .currencyCode(dto.getCurrency())
             .build();
       }
 
@@ -159,7 +160,6 @@ public class ExchangeService {
           .build();
       exchangeRateRepository.save(rate);
 
-      LogUtil.info(rate.toString());
       /**
        * 환율이 변동되었다 -> 자동 환전
        */
@@ -172,17 +172,18 @@ public class ExchangeService {
           PreferenceRate preferenceRate = exchangeOpt.get();
 
           for (Account account : preferenceRate.getAccounts()) {
-            //TODO: 현재 계좌 잔액에서 가져와야합니다.(Line:156)
+
+            GeneralAccount generalAccount=generalAccountRepository.findById(account.getAccountId()).orElseThrow();
             ExchangeRequestDto exchangeRequestDto = ExchangeRequestDto.builder()
-                .exchangeCurrency(dto.getCurrency())
+                .currencyCode(dto.getCurrency())
                 .accountId(account.getAccountId())
                 .accountNo(account.getAccountNo())
-                .exchangeAmount(3000L)//TODO:이 곳 입니다.
+                .exchangeAmount(Math.round(generalAccount.getBalance()))
                 .exchangeRate(updatedRate)
                 .build();
 
             LogUtil.info(exchangeRequestDto.toString());
-            executeExchange(exchangeRequestDto);
+            executeKRWTOUSDExchange(exchangeRequestDto);
           }
         }
       }
@@ -194,7 +195,7 @@ public class ExchangeService {
    */
   public void setPreferenceRate(String accountNo, ExchangeRateRegisterRequestDto dto) {
 
-    String id = makeId(dto.getCurrency(), dto.getExchangeRate());
+    String id = makeId(dto.getCurrencyCode(), dto.getExchangeRate());
     Optional<PreferenceRate> exchangeOpt = preferenceRateRepository.findById(id);
 
     PreferenceRate preference;
@@ -209,16 +210,16 @@ public class ExchangeService {
   }
 
   /**
-   * 환전
+   * 원화 -> USD 환전
    */
-  public ExchangeResponseDto executeExchange(ExchangeRequestDto dto) {
+  public ExchangeResponseDto executeKRWTOUSDExchange(ExchangeRequestDto dto) {
 
     long krw=dto.getExchangeAmount();
     if (dto.getExchangeAmount() % 10 != 0)
       dto.setExchangeAmount(krw - krw % 10);
 
     dto.setExchangeRate(
-        exchangeRateRepository.findByCurrency(dto.getExchangeCurrency()).getExchangeRate());
+        exchangeRateRepository.findByCurrencyCode(dto.getCurrencyCode()).getExchangeRate());
 
     /**
      * 원화 -> 달러
@@ -226,9 +227,9 @@ public class ExchangeService {
     double amount = convertKrwToUsdWithoutFee(dto.getExchangeAmount(), dto.getExchangeRate());
 
     // 2. 최소 환전 금액 설정
-    double minimumAmount = getMinimumAmount(dto.getExchangeCurrency());
+    double minimumAmount = getMinimumAmount(dto.getCurrencyCode());
     if (amount < minimumAmount) {
-      throw new InvalidAmountException(minimumAmount, dto.getExchangeCurrency());
+      throw new InvalidAmountException(minimumAmount, dto.getCurrencyCode());
     }
 
     TransactionRequestDto withdrawal = new TransactionRequestDto();
@@ -243,7 +244,7 @@ public class ExchangeService {
     transactionService.postForeignDeposit(foreignAccount.getAccountNo(), deposit);
 
     ExchangeCurrencyDto exchangeCurrencyDto = ExchangeCurrencyDto.builder()
-        .currency(dto.getExchangeCurrency())
+        .currencyCode(dto.getCurrencyCode())
         .exchangeRate(dto.getExchangeRate())//환율
         .amount(dto.getExchangeAmount())//원화
         .build();
@@ -262,13 +263,13 @@ public class ExchangeService {
     responseDto.setAccountInfoDto(accountInfoDto);
     responseDto.setExecuted_at(LocalDateTime.now());
 
-    notificationService.notifyMessage(responseDto);
+    notificationService.notifyExchangeMessage(responseDto);
 
     return responseDto;
   }
 
   /**
-   * 환전된 금액 반환하는 메서드
+   * KRW->USD 환전된 금액 반환하는 메서드
    */
   public double convertKrwToUsdWithoutFee(long krwAmount, double exchangeRate) {
     if (exchangeRate <= 0) {
@@ -277,6 +278,18 @@ public class ExchangeService {
 
     double usdAmount = krwAmount / exchangeRate;
     return Math.round(usdAmount * 100.0) / 100.0; // 소수점 두 자리까지 반올림
+  }
+
+  /**
+   * USD -> KRW 환전된 금액 반환하는 메서드
+   */
+  public long convertUsdToKrwWithoutFee(double usdAmount, double exchangeRate) {
+    if (exchangeRate <= 0) {
+      throw new IllegalArgumentException("환율은 0보다 커야 합니다.");
+    }
+
+    double krwAmount = usdAmount * exchangeRate;
+    return Math.round(krwAmount); // 반올림하여 정수로 반환
   }
 
   /**
