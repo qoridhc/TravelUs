@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { MeetingAccount } from "../types/account";
+import { MeetingForeignAccount } from "../types/account";
 
 export interface AccountState {
   isKeyboard?: boolean;
   accountPassword?: string;
-  meetingAccountList: Array<MeetingAccount>;
+  meetingAccountList: Array<MeetingForeignAccount>;
 }
 
 const initialState: AccountState = {
@@ -25,7 +25,7 @@ export const userSilce = createSlice({
     setAccountPassword: (state, action: PayloadAction<string>) => {
       state.accountPassword = action.payload;
     },
-    editMeetingAccountList: (state, action: PayloadAction<Array<MeetingAccount>>) => {
+    editMeetingAccountList: (state, action: PayloadAction<Array<MeetingForeignAccount>>) => {
       state.meetingAccountList = action.payload;
     },
   },

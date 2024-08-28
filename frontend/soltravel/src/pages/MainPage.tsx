@@ -20,8 +20,8 @@ const MainPage = () => {
     dispatch(
       editMeetingAccountList([
         {
-          MeetingAccountName: "모히또에서 몰디브 한 잔하는 모임",
-          MeetingAccountIcon: "airplane",
+          meetingAccountName: "모히또에서 몰디브 한 잔하는 모임",
+          meetingAccountIcon: "airplane",
           normalMeetingAccount: {
             accountNumber: "217-879928-13289",
             accountMoney: "3,481,900",
@@ -33,8 +33,8 @@ const MainPage = () => {
           },
         },
         {
-          MeetingAccountName: "신암고 1-3반 동창회",
-          MeetingAccountIcon: "school",
+          meetingAccountName: "신암고 1-3반 동창회",
+          meetingAccountIcon: "school",
           normalMeetingAccount: {
             accountNumber: "217-874218-12289",
             accountMoney: "481,900",

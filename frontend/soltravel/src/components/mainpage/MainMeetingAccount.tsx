@@ -3,24 +3,13 @@ import { useNavigate } from "react-router";
 import { IoSchool } from "react-icons/io5";
 import { PiAirplaneTiltFill } from "react-icons/pi";
 import path from "path";
+import { MeetingForeignAccount } from "../../types/account";
 
 interface Props {
-  account: {
-    MeetingAccountName: string;
-    MeetingAccountIcon: string;
-    normalMeetingAccount: {
-      accountNumber: string;
-      accountMoney: string;
-    };
-    foreignMeetingAccount: {
-      accountNumber: string;
-      accountMoney: string;
-      currencyType: string;
-    };
-  };
+  account: MeetingForeignAccount;
 }
 
-const MainMeetingAccount = ({account} : Props) => {
+const MainMeetingAccount = ({ account }: Props) => {
   const navigate = useNavigate();
 
   return (
@@ -31,7 +20,7 @@ const MainMeetingAccount = ({account} : Props) => {
       className="w-full py-5 pb-10 px-5 flex flex-col rounded-xl bg-white shadow-md">
       <div className="flex flex-col space-y-4">
         <div className="flex items-center space-x-1 mb-1">
-          {account.MeetingAccountIcon === "airplane" ? (
+          {account.meetingAccountIcon === "airplane" ? (
             <div className="w-6 h-6 bg-[#638ee4] rounded-full flex justify-center items-center">
               <PiAirplaneTiltFill className="text-zinc-50" />
             </div>
@@ -40,7 +29,7 @@ const MainMeetingAccount = ({account} : Props) => {
               <IoSchool className="text-zinc-50" />
             </div>
           )}
-          <p className="font-bold">{account.MeetingAccountName}</p>
+          <p className="font-bold">{account.meetingAccountName}</p>
         </div>
         <div className="rounded-md flex justify-between">
           <div>
