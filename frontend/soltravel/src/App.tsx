@@ -52,7 +52,7 @@ function App() {
           <Route path="/foreignaccount" element={<ForeignAccount />}></Route>
           <Route path="/account" element={<ViewAccount />}></Route>
           <Route path="/exchange" element={<Exchange />}></Route>
-          <Route path="/selectaccount" element={<SelectAccount />}></Route>
+          <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
           <Route path="/settlestart" element={<SettleStart />}></Route>
           <Route path="/settlement" element={<Settlement />}></Route>
           <Route path="/settleexchange" element={<SettleExchange />}></Route>

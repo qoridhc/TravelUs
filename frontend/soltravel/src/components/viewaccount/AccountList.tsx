@@ -6,7 +6,7 @@ type AccountDetailsProps = {
   onSelectAccount: (account: AccountInfo) => void;
 };
 
-const AccountDetails = ({ accounts, onSelectAccount }: AccountDetailsProps): React.ReactElement => {
+const AccountList = ({ accounts, onSelectAccount }: AccountDetailsProps): React.ReactElement => {
   return (
     <div>
       {accounts.map((account) => (
@@ -32,4 +32,4 @@ const AccountDetails = ({ accounts, onSelectAccount }: AccountDetailsProps): Rea
   );
 };
 
-export default AccountDetails;
+export default AccountList;

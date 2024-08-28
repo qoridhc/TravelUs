@@ -117,24 +117,6 @@ const Exchange: React.FC = () => {
       </div>
       <div className="bg-white rounded-lg p-4 shadow">
         <h3 className="font-bold mb-2">{exchangeRate.currency}</h3>
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <p>기준일</p>
-          <p className="text-right">{exchangeRate.date}</p>
-          <p>고시시간/회차</p>
-          <p className="text-right">{exchangeRate.time} / {exchangeRate.round}회차</p>
-          <p>송금 보낼 때</p>
-          <p className="text-right">{exchangeRate.sendRate.toFixed(2)} 원</p>
-          <p>송금 받을 때</p>
-          <p className="text-right">{exchangeRate.receiveRate.toFixed(2)} 원</p>
-          <p>현찰 살 때</p>
-          <p className="text-right">{exchangeRate.buyRate.toFixed(2)} 원</p>
-          <p>현찰 팔 때</p>
-          <p className="text-right">{exchangeRate.sellRate.toFixed(2)} 원</p>
-          <p>매매기준율</p>
-          <p className="text-right">{exchangeRate.baseRate.toFixed(2)} 원</p>
-          <p>대미환산율</p>
-          <p className="text-right">{exchangeRate.usdConversionRate.toFixed(4)}</p>
-        </div>
       </div>
       <button
         className="w-full bg-[#0046FF] text-white py-3 rounded-lg mt-4"

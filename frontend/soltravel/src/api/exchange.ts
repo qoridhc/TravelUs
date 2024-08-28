@@ -1,13 +1,13 @@
 import api from "../lib/axios";
-import { ExchangeRateInfo } from "../types/exchange";
+import { ExchangeRateInfo, ExchangeRequest, ExchangeResponse } from "../types/exchange";
 
 export const exchangeApi = {
-  getExchangeRates: async (): Promise<ExchangeRateInfo[]> => {
-    try {
-      const response = await api.get<ExchangeRateInfo[]>('/exchange');
-      return response.data;
-    } catch (error) {
-      throw new Error('Failed to fetch exchange rates');
-    }
+  getExchangeRates: (): Promise<ExchangeRateInfo[]> => {
+    return api.get('/exchange')
   },
+
+  requestExchange: (data: ExchangeRequest): Promise<ExchangeResponse> => {
+    return api.post(`/exchange`, data);
+  }
 };
+
