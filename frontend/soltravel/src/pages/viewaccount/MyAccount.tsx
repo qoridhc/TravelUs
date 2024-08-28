@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
+// 이 페이지 필요 없을수도?
 
+import React, { useState, useEffect } from 'react';
+// import { AccountInfo } from '../types/account';
+
+// 예시 데이터들 나중에 필요 없음
 interface AccountInfo {
   bankName: string;
-  accountType: string;
-  accountNumber: string;
-  balance: number;
+  accountTypeName: string;
+  accountNo: string;
+  accountBalance: number;
 }
 
 interface Transaction {
@@ -25,9 +29,9 @@ const PersonalAccount: React.FC = () => {
     // API 호출 시뮬레이션
     setAccountInfo({
       bankName: '신한은행',
-      accountType: '개인 입출금 통장',
-      accountNumber: '110-455-247307',
-      balance: 5270133
+      accountTypeName: '개인 입출금 통장',
+      accountNo: '110-455-247307',
+      accountBalance: 5270133
     });
     setTransactions([
       { date: '2024.08.19', time: '14:09:46', description: 'GS25 진평삼성', amount: 4500, balance: 5285033, type: 'withdrawal' },
@@ -57,11 +61,11 @@ const PersonalAccount: React.FC = () => {
           <div className='w-8 h-8 mr-2 bg-[#0046FF] rounded-full'></div>
           <div className='ml-3'>
             <p className='font-semibold'>{accountInfo.bankName}</p>
-            <p className='font-semibold'>{accountInfo.accountType}</p>
-            <p className='text-sm text-gray-500'>{accountInfo.accountNumber}</p>
+            <p className='font-semibold'>{accountInfo.accountTypeName}</p>
+            <p className='text-sm text-gray-500'>{accountInfo.accountNo}</p>
           </div>
         </div>
-        <p className='text-2xl font-bold text-right'>{accountInfo.balance.toLocaleString()} 원</p>
+        <p className='text-2xl font-bold text-right'>{accountInfo.accountBalance.toLocaleString()} 원</p>
       </div>
 
       {/* 버튼 섹션 */}

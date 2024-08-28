@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface AccountInfo {
   bankName: string;
@@ -20,6 +21,8 @@ const GeneralAccount: React.FC = () => {
   const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [showBalance, setShowBalance] = useState(true);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // API 호출 시뮬레이션
@@ -48,6 +51,10 @@ const GeneralAccount: React.FC = () => {
     return groups;
   }, {} as Record<string, Transaction[]>);
 
+  const handleNavigate = () => {
+    navigate('/detail')
+  }
+
   return (
     <div className='p-4 max-w-md mx-auto bg-gray-100 min-h-screen'>
       {/* 계좌 정보 섹션 */}
@@ -65,8 +72,12 @@ const GeneralAccount: React.FC = () => {
 
       {/* 버튼 섹션 */}
       <div className="mb-4 flex space-x-2">
-        <button className='py-2 flex-1 bg-[#0046FF] text-white rounded'>이체</button>
-        <button className='py-2 flex-1 bg-[#0046FF] text-white rounded'>계좌 관리</button>
+        <button className='py-2 flex-1 bg-[#0046FF] text-white rounded'>입금</button>
+        <button
+        className='py-2 flex-1 bg-[#0046FF] text-white rounded'
+        onClick={handleNavigate}
+        >계좌 관리
+        </button>
       </div>
 
       {/* 거래 내역 섹션 */}
