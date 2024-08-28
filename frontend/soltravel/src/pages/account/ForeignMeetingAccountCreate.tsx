@@ -4,6 +4,8 @@ import { RootState } from "../../redux/store";
 import { useNavigate } from "react-router";
 import { RiHome5Line } from "react-icons/ri";
 import TypeSelect from "../../components/account/inputField/TypeSelect";
+import { currencyTypeList } from "../../types/exchange";
+import ExchangeRateInput from "../../components/account/inputField/ExchangeRateInput";
 
 const ForeignMeetingAccountCreate = () => {
   // const {} = useSelector((state: RootState) => state.account);
@@ -12,51 +14,38 @@ const ForeignMeetingAccountCreate = () => {
 
   const [step, setStep] = useState(0);
   const stepList = ["통화를", "희망 환율을", "여행 일정을"];
-  const menuList = [
-    { text: "CAD", value: "none" },
-    { text: "CHF", value: "airplane" },
-    { text: "CNY", value: "school" },
-    { text: "EUR", value: "school" },
-    { text: "GBP", value: "school" },
-    { text: "EUR", value: "school" },
-  ];
   const [currencyType, setCurrencyType] = useState("");
+  const [exchangeRate, setExchangeRate] = useState(0);
 
   const handleCurrencyTypeChange = (currencyType: string) => {
     setCurrencyType(currencyType);
     if (currencyType !== "") {
       setStep(1);
+      console.log(step);
     }
   };
 
-  // const handleMeetingNameChange = (meetingname: string) => {
-  //   setMeetingName(meetingname);
-  //   if (meetingname.length >= 2) {
-  //     setStep(1);
-  //   }
-  // };
+  const handleExchangeRateChange = (exchangeRate: number) => {
+    setExchangeRate(exchangeRate);
+    if (exchangeRate > 0) {
+      setStep(2);
+    }
+  };
 
-  // const handleMeetingTypeChange = (meetingType: string) => {
-  //   setMeetingType(meetingType);
-  //   if (meetingType !== "") {
-  //     setStep(2);
-  //   }
-  // };
+  const handleNext = () => {
+    // dispatch(
+    //   editGeneralMeetingAccountList({
+    //     generalMeetingAccountName: meetingName,
+    //     generalMeetingAccountIcon: meetingType,
+    //     generalMeetingAccountUserName: name,
+    //     generalMeetingAccountUserResidentNumber: residentNumber,
+    //     generalMeetingAccountPassword: accountPassword,
+    //     generalMeetingAccountMemberList: memberList,
+    //   })
+    // );
 
-  // const handleNext = () => {
-  //   dispatch(
-  //     editGeneralMeetingAccountList({
-  //       generalMeetingAccountName: meetingName,
-  //       generalMeetingAccountIcon: meetingType,
-  //       generalMeetingAccountUserName: name,
-  //       generalMeetingAccountUserResidentNumber: residentNumber,
-  //       generalMeetingAccountPassword: accountPassword,
-  //       generalMeetingAccountMemberList: memberList,
-  //     })
-  //   );
-
-  //   navigate("/foreignmeetingaccountcreate");
-  // };
+    navigate("/");
+  };
 
   return (
     <div className="h-full flex flex-col justify-between">
@@ -87,14 +76,20 @@ const ForeignMeetingAccountCreate = () => {
                 step > 1 ? "translate-y-0" : "translate-y-[3px]"
               }`}>
               {step > 1 && <NameInput labelName="모임주" name={name} onChange={handleNameChange} />}
-            </div>
+            </div> */}
 
             <div
               className={`transition-transform duration-300 ease-in-out ${
                 step > 0 ? "translate-y-0" : "translate-y-[3px]"
               }`}>
-              {step > 0 && <TypeSelect meetingType={meetingType} onChange={handleMeetingTypeChange} />}
-            </div> */}
+              {step > 0 && (
+                <ExchangeRateInput
+                  currencyType={currencyType}
+                  exchangeRate={exchangeRate}
+                  onChange={handleExchangeRateChange}
+                />
+              )}
+            </div>
 
             <div
               className={`transition-transform duration-300 ease-in-out ${
@@ -102,7 +97,7 @@ const ForeignMeetingAccountCreate = () => {
               }`}>
               <TypeSelect
                 label="통화"
-                menuList={menuList}
+                menuList={currencyTypeList}
                 selectedType={currencyType}
                 onChange={handleCurrencyTypeChange}
               />
