@@ -10,6 +10,7 @@ import ResidentNumberInput from "../../components/account/inputField/ResidentNum
 import PasswordInput from "../../components/account/inputField/PasswordInput";
 import MeetingTypeSelect from "../../components/account/inputField/TypeSelect";
 import MemberSelect from "../../components/account/inputField/MemberSelect";
+import { meetingAccountIconList } from "../../types/account";
 
 const MeetingAccountCreate = () => {
   const { isKeyboard, accountPassword } = useSelector((state: RootState) => state.account);
@@ -25,11 +26,7 @@ const MeetingAccountCreate = () => {
     "계좌 비밀번호를",
     "모임원을",
   ];
-  const menuList = [
-    { text: "선택안함", value: "none" },
-    { text: "여행", value: "airplane" },
-    { text: "학교", value: "school" },
-  ];
+
   const [meetingName, setMeetingName] = useState("");
   const [meetingType, setMeetingType] = useState("");
   const [name, setName] = useState("");
@@ -176,7 +173,7 @@ const MeetingAccountCreate = () => {
                   {step > 0 && (
                     <MeetingTypeSelect
                       label="모임종류"
-                      menuList={menuList}
+                      menuList={meetingAccountIconList}
                       selectedType={meetingType}
                       onChange={handleMeetingTypeChange}
                     />

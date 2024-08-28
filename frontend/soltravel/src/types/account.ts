@@ -61,3 +61,10 @@ export interface GeneralMeetingAccountDetail {
   generalMeetingAccountPassword: string;
   generalMeetingAccountMemberList: Array<string>;
 }
+
+// 모임통장 모임종류 아이콘 
+export const meetingAccountIconList: Array<{text: string, value: string}> = [
+  { text: "선택안함", value: "none" },
+  { text: "여행", value: "airplane" },
+  { text: "학교", value: "school" },
+];
