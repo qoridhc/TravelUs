@@ -15,7 +15,7 @@ const MainMeetingAccount = ({ account }: Props) => {
   return (
     <div
       onClick={() => {
-        navigate("/account");
+        navigate(`/meetingaccount/${account.id}`);
       }}
       className="w-full py-5 pb-10 px-5 flex flex-col rounded-xl bg-white shadow-md">
       <div className="flex flex-col space-y-4">

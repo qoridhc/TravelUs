@@ -121,23 +121,21 @@ const MainPage = () => {
           </div>
         )}
 
-        <div className="w-full flex flex-col items-center">
+        <div className="w-full flex flex-col items-center space-y-2">
           {/* 모임 통장 있을 시 표시 */}
           {userDetail[0].usermeetingAccount && (
-            <>
-              <Swiper
-                pagination={{
-                  dynamicBullets: true,
-                }}
-                modules={[Pagination]}
-                className="rounded-xl">
-                {meetingAccountList.map((account, index) => (
-                  <SwiperSlide>
-                    <MainMeetingAccount account={account} />
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </>
+            <Swiper
+              pagination={{
+                dynamicBullets: true,
+              }}
+              modules={[Pagination]}
+              className="mainSwiper rounded-xl">
+              {meetingAccountList.map((account, index) => (
+                <SwiperSlide>
+                  <MainMeetingAccount account={account} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           )}
 
           {/* 환율 표시 */}
