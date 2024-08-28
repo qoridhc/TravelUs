@@ -1,10 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination } from "swiper/modules";
 import { IoIosArrowForward } from "react-icons/io";
-import { PiAirplaneTiltFill } from "react-icons/pi";
+import MainMeetingAccount from "../components/mainpage/MainMeetingAccount";
+import "../css/swiper.css";
+import "swiper/css/pagination";
+import "swiper/css";
 
 const MainPage = () => {
   const navigate = useNavigate();
+
+  const meetingAccountList = useSelector((state: RootState) => state.account.meetingAccountList);
 
   const userDetail = [
     {
@@ -49,7 +58,7 @@ const MainPage = () => {
               navigate("/accountcreate");
             }}>
             신청하기
-          </button>{" "}
+          </button>
         </div>
 
         {/* 입출금 통장 있을 시 표시 */}
@@ -80,47 +89,20 @@ const MainPage = () => {
 
         {/* 모임 통장 있을 시 표시 */}
         {userDetail[0].usermeetingAccount && (
-          <div
-            onClick={() => {
-              navigate("/account");
-            }}
-            className="w-full py-5 px-5 flex flex-col rounded-xl bg-white shadow-md">
-            <div className="flex flex-col space-y-4">
-              <div className="flex items-center space-x-1 mb-1">
-                <div className="w-6 h-6 bg-[#638ee4] rounded-full flex justify-center items-center">
-                  <PiAirplaneTiltFill className="text-zinc-50" />
-                </div>
-                <p className="font-bold">모히또에서 몰디브 한 잔하는 모임</p>
-              </div>
-              <div className="rounded-md flex justify-between">
-                <div>
-                  <p className="text-sm font-bold">올인원 일반모임통장</p>
-                  <p className="text-sm text-zinc-500">{userDetail[0].usermeetingAccount.accountNumber}</p>
-                </div>
-                <div className="flex items-center">
-                  <p className="text-[1.3rem] font-semibold">{userDetail[0].usermeetingAccount.accountMoney}</p>
-                  <p className="text-[1rem]">원</p>
-                </div>
-              </div>
-              <hr />
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate("/foreignaccount");
-                }}
-                className="rounded-md flex justify-between">
-                <div className="flex flex-col">
-                  <p className="text-sm font-bold">올인원 외화모임통장</p>
-                  <p className="text-sm text-zinc-500">{userDetail[0].usermeetingAccount.accountNumber}</p>
-                </div>
-
-                <div className="flex items-center">
-                  <p className="text-[1.3rem] font-semibold">{userDetail[0].usermeetingAccount.travelBox.boxMoney}</p>
-                  <p className="text-[1rem]">{userDetail[0].usermeetingAccount.travelBox.currencyType}</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <>
+            <Swiper
+              pagination={{
+                dynamicBullets: true,
+              }}
+              modules={[Pagination]}
+              className="rounded-xl">
+              {meetingAccountList.map((account, index) => (
+                <SwiperSlide>
+                  <MainMeetingAccount account={account} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </>
         )}
 
         {/* 환율 표시 */}

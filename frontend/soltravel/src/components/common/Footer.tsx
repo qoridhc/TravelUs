@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router";
 import { RiHome5Line } from "react-icons/ri";
 import { IoPeople } from "react-icons/io5";
 import { MdOutlineEventNote } from "react-icons/md";
@@ -7,7 +7,13 @@ import { BsThreeDots } from "react-icons/bs";
 
 const Footer = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentMenu, setCurrentMenu] = useState("홈");
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
 
   const handleMenuHome = () => {
     navigate("/");

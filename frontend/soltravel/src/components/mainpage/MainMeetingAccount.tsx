@@ -1,7 +1,8 @@
+import React from "react";
 import { useNavigate } from "react-router";
-import { PiAirplaneTiltFill } from "react-icons/pi";
 import { IoSchool } from "react-icons/io5";
-import { useDispatch, useSelector } from "react-redux";
+import { PiAirplaneTiltFill } from "react-icons/pi";
+import path from "path";
 
 interface Props {
   account: {
@@ -19,27 +20,26 @@ interface Props {
   };
 }
 
-const MeetingAccount = ({ account }: Props) => {
+const MainMeetingAccount = ({account} : Props) => {
   const navigate = useNavigate();
 
   return (
     <div
-      // key={index}
       onClick={() => {
         navigate("/account");
       }}
-      className="w-full py-5 px-5 flex flex-col rounded-xl bg-white shadow-md">
+      className="w-full py-5 pb-10 px-5 flex flex-col rounded-xl bg-white shadow-md">
       <div className="flex flex-col space-y-4">
         <div className="flex items-center space-x-1 mb-1">
-            {account.MeetingAccountIcon === "airplane" ? (
-              <div className="w-6 h-6 bg-[#638ee4] rounded-full flex justify-center items-center">
-                <PiAirplaneTiltFill className="text-zinc-50" />
-              </div>
-            ) : (
-              <div className="w-6 h-6 bg-[#61bb9d] rounded-full flex justify-center items-center">
-                <IoSchool className="text-zinc-50" />
-              </div>
-            )}
+          {account.MeetingAccountIcon === "airplane" ? (
+            <div className="w-6 h-6 bg-[#638ee4] rounded-full flex justify-center items-center">
+              <PiAirplaneTiltFill className="text-zinc-50" />
+            </div>
+          ) : (
+            <div className="w-6 h-6 bg-[#61bb9d] rounded-full flex justify-center items-center">
+              <IoSchool className="text-zinc-50" />
+            </div>
+          )}
           <p className="font-bold">{account.MeetingAccountName}</p>
         </div>
         <div className="rounded-md flex justify-between">
@@ -63,7 +63,8 @@ const MeetingAccount = ({ account }: Props) => {
             <p className="text-sm font-bold">올인원 외화모임통장</p>
             <p className="text-sm text-zinc-500">{account.foreignMeetingAccount.accountNumber}</p>
           </div>
-          <div className="flex items-center space-x-[0.1rem]">
+
+          <div className="flex items-center">
             <p className="text-[1.3rem] font-semibold">{account.foreignMeetingAccount.accountMoney}</p>
             <p className="text-[1rem]">{account.foreignMeetingAccount.currencyType}</p>
           </div>
@@ -73,4 +74,4 @@ const MeetingAccount = ({ account }: Props) => {
   );
 };
 
-export default MeetingAccount;
+export default MainMeetingAccount;

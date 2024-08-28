@@ -25,7 +25,7 @@ const initialState: AccountState = {
   meetingAccountList: [
     {
       MeetingAccountName: "모히또에서 몰디브 한 잔하는 모임",
-      MeetingAccountIcon: "PiAirplaneTiltFill",
+      MeetingAccountIcon: "airplane",
       normalMeetingAccount: {
         accountNumber: "217-879928-13289",
         accountMoney: "3,481,900",
@@ -38,7 +38,7 @@ const initialState: AccountState = {
     },
     {
       MeetingAccountName: "신암고 1-3반 동창회",
-      MeetingAccountIcon: "IoSchool",
+      MeetingAccountIcon: "school",
       normalMeetingAccount: {
         accountNumber: "217-874218-12289",
         accountMoney: "481,900",
@@ -62,12 +62,12 @@ export const userSilce = createSlice({
     setAccountPassword: (state, action: PayloadAction<string>) => {
       state.accountPassword = action.payload;
     },
-    updateMeetingAccountList: (state, action: PayloadAction<typeof initialState.meetingAccountList>) => {
+    setMeetingAccountList: (state, action: PayloadAction<typeof initialState.meetingAccountList>) => {
       state.meetingAccountList = action.payload;
     },
   },
 });
 
-export const { setIsKeyboard, updateMeetingAccountList, setAccountPassword } = userSilce.actions;
+export const { setIsKeyboard, setMeetingAccountList, setAccountPassword } = userSilce.actions;
 
 export default userSilce.reducer;
