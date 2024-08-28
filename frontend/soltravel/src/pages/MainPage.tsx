@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+import { editMeetingAccountList } from "../redux/accountSlice";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import { IoIosArrowForward } from "react-icons/io";
@@ -12,8 +13,41 @@ import "swiper/css";
 
 const MainPage = () => {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const meetingAccountList = useSelector((state: RootState) => state.account.meetingAccountList);
+
+  useEffect(() => {
+    dispatch(
+      editMeetingAccountList([
+        {
+          meetingAccountName: "모히또에서 몰디브 한 잔하는 모임",
+          meetingAccountIcon: "airplane",
+          normalMeetingAccount: {
+            accountNumber: "217-879928-13289",
+            accountMoney: "3,481,900",
+          },
+          foreignMeetingAccount: {
+            accountNumber: "212-123428-13289",
+            accountMoney: "113,890",
+            currencyType: "￥",
+          },
+        },
+        {
+          meetingAccountName: "신암고 1-3반 동창회",
+          meetingAccountIcon: "school",
+          normalMeetingAccount: {
+            accountNumber: "217-874218-12289",
+            accountMoney: "481,900",
+          },
+          foreignMeetingAccount: {
+            accountNumber: "212-123902-09281",
+            accountMoney: "390",
+            currencyType: "$",
+          },
+        },
+      ])
+    );
+  }, [dispatch]);
 
   const userDetail = [
     {

@@ -81,12 +81,11 @@ const SecurityKeyboard = () => {
       <IoCloseOutline className="text-3xl absolute top-5 left-5" onClick={handleKeyboardClose} />
       <div className="py-14 flex flex-col space-y-3">
         <p className="text-lg text-center font-semibold">비밀번호 입력</p>
-        {/* <input className="text-center bg-[#EFEFF5]" type="password" value={password} readOnly /> */}
       </div>
       <div className="p-5 bg-white grid grid-cols-3 gap-5">
         {nums.map((n, i) => {
           const Basic_button = (
-            <button className="text-2xl font-semibold" value={n} onClick={shuffleNums(n)} key={i}>
+            <button className="text-2xl font-semibold" value={n} onClick={() => handlePasswordChange(n)} key={i}>
               {n}
             </button>
           );
