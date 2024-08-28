@@ -50,7 +50,7 @@ const AccountDetail = () => {
               }}
               className="w-full h-9 p-2 rounded-md bg-[#0046FF] text-white text-sm font-bold"
             >
-              재환전
+              환전
             </button>
           </div>
         </div>
@@ -88,7 +88,7 @@ const AccountDetail = () => {
           }}
           className="w-full h-9 p-2 rounded-md bg-[#0046FF] text-white text-sm font-bold"
         >
-          환전
+          재환전
         </button>
       </div>
     </div>
