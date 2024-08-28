@@ -1,7 +1,10 @@
 import React from "react";
 import { IoMdCheckmark } from "react-icons/io";
+import { useNavigate } from "react-router";
 
 const AccountCreateComplete = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="h-full p-5 grid grid-rows-3">
       <div className="row-start-2 flex flex-col justify-center items-center space-y-5">
@@ -18,8 +21,14 @@ const AccountCreateComplete = () => {
       </div>
 
       <div className="w-full font-semibold row-start-3 flex flex-col justify-end space-y-3">
-        <button className="w-full py-3 text-white bg-[#0471E9] rounded-lg">모임통장 신청하기</button>
-        <button className="w-full py-3 text-[#565656] border-2 rounded-lg">홈으로</button>
+        <button
+          className="w-full py-3 text-white bg-[#0471E9] rounded-lg"
+          onClick={() => navigate("/meetingaccountcreate")}>
+          모임통장 신청하기
+        </button>
+        <button className="w-full py-3 text-[#565656] border-2 rounded-lg" onClick={() => navigate("/")}>
+          홈으로
+        </button>
       </div>
     </div>
   );

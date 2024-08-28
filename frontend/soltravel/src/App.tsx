@@ -22,6 +22,7 @@ import SettleExchange from "./pages/settle/SettleExchange";
 import Detail from "./pages/viewaccount/Detail";
 import GroupAccountPage from "./pages/viewaccount/ViewAccount";
 import AccountCreateComplete from "./pages/account/AccountCreateComplete";
+import MeetingAccountCreate from "./pages/account/MeetingAccountCreate";
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/userupdate" element={<UserUpdate />} />
           <Route path="/accountcreate" element={<AccountCreate />}></Route>
+          <Route path="/meetingaccountcreate" element={<MeetingAccountCreate />}></Route>
           <Route path="/accountcreatecomplete" element={<AccountCreateComplete />}></Route>
           <Route path="/myaccount" element={<MyAccount />}></Route>
           <Route path="/generalaccount" element={<GeneralAccount />}></Route>
