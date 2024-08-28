@@ -2,10 +2,10 @@ import { useNavigate } from "react-router";
 import { PiAirplaneTiltFill } from "react-icons/pi";
 import { IoSchool } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { MeetingForeignAccount } from "../../types/account";
+import { MeetingAccountListDetail } from "../../types/account";
 
 interface Props {
-  account: MeetingForeignAccount;
+  account: MeetingAccountListDetail;
 }
 
 const MeetingAccount = ({ account }: Props) => {

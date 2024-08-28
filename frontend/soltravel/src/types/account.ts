@@ -37,7 +37,7 @@ export interface DepositRequest {
 }
 
 // 모임통장 목록 조회 정보
-export interface MeetingForeignAccount {
+export interface MeetingAccountListDetail {
   meetingAccountName: string;
   meetingAccountIcon: string;
   normalMeetingAccount: {
@@ -49,4 +49,9 @@ export interface MeetingForeignAccount {
     accountMoney: string;
     currencyType: string;
   };
+}
+
+// 모임통장 개설 정보
+export interface MeetingAccountDetail {
+
 }
