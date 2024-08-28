@@ -59,6 +59,7 @@ function App() {
           <Route path="/settlement" element={<Settlement />}></Route>
           <Route path="/settleexchange" element={<SettleExchange />}></Route>
           <Route path="/detail" element={<Detail />}></Route>
+          <Route path="/test" element={<Detail />}></Route>
         </Routes>
       </BrowserRouter>
     </div>
