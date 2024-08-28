@@ -1,9 +1,45 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { editMeetingAccountList } from "../../redux/accountSlice";
 import MeetingAccount from "../../components/account/MeetingAccount";
+import { useEffect, useState } from "react";
 
 const MeetingAccountList = () => {
+  const dispatch = useDispatch();
   const meetingAccountList = useSelector((state: RootState) => state.account.meetingAccountList);
+
+  useEffect(() => {
+    dispatch(
+      editMeetingAccountList([
+        {
+          MeetingAccountName: "모히또에서 몰디브 한 잔하는 모임",
+          MeetingAccountIcon: "airplane",
+          normalMeetingAccount: {
+            accountNumber: "217-879928-13289",
+            accountMoney: "3,481,900",
+          },
+          foreignMeetingAccount: {
+            accountNumber: "212-123428-13289",
+            accountMoney: "113,890",
+            currencyType: "￥",
+          },
+        },
+        {
+          MeetingAccountName: "신암고 1-3반 동창회",
+          MeetingAccountIcon: "school",
+          normalMeetingAccount: {
+            accountNumber: "217-874218-12289",
+            accountMoney: "481,900",
+          },
+          foreignMeetingAccount: {
+            accountNumber: "212-123902-09281",
+            accountMoney: "390",
+            currencyType: "$",
+          },
+        },
+      ])
+    );
+  }, [dispatch]);
 
   return (
     <div className="w-full h-full pb-16 bg-[#EFEFF5]">
