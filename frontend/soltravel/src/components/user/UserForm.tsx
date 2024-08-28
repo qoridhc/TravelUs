@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -14,18 +14,13 @@ interface InputState {
   verificationCode?: string;
 }
 
-const UserForm = () => {
-  const [inputs, setInputs] = useState<InputState>({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    name: "",
-    birthday: "",
-    phone: "",
-    address: "",
-    verificationCode: "",
-  });
+interface Props {
+  inputs: InputState;
+  setInputs: (value: React.SetStateAction<InputState>) => void;
+  setIsFormValid: (value: boolean) => void;
+}
 
+const UserForm = ({ inputs, setInputs, setIsFormValid }: Props) => {
   const [errors, setErrors] = useState({
     email: false,
     password: false,
@@ -34,10 +29,9 @@ const UserForm = () => {
     birthday: false,
     phone: false,
     address: false,
-    verificationCode: false,
+    // verificationCode: false,
   });
 
-  const [showVerificationInput, setShowVerificationInput] = useState(false);
 
   const handleValidation = (id: string, value: string) => {
     let error = false;
@@ -101,38 +95,18 @@ const UserForm = () => {
     setErrors((prev) => ({ ...prev, [id]: error }));
   };
 
-  const validateInputs = () => {
-    const newErrors = {
-      email: handleValidation("email", inputs.email),
-      password: handleValidation("password", inputs.password),
-      confirmPassword: handleValidation("confirmPassword", inputs.confirmPassword),
-      name: handleValidation("name", inputs.name),
-      birthday: handleValidation("birthday", inputs.birthday),
-      phone: handleValidation("phone", inputs.phone),
-      address: handleValidation("address", inputs.address),
-      verificationCode: handleValidation("verificationCode", inputs.verificationCode || ""),
-    };
-    setErrors(newErrors);
-    return !Object.values(newErrors).some((error) => error);
-  };
+  useEffect(() => {
+    // 모든 필드가 유효한지 확인
+    const allFieldsValid = Object.values(errors).every((error) => !error);
+    const allFieldsFilled = Object.values(inputs).every((value) => value !== "");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validateInputs()) {
-      // 유효성 검사 통과 시 처리 로직
-      console.log("Form submitted:", inputs);
-      // navigate("/next-page"); // 예: 회원가입 완료 페이지로 이동
-    }
-  };
+    setIsFormValid(allFieldsValid && allFieldsFilled);
+  }, [errors, inputs]);
+
 
   return (
     <>
-      <Box
-        className="w-full flex flex-col justify-center items-center space-y-5"
-        component="form"
-        noValidate
-        autoComplete="off"
-        onSubmit={handleSubmit}>
+      <Box className="w-full flex flex-col justify-center items-center space-y-5" component="form" noValidate autoComplete="off">
         <TextField
           required
           className="w-full h-14"
@@ -289,7 +263,8 @@ const UserForm = () => {
               // "&:hover": {
               //   backgroundColor: "#0036D4", // hover 상태에서의 배경색
               // },
-            }}>
+            }}
+          >
             <p className="text-xs font-semibold">인증번호</p>
             <p className="text-xs font-semibold">발송</p>
           </Button>
