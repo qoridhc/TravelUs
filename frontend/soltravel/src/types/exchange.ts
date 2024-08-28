@@ -1,6 +1,6 @@
 // 환율 타입
 export interface ExchangeRateInfo {
-  currency: string;
+  currencyCode: string;
   exchangeRate: number;
   exchangeMin: number;
   created: string;
@@ -8,7 +8,7 @@ export interface ExchangeRateInfo {
 
 // 환율 그래프를 위한 타입
 export interface ExchangeRateHistoryRequest {
-  currency: string;
+  currencyCode: string;
   startDate: string;
   endDate: string;
 }
@@ -24,8 +24,7 @@ export interface ExchangeRateHistoryResponse {
   tcBuying: number;
 }
 
-
-// 환전 요청 타입
+// 환전 진행 관련 요청 / 응답
 export interface ExchangeRequest {
   accountid: number;
   accountNo: string;
@@ -34,7 +33,6 @@ export interface ExchangeRequest {
   exchangeRate: number;
 }
 
-// 환전 요청에 관한 Response
 export interface ExchangeResponse {
   exchangeCurrencyDto: {
     amount: number;
@@ -49,3 +47,14 @@ export interface ExchangeResponse {
   },
   executed_at: string;
 }
+
+// 통화 종류
+export const currencyNames: { [key: string]: string } = {
+  USD: '미국 달러',
+  JPY: '일본 엔',
+  EUR: '유로',
+  GBP: '영국 파운드',
+  CHF: '스위스 프랑',
+  CAD: '캐나다 달러',
+  CNY: '중국 위안',
+};

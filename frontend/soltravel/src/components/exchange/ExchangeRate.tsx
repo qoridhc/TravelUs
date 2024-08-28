@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { exchangeApi } from '../../api/exchange';
 import { ExchangeRateInfo as ExchangeRateInfoType } from '../../types/exchange';
-
-export const currencyNames: { [key: string]: string } = {
-  USD: '미국 달러',
-  JPY: '일본 엔',
-  EUR: '유로',
-  GBP: '영국 파운드',
-  CHF: '스위스 프랑',
-  CAD: '캐나다 달러',
-  CNY: '중국 위안',
-};
+import { currencyNames } from '../../types/exchange';
 
 interface ExchangeRateInfoProps {
   onExchangeClick?: () => void;
@@ -45,7 +36,7 @@ const ExchangeRateInfo = ({ onExchangeClick, onCurrencyChange }: ExchangeRateInf
 
   const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newCurrency = e.target.value;
-    setSelectedCurrency(currencies.find(c => c.currency === newCurrency) || null);
+    setSelectedCurrency(currencies.find(c => c.currencyCode === newCurrency) || null);
     onCurrencyChange(newCurrency);
   };
 
@@ -56,11 +47,11 @@ const ExchangeRateInfo = ({ onExchangeClick, onCurrencyChange }: ExchangeRateInf
         <select
           className="w-full border rounded p-2"
           onChange={handleCurrencyChange}
-          value={selectedCurrency?.currency || ''}
+          value={selectedCurrency?.currencyCode || ''}
         >
           {currencies.map((currency) => (
-            <option key={currency.currency} value={currency.currency}>
-              {getCurrencyName(currency.currency)} ({currency.currency})
+            <option key={currency.currencyCode} value={currency.currencyCode}>
+              {getCurrencyName(currency.currencyCode)} ({currency.currencyCode})
             </option>
           ))}
         </select>
@@ -72,7 +63,7 @@ const ExchangeRateInfo = ({ onExchangeClick, onCurrencyChange }: ExchangeRateInf
             현재 매매기준율
           </div>
           <div className="flex justify-between items-center">
-            <span>{`1 ${getCurrencyName(selectedCurrency.currency)} (${selectedCurrency.currency})`}</span>
+            <span>{`1 ${getCurrencyName(selectedCurrency.currencyCode)} (${selectedCurrency.currencyCode})`}</span>
             <span className="text-[#0046FF] font-bold">{selectedCurrency.exchangeRate.toFixed(2)}원</span>
           </div>
           <div className="text-sm text-gray-500 mt-1">

@@ -20,7 +20,7 @@ const ExchangeRatePage = (): React.ReactElement => {
       <h1 className="text-xl font-bold mb-4">환율 조회</h1>
       <ExchangeRateInfo onExchangeClick={handleExchange} onCurrencyChange={handleCurrencyChange} />
       <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">환율 변동 차트</h2>
+        {/* <h2 className="text-xl font-semibold mb-4">환율 변동 차트</h2> */}
         <ExchangeRateChart currency={selectedCurrency} />
       </div>
     </div>
