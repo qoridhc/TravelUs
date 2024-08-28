@@ -24,6 +24,7 @@ import Detail from "./pages/viewaccount/Detail";
 import GroupAccountPage from "./pages/viewaccount/ViewAccount";
 import AccountCreateComplete from "./pages/account/AccountCreateComplete";
 import GeneralMeetingAccountCreate from "./pages/account/GeneralMeetingAccountCreate";
+import MeetingAccountCreatePrepare from "./pages/account/MeetingAccountCreatePrepare";
 
 function App() {
   return (
@@ -63,6 +64,7 @@ function App() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/userupdate" element={<UserUpdate />} />
           <Route path="/accountcreate" element={<AccountCreate />}></Route>
+          <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />}></Route>
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />}></Route>
           <Route path="/accountcreatecomplete" element={<AccountCreateComplete />}></Route>
           <Route path="/myaccount" element={<MyAccount />}></Route>
