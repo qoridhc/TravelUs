@@ -20,6 +20,7 @@ const MainPage = () => {
     dispatch(
       editMeetingAccountList([
         {
+          id: 1, 
           meetingAccountName: "모히또에서 몰디브 한 잔하는 모임",
           meetingAccountIcon: "airplane",
           normalMeetingAccount: {
@@ -33,6 +34,7 @@ const MainPage = () => {
           },
         },
         {
+          id: 2, 
           meetingAccountName: "신암고 1-3반 동창회",
           meetingAccountIcon: "school",
           normalMeetingAccount: {
