@@ -8,6 +8,8 @@ import { useNavigate } from "react-router";
 import NameInput from "../../components/account/inputField/NameInput";
 import ResidentNumberInput from "../../components/account/inputField/ResidentNumberInput";
 import PasswordInput from "../../components/account/inputField/PasswordInput";
+import MeetingType from "../../components/account/inputField/MeetingTypeSelect";
+import MeetingTypeSelect from "../../components/account/inputField/MeetingTypeSelect";
 
 const MeetingAccountCreate = () => {
   const { isKeyboard, accountPassword } = useSelector((state: RootState) => state.account);
@@ -42,7 +44,7 @@ const MeetingAccountCreate = () => {
 
   const handleMeetingTypeChange = (meetingType: string) => {
     setMeetingType(meetingType);
-    if (meetingType.length >= 2) {
+    if (meetingType !== "") {
       setStep(2);
     }
   };
@@ -124,7 +126,7 @@ const MeetingAccountCreate = () => {
               className={`transition-transform duration-300 ease-in-out ${
                 step > 0 ? "translate-y-0" : "translate-y-[3px]"
               }`}>
-              {step > 0 && <NameInput labelName="모임종류" name={meetingType} onChange={handleMeetingTypeChange} />}
+              {step > 0 && <MeetingTypeSelect meetingType={meetingType} onChange={handleMeetingTypeChange} />}
             </div>
 
             <div
