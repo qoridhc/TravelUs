@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.controller;
 
+import com.ssafy.soltravel.dto.account.AccountDetailDto;
 import com.ssafy.soltravel.dto.account.AccountDto;
 import com.ssafy.soltravel.dto.account.request.DeleteAccountRequestDto;
 import com.ssafy.soltravel.dto.account.response.DeleteAccountResponseDto;

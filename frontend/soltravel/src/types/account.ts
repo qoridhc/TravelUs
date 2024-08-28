@@ -38,6 +38,7 @@ export interface DepositRequest {
 
 // 모임통장 목록 조회 정보
 export interface MeetingAccountListDetail {
+  id: number;
   meetingAccountName: string;
   meetingAccountIcon: string;
   normalMeetingAccount: {

@@ -13,7 +13,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://mysql:3306/soltravel?serverTimezone=Asia/Seoul&useUniCode=yes&characterEncoding=UTF-8
     username: root
-    password: 1234
+    password: thfxmfpqmf225!@
     hikari:
       pool-name: hikari-pool
       maximum-pool-size: 50
@@ -32,11 +32,18 @@ spring:
       host: redis
       port: 6379
 
+  # Flyway 설정
+  flyway:
+    enabled: true
+    locations: classpath:db/
+    baseline-on-migrate: true
+
+
 
   # JPA 설정  
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect

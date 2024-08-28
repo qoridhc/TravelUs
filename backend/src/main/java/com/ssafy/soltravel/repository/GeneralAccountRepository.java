@@ -1,6 +1,7 @@
 package com.ssafy.soltravel.repository;
 
 import com.ssafy.soltravel.domain.GeneralAccount;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,6 +20,14 @@ public interface GeneralAccountRepository extends JpaRepository<GeneralAccount, 
 //        "JOIN p.user u " +
 //        "WHERE ga.accountNo = :accountNo")
 //    User findUserByAccountNo(@Param("accountNo") String accountNo);
+
+
+    List<GeneralAccount>  findAllByUser_userId(Long userId);
+
+    @Query("SELECT g.id FROM GeneralAccount g " +
+        "JOIN g.foreignAccount f " +
+        "WHERE g.accountNo = :accountNo OR f.accountNo = :accountNo")
+    Long findAccountIdsByAccountNo(@Param("accountNo") String accountNo);
 
     Optional<GeneralAccount> findByAccountNo(String accountNo);
 

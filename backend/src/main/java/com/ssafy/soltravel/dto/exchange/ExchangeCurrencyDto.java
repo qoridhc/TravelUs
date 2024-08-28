@@ -19,5 +19,5 @@ public class ExchangeCurrencyDto {
   private Double exchangeRate;
 
   @Schema(description = "환전된 외화의 통화 코드", example = "USD")
-  private String currency;
+  private String currencyCode;
 }

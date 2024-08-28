@@ -4,7 +4,6 @@ import com.ssafy.soltravel.dto.account_book.NCPClovaRequestBody;
 import com.ssafy.soltravel.dto.account_book.ReceiptUploadRequestDto;
 import com.ssafy.soltravel.util.LogUtil;
 import jakarta.annotation.PostConstruct;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -39,7 +38,7 @@ public class ClovaOcrService {
         .build();
   }
 
-  public void execute(ReceiptUploadRequestDto requestDto, String url) throws IOException {
+  public ResponseEntity<Map<String, Object>> execute(ReceiptUploadRequestDto requestDto, String url) throws IOException {
 
     // 요청 바디 생성
     NCPClovaRequestBody requestBody = createRequestBody(
@@ -80,6 +79,7 @@ public class ClovaOcrService {
 
     // 결과 확인
     LogUtil.info("NCP OCR complete", response);
+    return response;
   }
 
   private NCPClovaRequestBody createRequestBody(MultipartFile file, String url,

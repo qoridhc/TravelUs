@@ -1,50 +1,56 @@
 package com.ssafy.soltravel.dto.account;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.ssafy.soltravel.domain.Enum.AccountType;
+import com.ssafy.soltravel.dto.currency.CurrencyDto;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AccountDto {
 
+    @Schema(description = "계좌 ID", example = "1")
+    private Long id;
+
     @Schema(description = "은행 코드", example = "088")
-    private String bankCode;
+    private int bankCode;
 
-    @Schema(description = "일일 이체 한도", example = "50000000")
-    private Long dailyTransferLimit;
+    @Schema(description = "계좌 비밀번호", example = "1234")
+    private String accountPassword;
 
-    @Schema(description = "계좌 이름", example = "신한은행 모임통장")
-    private String accountName;
-
-    @Schema(description = "계좌 유형 코드", example = "1")
-    private String accountTypeCode;
-
-    @Schema(description = "은행 이름", example = "신한은행")
-    private String bankName;
-
-    @Schema(description = "계좌 유형 이름", example = "수시입출금")
-    private String accountTypeName;
-
-    @Schema(description = "계좌 만료일", example = "20240919")
-    private String accountExpiryDate;
-
-    @Schema(description = "사용자 이름", example = "qoridhc")
-    private String userName;
-
-    @Schema(description = "1회 이체 한도", example = "100000000")
-    private Long oneTimeTransferLimit;
-
-    @Schema(description = "계좌 생성일", example = "20240819")
-    private String accountCreatedDate;
-
-    @Schema(description = "마지막 거래 날짜", example = "20240919")
-    private String lastTransactionDate;
-
-    @Schema(description = "계좌 번호", example = "0889683365547051")
+    @Schema(description = "계좌 번호", example = "0889876543210")
     private String accountNo;
 
-    @Schema(description = "통화", example = "KRW")
-    private String currency;
+    @Schema(description = "계좌 이름", example = "신한은행 일반 모임통장")
+    private String accountName;
 
-    @Schema(description = "계좌 잔액", example = "1000000")
-    private Long accountBalance;
+    @Schema(description = "계좌 유형 (예: 개인 또는 그룹)", example = "GROUP")
+    private AccountType accountType;
+
+    @Schema(description = "그룹 이름", example = "SolTravel 모임 통장")
+    private String groupName;
+
+    @Schema(description = "아이콘 이름", example = "airPlane")
+    private String iconName;
+
+    @Schema(description = "여행 시작 일자", example = "20240830")
+    private LocalDate travelStartDate;
+
+    @Schema(description = "여행 종료 일자", example = "20240902")
+    private LocalDate travelEndDate;
+
+    @Schema(description = "통화 정보")
+    private CurrencyDto currency;
+
+    @Schema(description = "계좌 생성 일자", example = "2024-08-28T10:00:00")
+    private String createdAt;
+
+    @Schema(description = "계좌 수정 일자", example = "2024-08-28T12:00:00")
+    private String updatedAt;
+
 }
