@@ -1,25 +1,25 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { MeetingAccountListDetail, MeetingAccountDetail } from "../types/account";
+import { MeetingAccountListDetail, GeneralMeetingAccountDetail } from "../types/account";
 
 export interface AccountState {
   isKeyboard: boolean;
   accountPassword: string;
   meetingAccountList: Array<MeetingAccountListDetail>;
-  meetingAccountDetail: MeetingAccountDetail;
+  generalMeetingAccountDetail: GeneralMeetingAccountDetail;
 }
 
 const initialState: AccountState = {
   isKeyboard: false,
   accountPassword: "",
   meetingAccountList: [],
-  meetingAccountDetail: {
-    meetingAccountName: "",
-    meetingAccountIcon: "",
-    meetingAccountUserName: "",
-    meetingAccountUserResidentNumber: "",
-    meetingAccountPassword: "",
-    meetingAccountMemberList: [],
+  generalMeetingAccountDetail: {
+    generalMeetingAccountName: "",
+    generalMeetingAccountIcon: "",
+    generalMeetingAccountUserName: "",
+    generalMeetingAccountUserResidentNumber: "",
+    generalMeetingAccountPassword: "",
+    generalMeetingAccountMemberList: [],
   },
 };
 

@@ -23,7 +23,7 @@ import SettleExchange from "./pages/settle/SettleExchange";
 import Detail from "./pages/viewaccount/Detail";
 import GroupAccountPage from "./pages/viewaccount/ViewAccount";
 import AccountCreateComplete from "./pages/account/AccountCreateComplete";
-import MeetingAccountCreate from "./pages/account/MeetingAccountCreate";
+import MeetingAccountCreate from "./pages/account/GeneralMeetingAccountCreate";
 
 function App() {
   return (

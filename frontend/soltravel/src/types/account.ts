@@ -51,12 +51,12 @@ export interface MeetingAccountListDetail {
   };
 }
 
-// 모임통장 개설 정보
-export interface MeetingAccountDetail {
-  meetingAccountName: string;
-  meetingAccountIcon: string;
-  meetingAccountUserName: string;
-  meetingAccountUserResidentNumber: string;
-  meetingAccountPassword: string;
-  meetingAccountMemberList: Array<string>;
+// 일반모임통장 개설 정보
+export interface GeneralMeetingAccountDetail {
+  generalMeetingAccountName: string;
+  generalMeetingAccountIcon: string;
+  generalMeetingAccountUserName: string;
+  generalMeetingAccountUserResidentNumber: string;
+  generalMeetingAccountPassword: string;
+  generalMeetingAccountMemberList: Array<string>;
 }
