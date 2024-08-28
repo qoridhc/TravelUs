@@ -87,66 +87,68 @@ const MainPage = () => {
           </div>
         )}
 
-        {/* 모임 통장 있을 시 표시 */}
-        {userDetail[0].usermeetingAccount && (
-          <>
-            <Swiper
-              pagination={{
-                dynamicBullets: true,
-              }}
-              modules={[Pagination]}
-              className="rounded-xl">
-              {meetingAccountList.map((account, index) => (
-                <SwiperSlide>
-                  <MainMeetingAccount account={account} />
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </>
-        )}
+        <div className="w-full flex flex-col items-center">
+          {/* 모임 통장 있을 시 표시 */}
+          {userDetail[0].usermeetingAccount && (
+            <>
+              <Swiper
+                pagination={{
+                  dynamicBullets: true,
+                }}
+                modules={[Pagination]}
+                className="rounded-xl">
+                {meetingAccountList.map((account, index) => (
+                  <SwiperSlide>
+                    <MainMeetingAccount account={account} />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </>
+          )}
 
-        {/* 환율 표시 */}
-        <div className="w-full p-6 flex flex-col space-y-2 rounded-xl bg-white shadow-md">
-          <div className="flex items-center space-x-1">
-            <p className="text-md font-bold flex justify-start">환율</p>
-            <IoIosArrowForward className="text-[#565656]" />
-          </div>
-          <div className="flex justify-end">
-            <p className="text-sm text-zinc-400">매매기준율 2024.08.22 17:20:00</p>
-          </div>
-          <div className="flex justify-between items-center">
-            <div className="w-24 p-1 flex flex-col justify-center items-center space-y-2">
-              <div className="flex justify-center items-center space-x-1">
-                <img className="w-6 h-5 rounded-sm" src="/assets/flag/flagOfTheUnitedStates.png" alt="미국" />
-                <p>USD</p>
-              </div>
-              <p className="text-lg font-semibold">1,335.90</p>
+          {/* 환율 표시 */}
+          <div className="w-full p-6 flex flex-col space-y-2 rounded-xl bg-white shadow-md">
+            <div className="flex items-center space-x-1">
+              <p className="text-md font-bold flex justify-start">환율</p>
+              <IoIosArrowForward className="text-[#565656]" />
             </div>
-            <div className="w-[0.8px] h-14 bg-gray-300"></div>
-            <div className="w-24 p-1 flex flex-col justify-center items-center space-y-2">
-              <div className="flex justify-center items-center space-x-1">
-                <img className="w-6 h-5 rounded-sm border" src="/assets/flag/flagOfJapan.png" alt="미국" />
-                <p>JPY</p>
-              </div>
-              <p className="text-lg font-semibold">918.65</p>
+            <div className="flex justify-end">
+              <p className="text-sm text-zinc-400">매매기준율 2024.08.22 17:20:00</p>
             </div>
-            <div className="w-[0.8px] h-14 bg-gray-300"></div>
-            <div className="w-24 p-1 flex flex-col justify-center items-center space-y-2">
-              <div className="flex justify-center items-center space-x-1">
-                <img className="w-6 h-5 rounded-sm" src="/assets/flag/flagOfEurope.png" alt="미국" />
-                <p>EUR</p>
+            <div className="flex justify-between items-center">
+              <div className="w-24 p-1 flex flex-col justify-center items-center space-y-2">
+                <div className="flex justify-center items-center space-x-1">
+                  <img className="w-6 h-5 rounded-sm" src="/assets/flag/flagOfTheUnitedStates.png" alt="미국" />
+                  <p>USD</p>
+                </div>
+                <p className="text-lg font-semibold">1,335.90</p>
               </div>
-              <p className="text-lg font-semibold">1,488.99</p>
+              <div className="w-[0.8px] h-14 bg-gray-300"></div>
+              <div className="w-24 p-1 flex flex-col justify-center items-center space-y-2">
+                <div className="flex justify-center items-center space-x-1">
+                  <img className="w-6 h-5 rounded-sm border" src="/assets/flag/flagOfJapan.png" alt="미국" />
+                  <p>JPY</p>
+                </div>
+                <p className="text-lg font-semibold">918.65</p>
+              </div>
+              <div className="w-[0.8px] h-14 bg-gray-300"></div>
+              <div className="w-24 p-1 flex flex-col justify-center items-center space-y-2">
+                <div className="flex justify-center items-center space-x-1">
+                  <img className="w-6 h-5 rounded-sm" src="/assets/flag/flagOfEurope.png" alt="미국" />
+                  <p>EUR</p>
+                </div>
+                <p className="text-lg font-semibold">1,488.99</p>
+              </div>
             </div>
+            <button
+              onClick={(e) => {
+                navigate("/exchange");
+                e.stopPropagation();
+              }}
+              className="h-10 rounded-md bg-[#EAEAEA] font-bold text-sm">
+              환전신청
+            </button>{" "}
           </div>
-          <button
-            onClick={(e) => {
-              navigate("/exchange");
-              e.stopPropagation();
-            }}
-            className="h-10 rounded-md bg-[#EAEAEA] font-bold text-sm">
-            환전신청
-          </button>{" "}
         </div>
 
         {/* 가계부 */}
