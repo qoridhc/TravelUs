@@ -105,7 +105,11 @@ const MeetingAccountCreate = () => {
                 step > 2 ? "translate-y-[3px]" : "translate-y-0"
               }`}>
               {step > 2 && (
-                <ResidentNumberInput residentNumber={residentNumber} onChange={handleResidentNumberChange} />
+                <ResidentNumberInput
+                  stepInfo={{ currentStep: step, closeStep: 4 }}
+                  residentNumber={residentNumber}
+                  onChange={handleResidentNumberChange}
+                />
               )}
             </div>
 

@@ -38,7 +38,7 @@ const MeetingAccountDetail = () => {
               <IoSchool className="text-zinc-50" />
             </div>
           )} */}
-        <p className="font-bold flex items-center">{meetingAccountList[numberId - 1].MeetingAccountName}</p>
+        <p className="font-bold flex items-center">{meetingAccountList[numberId - 1].meetingAccountName}</p>
       </div>
 
       <div className="w-full flex flex-col items-center space-y-5">

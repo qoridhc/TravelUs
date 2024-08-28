@@ -1,13 +1,22 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { TextField } from "@mui/material";
 
 interface ResidentNumberInputProps {
+  stepInfo: { currentStep: number; closeStep: number };
   residentNumber: string;
   onChange: (number: string) => void;
 }
 
-const ResidentNumberInput: React.FC<ResidentNumberInputProps> = ({ residentNumber, onChange }) => {
+const ResidentNumberInput: React.FC<ResidentNumberInputProps> = ({ stepInfo, residentNumber, onChange }) => {
   const residentNumberRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (stepInfo.currentStep === stepInfo.closeStep) {
+      if (residentNumberRef.current) {
+        residentNumberRef.current.blur();
+      }
+    }
+  }, [stepInfo]);
 
   return (
     <TextField
