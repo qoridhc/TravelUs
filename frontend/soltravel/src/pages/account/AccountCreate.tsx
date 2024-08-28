@@ -6,10 +6,12 @@ import { setIsKeyboard, setAccountPassword } from "../../redux/accountSlice";
 import { RootState } from "../../redux/store";
 import SecurityKeyboard from "../../components/account/SecurityKeyboard";
 import { TextField } from "@mui/material";
+import { useNavigate } from "react-router";
 
 const AccountCreate = () => {
   const { isKeyboard, accountPassword } = useSelector((state: RootState) => state.account);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [step, setStep] = useState(0);
   const stepList = ["이름을", "주민등록번호를", "계좌 비밀번호를"];
@@ -209,6 +211,7 @@ const AccountCreate = () => {
               ? "opacity-40"
               : ""
           }`}
+          onClick={() => navigate("/accountcreatecomplete")}
           disabled={step !== 2 || name.length < 2 || residentNumber.length !== 14 || maskedPassword.length !== 4}>
           완료
         </button>
