@@ -10,6 +10,7 @@ import ResidentNumberInput from "../../components/account/inputField/ResidentNum
 import PasswordInput from "../../components/account/inputField/PasswordInput";
 import MeetingType from "../../components/account/inputField/MeetingTypeSelect";
 import MeetingTypeSelect from "../../components/account/inputField/MeetingTypeSelect";
+import { LuDot } from "react-icons/lu";
 
 const MeetingAccountCreate = () => {
   const { isKeyboard, accountPassword } = useSelector((state: RootState) => state.account);
@@ -89,9 +90,16 @@ const MeetingAccountCreate = () => {
         </div>
 
         <div className="p-5 grid gap-8">
-          <div className="text-2xl font-semibold">
-            <p>{stepList[step]}</p>
-            <p>입력해주세요</p>
+          <div className="grid gap-3">
+            <div className="flex space-x-2">
+              <p className="text-[#0471E9] font-semibold">01</p>
+              <p className="font-semibold">일반모임통장 계좌개설</p>
+            </div>
+
+            <div className="text-2xl font-semibold">
+              <p>{stepList[step]}</p>
+              <p>입력해주세요</p>
+            </div>
           </div>
 
           <div className="grid gap-3">
@@ -160,7 +168,7 @@ const MeetingAccountCreate = () => {
             residentNumber.length !== 14 ||
             maskedPassword.length !== 4
           }>
-          완료
+          다음
         </button>
       </div>
 
