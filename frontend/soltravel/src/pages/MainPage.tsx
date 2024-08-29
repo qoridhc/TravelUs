@@ -42,7 +42,7 @@ const MainPage = () => {
   }, [dispatch, userIdNumber]); // 의존성 배열에 필요한 값 추가
 
   return (
-    <div className="w-full pb-16 bg-[#EFEFF5]">
+    <div className="w-full">
       <div className="w-full p-5 flex flex-col items-center space-y-4">
         {/* 모임통장 신청 */}
         <div className="w-full p-6 flex flex-col space-y-5 rounded-xl bg-white shadow-md">

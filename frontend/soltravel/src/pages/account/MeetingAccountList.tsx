@@ -6,7 +6,7 @@ const MeetingAccountList = () => {
   const accountList = useSelector((state: RootState) => state.account.accountList);
 
   return (
-    <div className="w-full h-full pb-16 bg-[#EFEFF5]">
+    <div className="w-full">
       <div className="w-full p-5 flex flex-col items-center space-y-8">
         <div className="w-full flex justify-start">
           <p className="text-xl font-bold">내 모임통장 계좌</p>
