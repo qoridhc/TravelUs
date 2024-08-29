@@ -12,7 +12,10 @@ const AccountCreateComplete = () => {
           <IoMdCheckmark className="text-4xl text-white" />
         </div>
 
-        <p className="text-lg font-semibold">계좌 개설 완료되었습니다.</p>
+        <div className="text-lg text-center">
+          <p className="font-semibold">입출금통장</p>
+          <p>계좌 개설 완료되었습니다.</p>
+        </div>
 
         <div className="w-full p-5 bg-[#EFEFF5] rounded-md flex justify-between">
           <p className="text-sm text-[#565656]">계좌번호</p>

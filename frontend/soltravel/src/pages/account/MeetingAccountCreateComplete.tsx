@@ -12,7 +12,7 @@ const MeetingAccountCreateComplete = () => {
           <IoMdCheckmark className="text-4xl text-white" />
         </div>
 
-        <div className="text-lg">
+        <div className="text-lg text-center">
           <p className="font-semibold">해외여행 올인원 모임통장</p>
           <p>계좌 개설 완료되었습니다.</p>
         </div>
