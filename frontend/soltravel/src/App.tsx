@@ -26,6 +26,7 @@ import MeetingAccountCreatePrepare from "./pages/account/MeetingAccountCreatePre
 import ForeignMeetingAccountCreate from "./pages/account/ForeignMeetingAccountCreate";
 import MeetingAccountCreateComplete from "./pages/account/MeetingAccountCreateComplete";
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
+import Deposit from "./pages/transaction/Transaction"
 
 function App() {
   return (
@@ -74,6 +75,7 @@ function App() {
           <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
           <Route path="/settlement" element={<Settlement />}></Route>
           <Route path="/detail" element={<Detail />}></Route>
+          <Route path="/deposit" element={<Deposit />}></Route>
         </Routes>
       </BrowserRouter>
     </div>

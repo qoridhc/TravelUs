@@ -114,7 +114,7 @@ const Exchange: React.FC = () => {
     }
 
     const exchangeRequest: ExchangeRequest = {
-      userId,
+      userId: userId,
       accountId: selectedAccount.id,
       accountNo: selectedAccount.accountNo,
       currencyCode: selectedCurrency,
