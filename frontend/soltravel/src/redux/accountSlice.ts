@@ -6,7 +6,7 @@ export interface AccountState {
   isKeyboard: boolean;
   accountPassword: string;
   accountList: Array<AccountInfo>;
-  foreingAccountList: Array<AccountInfo>;
+  foreignAccountList: Array<AccountInfo>;
   generalMeetingAccountDetail: GeneralMeetingAccountDetail;
 }
 
@@ -14,7 +14,7 @@ const initialState: AccountState = {
   isKeyboard: false,
   accountPassword: "",
   accountList: [],
-  foreingAccountList: [],
+  foreignAccountList: [],
   generalMeetingAccountDetail: {
     generalMeetingAccountName: "",
     generalMeetingAccountIcon: "",
@@ -39,7 +39,7 @@ export const userSilce = createSlice({
       state.accountList = action.payload;
     },
     editForeingAccountList: (state, action: PayloadAction<Array<AccountInfo>>) => {
-      state.foreingAccountList = action.payload;
+      state.foreignAccountList = action.payload;
     },
     editGeneralMeetingAccountList: (state, action: PayloadAction<GeneralMeetingAccountDetail>) => {
       state.generalMeetingAccountDetail = action.payload;

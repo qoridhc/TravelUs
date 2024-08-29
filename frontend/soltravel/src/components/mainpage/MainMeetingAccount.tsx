@@ -6,11 +6,12 @@ import path from "path";
 import { AccountInfo } from "../../types/account";
 
 interface Props {
+  index: number;
   account: AccountInfo;
   foreignAccount: AccountInfo;
 }
 
-const MainMeetingAccount = ({ account, foreignAccount }: Props) => {
+const MainMeetingAccount = ({ index, account, foreignAccount }: Props) => {
   const navigate = useNavigate();
 
   // 숫자를 세 자리마다 쉼표로 구분하여 표시
@@ -18,17 +19,22 @@ const MainMeetingAccount = ({ account, foreignAccount }: Props) => {
     return new Intl.NumberFormat("ko-KR").format(amount);
   };
 
+  const formatAccountNumber = (accountNo: string) => {
+    // 계좌번호를 각 4자리씩 나누고 '-'로 연결
+    return accountNo.replace(/(\d{3})(\d{4})(\d{4})(\d{5})/, "$1-$2-$3-$4");
+  };
+
   return (
     <>
       {account && (
         <div
           onClick={() => {
-            navigate(`/meetingaccount/${account.id}`);
+            navigate(`/meetingaccount/${index}`);
           }}
           className="w-full py-5 pb-10 px-5 flex flex-col rounded-xl bg-white shadow-md">
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-1 mb-1">
-              {account.iconName === "airplane" ? (
+              {account.iconName === "airPlane" ? (
                 <div className="w-6 h-6 bg-[#638ee4] rounded-full flex justify-center items-center">
                   <PiAirplaneTiltFill className="text-zinc-50" />
                 </div>
@@ -42,7 +48,7 @@ const MainMeetingAccount = ({ account, foreignAccount }: Props) => {
             <div className="rounded-md flex justify-between">
               <div>
                 <p className="text-sm font-bold">올인원 일반모임통장</p>
-                <p className="text-sm text-zinc-500">{account.accountNo}</p>
+                <p className="text-sm text-zinc-500">{formatAccountNumber(account.accountNo)}</p>
               </div>
               <div className="flex items-center space-x-1">
                 <p className="text-[1.3rem] font-semibold">{formatCurrency(account.balance)}</p>
@@ -59,7 +65,7 @@ const MainMeetingAccount = ({ account, foreignAccount }: Props) => {
                 className="rounded-md flex justify-between">
                 <div className="flex flex-col">
                   <p className="text-sm font-bold">올인원 외화모임통장</p>
-                  <p className="text-sm text-zinc-500">{foreignAccount.accountNo}</p>
+                  <p className="text-sm text-zinc-500">{formatAccountNumber(foreignAccount.accountNo)}</p>
                 </div>
 
                 <div className="flex items-center space-x-1">
