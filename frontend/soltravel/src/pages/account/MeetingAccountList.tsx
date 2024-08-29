@@ -4,6 +4,7 @@ import MeetingAccount from "../../components/account/MeetingAccount";
 
 const MeetingAccountList = () => {
   const accountList = useSelector((state: RootState) => state.account.accountList);
+    const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
 
   return (
     <div className="w-full">
@@ -20,13 +21,13 @@ const MeetingAccountList = () => {
             </p>
           </div>
           {/* 모임 통장 있을 시 표시 */}
-          {/* {accountList.length > 1 ? (
-            accountList.map((account, index) => <MeetingAccount account={account} />)
+          {accountList.length > 1 ? (
+            accountList.slice(1).map((account, index) => <MeetingAccount index={index} account={account} foreignAccount={foreignAccountList[index]} />)
           ) : (
             <div>
               <p>개설된 모임 통장이 없어요</p>
             </div>
-          )} */}
+          )}
         </div>
       </div>
     </div>

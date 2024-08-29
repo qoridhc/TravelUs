@@ -5,20 +5,20 @@ import AccountBookCalendar from "../../components/accountBook/AccountBookCalenda
 
 const AccountBookDetail = () => {
   const [accountName, setAccountName] = useState("");
-  const accountDetail = {
-    id: 1,
-    meetingAccountName: "모히또에서 몰디브 한 잔하는 모임",
-    meetingAccountIcon: "airplane",
-    normalMeetingAccount: {
-      accountNumber: "217-879928-13289",
-      accountMoney: "3,481,900",
-    },
-    foreignMeetingAccount: {
-      accountNumber: "212-123428-13289",
-      accountMoney: "113,890",
-      currencyType: "￥",
-    },
-  };
+  // const accountDetail = {
+  //   id: 1,
+  //   meetingAccountName: "모히또에서 몰디브 한 잔하는 모임",
+  //   meetingAccountIcon: "airplane",
+  //   normalMeetingAccount: {
+  //     accountNumber: "217-879928-13289",
+  //     accountMoney: "3,481,900",
+  //   },
+  //   foreignMeetingAccount: {
+  //     accountNumber: "212-123428-13289",
+  //     accountMoney: "113,890",
+  //     currencyType: "￥",
+  //   },
+  // };
 
   return (
     <div>

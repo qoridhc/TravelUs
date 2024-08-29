@@ -63,6 +63,30 @@ export interface MeetingAccountListDetail {
   updatedAt: string;
 }
 
+// 참여자 조회 정보
+export interface UserInfo {
+  userId: number;
+  username: string;
+  email: string;
+  phone: string;
+  address: string;
+  birth: string;
+  registerAt: string;
+}
+
+export interface Participant {
+  participantId: number;
+  userInfo: UserInfo;
+  createdAt: string;
+  updatedAt: string;
+  master: boolean;
+}
+
+export interface AccountParticipants {
+  accountId: number;
+  participants: Participant[];
+}
+
 // 일반모임통장 개설 정보
 export interface GeneralMeetingAccountDetail {
   generalMeetingAccountName: string;

@@ -17,7 +17,6 @@ import AccountCreate from "./pages/account/AccountCreate";
 import ExchangeRate from "./pages/exchange/ExchangeRate";
 import Exchange from "./pages/exchange/Exchange";
 import SelectAccount from "./pages/exchange/SelectAccount";
-import SettleStart from "./pages/settle/SettleStart";
 import Settlement from "./pages/settle/Settlement";
 import Detail from "./pages/viewaccount/Detail";
 import GroupAccountPage from "./pages/viewaccount/ViewAccount";
@@ -73,7 +72,6 @@ function App() {
           <Route path="/exchangerate" element={<ExchangeRate />} />
           <Route path="/exchange" element={<Exchange />}></Route>
           <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
-          <Route path="/settlestart" element={<SettleStart />}></Route>
           <Route path="/settlement" element={<Settlement />}></Route>
           <Route path="/detail" element={<Detail />}></Route>
         </Routes>
