@@ -2,23 +2,13 @@ import React, { useState } from "react";
 import DropdownInput from "../../components/accountBook/DropdownInput";
 import MeetingAccount from "../../components/account/MeetingAccount";
 import AccountBookCalendar from "../../components/accountBook/AccountBookCalendar";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const AccountBookDetail = () => {
   const [accountName, setAccountName] = useState("");
-  // const accountDetail = {
-  //   id: 1,
-  //   meetingAccountName: "모히또에서 몰디브 한 잔하는 모임",
-  //   meetingAccountIcon: "airplane",
-  //   normalMeetingAccount: {
-  //     accountNumber: "217-879928-13289",
-  //     accountMoney: "3,481,900",
-  //   },
-  //   foreignMeetingAccount: {
-  //     accountNumber: "212-123428-13289",
-  //     accountMoney: "113,890",
-  //     currencyType: "￥",
-  //   },
-  // };
+  const account = useSelector((state: RootState) => state.account.accountList);
+  const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
 
   return (
     <div>
@@ -27,7 +17,11 @@ const AccountBookDetail = () => {
 
         <div className="w-full flex flex-col space-y-3">
           <DropdownInput selectedOption={accountName} onChange={setAccountName} />
-          {/* {accountName === "" ? <></> : <MeetingAccount account={accountDetail} />} */}
+          {accountName === "" ? (
+            <></>
+          ) : (
+            <MeetingAccount index={0} account={account[1]} foreignAccount={foreignAccountList[0]} />
+          )}
           <AccountBookCalendar />
         </div>
       </div>
