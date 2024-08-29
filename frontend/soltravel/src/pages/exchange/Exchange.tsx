@@ -78,10 +78,10 @@ const Exchange: React.FC = () => {
       return;
     }
 
-    // if (numAmount > selectedAccount.accountBalance) {
-    //   alert('계좌 잔액이 부족합니다.');
-    //   return;
-    // }
+    if (numAmount > selectedAccount.balance) {
+      alert('계좌 잔액이 부족합니다.');
+      return;
+    }
 
     const selectedRate = exchangeRates.find(r => r.currencyCode === selectedCurrency);
     if (!selectedRate) {
@@ -95,6 +95,7 @@ const Exchange: React.FC = () => {
     }
 
     const exchangeRequest: ExchangeRequest = {
+      userId,
       accountId: selectedAccount.id,
       accountNo: selectedAccount.accountNo,
       currencyCode: selectedCurrency,
@@ -106,7 +107,7 @@ const Exchange: React.FC = () => {
     try {
       const response: ExchangeResponse = await exchangeApi.requestExchange(exchangeRequest);
       console.log('환전 완료:', response);
-      // alert(`환전이 완료되었습니다. 환전된 금액: ${response.exchangeCurrencyDto.amount} ${response.exchangeCurrencyDto.currencyCode}`);
+      alert(`환전이 완료되었습니다. 환전된 금액: ${response.exchangeCurrencyDto.amount} ${response.exchangeCurrencyDto.currency}`);
       // 환전 후 계좌 정보 업데이트
       setAccounts(accounts.map(acc => 
         acc.accountNo === selectedAccount.accountNo 
@@ -115,7 +116,7 @@ const Exchange: React.FC = () => {
       ));
       setSelectedAccount({
         ...selectedAccount,
-        // accountBalance: response.accountInfoDto.balance,
+        balance: response.accountInfoDto.balance,
       });
       setExchangeAmount('');
       setExpectedExchange('0');
@@ -158,7 +159,6 @@ const Exchange: React.FC = () => {
           <div>
             <p className="font-semibold">{selectedAccount.accountName}</p>
             <p className="font-semibold">{selectedAccount.accountNo}</p>
-            {/* <p className="text-sm text-gray-500">{selectedAccount.bankName} {selectedAccount.accountNo}</p> */}
           </div>
         </div>
         <input
