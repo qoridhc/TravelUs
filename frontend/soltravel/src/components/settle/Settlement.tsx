@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { accountApi } from '../../api/account';
-import AccountInfo from '../../types/account';
+// import AccountInfo from '../../types/account';
 
 const Settlement: React.FC = () => {
   
