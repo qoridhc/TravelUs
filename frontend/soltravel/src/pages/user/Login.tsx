@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
+import { userApi } from "../../api/user";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -11,6 +12,20 @@ const Login = () => {
       setEmail(e.target.value);
     } else {
       setPassword(e.target.value);
+    }
+  };
+
+  const handleLogin = async () => {
+    try {
+      const response = await userApi.fetchLogin(email, password);
+      if (response.status === 200) {
+        localStorage.setItem("accessToken", response.data.accessToken);
+        localStorage.setItem("userId", response.data.userId.toString());
+        navigate("/");
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
+      alert("로그인 에러");
     }
   };
 
@@ -46,7 +61,7 @@ const Login = () => {
             </div>
             <button
               onClick={() => {
-                navigate("/");
+                handleLogin();
               }}
               className="w-[92%] h-12 rounded-md bg-[#0046FF] font-bold text-white text-sm">
               로그인
