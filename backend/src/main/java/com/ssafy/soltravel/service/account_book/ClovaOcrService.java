@@ -1,6 +1,6 @@
 package com.ssafy.soltravel.service.account_book;
 
-import com.ssafy.soltravel.dto.account_book.NCPClovaRequestBody;
+import com.ssafy.soltravel.dto.account_book.api.NCPClovaRequestBody;
 import com.ssafy.soltravel.dto.account_book.ReceiptUploadRequestDto;
 import com.ssafy.soltravel.util.LogUtil;
 import jakarta.annotation.PostConstruct;

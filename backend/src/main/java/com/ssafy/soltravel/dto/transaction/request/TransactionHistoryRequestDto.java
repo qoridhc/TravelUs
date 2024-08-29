@@ -3,9 +3,15 @@ package com.ssafy.soltravel.dto.transaction.request;
 import com.ssafy.soltravel.domain.Enum.OrderByType;
 import com.ssafy.soltravel.domain.Enum.TransacntionType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TransactionHistoryRequestDto {
 
     @Schema(description = "조회할 거래의 시작 날짜", example = "20240822")

@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class SettlementRequestDto {
 
-  @Schema(description = "계좌 ID", example = "1")
+  @Schema(description = "외화 계좌 ID", example = "1")
   private long accountId;
 
   @Schema(description = "외화 계좌 번호", example = "0883473075115544")

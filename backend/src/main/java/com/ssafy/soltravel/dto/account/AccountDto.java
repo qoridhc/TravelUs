@@ -26,6 +26,9 @@ public class AccountDto {
     @Schema(description = "계좌 번호", example = "0889876543210")
     private String accountNo;
 
+    @Schema(description = "계좌 잔액", example = "1000")
+    private Double balance;
+
     @Schema(description = "계좌 이름", example = "신한은행 일반 모임통장")
     private String accountName;
 

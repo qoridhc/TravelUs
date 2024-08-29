@@ -1,8 +1,10 @@
 package com.ssafy.soltravel.dto.account.request;
 
 import com.ssafy.soltravel.domain.Enum.AccountType;
+import com.ssafy.soltravel.dto.user.EmailValidationDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Data;
 
 @Data
@@ -31,4 +33,7 @@ public class CreateAccountRequestDto {
 
     @Schema(description = "희망 환율", example = "1333.40")
     private float exchangeRate;
+
+    @Schema(description = "모임 초기 참여자 설정")
+    private List<EmailValidationDto> participantInfos;
 }

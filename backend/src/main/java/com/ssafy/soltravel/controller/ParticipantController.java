@@ -1,16 +1,19 @@
 package com.ssafy.soltravel.controller;
 
 import com.ssafy.soltravel.dto.ResponseDto;
+import com.ssafy.soltravel.dto.account.AccountDto;
 import com.ssafy.soltravel.dto.participants.request.AddParticipantRequestDto;
 import com.ssafy.soltravel.dto.participants.request.ParticipantListResponseDto;
 import com.ssafy.soltravel.service.account.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +53,7 @@ public class ParticipantController {
         return response;
     }
 
-    @Operation(summary = "참가자 조회", description = "특정 계좌의 모든 참여자를 조회하는 API.")
+    @Operation(summary = "특정 모임의 모든 참가자 조회", description = "특정 계좌의 모든 참여자를 조회하는 API.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = ParticipantListResponseDto.class))),
         @ApiResponse(responseCode = "404", description = "참가자를 찾을 수 없음", content = @Content),
@@ -63,6 +66,23 @@ public class ParticipantController {
     ) {
 
         ResponseEntity<ParticipantListResponseDto> response = accountService.getParticipants(accountId);
+
+        return response;
+    }
+
+    @Operation(summary = "특정 유저가 가입한 모든 모임 통장 정보 조회", description = "특정 유저가 가입한 모든 모임 통장 정보 조회하는 API")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ResponseDto.class)))),
+        @ApiResponse(responseCode = "404", description = "참가자를 찾을 수 없음", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @GetMapping("/{userId}/participants/all")
+    public ResponseEntity<List<AccountDto>> getGroupInfoByUserId(
+        @Parameter(description = "조회 하려는 사용자의 ID(userId)", example = "1")
+        @PathVariable Long userId
+    ) {
+
+        ResponseEntity<List<AccountDto>> response = accountService.getAllGroupInfoByUserId(userId);
 
         return response;
     }
