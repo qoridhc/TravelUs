@@ -26,7 +26,7 @@ import MeetingAccountCreatePrepare from "./pages/account/MeetingAccountCreatePre
 import ForeignMeetingAccountCreate from "./pages/account/ForeignMeetingAccountCreate";
 import MeetingAccountCreateComplete from "./pages/account/MeetingAccountCreateComplete";
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
-
+import PrivateRoute from "./pages/user/PrivateRoute";
 function App() {
   return (
     <div className="h-full">
@@ -40,9 +40,12 @@ function App() {
                 <Header />
                 <div style={{ paddingBottom: "64px", backgroundColor: "#EFEFF5", minHeight: "100vh" }}>
                   <Routes>
-                    <Route path="/" element={<MainPage />} />
-                    <Route path="/meetingaccountlist" element={<MeetingAccountList />} />
-                    <Route path="/accountbookdetail" element={<AccountBookDetail />}></Route>
+                    <Route element={<PrivateRoute />}>
+                      <Route path="/" element={<MainPage />} />
+                      <Route path="/meetingaccountlist" element={<MeetingAccountList />} />
+                      <Route path="/accountbookdetail" element={<AccountBookDetail />} />
+                      {/* Add other protected routes here */}
+                    </Route>
                   </Routes>
                 </div>
                 <Footer />
@@ -55,25 +58,25 @@ function App() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/userupdate" element={<UserUpdate />} />
 
-          <Route path="/accountcreate" element={<AccountCreate />}></Route>
-          <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />}></Route>
-          <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />}></Route>
-          <Route path="/foreignmeetingaccountcreate" element={<ForeignMeetingAccountCreate />}></Route>
-          <Route path="/accountcreatecomplete" element={<AccountCreateComplete />}></Route>
-          <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />}></Route>
+          <Route path="/accountcreate" element={<AccountCreate />} />
+          <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />} />
+          <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
+          <Route path="/foreignmeetingaccountcreate" element={<ForeignMeetingAccountCreate />} />
+          <Route path="/accountcreatecomplete" element={<AccountCreateComplete />} />
+          <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
 
           <Route path="/account/:userId" element={<GroupAccountPage />} />
-          <Route path="/myaccount" element={<MyAccount />}></Route>
+          <Route path="/myaccount" element={<MyAccount />} />
           <Route path="/meetingaccount/:id" element={<MeetingAccountDetail />} />
-          <Route path="/generalaccount" element={<GeneralAccount />}></Route>
-          <Route path="/foreignaccount" element={<ForeignAccount />}></Route>
-          <Route path="/account" element={<ViewAccount />}></Route>
+          <Route path="/generalaccount" element={<GeneralAccount />} />
+          <Route path="/foreignaccount" element={<ForeignAccount />} />
+          <Route path="/account" element={<ViewAccount />} />
 
           <Route path="/exchangerate" element={<ExchangeRate />} />
-          <Route path="/exchange" element={<Exchange />}></Route>
-          <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
-          <Route path="/settlement" element={<Settlement />}></Route>
-          <Route path="/detail" element={<Detail />}></Route>
+          <Route path="/exchange" element={<Exchange />} />
+          <Route path="/selectaccount/:userId" element={<SelectAccount />} />
+          <Route path="/settlement" element={<Settlement />} />
+          <Route path="/detail" element={<Detail />} />
         </Routes>
       </BrowserRouter>
     </div>
