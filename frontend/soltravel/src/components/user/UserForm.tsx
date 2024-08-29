@@ -4,6 +4,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
 interface InputState {
+  file: File | null;
   email: string;
   password: string;
   confirmPassword: string;

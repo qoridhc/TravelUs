@@ -38,37 +38,37 @@ const MeetingAccountDetail = () => {
             <Swiper slidesPerView={4.7} spaceBetween={20} freeMode={true} modules={[FreeMode, Pagination]} className="userSwiper">
               <SwiperSlide>
                 <div className="flex flex-col justify-center items-center space-y-1">
-                  <img className="w-10" src="/assets/user/userIconSample.png" alt="" />
+                  <img className="w-12" src="/assets/user/userIconSample.png" alt="" />
                   <p className="text-xs text-zinc-800">박예진</p>
                 </div>
               </SwiperSlide>
               <SwiperSlide>
                 <div className="flex flex-col justify-center items-center space-y-1">
-                  <img className="w-10" src="/assets/user/userIconSample.png" alt="" />
+                  <img className="w-12" src="/assets/user/userIconSample.png" alt="" />
                   <p className="text-xs text-zinc-800">허동원</p>
                 </div>
               </SwiperSlide>
               <SwiperSlide>
                 <div className="flex flex-col justify-center items-center space-y-1">
-                  <img className="w-10" src="/assets/user/userIconSample.png" alt="" />
+                  <img className="w-12" src="/assets/user/userIconSample.png" alt="" />
                   <p className="text-xs text-zinc-800">박민규</p>
                 </div>
               </SwiperSlide>
               <SwiperSlide>
                 <div className="flex flex-col justify-center items-center space-y-1">
-                  <img className="w-10" src="/assets/user/userIconSample.png" alt="" />
+                  <img className="w-12" src="/assets/user/userIconSample.png" alt="" />
                   <p className="text-xs text-zinc-800">이성현</p>
                 </div>
               </SwiperSlide>
               <SwiperSlide>
                 <div className="flex flex-col justify-center items-center space-y-1">
-                  <img className="w-10" src="/assets/user/userIconSample.png" alt="" />
+                  <img className="w-12" src="/assets/user/userIconSample.png" alt="" />
                   <p className="text-xs text-zinc-800">이진주</p>
                 </div>
               </SwiperSlide>
               <SwiperSlide>
                 <div className="flex flex-col justify-center items-center space-y-1">
-                  <img className="w-10" src="/assets/user/userIconSample.png" alt="" />
+                  <img className="w-12" src="/assets/user/userIconSample.png" alt="" />
                   <p className="text-xs text-zinc-800">이예림</p>
                 </div>
               </SwiperSlide>
