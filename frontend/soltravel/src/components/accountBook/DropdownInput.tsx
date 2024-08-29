@@ -10,13 +10,14 @@ import { AccountInfo } from "../../types/account";
 interface DropdownInputProps {
   accountList: AccountInfo[];
   selectedOption: string;
-  onChange: (accountName: string, accountIndex: number) => void;
+  onChange: (accountName: string, accountIndex: number, foreignAccountNo: string) => void;
 }
 
 const DropdownInput: React.FC<DropdownInputProps> = ({ accountList, selectedOption, onChange }) => {
+  const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
   const handleChange = (selected: string) => {
     const selectedIndex = accountList.findIndex((account) => account.accountName === selected);
-    onChange(selected, selectedIndex);
+    onChange(selected, selectedIndex, foreignAccountList[selectedIndex - 1].accountNo);
   };
 
   return (

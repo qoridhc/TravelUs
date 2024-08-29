@@ -4,17 +4,20 @@ import MeetingAccount from "../../components/account/MeetingAccount";
 import AccountBookCalendar from "../../components/accountBook/AccountBookCalendar";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import AccountBookDayDetail from "../../components/accountBook/AccountBookDayDetail";
 
 const AccountBookDetail = () => {
   const [accountName, setAccountName] = useState("");
   const [accountIndex, setAccountIndex] = useState<number | null>(null);
+  const [accountNo, setAccountNo] = useState("");
 
   const accountList = useSelector((state: RootState) => state.account.accountList);
   const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
 
-  const handleDropdownChange = (accountName: string, accountIndex: number) => {
+  const handleDropdownChange = (accountName: string, accountIndex: number, accountNo: string) => {
     setAccountName(accountName);
     setAccountIndex(accountIndex);
+    setAccountNo(accountNo);
   };
 
   return (
@@ -32,7 +35,8 @@ const AccountBookDetail = () => {
               foreignAccount={foreignAccountList[accountIndex - 1]}
             />
           )}
-          <AccountBookCalendar />
+          <AccountBookCalendar accountNo={accountNo} />
+          <AccountBookDayDetail />
         </div>
       </div>
     </div>

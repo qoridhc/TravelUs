@@ -1,60 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { format } from "date-fns";
 import "../../css/calendar.css";
+import api from "../../lib/axios";
+import { accountBookApi } from "../../api/accountBook";
+import { DayHistory } from "../../types/accountBook";
 
 type ValuePiece = Date | null;
 
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
-const AccountBookCalendar = () => {
-  const today = new Date();
+interface Props {
+  accountNo: string;
+}
+
+const AccountBookCalendar = ({ accountNo }: Props) => {
   const [value, onChange] = useState<Value>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [activeStartDate, setActiveStartDate] = useState("");
   const [activeEndDate, setActiveEndDate] = useState("");
+  const [monthlyTransaction, setMonthlyTransaction] = useState<Array<DayHistory>>([]);
 
-  const monthlyTransaction = [
-    { totalExpenditure: 0, totalIncome: 0 },
-    { totalExpenditure: 45.12, totalIncome: 0 },
-    { totalExpenditure: 30.5, totalIncome: 100.0 },
-    { totalExpenditure: 23.89, totalIncome: 100.0 },
-    { totalExpenditure: 0, totalIncome: 150.0 },
-    { totalExpenditure: 75.34, totalIncome: 0 },
-    { totalExpenditure: 60.12, totalIncome: 50.0 },
-    { totalExpenditure: 90.75, totalIncome: 0 },
-    { totalExpenditure: 12.49, totalIncome: 0 },
-    { totalExpenditure: 109.99, totalIncome: 200.0 },
-    { totalExpenditure: 27.5, totalIncome: 0 },
-    { totalExpenditure: 35.25, totalIncome: 0 },
-    { totalExpenditure: 0, totalIncome: 300.0 },
-    { totalExpenditure: 80.6, totalIncome: 0 },
-    { totalExpenditure: 44.99, totalIncome: 50.0 },
-    { totalExpenditure: 98.3, totalIncome: 0 },
-    { totalExpenditure: 56.79, totalIncome: 0 },
-    { totalExpenditure: 150.1, totalIncome: 0 },
-    { totalExpenditure: 39.99, totalIncome: 100.0 },
-    { totalExpenditure: 24.75, totalIncome: 0 },
-    { totalExpenditure: 0, totalIncome: 200.0 },
-    { totalExpenditure: 77.4, totalIncome: 0 },
-    { totalExpenditure: 65.89, totalIncome: 0 },
-    { totalExpenditure: 123.99, totalIncome: 250.0 },
-    { totalExpenditure: 84.67, totalIncome: 0 },
-    { totalExpenditure: 46.5, totalIncome: 0 },
-    { totalExpenditure: 0, totalIncome: 150.0 },
-    { totalExpenditure: 38.29, totalIncome: 0 },
-    { totalExpenditure: 102.34, totalIncome: 50.0 },
-    { totalExpenditure: 57.48, totalIncome: 0 },
-    { totalExpenditure: 85.5, totalIncome: 0 },
-    { totalExpenditure: 74.99, totalIncome: 0 },
-  ];
-
-  const dayTransaction = {
-    amount: 24.55,
-    // transactionAt: ,
-    balance: 5236.36,
-    store: "Maccheroni Republic",
-  };
+  // const dayTransaction = {
+  //   amount: 24.55,
+  //   transactionAt: "2021-11-08T11:44:30.327959",
+  //   balance: 5236.36,
+  //   store: "Maccheroni Republic",
+  // };
 
   const handleActiveDateChange = (date: any) => {
     setActiveStartDate(format(date.activeStartDate, "yyyyMMdd"));
@@ -67,7 +40,40 @@ const AccountBookCalendar = () => {
     // const
   };
 
-  return (
+  const getAccountBookInfo = async () => {
+    try {
+      setIsLoading(true);
+      const data = { startDate: activeStartDate, endDate: activeEndDate, transactionType: "A", orderByType: "ASC" };
+      const response = await accountBookApi.fetchAccountBookInfo(accountNo, data);
+      console.log(response);
+      setMonthlyTransaction(response.data.monthHistoryList);
+    } catch (error) {
+      console.log("accountBook의 fetchAccountBookInfo : ", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const initDates = () => {
+      const today = new Date();
+      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+      const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+      setActiveStartDate(format(firstDay, "yyyyMMdd"));
+      setActiveEndDate(format(lastDay, "yyyyMMdd"));
+    };
+
+    initDates(); // 컴포넌트가 처음 렌더링될 때 실행
+
+    if (accountNo !== "") {
+      getAccountBookInfo();
+    }
+  }, [accountNo]);
+
+  return isLoading ? (
+    <p>Loading...</p>
+  ) : (
     <div className="w-full flex justify-center relative">
       <Calendar
         className="p-3 rounded-md"
@@ -83,12 +89,14 @@ const AccountBookCalendar = () => {
           <div>
             <div className="text-xs text-left font-semibold">
               <p className="text-[#FF5F5F]">
-                {monthlyTransaction[date.getDate()].totalExpenditure !== 0
+                {monthlyTransaction[date.getDate()] !== undefined &&
+                monthlyTransaction[date.getDate()].totalExpenditure !== 0
                   ? `+ ${monthlyTransaction[date.getDate()].totalExpenditure}`
                   : ""}
               </p>
               <p className="text-[#0471E9]">
-                {monthlyTransaction[date.getDate()].totalIncome !== 0
+                {monthlyTransaction[date.getDate()] !== undefined &&
+                monthlyTransaction[date.getDate()].totalIncome !== 0
                   ? `- ${monthlyTransaction[date.getDate()].totalIncome}`
                   : ""}
               </p>
