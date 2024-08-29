@@ -3,9 +3,9 @@ import axios from "axios"
 // Axios 요청
 const api = axios.create({
   baseURL: process.env.REACT_APP_BACK_BASEURL,
-  headers: {
-    Authorization: `Bearer ${process.env.REACT_APP_ACCESS_TOKEN}`,
-  },
+  // headers: {
+  //   Authorization: `Bearer ${process.env.REACT_APP_ACCESS_TOKEN}`,
+  // },
 });
 
 // 요청 인터셉터
