@@ -20,7 +20,7 @@ const MainPage = () => {
     dispatch(
       editMeetingAccountList([
         {
-          id: 1, 
+          id: 1,
           meetingAccountName: "모히또에서 몰디브 한 잔하는 모임",
           meetingAccountIcon: "airplane",
           normalMeetingAccount: {
@@ -34,7 +34,7 @@ const MainPage = () => {
           },
         },
         {
-          id: 2, 
+          id: 2,
           meetingAccountName: "신암고 1-3반 동창회",
           meetingAccountIcon: "school",
           normalMeetingAccount: {
@@ -71,7 +71,7 @@ const MainPage = () => {
   ];
 
   return (
-    <div className="w-full pb-16 bg-[#EFEFF5]">
+    <div className="w-full">
       <div className="w-full p-5 flex flex-col items-center space-y-4">
         {/* 모임통장 신청 */}
         <div className="w-full p-6 flex flex-col space-y-5 rounded-xl bg-white shadow-md">

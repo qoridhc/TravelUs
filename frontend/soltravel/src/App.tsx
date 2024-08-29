@@ -39,24 +39,13 @@ function App() {
             element={
               <>
                 <Header />
-                <Routes>
-                  <Route path="/" element={<MainPage />} />
-                  <Route path="/meetingaccountlist" element={<MeetingAccountList />} />
-                  <Route path="/exchangerate" element={<ExchangeRate />} />
-                  <Route path="/account/:userId" element={<GroupAccountPage />} />
-                  <Route path="/accountbookdetail" element={<AccountBookDetail />}></Route>
-                </Routes>
-                <Footer />
-              </>
-            }
-          />
-
-          {/* 페이지에 Footer만 포함된 경로 */}
-          <Route
-            path="/meetingaccount/:id"
-            element={
-              <>
-                <MeetingAccountDetail />
+                <div style={{ paddingBottom: "64px", backgroundColor: "#EFEFF5", minHeight: "100vh" }}>
+                  <Routes>
+                    <Route path="/" element={<MainPage />} />
+                    <Route path="/meetingaccountlist" element={<MeetingAccountList />} />
+                    <Route path="/accountbookdetail" element={<AccountBookDetail />}></Route>
+                  </Routes>
+                </div>
                 <Footer />
               </>
             }
@@ -74,11 +63,14 @@ function App() {
           <Route path="/accountcreatecomplete" element={<AccountCreateComplete />}></Route>
           <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />}></Route>
 
+          <Route path="/account/:userId" element={<GroupAccountPage />} />
           <Route path="/myaccount" element={<MyAccount />}></Route>
+          <Route path="/meetingaccount/:id" element={<MeetingAccountDetail />} />
           <Route path="/generalaccount" element={<GeneralAccount />}></Route>
           <Route path="/foreignaccount" element={<ForeignAccount />}></Route>
           <Route path="/account" element={<ViewAccount />}></Route>
 
+          <Route path="/exchangerate" element={<ExchangeRate />} />
           <Route path="/exchange" element={<Exchange />}></Route>
           <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
           <Route path="/settlestart" element={<SettleStart />}></Route>
