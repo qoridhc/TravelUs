@@ -1,5 +1,5 @@
 import React from 'react';
-import { AccountInfo } from '../../types/account';
+import { AccountInfo } from "../../types/account";
 
 type AccountDetailsProps = {
   accounts: AccountInfo[];
@@ -18,13 +18,12 @@ const AccountList = ({ accounts, onSelectAccount }: AccountDetailsProps): React.
           <div className='mb-2 flex items-center'>
             <div className='w-8 h-8 mr-2 bg-[#0046FF] rounded-full'></div>
             <div className='ml-3'>
-              <p className='font-semibold'>{account.bankName}</p>
               <p className='font-semibold'>{account.accountName}</p>
               <p className='text-sm text-gray-500'>{account.accountNo}</p>
             </div>
           </div>
           <p className='text-2xl font-bold text-right'>
-            {Number(account.accountBalance).toLocaleString()} {account.currency}
+            {/* {Number(account.accountBalance).toLocaleString()} {account.currency} */}
           </p>
         </div>
       ))}

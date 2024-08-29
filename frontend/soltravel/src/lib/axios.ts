@@ -12,15 +12,15 @@ const api = axios.create({
 api.interceptors.request.use(
   config => {
     // // accessToken을 sessionStorage에서 가져오고
-    // const accessToken = sessionStorage.getItem("accessToken");
+    const accessToken = sessionStorage.getItem("accessToken");
     // // 토큰이 있으면 토큰을 넣어서 요청을 보냄
     // if (accessToken) {
     //   config.headers.Authorization = `${accessToken}`
 
     // 로그인 기능이 아직 없으므로 임시로 accessToken 지정 후 사용
-    const token = process.env.REACT_APP_ACCESS_TOKEN;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // const token = process.env.REACT_APP_ACCESS_TOKEN;
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config
   },

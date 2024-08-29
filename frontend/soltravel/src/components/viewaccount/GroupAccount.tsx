@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { accountApi } from '../../api/account';
-import { AccountInfo } from '../../types/account';
+import { AccountInfo } from "../../types/account";
 import AccountList from './AccountList';
 
 const GroupAccount = (): React.ReactElement => {
@@ -10,7 +10,9 @@ const GroupAccount = (): React.ReactElement => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  const { userId } = useParams<{ userId: string }>();
+  // const { userId } = useParams<{ userId: string }>();
+
+  const userId = 2
   const navigate = useNavigate();
 
   useEffect(() => {

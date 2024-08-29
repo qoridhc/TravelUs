@@ -1,9 +1,11 @@
 import { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router";
 import { userApi } from "../../api/user";
 import UserForm from "../../components/user/UserForm";
 
 interface InputState {
+  file: File | null;
   email: string;
   password: string;
   confirmPassword: string;
@@ -19,6 +21,7 @@ const SignUp = () => {
   const [isFormValid, setIsFormValid] = useState(false);
 
   const [inputs, setInputs] = useState<InputState>({
+    file: null,
     email: "",
     password: "",
     confirmPassword: "",
@@ -36,38 +39,25 @@ const SignUp = () => {
   const handleSignUp = async () => {
     const formData = new FormData();
 
-    formData.append(
-      "request",
-      new Blob(
-        [
-          JSON.stringify({
-            name: inputs.name,
-            email: inputs.email,
-            password: inputs.password,
-            phone: inputs.phone,
-            address: inputs.address,
-            birth: formatBirthday(inputs.birthday),
-          }),
-        ],
-        { type: "application/json" }
-      )
-    );
+    // formData.append("file", inputs.file as Blob);
+    formData.append("name", inputs.name);
+    formData.append("email", inputs.email);
+    formData.append("password", inputs.password);
+    formData.append("phone", inputs.phone);
+    formData.append("address", inputs.address);
+    formData.append("birth", formatBirthday(inputs.birthday));
 
     try {
-      // 첫 번째 API 호출: 회원가입
-      const signUpResponse = await userApi.fetchSignUp(formData);
-
-      // 두 번째 API 호출: 알림 구독
-      const notificationResponse = await userApi.fetchNotificationSubscribe();
-
-      // 두 API 호출 모두 성공했는지 확인
-      if (signUpResponse && notificationResponse) {
-        console.log("회원가입 성공");
-      } else {
-        console.error("회원가입 오류: API 호출 실패");
+      const response = await userApi.fetchSignUp(formData);
+      // 두 번째 API 호출: 알림 구독 (백에서 시도한답니다)
+      // const notificationResponse = await userApi.fetchNotificationSubscribe();
+      if (response.status === 200) {
+        console.log("회원가입이 성공적으로 완료되었습니다!");
+        navigate("/login");
       }
     } catch (error) {
-      console.error("회원가입 오류", error);
+      console.error("Error creating user:", error);
+      alert("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
 
@@ -80,9 +70,10 @@ const SignUp = () => {
           onClick={() => {
             handleSignUp();
           }}
-          className={`w-full h-24 rounded-md font-bold text-white text-sm ${!isFormValid ? "bg-[#c5cde2]" : "bg-[#0046FF]"}`}
-          disabled={!isFormValid}
-        >
+          className={`w-full h-24 rounded-md font-bold text-white text-sm ${
+            !isFormValid ? "bg-[#c5cde2]" : "bg-[#0046FF]"
+          }`}
+          disabled={!isFormValid}>
           가입
         </button>
         <div className="w-full h-20 flex items-center justify-center space-x-2">
@@ -91,8 +82,7 @@ const SignUp = () => {
             onClick={() => {
               navigate("/login");
             }}
-            className="text-[#0046FF] font-bold"
-          >
+            className="text-[#0046FF] font-bold">
             로그인
           </button>
         </div>
