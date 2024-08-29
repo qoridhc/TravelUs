@@ -151,7 +151,7 @@ const ForeignMeetingAccountCreate = () => {
             travelSchedule.startDate === null ||
             travelSchedule.endDate === null
           }>
-          다음
+          완료
         </button>
       </div>
     </div>
