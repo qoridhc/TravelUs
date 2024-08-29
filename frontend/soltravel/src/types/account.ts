@@ -1,19 +1,21 @@
 // 계좌 정보
 export interface AccountInfo {
-  bankCode: string;
+  id: number;
+  bankCode: number;
   dailyTransferLimit: string;
-  accountName: string;
-  accountTypeCode: string;
-  bankName: string;
-  accountTypeName: string;
-  accountExpiryDate: string;
-  userName: string;
-  oneTimeTransferLimit: string;
-  accountCreatedDate: string;
-  lastTransactionDate: string;
   accountNo: string;
-  currency: string;
-  accountBalance: number;
+  accountName: string;
+  accountType: string;
+  gropuName: string;
+  iconName: string;
+  travelStartDate: string;
+  travelEndDate: string;
+  currency: {
+    currencyCode: string;
+    currencyName: string;
+  }
+  createdAt: string;
+  updatedAt: string;
 }
 
 // 거래 내역 조회
@@ -30,10 +32,16 @@ export interface Transaction {
   transactionTypeName: string;
 }
 
-// 입금
+// 입금 요청
 export interface DepositRequest {
   transactionBalance: number;
   transactionSummary: string;
+}
+
+// 입금 응답
+export interface DepositResponse {
+  transactionUniqueNo: string;
+  transactionDate: string;
 }
 
 // 모임통장 목록 조회 정보

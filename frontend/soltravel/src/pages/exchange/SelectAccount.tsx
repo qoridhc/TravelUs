@@ -13,7 +13,10 @@ const SelectAccount = (): React.ReactElement => {
   const [error, setError] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const { userId } = useParams<{ userId: string }>();
+  // const { userId } = useParams<{ userId: string }>();
+
+  const userId = 2
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -92,7 +95,7 @@ const SelectAccount = (): React.ReactElement => {
                 <p className="text-sm text-gray-500">{selectedAccount.accountNo}</p>
               </div>
             </div>
-            <p className="text-right font-bold">{selectedAccount.accountBalance.toLocaleString()} KRW</p>
+            {/* <p className="text-right font-bold">{selectedAccount.accountBalance.toLocaleString()} KRW</p> */}
           </div>
 
           
@@ -110,7 +113,7 @@ const SelectAccount = (): React.ReactElement => {
                   <p className="text-sm text-gray-500">{foreignAccounts[0].accountNo}</p>
                 </div>
               </div>
-              <p className="text-right font-bold">{foreignAccounts[0].accountBalance.toLocaleString()} {foreignAccounts[0].currency}</p>
+              {/* <p className="text-right font-bold">{foreignAccounts[0].accountBalance.toLocaleString()} {foreignAccounts[0].currency}</p> */}
             </div>
           )}
         </div>

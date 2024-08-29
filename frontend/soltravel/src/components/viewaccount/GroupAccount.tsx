@@ -10,7 +10,9 @@ const GroupAccount = (): React.ReactElement => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  const { userId } = useParams<{ userId: string }>();
+  // const { userId } = useParams<{ userId: string }>();
+
+  const userId = 2
   const navigate = useNavigate();
 
   useEffect(() => {
