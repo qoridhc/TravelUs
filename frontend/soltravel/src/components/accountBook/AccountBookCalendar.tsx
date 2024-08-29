@@ -23,6 +23,7 @@ const AccountBookCalendar = () => {
         next2Label={null} // +1년 & +10년 이동 버튼 숨기기
         prev2Label={null} // -1년 & -10년 이동 버튼 숨기기
         minDetail="year" // 10년단위 년도 숨기기
+        tileContent={({ activeStartDate, date, view }) => <p className="text-xs">+ 30,000</p>}
       />
     </div>
   );

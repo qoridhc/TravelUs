@@ -27,7 +27,7 @@ const AccountBookDetail = () => {
 
         <div className="w-full flex flex-col space-y-3">
           <DropdownInput selectedOption={accountName} onChange={setAccountName} />
-          <MeetingAccount account={accountDetail} />
+          {/* {accountName === "" ? <></> : <MeetingAccount account={accountDetail} />} */}
           <AccountBookCalendar />
         </div>
       </div>
