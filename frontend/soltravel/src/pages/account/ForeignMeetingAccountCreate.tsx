@@ -64,7 +64,7 @@ const ForeignMeetingAccountCreate = () => {
     //   })
     // );
 
-    navigate("/accountcreatecomplete");
+    navigate("/meetingaccountcreatecomplete");
   };
 
   return (
