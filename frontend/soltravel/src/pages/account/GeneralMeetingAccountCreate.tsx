@@ -12,10 +12,18 @@ import MeetingTypeSelect from "../../components/account/inputField/TypeSelect";
 import MemberSelect from "../../components/account/inputField/MemberSelect";
 import { meetingAccountIconList } from "../../types/account";
 
+interface ParticipantInfo {
+  userId: number;
+  accountId: number;
+  accountNo: string;
+}
+
 const MeetingAccountCreate = () => {
   const { isKeyboard, accountPassword } = useSelector((state: RootState) => state.account);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const userName = localStorage.getItem("userName") || "";
+  const accountList = useSelector((state: RootState) => state.account.accountList);
 
   const [step, setStep] = useState(0);
   const stepList = [
@@ -32,11 +40,23 @@ const MeetingAccountCreate = () => {
   const [name, setName] = useState("");
   const [residentNumber, setResidentNumber] = useState("");
   const [maskedPassword, setMaskedPassword] = useState("");
-  const [memberList, setMemberList] = useState<Array<string>>(["허동원"]);
+  const [memberList, setMemberList] = useState<Array<string>>([userName]);
+  const [participantInfos, setParticipantInfos] = useState<Array<ParticipantInfo>>([]);
+  const userId = localStorage.getItem("userId") || "";
+  const userIdNum = Number(userId);
+
 
   useEffect(() => {
     // redux store의 기존 저장되어있던 정보 제거
     dispatch(setAccountPassword(""));
+
+    // 모임주의 정보를 기본값으로 설정
+    const participantInfo = {
+      userId: userIdNum,
+      accountId: accountList[0].id,
+      accountNo: accountList[0].accountNo,
+    };
+    setParticipantInfos([participantInfo]);
   }, []);
 
   useEffect(() => {
@@ -88,12 +108,14 @@ const MeetingAccountCreate = () => {
     dispatch(setIsKeyboard(true));
   };
 
-  const handleMemberListChange = (addMember: string) => {
+  const handleMemberListChange = (addMember: string, participantInfo: ParticipantInfo) => {
     setMemberList((prev) => [...prev, addMember]);
+    setParticipantInfos((prev) => [...prev, participantInfo]);
   };
 
   const handleMemberDelete = (deleteMember: number) => {
     setMemberList((prev) => prev.filter((_, index) => index !== deleteMember));
+    setParticipantInfos((prev) => prev.filter((_, index) => index !== deleteMember));
   };
 
   const handleNext = () => {
@@ -104,12 +126,13 @@ const MeetingAccountCreate = () => {
         generalMeetingAccountUserName: name,
         generalMeetingAccountUserResidentNumber: residentNumber,
         generalMeetingAccountPassword: accountPassword,
-        generalMeetingAccountMemberList: memberList,
+        generalMeetingAccountMemberList: participantInfos,
       })
     );
 
     navigate("/foreignmeetingaccountcreate");
   };
+
 
   return (
     <div className="h-full flex flex-col justify-between">
@@ -194,6 +217,7 @@ const MeetingAccountCreate = () => {
                 }`}>
                 {step > 4 && (
                   <MemberSelect
+                    userName={userName}
                     memberList={memberList}
                     onChange={handleMemberListChange}
                     onDelete={handleMemberDelete}

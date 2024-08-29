@@ -1,12 +1,19 @@
 import React, { useState } from "react";
+import { userApi } from "../../../api/user";
 import { styled } from "@mui/material/styles";
 import Chip from "@mui/material/Chip";
 import Paper from "@mui/material/Paper";
 import { FormControl, OutlinedInput } from "@mui/material";
 
+interface ParticipantInfo {
+  userId: number;
+  accountId: number;
+  accountNo: string;
+}
 interface MemberSelectProps {
+  userName: string;
   memberList: Array<string>;
-  onChange: (addMember: string) => void;
+  onChange: (addMember: string, participantInfo: ParticipantInfo) => void;
   onDelete: (deleteMember: number) => void;
 }
 
@@ -14,12 +21,34 @@ const ListItem = styled("li")(({ theme }) => ({
   margin: theme.spacing(0.5),
 }));
 
-const MemberSelect: React.FC<MemberSelectProps> = ({ memberList, onChange, onDelete }) => {
+const MemberSelect: React.FC<MemberSelectProps> = ({
+  userName,
+  memberList,
+  onChange,
+  onDelete,
+}) => {
   const [addMember, setAddMember] = useState("");
   const [hover, setHover] = useState(false);
 
+  const handleEmail = async (email: string) => {
+    try {
+      const response = await userApi.fetchEmailValidation(email);
+      if (response.status === 200) {
+        const participantInfo = {
+          userId: response.data.userId,
+          accountId: response.data.accountId,
+          accountNo: response.data.accountNo,
+        };
+        onChange(response.data.userName, participantInfo);
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
+      alert("존재하지 않는 회원입니다.");
+    }
+  };
+
   const handleAddMember = () => {
-    onChange(addMember);
+    handleEmail(addMember);
     setAddMember("");
   };
 
@@ -69,7 +98,7 @@ const MemberSelect: React.FC<MemberSelectProps> = ({ memberList, onChange, onDel
           {memberList.map((member, index) => {
             return (
               <ListItem key={index}>
-                <Chip label={member} onDelete={member === "허동원" ? undefined : handleDelete(index)} />
+                <Chip label={member} onDelete={member === userName ? undefined : handleDelete(index)} />
               </ListItem>
             );
           })}

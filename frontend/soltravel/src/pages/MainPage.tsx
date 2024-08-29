@@ -20,6 +20,11 @@ const MainPage = () => {
   const accountList = useSelector((state: RootState) => state.account.accountList);
   const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
 
+  const formatAccountNumber = (accountNo: string) => {
+    // 계좌번호를 각 4자리씩 나누고 '-'로 연결
+    return accountNo.replace(/(\d{3})(\d{4})(\d{4})(\d{5})/, "$1-$2-$3-$4");
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -79,7 +84,7 @@ const MainPage = () => {
               <div className="flex justify-between items-center">
                 <div className="flex flex-col">
                   <p className="font-bold">올인원머니통장</p>
-                  <p className="text-sm text-zinc-500">입출금 {accountList[0].accountNo}</p>
+                  <p className="text-sm text-zinc-500">입출금 {formatAccountNumber(accountList[0].accountNo)}</p>
                 </div>
               </div>
               <div className="flex items-center">
