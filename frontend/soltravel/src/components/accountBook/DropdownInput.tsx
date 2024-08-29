@@ -43,7 +43,7 @@ const DropdownInput: React.FC<DropdownInputProps> = ({ selectedOption, onChange 
           display: "none",
         },
       }}>
-      <InputLabel id="demo-simple-select-filled-label">모임명</InputLabel>
+      <InputLabel id="demo-simple-select-filled-label">모임명을 선택해주세요</InputLabel>
       <Select
         labelId="demo-simple-select-filled-label"
         id="demo-simple-select-filled"
