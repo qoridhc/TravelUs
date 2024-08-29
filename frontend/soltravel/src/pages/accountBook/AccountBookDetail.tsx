@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import DropdownInput from "../../components/accountBook/DropdownInput";
 import MeetingAccount from "../../components/account/MeetingAccount";
+import AccountBookCalendar from "../../components/accountBook/AccountBookCalendar";
 
 const AccountBookDetail = () => {
   const [accountName, setAccountName] = useState("");
@@ -27,6 +28,7 @@ const AccountBookDetail = () => {
         <div className="w-full flex flex-col space-y-3">
           <DropdownInput selectedOption={accountName} onChange={setAccountName} />
           <MeetingAccount account={accountDetail} />
+          <AccountBookCalendar />
         </div>
       </div>
     </div>
