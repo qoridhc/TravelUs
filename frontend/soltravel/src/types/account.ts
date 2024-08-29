@@ -4,6 +4,7 @@ export interface AccountInfo {
   bankCode: number;
   dailyTransferLimit: string;
   accountNo: string;
+  balance: number;
   accountName: string;
   accountType: string;
   gropuName: string;
@@ -68,4 +69,28 @@ export interface MeetingAccountDetail {
   meetingAccountUserResidentNumber: string;
   meetingAccountPassword: string;
   meetingAccountMemberList: Array<string>;
+}
+
+// 참여자 조회 정보
+export interface UserInfo {
+  userId: number;
+  username: string;
+  email: string;
+  phone: string;
+  address: string;
+  birth: string;
+  registerAt: string;
+}
+
+export interface Participant {
+  participantId: number;
+  userInfo: UserInfo;
+  createdAt: string;
+  updatedAt: string;
+  master: boolean;
+}
+
+export interface AccountParticipants {
+  accountId: number;
+  participants: Participant[];
 }

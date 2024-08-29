@@ -26,6 +26,7 @@ export interface ExchangeRateHistoryResponse {
 
 // 환전 진행 관련 요청 / 응답
 export interface ExchangeRequest {
+  userId: number;
   accountId: number;
   accountNo: string;
   currencyCode: string;
