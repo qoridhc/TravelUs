@@ -33,7 +33,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class ForeignAccount {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "foreign_account_id")
     private Long id;
 
@@ -70,6 +69,22 @@ public class ForeignAccount {
     @JsonIgnore
     private GeneralAccount generalAccount;
 
-//    @OneToMany(mappedBy = "foreignAccount", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<AccountBookHistory> accountBook;
+    @OneToMany(mappedBy = "foreignAccount", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AccountBookHistory> accountBook;
+
+    @OneToMany(mappedBy = "foreignAccount", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CashHistory> cashHistory;
+
+    /*
+    * 연관관계 편의 메서드
+    */
+    public void addAccountBookHistory(AccountBookHistory accountBookHistory) {
+        this.accountBook.add(accountBookHistory);
+        accountBookHistory.setForeignAccount(this);
+    }
+
+    public void addCashHistory(CashHistory cashHistory) {
+        this.cashHistory.add(cashHistory);
+        cashHistory.setForeignAccount(this);
+    }
 }

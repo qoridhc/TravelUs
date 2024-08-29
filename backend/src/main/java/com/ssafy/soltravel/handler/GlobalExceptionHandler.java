@@ -3,6 +3,7 @@ package com.ssafy.soltravel.handler;
 import com.ssafy.soltravel.dto.ResponseDto;
 import com.ssafy.soltravel.exception.InvalidAuthCodeException;
 import com.ssafy.soltravel.exception.InvalidCredentialsException;
+import com.ssafy.soltravel.exception.LackOfBalanceException;
 import com.ssafy.soltravel.exception.RefundAccountNotFoundException;
 import com.ssafy.soltravel.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -62,6 +63,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RefundAccountNotFoundException.class)
     public ResponseEntity<ResponseDto> handleRefundAccountNotFoundException(RefundAccountNotFoundException e) {
+        ResponseDto errorResponse = new ResponseDto(
+            "BAD REQUEST",
+            e.getMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(LackOfBalanceException.class)
+    public ResponseEntity<ResponseDto> handleLackOfBalanceException(LackOfBalanceException e) {
         ResponseDto errorResponse = new ResponseDto(
             "BAD REQUEST",
             e.getMessage()

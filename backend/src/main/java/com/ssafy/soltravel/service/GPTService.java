@@ -22,7 +22,7 @@ public class GPTService {
   public void init() {
     basePrompt.put("role", "system");
     basePrompt.put("content", "Receive the JSON receipt data and extract only the store name (store), "
-        + "list of purchased items (items), item names (item), prices (price), and payment amount (paid). "
+        + "list of purchased items (items), item names (item), prices (price), quantity(quantity)(int, default: 1) and payment amount (paid). "
         + "Additionally, format the extracted information to ensure it becomes a complete JSON data."
     );
   }

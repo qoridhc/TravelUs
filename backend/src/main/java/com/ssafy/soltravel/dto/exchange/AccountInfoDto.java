@@ -22,5 +22,5 @@ public class AccountInfoDto {
   private double amount;
 
   @Schema(description = "계좌 잔액", example = "1500000")
-  private long balance;
+  private double balance;
 }

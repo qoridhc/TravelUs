@@ -28,6 +28,7 @@ public class AccountMapper {
             .accountType(generalAccount.getAccountType())
             .accountNo(generalAccount.getAccountNo())
             .groupName(generalAccount.getGroupName())
+            .balance(generalAccount.getBalance())
             .iconName(generalAccount.getIconName())
             .travelStartDate(generalAccount.getTravelStartDate())
             .travelEndDate(generalAccount.getTravelEndDate())
@@ -54,6 +55,7 @@ public class AccountMapper {
             .accountType(AccountType.GROUP)
             .accountNo(foreignAccount.getAccountNo())
             .groupName(foreignAccount.getGroupName())
+            .balance(foreignAccount.getBalance())
             .travelStartDate(foreignAccount.getTravelStartDate())
             .travelEndDate(foreignAccount.getTravelEndDate())
             .iconName(foreignAccount.getIconName())
@@ -78,9 +80,11 @@ public class AccountMapper {
         currency.setCurrencyName(currencyType.getCurrencyName());
 
         ForeignAccount foreignAccount = ForeignAccount.builder()
+            .id(generalAccount.getId())
             .bankCode(Integer.parseInt(recObject.get("bankCode")))
             .accountNo(recObject.get("accountNo"))
             .accountPassword(requestDto.getAccountPassword())
+            .accountName("신한은행 외화 모임통장")
             .balance(0.0)
             .generalAccount(generalAccount)
             .travelStartDate(requestDto.getTravelStartDate())

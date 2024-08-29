@@ -2,7 +2,6 @@ package com.ssafy.soltravel.service.user;
 
 
 import com.ssafy.soltravel.domain.User;
-import com.ssafy.soltravel.dto.user.EmailValidationResponseDto;
 import com.ssafy.soltravel.dto.user.UserCreateRequestDto;
 import com.ssafy.soltravel.dto.user.UserDetailDto;
 import com.ssafy.soltravel.dto.user.UserSearchRequestDto;
@@ -12,14 +11,13 @@ import com.ssafy.soltravel.exception.UserNotFoundException;
 import com.ssafy.soltravel.mapper.UserMapper;
 import com.ssafy.soltravel.repository.UserRepository;
 import com.ssafy.soltravel.service.AwsFileService;
+import com.ssafy.soltravel.service.account.AccountService;
 import com.ssafy.soltravel.util.LogUtil;
 import com.ssafy.soltravel.util.PasswordEncoder;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
@@ -46,6 +44,7 @@ public class UserService implements UserDetailsService {
   private final AwsFileService fileService;
   private final Map<String, String> apiKeys;
   private final WebClient webClient;
+  private final AccountService accountService;
 
 
   // 외부 API 요청용 메서드
@@ -188,13 +187,5 @@ public class UserService implements UserDetailsService {
         .registerAt(user.getRegisterAt())
         .isExit(user.getIsExit())
         .build();
-  }
-
-  public EmailValidationResponseDto findUserIdByEmail(String email) throws UsernameNotFoundException {
-    User user = userRepository.findByEmail(email).orElseThrow(
-        () -> new RuntimeException(String.format("loadUserByUsername Failed: %s", email))
-    );
-
-    return new EmailValidationResponseDto(user.getUserId());
   }
 }

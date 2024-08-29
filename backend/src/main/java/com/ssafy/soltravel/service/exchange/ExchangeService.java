@@ -4,6 +4,7 @@ import com.ssafy.soltravel.common.Header;
 import com.ssafy.soltravel.domain.ExchangeRate;
 import com.ssafy.soltravel.domain.ForeignAccount;
 import com.ssafy.soltravel.domain.GeneralAccount;
+import com.ssafy.soltravel.domain.User;
 import com.ssafy.soltravel.domain.redis.PreferenceRate;
 import com.ssafy.soltravel.dto.exchange.Account;
 import com.ssafy.soltravel.dto.exchange.AccountInfoDto;
@@ -26,6 +27,8 @@ import com.ssafy.soltravel.service.NotificationService;
 import com.ssafy.soltravel.service.account.AccountService;
 import com.ssafy.soltravel.service.transaction.TransactionService;
 import com.ssafy.soltravel.util.LogUtil;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -130,7 +133,8 @@ public class ExchangeService {
    */
   public List<LatestRate> getLatestExchangeRate(LatestRateRequestDto requestDto) {
 
-    return latestRateRepository.findLatestRatesByCurrencyAndDateRange(requestDto.getCurrencyCode(),requestDto.getStartDate(),requestDto.getEndDate());
+    return latestRateRepository.findLatestRatesByCurrencyAndDateRange(requestDto.getCurrencyCode(),
+        requestDto.getStartDate(), requestDto.getEndDate());
   }
 
   /**
@@ -173,7 +177,8 @@ public class ExchangeService {
 
           for (Account account : preferenceRate.getAccounts()) {
 
-            GeneralAccount generalAccount=generalAccountRepository.findById(account.getAccountId()).orElseThrow();
+            GeneralAccount generalAccount = generalAccountRepository.findById(
+                account.getAccountId()).orElseThrow();
             ExchangeRequestDto exchangeRequestDto = ExchangeRequestDto.builder()
                 .currencyCode(dto.getCurrency())
                 .accountId(account.getAccountId())
@@ -214,9 +219,10 @@ public class ExchangeService {
    */
   public ExchangeResponseDto executeKRWTOUSDExchange(ExchangeRequestDto dto) {
 
-    long krw=dto.getExchangeAmount();
-    if (dto.getExchangeAmount() % 10 != 0)
+    double krw = dto.getExchangeAmount();
+    if (dto.getExchangeAmount() % 10 != 0) {
       dto.setExchangeAmount(krw - krw % 10);
+    }
 
     dto.setExchangeRate(
         exchangeRateRepository.findByCurrencyCode(dto.getCurrencyCode()).getExchangeRate());
@@ -232,15 +238,20 @@ public class ExchangeService {
       throw new InvalidAmountException(minimumAmount, dto.getCurrencyCode());
     }
 
+    User user=generalAccountRepository.findUserByGeneralAccountId(dto.getAccountId());
+
+
     TransactionRequestDto withdrawal = new TransactionRequestDto();
-    withdrawal.setTransactionBalance(dto.getExchangeAmount());//원화
+    withdrawal.setTransactionBalance(Math.round(dto.getExchangeAmount()));//원화
     withdrawal.setTransactionSummary("환전 출금");
+    withdrawal.setUserId(user.getUserId());//모임통장의 userId
     transactionService.postAccountWithdrawal(dto.getAccountNo(), withdrawal);
 
     ForeignAccount foreignAccount = accountService.getForeignAccount(dto.getAccountId());
     ForeignTransactionRequestDto deposit = new ForeignTransactionRequestDto();
     deposit.setTransactionBalance(amount);//외화임
     deposit.setTransactionSummary("환전 입금");
+    deposit.setUserId(user.getUserId());
     transactionService.postForeignDeposit(foreignAccount.getAccountNo(), deposit);
 
     ExchangeCurrencyDto exchangeCurrencyDto = ExchangeCurrencyDto.builder()
@@ -249,7 +260,7 @@ public class ExchangeService {
         .amount(dto.getExchangeAmount())//원화
         .build();
 
-    long balance = accountService.getBalanceByAccountId(dto.getAccountId());
+    double balance = accountService.getBalanceByAccountId(dto.getAccountId());
 
     AccountInfoDto accountInfoDto = AccountInfoDto.builder()
         .accountId(dto.getAccountId())
@@ -271,13 +282,17 @@ public class ExchangeService {
   /**
    * KRW->USD 환전된 금액 반환하는 메서드
    */
-  public double convertKrwToUsdWithoutFee(long krwAmount, double exchangeRate) {
+  public double convertKrwToUsdWithoutFee(double krwAmount, double exchangeRate) {
     if (exchangeRate <= 0) {
       throw new IllegalArgumentException("환율은 0보다 커야 합니다.");
     }
 
-    double usdAmount = krwAmount / exchangeRate;
-    return Math.round(usdAmount * 100.0) / 100.0; // 소수점 두 자리까지 반올림
+    // BigDecimal을 사용하여 정확한 소수점 계산
+    BigDecimal krw = BigDecimal.valueOf(krwAmount);
+    BigDecimal rate = BigDecimal.valueOf(exchangeRate);
+    BigDecimal usdAmount = krw.divide(rate, 2, RoundingMode.HALF_UP); // 소수점 두 자리까지 반올림
+
+    return usdAmount.doubleValue();
   }
 
   /**

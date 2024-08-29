@@ -34,8 +34,6 @@ create table foreign_account
     account_password   varchar(255),
     group_name         varchar(255),
     icon_name          varchar(255),
-    travel_end_date    date,
-    travel_start_date  date,
     primary key (foreign_account_id)
 ) engine = InnoDB
   default charset = utf8mb4

@@ -57,15 +57,22 @@ public class AuthService {
    * 일반회원 로그인
    */
   public UserLoginResponseDto login(UserLoginRequestDto loginRequestDto) {
+
+    // 이메일 & 비밀번호 설정
     String email = loginRequestDto.getEmail();
     String encryptedPwd = PasswordEncoder.encrypt(email, loginRequestDto.getPassword());
 
+    // 일치 검사
     User user = userRepository.findByEmailAndPwd(email, encryptedPwd).orElseThrow(
         () -> new InvalidCredentialsException(loginRequestDto.getEmail())
     );
+
     //TODO: 정지(탈퇴) 회원 검증
 
-    return tokenService.saveRefreshToken(user.getUserId());
+    // 응답 설정
+    UserLoginResponseDto response = tokenService.saveRefreshToken(user.getUserId());
+    response.setName(user.getName());
+    return response;
   }
 
   /*

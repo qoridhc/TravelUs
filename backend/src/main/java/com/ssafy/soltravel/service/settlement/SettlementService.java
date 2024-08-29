@@ -13,6 +13,7 @@ import com.ssafy.soltravel.service.NotificationService;
 import com.ssafy.soltravel.service.exchange.ExchangeService;
 import com.ssafy.soltravel.service.transaction.TransactionService;
 import com.ssafy.soltravel.util.LogUtil;
+import com.ssafy.soltravel.util.SecurityUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,18 +44,22 @@ public class SettlementService {
 
     LogUtil.info("모임통장에 입금될 amount: ", amount);
 
-    //외화 계좌에서 출금
-    ForeignTransactionRequestDto foreignTransactionRequestDto = new ForeignTransactionRequestDto();
-    foreignTransactionRequestDto.setTransactionBalance(foreignAccount.getBalance());
-    foreignTransactionRequestDto.setTransactionSummary("정산 출금");
-    transactionService.postForeignWithdrawal(requestDto.getAccountNo(),
-        foreignTransactionRequestDto);
+    if (amount > 0) {
+      //외화 계좌에서 출금
+      ForeignTransactionRequestDto foreignTransactionRequestDto = new ForeignTransactionRequestDto();
+      foreignTransactionRequestDto.setTransactionBalance(foreignAccount.getBalance());
+      foreignTransactionRequestDto.setTransactionSummary("정산 출금");
+      foreignTransactionRequestDto.setUserId(foreignAccount.getGeneralAccount().getUser().getUserId());//모임주의 id
+      transactionService.postForeignWithdrawal(true,requestDto.getAccountNo(),
+          foreignTransactionRequestDto);
 
-    //일반 통장에 입금
-    TransactionRequestDto transactionRequestDto = new TransactionRequestDto();
-    transactionRequestDto.setTransactionBalance(amount);
-    transactionRequestDto.setTransactionSummary("정산 입금");
-    transactionService.postAccountDeposit(generalAccount.getAccountNo(), transactionRequestDto);
+      //일반 통장에 입금
+      TransactionRequestDto transactionRequestDto = new TransactionRequestDto();
+      transactionRequestDto.setTransactionBalance(amount);
+      transactionRequestDto.setTransactionSummary("정산 입금");
+      transactionRequestDto.setUserId(generalAccount.getUser().getUserId());//계좌 주인의 Id
+      transactionService.postAccountDeposit(generalAccount.getAccountNo(), transactionRequestDto);
+    }
 
     //정산
     divideBalance(generalAccount);
@@ -64,25 +69,27 @@ public class SettlementService {
 
   public void divideBalance(GeneralAccount generalAccount) {
 
-    long accountId= generalAccount.getId();
+    long accountId = generalAccount.getId();
     String accountNo = generalAccount.getAccountNo();
-    List<Participant> participants=participantRepository.findAllByGeneralAccountId(accountId);
+    List<Participant> participants = participantRepository.findAllByGeneralAccountId(accountId);
 
     //나눠진 잔액
-    double originAmount=generalAccount.getBalance();
-    long amountPerPerson=Math.round(originAmount/participants.size());
+    double originAmount = generalAccount.getBalance();
+    long amountPerPerson = Math.round(originAmount / participants.size());
 
     /**
      * 각 모임원에게 입금
      */
-    LogUtil.info("각 모임원 입금 금액:",amountPerPerson);
-    for(Participant participant:participants) {
+    LogUtil.info("각 모임원 입금 금액:", amountPerPerson);
+    for (Participant participant : participants) {
 
       TransactionRequestDto transactionRequestDto = new TransactionRequestDto();
       transactionRequestDto.setTransactionBalance(amountPerPerson);
+      transactionRequestDto.setUserId(participant.getUser().getUserId());
       transactionRequestDto.setTransactionSummary("정산 입금");
 
-      transactionService.postAccountDeposit(participant.getPersonalAccount().getAccountNo(),transactionRequestDto);
+      transactionService.postAccountDeposit(participant.getPersonalAccount().getAccountNo(),
+          transactionRequestDto);
 
       //알림 전송
       SettlementResponseDto responseDto = new SettlementResponseDto();

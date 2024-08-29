@@ -16,6 +16,8 @@ import com.ssafy.soltravel.repository.ForeignAccountRepository;
 import com.ssafy.soltravel.repository.GeneralAccountRepository;
 import com.ssafy.soltravel.repository.UserRepository;
 import com.ssafy.soltravel.service.NotificationService;
+import com.ssafy.soltravel.service.account_book.CashHistoryService;
+import com.ssafy.soltravel.util.LogUtil;
 import com.ssafy.soltravel.util.SecurityUtil;
 import java.util.HashMap;
 import java.util.List;
@@ -39,18 +41,19 @@ public class TransactionService {
   private final Map<String, String> apiKeys;
   private final WebClient webClient;
   private final ModelMapper modelMapper;
+
   private final UserRepository userRepository;
   private final GeneralAccountRepository generalAccountRepository;
-
-  private final String BASE_URL = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit";
   private final ForeignAccountRepository foreignAccountRepository;
   private final NotificationService notificationService;
+  private final CashHistoryService cashHistoryService;
 
+  private final String BASE_URL = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit";
   // 일반 계좌 입금
   public ResponseEntity<DepositResponseDto> postAccountDeposit(String accountNo,
       TransactionRequestDto requestDto) {
 
-    Long userId = SecurityUtil.getCurrentUserId();
+    Long userId = requestDto.getUserId();
     User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
 
@@ -102,7 +105,7 @@ public class TransactionService {
       String accountNo,
       TransactionRequestDto requestDto) {
 
-    Long userId = SecurityUtil.getCurrentUserId();
+    Long userId= requestDto.getUserId();
 
     User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
@@ -141,6 +144,7 @@ public class TransactionService {
 
     DepositResponseDto responseDto = modelMapper.map(recObject, DepositResponseDto.class);
 
+    // 계좌 인출
     Double currentBalance = generalAccount.getBalance();
     generalAccount.setBalance(currentBalance - requestDto.getTransactionBalance());
 
@@ -288,7 +292,8 @@ public class TransactionService {
   public DepositResponseDto postForeignDeposit(String accountNo,
       ForeignTransactionRequestDto requestDto) {
 
-    Long userId = SecurityUtil.getCurrentUserId();
+    Long userId = requestDto.getUserId();
+
     User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
 
@@ -338,10 +343,10 @@ public class TransactionService {
   /**
    * 외화 계좌에서 출금하는 메서드
    */
-  public DepositResponseDto postForeignWithdrawal(String accountNo,
-      ForeignTransactionRequestDto requestDto) {
+  public DepositResponseDto postForeignWithdrawal(boolean is_settlement,String accountNo, ForeignTransactionRequestDto requestDto) {
 
-    Long userId = SecurityUtil.getCurrentUserId();
+    Long userId = requestDto.getUserId();
+
     User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
 
@@ -381,6 +386,12 @@ public class TransactionService {
 
     Double currentBalance = foreignAccount.getBalance();
     foreignAccount.setBalance(currentBalance - requestDto.getTransactionBalance());
+
+
+    if(!is_settlement)
+      cashHistoryService.getCashFromAccount(foreignAccount, requestDto.getTransactionBalance());
+
+    foreignAccountRepository.save(foreignAccount);
 
     return responseDto;
   }
