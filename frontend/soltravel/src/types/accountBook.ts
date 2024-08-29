@@ -5,7 +5,20 @@ export interface getAccountBookQuery {
   orderByType: string;
 }
 
+export interface getAccountBookDayQuery {
+  date: string;
+  transactionType: string;
+}
+
 export interface DayHistory {
   totalExpenditure : number;
   totalIncome: number;
+}
+
+export interface DayHistoryDetail {
+  amount: string;
+  transactionType: string;
+  transactionAt: string;
+  balance: string;
+  store: string;
 }

@@ -6,6 +6,8 @@ import "../../css/calendar.css";
 import api from "../../lib/axios";
 import { accountBookApi } from "../../api/accountBook";
 import { DayHistory } from "../../types/accountBook";
+import { useDispatch } from "react-redux";
+import { setDayHistoryDetailList } from "../../redux/accountBookSlice";
 
 type ValuePiece = Date | null;
 
@@ -16,18 +18,12 @@ interface Props {
 }
 
 const AccountBookCalendar = ({ accountNo }: Props) => {
+  const dispatch = useDispatch();
   const [value, onChange] = useState<Value>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [activeStartDate, setActiveStartDate] = useState("");
   const [activeEndDate, setActiveEndDate] = useState("");
   const [monthlyTransaction, setMonthlyTransaction] = useState<Array<DayHistory>>([]);
-
-  // const dayTransaction = {
-  //   amount: 24.55,
-  //   transactionAt: "2021-11-08T11:44:30.327959",
-  //   balance: 5236.36,
-  //   store: "Maccheroni Republic",
-  // };
 
   const handleActiveDateChange = (date: any) => {
     setActiveStartDate(format(date.activeStartDate, "yyyyMMdd"));
@@ -35,9 +31,20 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
     setActiveEndDate(format(date.activeStartDate, "yyyyMM") + last.getDate());
   };
 
-  const handleDateDetail = (date: any) => {
-    let clickDate = format(date, "yyyyMMdd");
-    // const
+  const handleDateDetail = async (date: any) => {
+    if (accountNo !== "") {
+      let clickDate = format(date, "yyyyMMdd");
+      try {
+        const data = {
+          date: clickDate,
+          transactionType: "A",
+        };
+        const response = await accountBookApi.fetchAccountBookDayInfo(accountNo, data);
+        dispatch(setDayHistoryDetailList(response.data));
+      } catch (error) {
+        console.log("accountBookApi의 fetchAccountBookDayInfo : ", error);
+      }
+    }
   };
 
   const getAccountBookInfo = async () => {
@@ -45,7 +52,6 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
       setIsLoading(true);
       const data = { startDate: activeStartDate, endDate: activeEndDate, transactionType: "A", orderByType: "ASC" };
       const response = await accountBookApi.fetchAccountBookInfo(accountNo, data);
-      console.log(response);
       setMonthlyTransaction(response.data.monthHistoryList);
     } catch (error) {
       console.log("accountBook의 fetchAccountBookInfo : ", error);
