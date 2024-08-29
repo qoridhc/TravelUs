@@ -3,20 +3,17 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { AccountInfo } from "../../types/account";
 
 interface DropdownInputProps {
+  accountList: AccountInfo[];
   selectedOption: string;
   onChange: (accountName: string) => void;
 }
 
-const DropdownInput: React.FC<DropdownInputProps> = ({ selectedOption, onChange }) => {
-  const accountList = [
-    "모히또에서 몰디브 한 잔하는 모임사람",
-    "신암고 1-3반 동창회",
-    "SSAFY 11기 구미 4반",
-    "SSAFY 11기 구미 5반",
-  ];
-
+const DropdownInput: React.FC<DropdownInputProps> = ({ accountList, selectedOption, onChange }) => {
   const handleChange = (selected: string) => {
     onChange(selected);
   };
@@ -57,9 +54,15 @@ const DropdownInput: React.FC<DropdownInputProps> = ({ selectedOption, onChange 
             },
           },
         }}>
-        {accountList.map((account) => (
-          <MenuItem value={account}>{account}</MenuItem>
-        ))}
+        {accountList.map((account, index) =>
+          index !== 0 ? (
+            <MenuItem value={account.accountName} key={index}>
+              {account.groupName}
+            </MenuItem>
+          ) : (
+            <></>
+          )
+        )}
       </Select>
     </FormControl>
   );
