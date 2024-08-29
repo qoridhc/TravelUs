@@ -7,7 +7,7 @@ export interface AccountInfo {
   balance: number;
   accountName: string;
   accountType: string;
-  gropuName: string;
+  groupName: string;
   iconName: string;
   travelStartDate: string;
   travelEndDate: string;
@@ -18,6 +18,7 @@ export interface AccountInfo {
   createdAt: string;
   updatedAt: string;
 }
+
 
 // 거래 내역 조회
 export interface Transaction {
@@ -48,27 +49,18 @@ export interface DepositResponse {
 // 모임통장 목록 조회 정보
 export interface MeetingAccountListDetail {
   id: number;
-  meetingAccountName: string;
-  meetingAccountIcon: string;
-  normalMeetingAccount: {
-    accountNumber: string;
-    accountMoney: string;
+  bankCode: number;
+  accountPassword: string;
+  accountNo: string;
+  balance: number;
+  accountName: string;
+  accountType: string;
+  currency: {
+    currencyCode: string;
+    currencyName: string;
   };
-  foreignMeetingAccount: {
-    accountNumber: string;
-    accountMoney: string;
-    currencyType: string;
-  };
-}
-
-// 모임통장 개설 정보
-export interface MeetingAccountDetail {
-  meetingAccountName: string;
-  meetingAccountIcon: string;
-  meetingAccountUserName: string;
-  meetingAccountUserResidentNumber: string;
-  meetingAccountPassword: string;
-  meetingAccountMemberList: Array<string>;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // 참여자 조회 정보
@@ -94,3 +86,20 @@ export interface AccountParticipants {
   accountId: number;
   participants: Participant[];
 }
+
+// 일반모임통장 개설 정보
+export interface GeneralMeetingAccountDetail {
+  generalMeetingAccountName: string;
+  generalMeetingAccountIcon: string;
+  generalMeetingAccountUserName: string;
+  generalMeetingAccountUserResidentNumber: string;
+  generalMeetingAccountPassword: string;
+  generalMeetingAccountMemberList: Array<string>;
+}
+
+// 모임통장 모임종류 아이콘 
+export const meetingAccountIconList: Array<{text: string, value: string}> = [
+  { text: "선택안함", value: "none" },
+  { text: "여행", value: "airplane" },
+  { text: "학교", value: "school" },
+];

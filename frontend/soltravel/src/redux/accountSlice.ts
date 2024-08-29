@@ -1,28 +1,29 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { MeetingAccountListDetail, MeetingAccountDetail } from "../types/account";
+import { AccountInfo, GeneralMeetingAccountDetail } from "../types/account";
 
 export interface AccountState {
   isKeyboard: boolean;
   accountPassword: string;
-  meetingAccountList: Array<MeetingAccountListDetail>;
-  meetingAccountDetail: MeetingAccountDetail;
+  accountList: Array<AccountInfo>;
+  foreignAccountList: Array<AccountInfo>;
+  generalMeetingAccountDetail: GeneralMeetingAccountDetail;
 }
 
 const initialState: AccountState = {
   isKeyboard: false,
   accountPassword: "",
-  meetingAccountList: [],
-  meetingAccountDetail: {
-    meetingAccountName: "",
-    meetingAccountIcon: "",
-    meetingAccountUserName: "",
-    meetingAccountUserResidentNumber: "",
-    meetingAccountPassword: "",
-    meetingAccountMemberList: [],
+  accountList: [],
+  foreignAccountList: [],
+  generalMeetingAccountDetail: {
+    generalMeetingAccountName: "",
+    generalMeetingAccountIcon: "",
+    generalMeetingAccountUserName: "",
+    generalMeetingAccountUserResidentNumber: "",
+    generalMeetingAccountPassword: "",
+    generalMeetingAccountMemberList: [],
   },
 };
-
 
 export const userSilce = createSlice({
   name: "account",
@@ -34,12 +35,18 @@ export const userSilce = createSlice({
     setAccountPassword: (state, action: PayloadAction<string>) => {
       state.accountPassword = action.payload;
     },
-    editMeetingAccountList: (state, action: PayloadAction<Array<MeetingAccountListDetail>>) => {
-      state.meetingAccountList = action.payload;
+    editAccountList: (state, action: PayloadAction<Array<AccountInfo>>) => {
+      state.accountList = action.payload;
+    },
+    editForeingAccountList: (state, action: PayloadAction<Array<AccountInfo>>) => {
+      state.foreignAccountList = action.payload;
+    },
+    editGeneralMeetingAccountList: (state, action: PayloadAction<GeneralMeetingAccountDetail>) => {
+      state.generalMeetingAccountDetail = action.payload;
     },
   },
 });
 
-export const { setIsKeyboard, setAccountPassword, editMeetingAccountList } = userSilce.actions;
+export const { setIsKeyboard, setAccountPassword, editAccountList, editForeingAccountList, editGeneralMeetingAccountList } = userSilce.actions;
 
 export default userSilce.reducer;

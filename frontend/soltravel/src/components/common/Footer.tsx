@@ -14,7 +14,6 @@ const Footer = () => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-
   const handleMenuHome = () => {
     navigate("/");
     setCurrentMenu("홈");
@@ -26,6 +25,7 @@ const Footer = () => {
   };
 
   const handleMenuAccountDiary = () => {
+    navigate("/accountbookdetail");
     setCurrentMenu("가계부");
   };
 

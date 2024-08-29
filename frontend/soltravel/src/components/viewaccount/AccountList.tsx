@@ -1,5 +1,5 @@
 import React from 'react';
-import { AccountInfo } from '../../types/account';
+import { AccountInfo } from "../../types/account";
 
 type AccountDetailsProps = {
   accounts: AccountInfo[];

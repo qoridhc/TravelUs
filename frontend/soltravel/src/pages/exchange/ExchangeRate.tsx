@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import ExchangeRateInfo from '../../components/exchange/ExchangeRate';
-import ExchangeRateChart from '../../components/exchange/ExchangeRateChart';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ExchangeRateInfo from "../../components/exchange/ExchangeRate";
+import ExchangeRateChart from "../../components/exchange/ExchangeRateChart";
 
 const ExchangeRatePage = (): React.ReactElement => {
   const navigate = useNavigate();
-  const [selectedCurrency, setSelectedCurrency] = useState<string>('USD')
+  const [selectedCurrency, setSelectedCurrency] = useState<string>("USD");
 
   const handleExchange = () => {
-    navigate('/exchange');
+    navigate("/exchange");
   };
 
   const handleCurrencyChange = (currency: string) => {
     setSelectedCurrency(currency);
-  }
+  };
 
   return (
     <div className="p-4 mt-5 max-w-sm mx-auto bg-white rounded-xl shadow-md">

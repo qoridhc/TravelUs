@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { RiHome5Line } from "react-icons/ri";
 import { useSelector, useDispatch } from "react-redux";
 import { setIsKeyboard, setAccountPassword } from "../../redux/accountSlice";
@@ -20,11 +20,21 @@ const AccountCreate = () => {
   const [residentNumber, setResidentNumber] = useState("");
   const [maskedPassword, setMaskedPassword] = useState("");
 
+  const residentNumberRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (accountPassword !== undefined) {
       setMaskedPassword("●".repeat(accountPassword.length));
     }
   }, [accountPassword]);
+
+  useEffect(() => {
+    if (step === 2) {
+      if (residentNumberRef.current) {
+        residentNumberRef.current.blur();
+      }
+    }
+  }, [step]);
 
   const handleNameChange = (name: string) => {
     setName(name);
@@ -84,7 +94,11 @@ const AccountCreate = () => {
                 step > 0 ? "translate-y-[3px]" : "translate-y-0"
               }`}>
               {step > 0 && (
-                <ResidentNumberInput residentNumber={residentNumber} onChange={handleResidentNumberChange} />
+                <ResidentNumberInput
+                  stepInfo={{ currentStep: step, closeStep: 2 }}
+                  residentNumber={residentNumber}
+                  onChange={handleResidentNumberChange}
+                />
               )}
             </div>
 
