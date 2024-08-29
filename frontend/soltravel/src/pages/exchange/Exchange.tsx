@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { accountApi } from '../../api/account';
 import { exchangeApi } from '../../api/exchange';
 import { AccountInfo } from '../../types/account';
 import { ExchangeRateInfo, ExchangeRequest, ExchangeResponse } from '../../types/exchange';
 
 const Exchange: React.FC = () => {
-  // const { userId } = useParams<{ userId: string }>();
-  const userId = 2
+  const navigate = useNavigate();
+  const [userId, setUserId] = useState<number | null>(null);
   const [accounts, setAccounts] = useState<AccountInfo[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<AccountInfo | null>(null);
   const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[]>([]);
@@ -17,14 +17,26 @@ const Exchange: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
+    const storedUserId = localStorage.getItem('userId');
+    if (!storedUserId) {
+      alert('로그인 후에 이용해 주세요.');
+      navigate('/login');
+      return;
+    }
+    setUserId(parseInt(storedUserId, 10));
+  }, [navigate])
+
+  useEffect(() => {
     const fetchData = async () => {
+      if (!userId) return;
+
       try {
         const [fetchedAccounts, rates] = await Promise.all([
           accountApi.fetchAccountInfo(userId),
           exchangeApi.getExchangeRates()
         ]);
         const groupAccounts = fetchedAccounts.filter(account => account.accountType === 'GROUP');
-        setAccounts(groupAccounts);
+        setAccounts(groupAccounts)
         if (groupAccounts.length > 0) {
           setSelectedAccount(groupAccounts[0]);
         }
@@ -58,11 +70,18 @@ const Exchange: React.FC = () => {
     const account = accounts.find(acc => acc.accountNo === e.target.value);
     if (account) {
       setSelectedAccount(account);
+      setExchangeAmount('');
     }
   };
 
   const handleExchangeAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setExchangeAmount(e.target.value);
+    const value = e.target.value;
+    if (!selectedAccount) return;
+
+    const numValue = parseFloat(value);
+    if (isNaN(numValue) || numValue <= selectedAccount.balance) {
+      setExchangeAmount(value);
+    }
   };
 
   const handleCurrencyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -70,7 +89,7 @@ const Exchange: React.FC = () => {
   };
 
   const handleExchange = async () => {
-    if (!selectedAccount) return;
+    if (!selectedAccount || !userId) return;
 
     const numAmount = parseFloat(exchangeAmount);
     if (isNaN(numAmount) || numAmount <= 0) {
@@ -137,12 +156,12 @@ const Exchange: React.FC = () => {
       <h1 className="text-xl font-bold mb-4">환전하기</h1>
       <div className="bg-white rounded-lg p-4 shadow mb-4">
         <label htmlFor="account-select" className="block text-sm font-medium text-gray-700 mb-2">
-          계좌 선택
+          계좌 선택 (모임통장)
         </label>
         <select
           id="account-select"
           className="w-full p-2 border rounded mb-2"
-          value={selectedAccount.accountNo}
+          value={selectedAccount?.accountNo || ''}
           onChange={handleAccountChange}
         >
           {accounts.map(account => (
@@ -151,6 +170,9 @@ const Exchange: React.FC = () => {
             </option>
           ))}
         </select>
+        {selectedAccount && (
+          <p className="text-sm text-gray-500">잔액: {selectedAccount.balance.toLocaleString()} {selectedAccount.currency.currencyCode}</p>
+        )}
       </div>
       <h2 className="font-bold mb-2">환전할 금액 입력</h2>
       <div className="bg-white rounded-lg p-4 shadow mb-4">
@@ -158,7 +180,7 @@ const Exchange: React.FC = () => {
           <div className="w-8 h-8 bg-[#0046FF] rounded-full mr-2"></div>
           <div>
             <p className="font-semibold">{selectedAccount.accountName}</p>
-            <p className="font-semibold">{selectedAccount.accountNo}</p>
+            <p className="text-sm text-gray-500">{selectedAccount.accountNo}</p>
           </div>
         </div>
         <input
@@ -167,6 +189,7 @@ const Exchange: React.FC = () => {
           value={exchangeAmount}
           onChange={handleExchangeAmountChange}
           placeholder="0"
+          max={selectedAccount.balance}
         />
         <select
           className="w-full p-2 border rounded mb-2"
@@ -178,7 +201,7 @@ const Exchange: React.FC = () => {
           ))}
         </select>
         <p className="text-right text-sm text-gray-500">
-          최소 {exchangeRates.find(r => r.currencyCode === selectedCurrency)?.exchangeMin.toLocaleString()} {selectedCurrency} 이상
+          최소 {exchangeRates.find(r => r.currencyCode === selectedCurrency)?.exchangeMin.toLocaleString()} KRW 이상
         </p>
       </div>
       <div className="bg-white rounded-lg p-4 shadow mb-4">
@@ -187,13 +210,13 @@ const Exchange: React.FC = () => {
           {parseFloat(expectedExchange) > 0 ? parseFloat(expectedExchange).toLocaleString() : '0'} {selectedCurrency}
         </p>
         <p className="text-sm text-gray-500">
-          적용 환율: {exchangeRates.find(r => r.currencyCode === selectedCurrency)?.exchangeRate.toFixed(2)} {selectedCurrency} = 1 {selectedAccount.currency.currencyCode}
+          적용 환율: {exchangeRates.find(r => r.currencyCode === selectedCurrency)?.exchangeRate.toFixed(2)} KRW = 1 {selectedCurrency}
         </p>
       </div>
       <button
         className={`w-full bg-[#0046FF] text-white py-3 rounded-lg mt-4 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
         onClick={handleExchange}
-        disabled={isLoading}
+        disabled={isLoading || parseFloat(exchangeAmount) > selectedAccount.balance}
       >
         {isLoading ? '환전 중...' : '환전하기'}
       </button>
