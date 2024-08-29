@@ -9,9 +9,10 @@ type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 const AccountBookCalendar = () => {
+  const today = new Date();
   const [value, onChange] = useState<Value>(null);
-  const [activeYear, setActiveYear] = useState("");
-  const [activeMonth, setActiveMonth] = useState("");
+  const [activeStartDate, setActiveStartDate] = useState("");
+  const [activeEndDate, setActiveEndDate] = useState("");
 
   const monthlyTransaction = [
     { totalExpenditure: 0, totalIncome: 0 },
@@ -48,9 +49,22 @@ const AccountBookCalendar = () => {
     { totalExpenditure: 74.99, totalIncome: 0 },
   ];
 
+  const dayTransaction = {
+    amount: 24.55,
+    // transactionAt: ,
+    balance: 5236.36,
+    store: "Maccheroni Republic",
+  };
+
   const handleActiveDateChange = (date: any) => {
-    setActiveYear(date.activeStartDate.getFullYear());
-    setActiveMonth(date.activeStartDate.getMonth() + 1);
+    setActiveStartDate(format(date.activeStartDate, "yyyyMMdd"));
+    let last = new Date(Number(format(date.activeStartDate, "yyyy")), Number(format(date.activeStartDate, "M")), 0);
+    setActiveEndDate(format(date.activeStartDate, "yyyyMM") + last.getDate());
+  };
+
+  const handleDateDetail = (date: any) => {
+    let clickDate = format(date, "yyyyMMdd");
+    // const
   };
 
   return (
@@ -66,20 +80,25 @@ const AccountBookCalendar = () => {
         prev2Label={null} // -1년 & -10년 이동 버튼 숨기기
         minDetail="year" // 10년단위 년도 숨기기
         tileContent={({ activeStartDate, date, view }) => (
-          <>
-            <p className="text-xs text-[#FF5F5F] font-semibold">
-              {monthlyTransaction[date.getDate()].totalExpenditure !== 0
-                ? `+ ${monthlyTransaction[date.getDate()].totalExpenditure}`
-                : ""}
-            </p>
-            <p className="text-xs text-[#0471E9] font-semibold">
-              {monthlyTransaction[date.getDate()].totalIncome !== 0
-                ? `- ${monthlyTransaction[date.getDate()].totalIncome}`
-                : ""}
-            </p>
-          </>
+          <div>
+            <div className="text-xs text-left font-semibold">
+              <p className="text-[#FF5F5F]">
+                {monthlyTransaction[date.getDate()].totalExpenditure !== 0
+                  ? `+ ${monthlyTransaction[date.getDate()].totalExpenditure}`
+                  : ""}
+              </p>
+              <p className="text-[#0471E9]">
+                {monthlyTransaction[date.getDate()].totalIncome !== 0
+                  ? `- ${monthlyTransaction[date.getDate()].totalIncome}`
+                  : ""}
+              </p>
+            </div>
+
+            {/* {today === date ? <p>오늘</p> : <></>} */}
+          </div>
         )}
         onActiveStartDateChange={(activeStartDate) => handleActiveDateChange(activeStartDate)}
+        onClickDay={(value, event) => handleDateDetail(value)}
       />
     </div>
   );

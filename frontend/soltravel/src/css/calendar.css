@@ -32,11 +32,17 @@
 .react-calendar__month-view__days__day {
   width: 100%;
   padding: 2px;
-  aspect-ratio: 1;
+  aspect-ratio: 1 / 1.5;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/* 일자와 입출금 내역 사이 간격 */
+.react-calendar__month-view__days__day abbr {
+  font-size: medium;
+  padding-bottom: 5px;
 }
 
  /* 선택한 날짜 스타일 적용 */
@@ -45,6 +51,10 @@
   color: #565656;
   background-color: #BBDBFF;
   border-radius: 0.3rem;
+}
+
+.react-calendar__tile--active:enabled:hover {
+  background-color: #BBDBFF;
 }
 
 /* 날짜칸 호버 시 배경색 없음 */
