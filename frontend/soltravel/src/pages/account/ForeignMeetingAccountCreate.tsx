@@ -1,27 +1,56 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { exchangeApi } from "../../api/exchange";
+import { accountApi } from "../../api/account";
+import { ExchangeRateInfo as ExchangeRateInfoType } from "../../types/exchange";
 import { useNavigate } from "react-router";
 import { RiHome5Line } from "react-icons/ri";
 import TypeSelect from "../../components/account/inputField/TypeSelect";
 import { currencyTypeList } from "../../types/exchange";
+import { MeetingAccountCreate } from "../../types/account";
 import ExchangeRateInput from "../../components/account/inputField/ExchangeRateInput";
 import TravleDateRangePicker from "../../components/account/inputField/TravelDateRangePicker";
 import { Dayjs } from "dayjs";
 
 const ForeignMeetingAccountCreate = () => {
-  // const {} = useSelector((state: RootState) => state.account);
-  const dispatch = useDispatch();
+  const generalMeetingAccountDetail = useSelector((state: RootState) => state.account.generalMeetingAccountDetail);
   const navigate = useNavigate();
 
   const [step, setStep] = useState(0);
   const stepList = ["통화를", "희망 환율을", "여행 일정을"];
   const [currencyType, setCurrencyType] = useState("");
   const [exchangeRate, setExchangeRate] = useState(0);
+  const [currentExchangeRate, setCurrentExchangeRate] = useState(0);
   const [travelSchedule, setTravelSchedule] = useState<{ startDate: Dayjs | null; endDate: Dayjs | null }>({
     startDate: null,
     endDate: null,
   });
+  const [currencies, setCurrencies] = useState<ExchangeRateInfoType[]>([]);
+
+  useEffect(() => {
+    fetchExchangeRates();
+  }, []);
+
+  useEffect(() => {
+    if (currencyType && currencies.length > 0) {
+      const selectedCurrency = currencies.find((currency) => currency.currencyCode === currencyType);
+      if (selectedCurrency) {
+        setCurrentExchangeRate(selectedCurrency.exchangeRate);
+      } else {
+        setCurrentExchangeRate(0);
+      }
+    }
+  }, [currencyType, currencies]);
+
+  const fetchExchangeRates = async () => {
+    try {
+      const data = await exchangeApi.getExchangeRates();
+      setCurrencies(data);
+    } catch (error) {
+      console.error("환율 정보를 가져오는 데 실패했습니다. 다시 시도해 주세요.", error);
+    }
+  };
 
   const handleCurrencyTypeChange = (currencyType: string) => {
     setCurrencyType(currencyType);
@@ -53,18 +82,29 @@ const ForeignMeetingAccountCreate = () => {
   };
 
   const handleNext = () => {
-    // dispatch(
-    //   editGeneralMeetingAccountList({
-    //     generalMeetingAccountName: meetingName,
-    //     generalMeetingAccountIcon: meetingType,
-    //     generalMeetingAccountUserName: name,
-    //     generalMeetingAccountUserResidentNumber: residentNumber,
-    //     generalMeetingAccountPassword: accountPassword,
-    //     generalMeetingAccountMemberList: memberList,
-    //   })
-    // );
+    if (!travelSchedule.startDate || !travelSchedule.endDate) {
+      alert("여행 일정의 시작일과 종료일을 모두 입력해주세요.");
+      return;
+    }
 
-    navigate("/meetingaccountcreatecomplete");
+    const accountRequest: MeetingAccountCreate = {
+      accountType: "GROUP",
+      accountPassword: generalMeetingAccountDetail.generalMeetingAccountPassword,
+      groupName: generalMeetingAccountDetail.generalMeetingAccountName,
+      travelStartDate: travelSchedule.startDate.format("YYYY-MM-DD"),
+      travelEndDate: travelSchedule.endDate.format("YYYY-MM-DD"),
+      currencyCode: currencyType,
+      iconName: generalMeetingAccountDetail.generalMeetingAccountIcon,
+      exchangeRate: exchangeRate,
+      participantInfos: generalMeetingAccountDetail.generalMeetingAccountMemberList,
+    };
+
+    try {
+      const response = accountApi.fetchCreateMeetingAccount(generalMeetingAccountDetail.generalMeetingAccountMemberList[0].userId, accountRequest);
+      navigate("/meetingaccountcreatecomplete");
+    } catch (error) {
+      console.error("모임통장 생성에 실패했습니다. 다시 시도해 주세요.", error);
+    }
   };
 
   return (
@@ -112,6 +152,7 @@ const ForeignMeetingAccountCreate = () => {
                 <ExchangeRateInput
                   currencyType={currencyType}
                   exchangeRate={exchangeRate}
+                  currentExchangeRate={currentExchangeRate}
                   onChange={handleExchangeRateChange}
                 />
               )}

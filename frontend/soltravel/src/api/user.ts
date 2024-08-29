@@ -15,8 +15,13 @@ export const userApi = {
     return api.post(`/auth/login`, { email, password });
   },
 
-  // fetchNotificationSubscribe: async () => {
-  //   const response = await api.get("/notification/subscribe");
-  //   return response.data;
-  // },
+  // 모임원 초대 시 이메일 유효성 검사
+  fetchEmailValidation: (email: string) => {
+    return api.get(`/user/validate-email/${email}`);
+  },
+
+  // 유저 조회
+  fetchUser: (userId: string) => {
+    return api.get(`/user/search/${userId}`);
+  },
 };

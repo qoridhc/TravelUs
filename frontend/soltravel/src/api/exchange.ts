@@ -4,7 +4,6 @@ import { ExchangeRateInfo, ExchangeRequest, ExchangeResponse, ExchangeRateHistor
 export const exchangeApi = {
   getExchangeRates: async (): Promise<ExchangeRateInfo[]> => {
     const response = await api.get('/exchange');
-    console.log(response.data)
     return response.data
   },
 
@@ -15,7 +14,6 @@ export const exchangeApi = {
 
   getExchangeRateHistory: async (data: ExchangeRateHistoryRequest): Promise<ExchangeRateHistoryResponse> => {
     const response = await api.post<ExchangeRateHistoryResponse>('/exchange/latest', data);
-    console.log(response.data)
     return response.data
   }
 };
