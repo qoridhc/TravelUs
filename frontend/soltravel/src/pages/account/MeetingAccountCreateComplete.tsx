@@ -2,7 +2,7 @@ import React from "react";
 import { IoMdCheckmark } from "react-icons/io";
 import { useNavigate } from "react-router";
 
-const AccountCreateComplete = () => {
+const MeetingAccountCreateComplete = () => {
   const navigate = useNavigate();
 
   return (
@@ -13,7 +13,7 @@ const AccountCreateComplete = () => {
         </div>
 
         <div className="text-lg text-center">
-          <p className="font-semibold">입출금통장</p>
+          <p className="font-semibold">해외여행 올인원 모임통장</p>
           <p>계좌 개설 완료되었습니다.</p>
         </div>
 
@@ -24,11 +24,6 @@ const AccountCreateComplete = () => {
       </div>
 
       <div className="w-full font-semibold row-start-3 flex flex-col justify-end space-y-3">
-        <button
-          className="w-full py-3 text-white bg-[#0471E9] rounded-lg"
-          onClick={() => navigate("/generalmeetingaccountcreate")}>
-          모임통장 신청하기
-        </button>
         <button className="w-full py-3 text-[#565656] border-2 rounded-lg" onClick={() => navigate("/")}>
           홈으로
         </button>
@@ -37,4 +32,4 @@ const AccountCreateComplete = () => {
   );
 };
 
-export default AccountCreateComplete;
+export default MeetingAccountCreateComplete;

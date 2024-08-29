@@ -25,6 +25,7 @@ import AccountCreateComplete from "./pages/account/AccountCreateComplete";
 import GeneralMeetingAccountCreate from "./pages/account/GeneralMeetingAccountCreate";
 import MeetingAccountCreatePrepare from "./pages/account/MeetingAccountCreatePrepare";
 import ForeignMeetingAccountCreate from "./pages/account/ForeignMeetingAccountCreate";
+import MeetingAccountCreateComplete from "./pages/account/MeetingAccountCreateComplete";
 
 function App() {
   return (
@@ -68,6 +69,7 @@ function App() {
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />}></Route>
           <Route path="/foreignmeetingaccountcreate" element={<ForeignMeetingAccountCreate />}></Route>
           <Route path="/accountcreatecomplete" element={<AccountCreateComplete />}></Route>
+          <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />}></Route>
           <Route path="/myaccount" element={<MyAccount />}></Route>
           <Route path="/generalaccount" element={<GeneralAccount />}></Route>
           <Route path="/foreignaccount" element={<ForeignAccount />}></Route>
