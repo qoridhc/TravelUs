@@ -18,7 +18,7 @@ const MainPage = () => {
   const userId = localStorage.getItem("userId");
   const userIdNumber = userId ? parseInt(userId, 10) : 0;
   const accountList = useSelector((state: RootState) => state.account.accountList);
-  const foreignAccountList = useSelector((state: RootState) => state.account.foreingAccountList);
+  const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,7 +39,7 @@ const MainPage = () => {
     };
 
     fetchData();
-  }, [dispatch, userIdNumber]); // 의존성 배열에 필요한 값 추가
+  }, [dispatch]); // 의존성 배열에 필요한 값 추가
 
   return (
     <div className="w-full">
@@ -105,7 +105,7 @@ const MainPage = () => {
               className="mainSwiper rounded-xl">
               {accountList.slice(1).map((account, index) => (
                 <SwiperSlide>
-                  <MainMeetingAccount account={account} foreignAccount={foreignAccountList[index]} />
+                  <MainMeetingAccount index={index} account={account} foreignAccount={foreignAccountList[index]} />
                 </SwiperSlide>
               ))}
             </Swiper>

@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { IoIosArrowForward } from "react-icons/io";
 
 const Header = () => {
   const navigate = useNavigate();
-  const userName = "허동원";
+
+  const userName = localStorage.getItem("userName");
 
   return (
     <div className="h-16 p-5 bg-[#EFEFF5] sticky top-0 flex justify-between items-center z-50">
