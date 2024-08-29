@@ -18,11 +18,11 @@ const MeetingAccountDetail = () => {
   const { id } = useParams();
   const numberId = Number(id);
 
-  const meetingAccountList = useSelector((state: RootState) => state.account.meetingAccountList);
+  // const meetingAccountList = useSelector((state: RootState) => state.account.meetingAccountList);
 
   return (
     <div className="w-full h-full pb-16 bg-[#EFEFF5]">
-      <div className="p-5 flex flex-col bg-[#c3d8eb]">
+      {/* <div className="p-5 flex flex-col bg-[#c3d8eb]">
         <div className="mb-12 flex space-x-2 items-center justify-start">
           <IoIosArrowBack
             onClick={() => {
@@ -85,7 +85,7 @@ const MeetingAccountDetail = () => {
         </div>
         <hr className="mb-3 border-0 border-t-[0.5px] border-zinc-200" />
         <AccountDetail />
-      </div>
+      </div> */}
     </div>
   );
 };

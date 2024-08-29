@@ -7,14 +7,14 @@ import { useNavigate } from "react-router";
 const AccountDetail = () => {
   const navigate = useNavigate();
 
-  const meetingAccountList = useSelector((state: RootState) => state.account.meetingAccountList);
+  // const meetingAccountList = useSelector((state: RootState) => state.account.meetingAccountList);
 
   const { id } = useParams();
   const numberId = Number(id);
 
   return (
     <div>
-      <p className="text-sm mb-3 font-bold">일반모임통장</p>
+      {/* <p className="text-sm mb-3 font-bold">일반모임통장</p>
       <div
         // key={index}
         onClick={() => {
@@ -90,7 +90,7 @@ const AccountDetail = () => {
         >
           재환전
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

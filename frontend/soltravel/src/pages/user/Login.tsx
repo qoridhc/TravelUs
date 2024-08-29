@@ -21,6 +21,7 @@ const Login = () => {
       if (response.status === 200) {
         localStorage.setItem("accessToken", response.data.accessToken);
         localStorage.setItem("userId", response.data.userId.toString());
+        localStorage.setItem("userName", response.data.name);
         navigate("/");
       }
     } catch (error) {

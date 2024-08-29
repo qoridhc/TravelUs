@@ -18,7 +18,7 @@ const MeetingAccount = ({ account }: Props) => {
         navigate(`/meetingaccount/${account.id}`);
       }}
       className="w-full py-5 px-5 flex flex-col rounded-xl bg-white shadow-md">
-      <div className="flex flex-col space-y-4">
+      {/* <div className="flex flex-col space-y-4">
         <div className="flex items-center space-x-1 mb-1">
           {account.meetingAccountIcon === "airplane" ? (
             <div className="w-6 h-6 bg-[#638ee4] rounded-full flex justify-center items-center">
@@ -57,7 +57,7 @@ const MeetingAccount = ({ account }: Props) => {
             <p className="text-[1rem]">{account.foreignMeetingAccount.currencyType}</p>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

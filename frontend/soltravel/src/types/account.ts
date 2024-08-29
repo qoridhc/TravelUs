@@ -4,9 +4,10 @@ export interface AccountInfo {
   bankCode: number;
   dailyTransferLimit: string;
   accountNo: string;
+  balance: number;
   accountName: string;
   accountType: string;
-  gropuName: string;
+  groupName: string;
   iconName: string;
   travelStartDate: string;
   travelEndDate: string;
@@ -17,6 +18,7 @@ export interface AccountInfo {
   createdAt: string;
   updatedAt: string;
 }
+
 
 // 거래 내역 조회
 export interface Transaction {
@@ -47,17 +49,18 @@ export interface DepositResponse {
 // 모임통장 목록 조회 정보
 export interface MeetingAccountListDetail {
   id: number;
-  meetingAccountName: string;
-  meetingAccountIcon: string;
-  normalMeetingAccount: {
-    accountNumber: string;
-    accountMoney: string;
+  bankCode: number;
+  accountPassword: string;
+  accountNo: string;
+  balance: number;
+  accountName: string;
+  accountType: string;
+  currency: {
+    currencyCode: string;
+    currencyName: string;
   };
-  foreignMeetingAccount: {
-    accountNumber: string;
-    accountMoney: string;
-    currencyType: string;
-  };
+  createdAt: string;
+  updatedAt: string;
 }
 
 // 일반모임통장 개설 정보
