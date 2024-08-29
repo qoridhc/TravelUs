@@ -6,11 +6,16 @@ import { AiTwotoneExclamationCircle } from "react-icons/ai";
 interface ExchangeRateInputProps {
   currencyType: string;
   exchangeRate: number;
+  currentExchangeRate: number;
   onChange: (exchangeRate: number) => void;
 }
 
-const ExchangeRateInput: React.FC<ExchangeRateInputProps> = ({ currencyType, exchangeRate, onChange }) => {
-  const [currentExchangeRate, setCurrentExchangeRate] = useState("1592.88");
+const ExchangeRateInput: React.FC<ExchangeRateInputProps> = ({
+  currencyType,
+  exchangeRate,
+  currentExchangeRate,
+  onChange,
+}) => {
   const [currencyTypeSymbol, setCurrencyTypeSymbol] = useState("");
 
   useEffect(() => {
