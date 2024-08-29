@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { editMeetingAccountList } from "../redux/accountSlice";
+import { accountApi } from "../api/account";
+import { editAccountList, editForeingAccountList } from "../redux/accountSlice";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import { IoIosArrowForward } from "react-icons/io";
@@ -14,62 +15,50 @@ import "swiper/css";
 const MainPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const meetingAccountList = useSelector((state: RootState) => state.account.meetingAccountList);
+  const userId = localStorage.getItem("userId");
+  const userIdNumber = userId ? parseInt(userId, 10) : 0;
+  const accountList = useSelector((state: RootState) => state.account.accountList);
+  const foreignAccountList = useSelector((state: RootState) => state.account.foreingAccountList);
 
   useEffect(() => {
-    
-    dispatch(
-      editMeetingAccountList([
-        {
-          id: 1, 
-          meetingAccountName: "모히또에서 몰디브 한 잔하는 모임",
-          meetingAccountIcon: "airplane",
-          normalMeetingAccount: {
-            accountNumber: "217-879928-13289",
-            accountMoney: "3,481,900",
-          },
-          foreignMeetingAccount: {
-            accountNumber: "212-123428-13289",
-            accountMoney: "113,890",
-            currencyType: "￥",
-          },
-        },
-        {
-          id: 2, 
-          meetingAccountName: "신암고 1-3반 동창회",
-          meetingAccountIcon: "school",
-          normalMeetingAccount: {
-            accountNumber: "217-874218-12289",
-            accountMoney: "481,900",
-          },
-          foreignMeetingAccount: {
-            accountNumber: "212-123902-09281",
-            accountMoney: "390",
-            currencyType: "$",
-          },
-        },
-      ])
-    );
-  }, [dispatch]);
+    const fetchData = async () => {
+      try {
+        // 두 API를 병렬로 호출
+        const [accountResponse, foreignResponse] = await Promise.all([
+          accountApi.fetchAccountInfo(userIdNumber),
+          accountApi.fetchForeignAccountInfo(userIdNumber),
+        ]);
 
-  const userDetail = [
-    {
-      userId: 1,
-      userName: "허동원",
-      userSavingAccount: {
-        accountNumber: "217-473928-13289",
-        accountMoney: "3,481,900",
-      },
-      usermeetingAccount: {
-        accountNumber: "217-879928-13289",
-        accountMoney: "4,734,910",
-        travelBox: {
-          boxMoney: "113,890",
-          currencyType: "￥",
-        },
-      },
-    },
-  ];
+        // Redux 스토어에 데이터 저장
+        dispatch(editAccountList(accountResponse));
+        dispatch(editForeingAccountList(foreignResponse));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        alert("계좌 조회에 실패했습니다.");
+      }
+    };
+
+    fetchData();
+  }, [dispatch, userIdNumber]); // 의존성 배열에 필요한 값 추가
+
+  // const userDetail = [
+  //   {
+  //     userId: 1,
+  //     userName: "허동원",
+  //     userSavingAccount: {
+  //       accountNumber: "217-473928-13289",
+  //       accountMoney: "3,481,900",
+  //     },
+  //     usermeetingAccount: {
+  //       accountNumber: "217-879928-13289",
+  //       accountMoney: "4,734,910",
+  //       travelBox: {
+  //         boxMoney: "113,890",
+  //         currencyType: "￥",
+  //       },
+  //     },
+  //   },
+  // ];
 
   return (
     <div className="w-full pb-16 bg-[#EFEFF5]">
@@ -99,7 +88,7 @@ const MainPage = () => {
         </div>
 
         {/* 입출금 통장 있을 시 표시 */}
-        {userDetail[0].userSavingAccount && (
+        {accountList && accountList.length > 0 && (
           <div
             onClick={() => {
               navigate("/myaccount");
@@ -109,11 +98,11 @@ const MainPage = () => {
               <div className="flex justify-between items-center">
                 <div className="flex flex-col">
                   <p className="font-bold">올인원머니통장</p>
-                  <p className="text-sm text-zinc-500">입출금 {userDetail[0].userSavingAccount.accountNumber}</p>
+                  <p className="text-sm text-zinc-500">입출금 {accountList[0].accountNo}</p>
                 </div>
               </div>
               <div className="flex items-center">
-                <p className="text-[1.3rem] font-semibold">{userDetail[0].userSavingAccount.accountMoney}</p>
+                <p className="text-[1.3rem] font-semibold">{accountList[0].balance}</p>
                 <p className="text-[1rem]">원</p>
               </div>
               <hr />
@@ -126,16 +115,16 @@ const MainPage = () => {
 
         <div className="w-full flex flex-col items-center space-y-2">
           {/* 모임 통장 있을 시 표시 */}
-          {userDetail[0].usermeetingAccount && (
+          {accountList.length > 1 && (
             <Swiper
               pagination={{
                 dynamicBullets: true,
               }}
               modules={[Pagination]}
               className="mainSwiper rounded-xl">
-              {meetingAccountList.map((account, index) => (
+              {accountList.slice(1).map((account, index) => (
                 <SwiperSlide>
-                  <MainMeetingAccount account={account} />
+                  <MainMeetingAccount account={account} foreignAccount={foreignAccountList[index]} />
                 </SwiperSlide>
               ))}
             </Swiper>

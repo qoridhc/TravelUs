@@ -20,13 +20,13 @@ const MeetingAccountList = () => {
             </p>
           </div>
           {/* 모임 통장 있을 시 표시 */}
-          {accountList.length > 1 ? (
+          {/* {accountList.length > 1 ? (
             accountList.map((account, index) => <MeetingAccount account={account} />)
           ) : (
             <div>
               <p>개설된 모임 통장이 없어요</p>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>
