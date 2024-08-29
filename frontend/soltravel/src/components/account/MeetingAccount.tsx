@@ -19,7 +19,7 @@ const MeetingAccount = ({ account }: Props) => {
       }}
       className="w-full py-5 px-5 flex flex-col rounded-xl bg-white shadow-md">
       <div className="flex flex-col space-y-4">
-        <div className="flex items-center space-x-1 mb-1">
+        <div className="flex items-center space-x-2 mb-1">
           {account.meetingAccountIcon === "airplane" ? (
             <div className="w-6 h-6 bg-[#638ee4] rounded-full flex justify-center items-center">
               <PiAirplaneTiltFill className="text-zinc-50" />
