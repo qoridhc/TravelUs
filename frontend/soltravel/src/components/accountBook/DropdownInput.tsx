@@ -10,12 +10,13 @@ import { AccountInfo } from "../../types/account";
 interface DropdownInputProps {
   accountList: AccountInfo[];
   selectedOption: string;
-  onChange: (accountName: string) => void;
+  onChange: (accountName: string, accountIndex: number) => void;
 }
 
 const DropdownInput: React.FC<DropdownInputProps> = ({ accountList, selectedOption, onChange }) => {
   const handleChange = (selected: string) => {
-    onChange(selected);
+    const selectedIndex = accountList.findIndex((account) => account.accountName === selected);
+    onChange(selected, selectedIndex);
   };
 
   return (
