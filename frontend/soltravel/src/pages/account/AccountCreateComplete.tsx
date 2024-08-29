@@ -23,7 +23,7 @@ const AccountCreateComplete = () => {
       <div className="w-full font-semibold row-start-3 flex flex-col justify-end space-y-3">
         <button
           className="w-full py-3 text-white bg-[#0471E9] rounded-lg"
-          onClick={() => navigate("/meetingaccountcreate")}>
+          onClick={() => navigate("/generalmeetingaccountcreate")}>
           모임통장 신청하기
         </button>
         <button className="w-full py-3 text-[#565656] border-2 rounded-lg" onClick={() => navigate("/")}>

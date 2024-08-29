@@ -58,3 +58,14 @@ export const currencyNames: { [key: string]: string } = {
   CAD: '캐나다 달러',
   CNY: '중국 위안',
 };
+
+// 통화 종류 목록
+export const currencyTypeList: Array<{text: string, value: string}> = [
+  { text: "USD(미국/$)", value: "USD" },
+  { text: "JPY(일본/¥)", value: "JPY" },
+  { text: "EUR(유로/€)", value: "EUR" },
+  { text: "GBP(영국/£)", value: "GBP" },
+  { text: "CHF(스위스/₣)", value: "CHF" },
+  { text: "CAD(캐나다/$)", value: "CAD" },
+  { text: "CNY(중국/¥)", value: "CNY" },
+];

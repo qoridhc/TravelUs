@@ -52,12 +52,19 @@ export interface MeetingAccountListDetail {
   };
 }
 
-// 모임통장 개설 정보
-export interface MeetingAccountDetail {
-  meetingAccountName: string;
-  meetingAccountIcon: string;
-  meetingAccountUserName: string;
-  meetingAccountUserResidentNumber: string;
-  meetingAccountPassword: string;
-  meetingAccountMemberList: Array<string>;
+// 일반모임통장 개설 정보
+export interface GeneralMeetingAccountDetail {
+  generalMeetingAccountName: string;
+  generalMeetingAccountIcon: string;
+  generalMeetingAccountUserName: string;
+  generalMeetingAccountUserResidentNumber: string;
+  generalMeetingAccountPassword: string;
+  generalMeetingAccountMemberList: Array<string>;
 }
+
+// 모임통장 모임종류 아이콘 
+export const meetingAccountIconList: Array<{text: string, value: string}> = [
+  { text: "선택안함", value: "none" },
+  { text: "여행", value: "airplane" },
+  { text: "학교", value: "school" },
+];
