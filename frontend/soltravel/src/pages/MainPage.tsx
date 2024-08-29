@@ -41,25 +41,6 @@ const MainPage = () => {
     fetchData();
   }, [dispatch, userIdNumber]); // 의존성 배열에 필요한 값 추가
 
-  // const userDetail = [
-  //   {
-  //     userId: 1,
-  //     userName: "허동원",
-  //     userSavingAccount: {
-  //       accountNumber: "217-473928-13289",
-  //       accountMoney: "3,481,900",
-  //     },
-  //     usermeetingAccount: {
-  //       accountNumber: "217-879928-13289",
-  //       accountMoney: "4,734,910",
-  //       travelBox: {
-  //         boxMoney: "113,890",
-  //         currencyType: "￥",
-  //       },
-  //     },
-  //   },
-  // ];
-
   return (
     <div className="w-full pb-16 bg-[#EFEFF5]">
       <div className="w-full p-5 flex flex-col items-center space-y-4">
