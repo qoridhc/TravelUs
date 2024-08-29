@@ -17,6 +17,7 @@ const MainPage = () => {
   const meetingAccountList = useSelector((state: RootState) => state.account.meetingAccountList);
 
   useEffect(() => {
+    
     dispatch(
       editMeetingAccountList([
         {

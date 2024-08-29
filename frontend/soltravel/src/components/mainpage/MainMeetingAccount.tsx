@@ -3,10 +3,10 @@ import { useNavigate } from "react-router";
 import { IoSchool } from "react-icons/io5";
 import { PiAirplaneTiltFill } from "react-icons/pi";
 import path from "path";
-import { MeetingAccountListDetail } from "../../types/account";
+import { accountList } from "../../types/account";
 
 interface Props {
-  account: MeetingAccountListDetail;
+  account: accountList;
 }
 
 const MainMeetingAccount = ({ account }: Props) => {

@@ -36,20 +36,21 @@ export interface DepositRequest {
   transactionSummary: string;
 }
 
-// 모임통장 목록 조회 정보
-export interface MeetingAccountListDetail {
+// 사용자의 모든 일반(개인/그룹) 통장 목록 조회 정보
+export interface accountList {
   id: number;
-  meetingAccountName: string;
-  meetingAccountIcon: string;
-  normalMeetingAccount: {
-    accountNumber: string;
-    accountMoney: string;
+  bankCode: number;
+  accountPassword: string;
+  accountNo: string;
+  balance: number;
+  accountName: string;
+  accountType: string;
+  currency: {
+    currencyCode: string;
+    currencyName: string;
   };
-  foreignMeetingAccount: {
-    accountNumber: string;
-    accountMoney: string;
-    currencyType: string;
-  };
+  createdAt: string;
+  updatedAt: string;
 }
 
 // 일반모임통장 개설 정보
