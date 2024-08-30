@@ -24,7 +24,7 @@ const initialState: AccountState = {
     generalMeetingAccountMemberList: [],
   },
 };
-
+    
 export const userSilce = createSlice({
   name: "account",
   initialState,

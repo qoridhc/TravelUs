@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AccountInfo } from "../../types/account";
 
 interface Props {
-  index: number; 
+  index: number;
   account: AccountInfo;
   foreignAccount: AccountInfo;
 }
