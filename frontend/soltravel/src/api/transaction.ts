@@ -1,10 +1,10 @@
 import api from "../lib/axios";
-import { DepositRequest, DepositResponse } from "../types/transaction";
+import { TransferRequest, TransferResponse } from "../types/transaction";
 
-export const depositApi = {
-  // 정산하기
-  DepositInfo: async (accountNo: string, data: DepositRequest): Promise<DepositResponse> => {
-    const response = await api.post<DepositResponse>(`/transaction/${accountNo}/deposit`, data)
+export const transactionApi = {
+  // 이체하기
+  TransferInfo: async (accountNo: string, data: TransferRequest): Promise<TransferResponse> => {
+    const response = await api.post<TransferResponse>(`/transaction/${accountNo}/transfer`, data)
     return response.data
   },
 };
