@@ -1,5 +1,5 @@
 import api from "../lib/axios";
-import { DayHistory, getAccountBookDayQuery, getAccountBookQuery } from "../types/accountBook";
+import { DayHistory, DayHistoryCreateInfo, getAccountBookDayQuery, getAccountBookQuery } from "../types/accountBook";
 
 export const accountBookApi = {
   // 월별 가계부 정보 가져오기
@@ -20,4 +20,9 @@ export const accountBookApi = {
       },
     });
   },
+
+  // 가계부 등록
+  createAccountBook: (data: DayHistoryCreateInfo) => {
+    return api.post(`/account-book/save/history`, data, {})
+  }
 }

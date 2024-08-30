@@ -28,3 +28,10 @@ export interface BuyItemInfo {
   price: number;
   quantity: number
 }
+
+export interface DayHistoryCreateInfo {
+  accountNo: string;
+  store: string;
+  paid: number;
+  items: Array<BuyItemInfo>;
+}

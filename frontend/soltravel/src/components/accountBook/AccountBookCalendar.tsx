@@ -116,7 +116,7 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
         onClickDay={(value, event) => handleDateDetail(value)}
       />
 
-      <AccountBookInputModal />
+      <AccountBookInputModal accountNo={accountNo} />
     </div>
   );
 };
