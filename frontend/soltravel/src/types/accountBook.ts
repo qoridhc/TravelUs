@@ -22,3 +22,9 @@ export interface DayHistoryDetail {
   balance: string;
   store: string;
 }
+
+export interface BuyItemInfo {
+  item: string;
+  price: number;
+  quantity: number
+}
