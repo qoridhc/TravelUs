@@ -5,9 +5,10 @@ import { format } from "date-fns";
 import "../../css/calendar.css";
 import api from "../../lib/axios";
 import { accountBookApi } from "../../api/accountBook";
-import { DayHistory } from "../../types/accountBook";
+import { BuyItemInfo, DayHistory } from "../../types/accountBook";
 import { useDispatch } from "react-redux";
 import { setDayHistoryDetailList } from "../../redux/accountBookSlice";
+import AccountBookInputModal from "./AccountBookInputModal";
 
 type ValuePiece = Date | null;
 
@@ -80,7 +81,7 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
   return isLoading ? (
     <p>Loading...</p>
   ) : (
-    <div className="w-full flex justify-center relative">
+    <div className="w-full flex flex-col justify-center items-end space-y-3 relative">
       <Calendar
         className="p-3 rounded-md"
         value={value}
@@ -114,6 +115,8 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
         onActiveStartDateChange={(activeStartDate) => handleActiveDateChange(activeStartDate)}
         onClickDay={(value, event) => handleDateDetail(value)}
       />
+
+      <AccountBookInputModal />
     </div>
   );
 };
