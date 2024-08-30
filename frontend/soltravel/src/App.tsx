@@ -26,7 +26,9 @@ import MeetingAccountCreatePrepare from "./pages/account/MeetingAccountCreatePre
 import ForeignMeetingAccountCreate from "./pages/account/ForeignMeetingAccountCreate";
 import MeetingAccountCreateComplete from "./pages/account/MeetingAccountCreateComplete";
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
+import Transaction from "./pages/transaction/Transaction"
 import PrivateRoute from "./pages/user/PrivateRoute";
+
 function App() {
   return (
     <div className="h-full">
@@ -73,10 +75,11 @@ function App() {
           <Route path="/account" element={<ViewAccount />} />
 
           <Route path="/exchangerate" element={<ExchangeRate />} />
-          <Route path="/exchange" element={<Exchange />} />
-          <Route path="/selectaccount/:userId" element={<SelectAccount />} />
-          <Route path="/settlement" element={<Settlement />} />
-          <Route path="/detail" element={<Detail />} />
+          <Route path="/exchange" element={<Exchange />}></Route>
+          <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
+          <Route path="/settlement" element={<Settlement />}></Route>
+          <Route path="/detail" element={<Detail />}></Route>
+          <Route path="/transaction" element={<Transaction />}></Route>
         </Routes>
       </BrowserRouter>
     </div>
