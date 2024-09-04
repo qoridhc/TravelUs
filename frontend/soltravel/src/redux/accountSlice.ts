@@ -7,6 +7,7 @@ export interface AccountState {
   accountPassword: string;
   accountList: Array<AccountInfo>;
   foreignAccountList: Array<AccountInfo>;
+  joinedAccountList: Array<AccountInfo>;
   generalMeetingAccountDetail: GeneralMeetingAccountDetail;
 }
 
@@ -15,6 +16,7 @@ const initialState: AccountState = {
   accountPassword: "",
   accountList: [],
   foreignAccountList: [],
+  joinedAccountList: [],
   generalMeetingAccountDetail: {
     generalMeetingAccountName: "",
     generalMeetingAccountIcon: "",
@@ -41,12 +43,15 @@ export const userSilce = createSlice({
     editForeingAccountList: (state, action: PayloadAction<Array<AccountInfo>>) => {
       state.foreignAccountList = action.payload;
     },
+    editJoinedAccountList: (state, action: PayloadAction<Array<AccountInfo>>) => {
+      state.joinedAccountList = action.payload;
+    },
     editGeneralMeetingAccountList: (state, action: PayloadAction<GeneralMeetingAccountDetail>) => {
       state.generalMeetingAccountDetail = action.payload;
     },
   },
 });
 
-export const { setIsKeyboard, setAccountPassword, editAccountList, editForeingAccountList, editGeneralMeetingAccountList } = userSilce.actions;
+export const { setIsKeyboard, setAccountPassword, editAccountList, editForeingAccountList, editGeneralMeetingAccountList, editJoinedAccountList } = userSilce.actions;
 
 export default userSilce.reducer;

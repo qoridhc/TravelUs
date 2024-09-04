@@ -21,6 +21,7 @@ const ForeignMeetingAccountCreate = () => {
   const stepList = ["통화를", "희망 환율을", "여행 일정을"];
   const [currencyType, setCurrencyType] = useState("");
   const [exchangeRate, setExchangeRate] = useState(0);
+  const [exchangeRateBDP, setExchangeRateBDP] = useState(0);
   const [currentExchangeRate, setCurrentExchangeRate] = useState(0);
   const [travelSchedule, setTravelSchedule] = useState<{ startDate: Dayjs | null; endDate: Dayjs | null }>({
     startDate: null,
@@ -67,6 +68,13 @@ const ForeignMeetingAccountCreate = () => {
     }
   };
 
+  const handleExchangeRateChangeBDP = (exchangeRateBDP: number) => {
+    setExchangeRateBDP(exchangeRateBDP);
+    if (exchangeRateBDP > 0) {
+      setStep(2);
+    }
+  };
+
   const handleTravelStartDate = (startDate: Dayjs) => {
     setTravelSchedule((prevSchedule) => ({
       ...prevSchedule,
@@ -87,6 +95,12 @@ const ForeignMeetingAccountCreate = () => {
       return;
     }
 
+    if (currencyType !== "USD") {
+      alert("준비 중인 통화입니다. 현재는 미국 달러만 지원합니다.");
+    }
+
+    const combinedExchangeRate = parseFloat(`${exchangeRate}.${exchangeRateBDP}`);
+
     const accountRequest: MeetingAccountCreate = {
       accountType: "GROUP",
       accountPassword: generalMeetingAccountDetail.generalMeetingAccountPassword,
@@ -95,10 +109,11 @@ const ForeignMeetingAccountCreate = () => {
       travelEndDate: travelSchedule.endDate.format("YYYY-MM-DD"),
       currencyCode: currencyType,
       iconName: generalMeetingAccountDetail.generalMeetingAccountIcon,
-      exchangeRate: exchangeRate,
+      exchangeRate: combinedExchangeRate,
       participantInfos: generalMeetingAccountDetail.generalMeetingAccountMemberList,
     };
 
+    console.log(accountRequest);
     try {
       const response = accountApi.fetchCreateMeetingAccount(generalMeetingAccountDetail.generalMeetingAccountMemberList[0].userId, accountRequest);
       navigate("/meetingaccountcreatecomplete");
@@ -112,7 +127,12 @@ const ForeignMeetingAccountCreate = () => {
       <div className="flex flex-col space-y-5">
         <div className="p-5 grid grid-cols-[1fr_8fr_1fr]">
           <div className="flex items-center">
-            <RiHome5Line className="text-2xl" />
+            <RiHome5Line
+              onClick={() => {
+                navigate("/");
+              }}
+              className="text-2xl"
+            />
           </div>
           <p className="text-xl text-center font-semibold">외화모임통장 가입정보</p>
         </div>
@@ -152,8 +172,10 @@ const ForeignMeetingAccountCreate = () => {
                 <ExchangeRateInput
                   currencyType={currencyType}
                   exchangeRate={exchangeRate}
+                  exchangeRateBDP={exchangeRateBDP}
                   currentExchangeRate={currentExchangeRate}
                   onChange={handleExchangeRateChange}
+                  onChangeBDP={handleExchangeRateChangeBDP}
                 />
               )}
             </div>

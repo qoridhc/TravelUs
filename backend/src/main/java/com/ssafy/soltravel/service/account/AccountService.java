@@ -50,6 +50,7 @@ public class AccountService {
   private final Map<String, String> apiKeys;
   private final WebClient webClient;
   private final ModelMapper modelMapper;
+  private final AccountMapper accountMapper;
 
   private final UserRepository userRepository;
   private final ParticipantRepository participantRepository;
@@ -102,8 +103,7 @@ public class AccountService {
     Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
 
     // generalAccount 생성 & 저장
-    GeneralAccount generalAccount = AccountMapper.toGeneralAccountEntitiy(recObject, user,
-        requestDto);
+    GeneralAccount generalAccount = accountMapper.toGeneralAccountEntitiy(recObject, user,requestDto);
 
     GeneralAccount savedAccount = generalAccountRepository.save(generalAccount);
 
@@ -117,7 +117,7 @@ public class AccountService {
 
     CreateAccountResponseDto responseDto = new CreateAccountResponseDto();
 
-    AccountDto generalAccountDto = AccountMapper.toCreateAccountDto(generalAccount);
+    AccountDto generalAccountDto = accountMapper.toCreateAccountDto(generalAccount);
 
     responseDto.setGeneralAccount(generalAccountDto);
 
@@ -160,7 +160,7 @@ public class AccountService {
         }
       }
       // dto 변환
-      AccountDto foreignAccountDto = AccountMapper.toCreateAccountDto(foreignAccount);
+      AccountDto foreignAccountDto = accountMapper.toCreateAccountDto(foreignAccount);
 
       responseDto.setForeignAccount(foreignAccountDto);
     }
@@ -206,7 +206,7 @@ public class AccountService {
       GeneralAccount generalAccount = generalAccountRepository.findById(accountId)
           .orElseThrow(() -> new RuntimeException());
 
-      ForeignAccount foreignAccount = AccountMapper.toForeignAccountEntitiy(
+      ForeignAccount foreignAccount = accountMapper.toForeignAccountEntitiy(
           recObject,
           generalAccount,
           requestDto
@@ -220,7 +220,7 @@ public class AccountService {
     }
   }
 
-  // 계좌 단건 조회 - 상세 정보 X
+  // 계좌 단건 조회 (AccountNo로) - 상세 정보 X
   public ResponseEntity<AccountDto> getByAccountNo(String accountNo, boolean isForeign) {
 
     Long userId = SecurityUtil.getCurrentUserId();
@@ -235,15 +235,35 @@ public class AccountService {
           .orElseThrow(
               () -> new IllegalArgumentException("The accountNo does not exist: " + accountNo));
 
-      accountDto = AccountMapper.toCreateAccountDto(foreignAccount);
+      accountDto = accountMapper.toCreateAccountDto(foreignAccount);
     } else {
       GeneralAccount generalAccount = generalAccountRepository.findByAccountNo(accountNo)
           .orElseThrow(
               () -> new IllegalArgumentException("The accountNo does not exist: " + accountNo));
 
-      accountDto = AccountMapper.toCreateAccountDto(generalAccount);
+      accountDto = accountMapper.toCreateAccountDto(generalAccount);
 
     }
+    return ResponseEntity.status(HttpStatus.OK).body(accountDto);
+  }
+
+
+  // 외화 계좌 단건 조회 (AccountID로)- 상세 정보 X
+  public ResponseEntity<AccountDto> getForeignByAccountId(Long accountId) {
+
+    Long userId = SecurityUtil.getCurrentUserId();
+
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
+
+    AccountDto accountDto = null;
+
+      ForeignAccount foreignAccount = foreignAccountRepository.findById(accountId)
+          .orElseThrow(
+              () -> new IllegalArgumentException("The accountId does not exist: " + accountId));
+
+      accountDto = accountMapper.toCreateAccountDto(foreignAccount);
+
     return ResponseEntity.status(HttpStatus.OK).body(accountDto);
   }
 
@@ -260,13 +280,13 @@ public class AccountService {
     if (isForeign) {
       List<ForeignAccount> foreignAccounts = foreignAccountRepository.findAllByUserId(userId);
 
-      accountDtos = foreignAccounts.stream().map(AccountMapper::toCreateAccountDto)
+      accountDtos = foreignAccounts.stream().map(accountMapper::toCreateAccountDto)
           .collect(Collectors.toList());
 
     } else {
       List<GeneralAccount> generalAccounts = generalAccountRepository.findAllByUser_userId(userId);
 
-      accountDtos = generalAccounts.stream().map(AccountMapper::toCreateAccountDto)
+      accountDtos = generalAccounts.stream().map(accountMapper::toCreateAccountDto)
           .collect(Collectors.toList());
     }
 
@@ -480,7 +500,7 @@ public class AccountService {
   public ResponseEntity<List<AccountDto>> getAllGroupInfoByUserId(Long userId) {
     List<GeneralAccount> allByParticipantUserId = generalAccountRepository.findAllByParticipantUserId(userId);
 
-    List<AccountDto> response = allByParticipantUserId.stream().map(AccountMapper::toCreateAccountDto).toList();
+    List<AccountDto> response = allByParticipantUserId.stream().map(accountMapper::toCreateAccountDto).toList();
 
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }

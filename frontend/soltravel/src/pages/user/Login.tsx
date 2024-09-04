@@ -26,7 +26,7 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Error creating user:", error);
-      alert("로그인 에러");
+      alert("아이디 또는 비밀번호가 틀렸습니다.");
     }
   };
 
@@ -35,24 +35,38 @@ const Login = () => {
       <div className="w-full h-full flex flex-col justify-center items-center">
         <div className="w-full h-[50%] flex flex-col justify-between items-center">
           <div className="w-[90%] h-[78%] flex flex-col items-center justify-around rounded-xl bg-white shadow-sm">
-            <p className="text-2xl font-bold">All-In-One 로그인</p>
+            <div className="flex items-center space-x-1">
+              <img className="w-7" src="/assets/shc_symbol_ci.png" alt="" />
+              <p className="text-[1.4rem] font-bold">신한은행 로그인</p>
+            </div>
             <div className="w-[83%] h-[50%] flex flex-col justify-around text-zinc-500">
-              <p className="text-sm font-semibold">아이디</p>
+              <label htmlFor="email" className="text-sm font-semibold cursor-pointer">
+                아이디
+              </label>
               <input
                 onChange={(e) => {
                   handleChange(e);
                 }}
+                id="email"
                 className="focus:outline-none text-zinc-800"
                 type="text"
                 name="email"
                 value={email}
               />
               <hr className="bg-zinc-800" />
-              <p className="text-sm font-semibold">사용자 암호</p>
+              <label htmlFor="password" className="text-sm font-semibold cursor-pointer">
+                사용자 암호
+              </label>
               <input
                 onChange={(e) => {
                   handleChange(e);
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleLogin();
+                  }
+                }}
+                id="password"
                 className="focus:outline-none text-zinc-800"
                 type="password"
                 name="password"

@@ -70,7 +70,7 @@ public class ParticipantController {
         return response;
     }
 
-    @Operation(summary = "특정 유저가 가입한 모든 모임 통장 정보 조회", description = "특정 유저가 가입한 모든 모임 통장 정보 조회하는 API")
+    @Operation(summary = "특정 유저가 가입한 (생성 X)모든 모임 통장 정보 조회", description = "특정 유저가 가입한 모든 모임 통장 정보 조회하는 API")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ResponseDto.class)))),
         @ApiResponse(responseCode = "404", description = "참가자를 찾을 수 없음", content = @Content),

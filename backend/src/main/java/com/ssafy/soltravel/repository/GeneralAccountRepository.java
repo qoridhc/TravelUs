@@ -17,13 +17,6 @@ public interface GeneralAccountRepository extends JpaRepository<GeneralAccount, 
     @Transactional
     void deleteByAccountNo(String accountNo);
 
-//    @Query("SELECT u FROM Participant p " +
-//        "JOIN p.generalAccount ga " +
-//        "JOIN p.user u " +
-//        "WHERE ga.accountNo = :accountNo")
-//    User findUserByAccountNo(@Param("accountNo") String accountNo);
-
-
     List<GeneralAccount>  findAllByUser_userId(Long userId);
 
     @Query("SELECT g.id FROM GeneralAccount g " +
@@ -41,6 +34,8 @@ public interface GeneralAccountRepository extends JpaRepository<GeneralAccount, 
     @Query("SELECT ga.user FROM GeneralAccount ga WHERE ga.id = :generalAccountId")
     User findUserByGeneralAccountId(@Param("generalAccountId") Long generalAccountId);
 
-    @Query("SELECT ga FROM GeneralAccount ga JOIN ga.participants p WHERE p.user.userId = :userId AND ga.accountType = 'GROUP'")
+    @Query("SELECT ga FROM GeneralAccount ga JOIN ga.participants p WHERE p.user.userId = :userId " +
+        "AND ga.accountType = 'GROUP' " +
+        "AND p.isMaster = false")
     List<GeneralAccount> findAllByParticipantUserId(@Param("userId") Long userId);
 }

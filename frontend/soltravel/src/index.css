@@ -8,9 +8,15 @@ html, body, #root {
   padding: 0;
 }
 
+@font-face {
+  font-family: "NanumSquareOTF_acB";
+  font-weight: normal;
+  src: url("./fonts/NanumSquareOTF_acB.otf") format("truetype");
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: "NanumSquareOTF_acB", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;

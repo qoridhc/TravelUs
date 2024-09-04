@@ -2,6 +2,8 @@ spring:
   mvc:
     servlet:
       path: /api/v1
+    async:
+      request-timeout: 3000000
 
   application:
     name: backend
@@ -78,6 +80,10 @@ jwt:
 server:
   front:
     url: http://localhost:3000
+
+  servlet:
+    session:
+      timeout: 30m
 
 # S3 설정
 cloud:

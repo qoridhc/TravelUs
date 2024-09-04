@@ -56,4 +56,6 @@ public class AccountDto {
     @Schema(description = "계좌 수정 일자", example = "2024-08-28T12:00:00")
     private String updatedAt;
 
+    @Schema(description = "희망 환율", example = "1390.04")
+    private Float preferenceExchange;
 }

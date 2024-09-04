@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { LineChart } from '@mui/x-charts/LineChart';
+import React, { useState, useEffect, useRef } from 'react';
+import { ScatterChart } from '@mui/x-charts/ScatterChart';
 import { exchangeApi } from '../../api/exchange';
 import { currencyNames } from '../../types/exchange';
 import { ExchangeRateHistoryResponse } from '../../types/exchange';
@@ -12,6 +12,7 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({ currency }) => {
   const [chartData, setChartData] = useState<ExchangeRateHistoryResponse[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchExchangeRateHistory();
@@ -25,7 +26,7 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({ currency }) => {
 
     try {
       const data = await exchangeApi.getExchangeRateHistory({
-        currencyCode: currency || 'CAD',
+        currencyCode: currency || 'USD',
         startDate,
         endDate,
       });
@@ -55,28 +56,49 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({ currency }) => {
       return <div>표시할 데이터가 없습니다.</div>;
     }
 
-    const formattedData = chartData.map((dataPoint) => ({
-      date: new Date(dataPoint.postAt).toLocaleDateString(),
-      rate: dataPoint.dealBasR, // 각 데이터 포인트의 환율
+    const formattedData = chartData.map((dataPoint, index) => ({
+      id: index,
+      x: index,
+      y: dataPoint.dealBasR,
+      info: {
+        date: new Date(dataPoint.postAt).toLocaleDateString(),
+        rate: dataPoint.dealBasR
+      }
     }));
 
+    const minRate = Math.min(...formattedData.map(d => d.y));
+    const maxRate = Math.max(...formattedData.map(d => d.y));
+    const yAxisMin = Math.max(500, Math.floor(minRate / 100) * 100);
+    const yAxisMax = Math.ceil(maxRate / 100) * 100;
+
+    // 차트의 너비를 데이터 포인트 수에 따라 동적으로 설정
+    const chartWidth = Math.max(600, formattedData.length * 20); // 최소 600px, 각 데이터 포인트당 20px
+
     return (
-      <LineChart
-        xAxis={[{ 
-          dataKey: 'date',
-          scaleType: 'band',
-          tickLabelStyle: { angle: 45, textAnchor: 'start', dominantBaseline: 'hanging' }
-        }]}
+      <ScatterChart
+        width={chartWidth}
+        height={300}
         series={[
           {
-            dataKey: 'rate',
-            area: true,
+            data: formattedData,
             label: `${currencyNames[currency] || currency}`,
+            valueFormatter: (v: any) => `${v.info.date}: ${v.info.rate.toFixed(2)}`,
           },
         ]}
-        dataset={formattedData}
-        height={300}
-        margin={{ left: 50, right: 50, top: 20, bottom: 50 }}
+        xAxis={[
+          { 
+            label: '날짜',
+            valueFormatter: (v) => formattedData[v]?.info.date || '',
+          }
+        ]}
+        yAxis={[
+          { 
+            label: '환율',
+            min: yAxisMin,
+            max: yAxisMax,
+          }
+        ]}
+        margin={{ left: 70, right: 20, top: 20, bottom: 50 }}
       />
     );
   };
@@ -84,8 +106,17 @@ const ExchangeRateChart: React.FC<ExchangeRateChartProps> = ({ currency }) => {
   return (
     <div>
       <h2 className="text-lg font-semibold mb-4">최근 30일 환율 변동</h2>
-      <div className="mt-4" style={{ height: '300px', width: '100%' }}>
-        {renderChart()}
+      <div 
+        ref={containerRef}
+        className="mt-4 overflow-x-auto" 
+        style={{ 
+          height: '350px', // 차트 높이 + 여유 공간
+          width: '100%',
+        }}
+      >
+        <div style={{ minWidth: '600px', height: '300px' }}>
+          {renderChart()}
+        </div>
       </div>
     </div>
   );

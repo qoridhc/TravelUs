@@ -1,7 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router";
-import { IoSchool } from "react-icons/io5";
+import { IoHome } from "react-icons/io5";
 import { PiAirplaneTiltFill } from "react-icons/pi";
+import { FaUserFriends, FaBriefcase, FaHeart } from "react-icons/fa";
 import path from "path";
 import { AccountInfo } from "../../types/account";
 
@@ -23,6 +24,54 @@ const MainMeetingAccount = ({ index, account, foreignAccount }: Props) => {
     // 계좌번호를 각 4자리씩 나누고 '-'로 연결
     return accountNo.replace(/(\d{3})(\d{4})(\d{4})(\d{5})/, "$1-$2-$3-$4");
   };
+  
+  const getIcon = (iconName: string) => {
+    // 아이콘별 배경색을 정의하는 객체
+    const iconBackgrounds: Record<string, string> = {
+      airPlane: "bg-[#638ee4]",
+      friend: "bg-[#F5E198]",
+      family: "bg-[#FFB555]",
+      lover: "bg-[#EB8CA2]",
+      job: "bg-[#95DBC1]",
+      default: "bg-[#638ee4]", // 기본 배경색
+    };
+  
+    // 해당 아이콘의 배경색을 가져오고, 없으면 기본값 사용
+    const backgroundClass = iconBackgrounds[iconName] || iconBackgrounds.default;
+  
+    const containerClasses = `w-6 h-6 ${backgroundClass} rounded-full flex justify-center items-center text-white`;
+    const iconClasses = "w-4 h-4"; // 아이콘 자체 크기를 줄이기 위한 클래스
+  
+    let IconComponent;
+  
+    switch (iconName) {
+      case "airPlane":
+        IconComponent = <PiAirplaneTiltFill className={iconClasses} />;
+        break;
+      case "friend":
+        IconComponent = <FaUserFriends className={iconClasses} />;
+        break;
+      case "family":
+        IconComponent = <IoHome className={iconClasses} />;
+        break;
+      case "lover":
+        IconComponent = <FaHeart className={iconClasses} />;
+        break;
+      case "job":
+        IconComponent = <FaBriefcase className={iconClasses} />;
+        break;
+      default:
+        IconComponent = <PiAirplaneTiltFill className={iconClasses} />;
+        break;
+    }
+  
+    return (
+      <span className={containerClasses}>
+        {IconComponent}
+      </span>
+    );
+  };
+  
 
   return (
     <>
@@ -34,15 +83,7 @@ const MainMeetingAccount = ({ index, account, foreignAccount }: Props) => {
           className="w-full py-5 pb-10 px-5 flex flex-col rounded-xl bg-white shadow-md">
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-1 mb-1">
-              {account.iconName === "airPlane" ? (
-                <div className="w-6 h-6 bg-[#638ee4] rounded-full flex justify-center items-center">
-                  <PiAirplaneTiltFill className="text-zinc-50" />
-                </div>
-              ) : (
-                <div className="w-6 h-6 bg-[#61bb9d] rounded-full flex justify-center items-center">
-                  <IoSchool className="text-zinc-50" />
-                </div>
-              )}
+              {getIcon(account.iconName)}
               <p className="font-bold">{account.groupName}</p>
             </div>
             <div className="rounded-md flex justify-between">
@@ -57,12 +98,7 @@ const MainMeetingAccount = ({ index, account, foreignAccount }: Props) => {
             </div>
             <hr />
             {foreignAccount && (
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate("/foreignaccount");
-                }}
-                className="rounded-md flex justify-between">
+              <div className="rounded-md flex justify-between">
                 <div className="flex flex-col">
                   <p className="text-sm font-bold">올인원 외화모임통장</p>
                   <p className="text-sm text-zinc-500">{formatAccountNumber(foreignAccount.accountNo)}</p>

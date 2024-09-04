@@ -7,9 +7,8 @@ import MyPage from "./pages/user/MyPage";
 import UserUpdate from "./pages/user/UserUpdate";
 import MeetingAccountList from "./pages/account/MeetingAccountList";
 import MeetingAccountDetail from "./pages/account/MeetingAccountDetail";
-import MyAccount from "./pages/viewaccount/MyAccount";
-import GeneralAccount from "./pages/viewaccount/GeneralAccount";
-import ForeignAccount from "./pages/viewaccount/ForeignAccount";
+import JoinedMeetingAccountDetail from "./pages/account/JoinedMeetingAccountDetail";
+import AccountHistory from "./pages/accountHistory/AccountHistory";
 import ViewAccount from "./pages/viewaccount/Account";
 import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
@@ -46,6 +45,7 @@ function App() {
                       <Route path="/" element={<MainPage />} />
                       <Route path="/meetingaccountlist" element={<MeetingAccountList />} />
                       <Route path="/accountbookdetail" element={<AccountBookDetail />} />
+                      <Route path="/exchangerate" element={<ExchangeRate />} />
                       {/* Add other protected routes here */}
                     </Route>
                   </Routes>
@@ -68,13 +68,11 @@ function App() {
           <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
 
           <Route path="/account/:userId" element={<GroupAccountPage />} />
-          <Route path="/myaccount" element={<MyAccount />} />
           <Route path="/meetingaccount/:id" element={<MeetingAccountDetail />} />
-          <Route path="/generalaccount" element={<GeneralAccount />} />
-          <Route path="/foreignaccount" element={<ForeignAccount />} />
+          <Route path="/joinedmeetingaccount/:id" element={<JoinedMeetingAccountDetail />} />
           <Route path="/account" element={<ViewAccount />} />
+          <Route path="/accounthistory/:accountNo" element={<AccountHistory />} />
 
-          <Route path="/exchangerate" element={<ExchangeRate />} />
           <Route path="/exchange" element={<Exchange />}></Route>
           <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
           <Route path="/settlement" element={<Settlement />}></Route>

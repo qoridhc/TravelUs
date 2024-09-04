@@ -1,15 +1,20 @@
 package com.ssafy.soltravel.service.account_book;
 
+import com.ssafy.soltravel.domain.CashHistory;
 import com.ssafy.soltravel.domain.Enum.OrderByType;
+import com.ssafy.soltravel.domain.ForeignAccount;
 import com.ssafy.soltravel.dto.account_book.AccountHistoryReadRequestDto;
 import com.ssafy.soltravel.dto.account_book.AccountHistoryReadResponseDto;
 import com.ssafy.soltravel.dto.account_book.AccountHistorySaveRequestDto;
 import com.ssafy.soltravel.dto.account_book.AccountHistorySaveResponseDto;
+import com.ssafy.soltravel.dto.account_book.DetailAccountHistoryReadRequestDto;
+import com.ssafy.soltravel.dto.account_book.DetailAccountHistoryReadResponseDto;
 import com.ssafy.soltravel.dto.account_book.ReceiptAnalysisDto;
 import com.ssafy.soltravel.dto.account_book.ReceiptUploadRequestDto;
 import com.ssafy.soltravel.dto.transaction.TransactionHistoryDto;
 import com.ssafy.soltravel.dto.transaction.request.ForeignTransactionRequestDto;
 import com.ssafy.soltravel.dto.transaction.request.TransactionHistoryRequestDto;
+import com.ssafy.soltravel.exception.ForeignAccountNotFoundException;
 import com.ssafy.soltravel.exception.LackOfBalanceException;
 import com.ssafy.soltravel.mapper.AccountBookMapper;
 import com.ssafy.soltravel.mapper.TransactionMapper;
@@ -19,6 +24,9 @@ import com.ssafy.soltravel.service.GPTService;
 import com.ssafy.soltravel.service.transaction.TransactionService;
 import com.ssafy.soltravel.util.SecurityUtil;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -75,16 +83,23 @@ public class AccountBookService {
       throws LackOfBalanceException {
 
     // 현금 사용으로 출금 신청
-    ForeignTransactionRequestDto withRequest = ForeignTransactionRequestDto.builder()
-        .transactionBalance(requestDto.getPaid())
-        .transactionSummary("현금 사용")
-        .build();
-    transactionService.postForeignWithdrawal(false, requestDto.getAccountNo(), withRequest);
+    // ForeignTransactionRequestDto withRequest = ForeignTransactionRequestDto.builder()
+    //     .transactionBalance(requestDto.getPaid())
+    //     .transactionSummary("현금 사용")
+    //     .userId(SecurityUtil.getCurrentUserId())
+    //     .build();
+    // transactionService.postForeignWithdrawal(false, requestDto.getAccountNo(), withRequest);
 
     // 현금 사용 가계 등록
-    // Double newBalance = cashHistoryService.payCash(
-    //     foreignAccount, requestDto.getPaid()
-    // );
+    ForeignAccount foreignAccount = foreignAccountRepository.findByAccountNo(
+        requestDto.getAccountNo()
+    ).orElseThrow(
+        () -> new ForeignAccountNotFoundException(requestDto.getAccountNo())
+    );
+
+     Double newBalance = cashHistoryService.payCash(
+         foreignAccount, requestDto.getPaid(), requestDto.getStore(), requestDto.getTransactionAt()
+     );
 
     return AccountHistorySaveResponseDto.builder()
         .message("가계부가 등록되었습니다.")
@@ -95,16 +110,20 @@ public class AccountBookService {
   /*
    * 가계부 조회
    */
-  public AccountHistoryReadResponseDto findAccountHistory(String accountNo, AccountHistoryReadRequestDto request) {
+  public AccountHistoryReadResponseDto findAccountHistory(
+      String accountNo, AccountHistoryReadRequestDto request
+  ) {
 
+    // 응답 변수 셋팅
     AccountHistoryReadResponseDto response = AccountHistoryReadResponseDto.builder()
         .accountNo(accountNo)
         .build();
-    response.initHistoryList();
+    response.initList();
+
 
     // (가계부 요청 데이터)를 (외화 통장 이체 기록 요청 데이터)로 변환
     TransactionHistoryRequestDto transactionDto =
-        TransactionMapper.convertaccountToTransaction(request);
+        TransactionMapper.convertAccountToTransaction(request);
     transactionDto.setOrderByType(OrderByType.ASC);
 
     // 변환한 데이터로 이체 기록 요청
@@ -117,13 +136,69 @@ public class AccountBookService {
         transactionHistoryList
     );
 
+
     //현금 가계 기록 조회
+    List<CashHistory> cashHistoryList = cashHistoryService.findAllByForeignAccountAndPeriod(
+        accountNo,
+        request.getStartDate(),
+        request.getEndDate()
+    );
+
+    // 현금 기록을 가계부에 저장
+    updateAccountHistoryFromCash(
+        response.getMonthHistoryList(),
+        cashHistoryList
+    );
+
+    // 총 거래 횟수 셋팅 및 반환
+    response.setTransactionCount(transactionHistoryList.size());
+    return response;
+  }
+
+
+  /*
+   * 가계부 상세 조회
+   */
+  public List<DetailAccountHistoryReadResponseDto> findDetailAccountHistory(
+      String accountNo, DetailAccountHistoryReadRequestDto request
+  ) {
+
+    List<DetailAccountHistoryReadResponseDto> response = new ArrayList<>();
+
+    // (가계부 상세 요청 데이터)를 (외화 통장 이체 기록 요청 데이터)로 변환
+    TransactionHistoryRequestDto transactionDto =
+        TransactionMapper.convertDetailAccountToTransaction(request);
+    transactionDto.setOrderByType(OrderByType.ASC);
+
+    // 변환한 데이터로 이체 기록 요청
+    List<TransactionHistoryDto> transactionHistoryList =
+        transactionService.getForeignHistoryByAccountNo(accountNo, transactionDto);
+
+    // 이체 기록을 가계부에 저장
+    updateDetailHistoryFromTransactions(
+        response,
+        transactionHistoryList
+    );
+
+
+    //현금 가계 기록 조회
+    List<CashHistory> cashHistoryList = cashHistoryService.findAllByForeignAccountOneDay(
+        accountNo,
+        request.getDate()
+    );
+
+    // 현금 기록을 가계부에 저장
+    updateDetailHistoryFromCash(
+        response,
+        cashHistoryList
+    );
 
     return response;
   }
 
+
   /*
-   * findAccountHistory에서 사용(이체 기록을 가계 기록으로 변경)
+   * 가계부 조회에서 사용(이체 기록을 가계 기록으로 변경)
    */
   private void updateAccountHistoryFromTransactions(
       List<AccountHistoryReadResponseDto.DayAccountHistory> monthAccountBook,
@@ -153,24 +228,76 @@ public class AccountBookService {
   }
 
   /*
-   * findAccountHistory에서 사용(현금 기록을 가계 기록으로 변경)
+   * 가계부 조회에서 사용(현금 기록을 가계 기록으로 변경)
    */
-//  private void updateAccountHistoryFromCash(
-//      List<AccountHistoryReadResponseDto.DayAccountHistory> monthAccountBook,
-//      List<CashHistory> cashHistoryList
-//  ) {
-//
-//    // 현금 사용 기록을 순회하면서 응답 DTO에 저장
-//    for(CashHistory history : cashHistoryList) {
-//
-//      // 일자를 인덱스로 사용
-//      int date = history.getTransactionAt().getDayOfMonth();
-//
-//      // 현금 사용 기록만 있어서 그대로 빼주기
-//      monthAccountBook.get(date).addTotalExpenditure(history.getAmount());
-//    }
-//  }
+  private void updateAccountHistoryFromCash(
+      List<AccountHistoryReadResponseDto.DayAccountHistory> monthAccountBook,
+      List<CashHistory> cashHistoryList
+  ) {
 
+    // 현금 사용 기록을 순회하면서 응답 DTO에 저장
+    for(CashHistory history : cashHistoryList) {
+
+      // 일자를 인덱스로 사용
+      int date = history.getTransactionAt().getDayOfMonth();
+
+      // 현금 사용 기록만 있어서 값 그대로 추가
+      monthAccountBook.get(date).addTotalExpenditure(history.getAmount());
+    }
+  }
+
+
+  /*
+   * 가계부 상세 조회에서 사용(이체 기록을 상세 가계 기록으로 변경)
+   */
+  private void updateDetailHistoryFromTransactions(
+      List<DetailAccountHistoryReadResponseDto> detailAccountBook,
+      List<TransactionHistoryDto> transactionHistoryList
+  ) {
+
+    // 외화 통장 이체 기록을 순회하면서 응답 DTO에 저장
+    for (TransactionHistoryDto transaction : transactionHistoryList) {
+
+      // 거래 일자와 거래 시각을 결합한 문자열 생성
+      String dateTimeString = transaction.getTransactionDate() + transaction.getTransactionTime();
+
+      // DateTimeFormatter 정의: "yyyyMMddHHmmss" 형식에 맞춰서 포맷터 생성
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
+      // 문자열을 LocalDateTime으로 변환
+      LocalDateTime transactionDateTime = LocalDateTime.parse(dateTimeString, formatter);
+
+      DetailAccountHistoryReadResponseDto dto =
+          DetailAccountHistoryReadResponseDto.builder()
+              .amount(transaction.getTransactionBalance())
+              .transactionType(transaction.getTransactionType())
+              .transactionAt(transactionDateTime)
+              .balance(transaction.getTransactionAfterBalance())
+              .store(transaction.getTransactionMemo())
+              .build();
+      detailAccountBook.add(dto);
+    }
+  }
+
+  /*
+  * 가계부 상세 조회에서 사용(현금 기록을 상세 가계 기록으로 변경)
+  */
+  private void updateDetailHistoryFromCash(
+      List<DetailAccountHistoryReadResponseDto> detailAccountBook,
+      List<CashHistory> cashHistoryList
+  ){
+    for(CashHistory cashHistory : cashHistoryList) {
+      DetailAccountHistoryReadResponseDto dto =
+          DetailAccountHistoryReadResponseDto.builder()
+              .amount(String.valueOf(cashHistory.getAmount()))
+              .transactionType(cashHistory.getTransactionType().toString())
+              .transactionAt(cashHistory.getTransactionAt())
+              .balance(String.valueOf(cashHistory.getBalance()))
+              .store(String.valueOf(cashHistory.getStore()))
+              .build();
+      detailAccountBook.add(dto);
+    }
+  }
 }
 
 

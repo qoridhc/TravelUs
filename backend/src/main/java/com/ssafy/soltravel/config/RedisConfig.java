@@ -11,6 +11,7 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Configuration
 @EnableRedisRepositories
@@ -50,4 +51,14 @@ public class RedisConfig {
     return template;
   }
 
+  @Bean
+  public RedisTemplate<String, SseEmitter> sseEmitterRedisTemplate(RedisConnectionFactory connectionFactory) {
+    RedisTemplate<String, SseEmitter> template = new RedisTemplate<>();
+    template.setConnectionFactory(connectionFactory);
+    template.setKeySerializer(new StringRedisSerializer());
+    template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+    template.setHashKeySerializer(new StringRedisSerializer());
+    template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+    return template;
+  }
 }
