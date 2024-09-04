@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { RiHome5Line } from 'react-icons/ri';
 import { accountApi } from '../../api/account';
 import { settlementApi } from '../../api/settle';
 import { AccountInfo, AccountParticipants } from '../../types/account';
@@ -14,6 +15,7 @@ const Settlement: React.FC = () => {
     const [selectedForeignAccount, setSelectedForeignAccount] = useState<AccountInfo | null>(null);
     const [participants, setParticipants] = useState<AccountParticipants | null>(null);
     const [settlementAmount, setSettlementAmount] = useState<number>(0);
+    const [isBalanceExceeded, setIsBalanceExceeded] = useState<boolean>(true);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -112,92 +114,96 @@ const Settlement: React.FC = () => {
     }
 
     return (
-        <div className="p-4 max-w-md mx-auto bg-gray-100 min-h-screen">
-            <h1 className="mb-4 text-xl font-bold">모임 통장 정산</h1>
-            <h2 className="mb-2 font-bold">정산 계산법</h2>
-            <p className="mb-4 text-sm text-gray-500">남은 금액 / 모임 통장 인원</p>
-            
-            {/* 모임통장 선택 */}
-            <div className="mb-4">
-                <label htmlFor="group-account-select" className="block text-sm font-medium text-gray-700 mb-2">
-                    모임통장 선택
-                </label>
-                <select
-                    id="group-account-select"
-                    className="w-full p-2 border rounded mb-2"
-                    value={selectedGroupAccount?.id || ''}
-                    onChange={handleGroupAccountChange}
-                >
-                    {groupAccounts.map(account => (
-                        <option key={account.id} value={account.id}>
-                            {account.accountName} ({account.accountNo})
-                        </option>
-                    ))}
-                </select>
+        <div className="w-full h-full bg-[#EFEFF5]">
+            <div className="flex flex-col bg-[#c3d8eb]">
+                <div className="pl-5 pt-5 mb-14 flex space-x-2 items-center justify-start">
+                    <RiHome5Line
+                        onClick={() => navigate("/")}
+                        className="text-2xl text-zinc-600 cursor-pointer"
+                    />
+                    <p className="text-sm font-bold flex items-center">모임 통장 정산</p>
+                </div>
             </div>
             
-            {/* 원화 모임통장 정보 */}
-            {selectedGroupAccount && (
-                <div className="p-4 mb-4 bg-white rounded-lg shadow">
-                    <h3 className="font-bold mb-2">원화 모임통장</h3>
-                    <div className="mb-2 flex items-center">
-                        <div className="w-8 h-8 mr-2 bg-[#0046FF] rounded-full"></div>
-                        <div>
-                            <p className="font-semibold">{selectedGroupAccount.accountName}</p>
-                            <p className="text-sm text-gray-500">{selectedGroupAccount.accountNo}</p>
+            <div className="w-full p-5 flex flex-col">
+                <div className="mb-6 p-4 bg-white rounded-lg shadow">
+                    <h2 className="mb-4 text-lg font-semibold">모임통장 선택</h2>
+                    <select
+                        className="w-full p-2 border rounded mb-2"
+                        value={selectedGroupAccount?.id || ''}
+                        onChange={handleGroupAccountChange}
+                    >
+                        {groupAccounts.map(account => (
+                            <option key={account.id} value={account.id}>
+                                {account.accountName} ({account.accountNo})
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                
+                {selectedGroupAccount && (
+                    <div className="mb-6 p-4 bg-white rounded-lg shadow">
+                        <h3 className="font-bold mb-2">원화 모임통장</h3>
+                        <div className="mb-2 flex items-center">
+                            <div className="w-8 h-8 mr-2 bg-[#0046FF] rounded-full"></div>
+                            <div>
+                                <p className="font-semibold">{selectedGroupAccount.accountName}</p>
+                                <p className="text-sm text-gray-500">{selectedGroupAccount.accountNo}</p>
+                            </div>
                         </div>
+                        <input
+                            type="text"
+                            className="p-2 w-full text-right text-2xl font-bold border rounded"
+                            value={selectedGroupAccount.balance.toLocaleString()}
+                            readOnly
+                        />
+                        <p className="text-right text-sm text-gray-500">잔액 : {selectedGroupAccount.currency.currencyCode}</p>
                     </div>
-                    <input
-                        type="text"
-                        className="p-2 w-full text-right text-2xl font-bold border rounded"
-                        value={selectedGroupAccount.balance.toLocaleString()}
-                        readOnly
-                    />
-                    <p className="text-right text-sm text-gray-500">{selectedGroupAccount.currency.currencyCode}</p>
-                </div>
-            )}
-            
-            {/* 외화 모임통장 정보 */}
-            {selectedForeignAccount && (
-                <div className="p-4 mb-4 bg-white rounded-lg shadow">
-                    <h3 className="font-bold mb-2">외화 모임통장</h3>
-                    <div className="mb-2 flex items-center">
-                        <div className="w-8 h-8 mr-2 bg-[#0046FF] rounded-full"></div>
-                        <div>
-                            <p className="font-semibold">{selectedForeignAccount.accountName}</p>
-                            <p className="text-sm text-gray-500">{selectedForeignAccount.accountNo}</p>
+                )}
+                
+                {selectedForeignAccount && (
+                    <div className="mb-6 p-4 bg-white rounded-lg shadow">
+                        <h3 className="font-bold mb-2">외화 모임통장</h3>
+                        <div className="mb-2 flex items-center">
+                            <div className="w-8 h-8 mr-2 bg-[#0046FF] rounded-full"></div>
+                            <div>
+                                <p className="font-semibold">{selectedForeignAccount.accountName}</p>
+                                <p className="text-sm text-gray-500">{selectedForeignAccount.accountNo}</p>
+                            </div>
                         </div>
+                        <input
+                            type="text"
+                            className="p-2 w-full text-right text-2xl font-bold border rounded"
+                            value={selectedForeignAccount.balance.toLocaleString()}
+                            readOnly
+                        />
+                        <p className="text-right text-sm text-gray-500">잔액 : {selectedForeignAccount.currency.currencyCode}</p>
                     </div>
-                    <input
-                        type="text"
-                        className="p-2 w-full text-right text-2xl font-bold border rounded"
-                        value={selectedForeignAccount.balance.toLocaleString()}
-                        readOnly
-                    />
-                    <p className="text-right text-sm text-gray-500">{selectedForeignAccount.currency.currencyCode}</p>
-                </div>
-            )}
-            
-            {participants && (
-                <div className="mb-4">
-                    <p className="font-bold">모임 통장 인원: {participants.participants.length}명</p>
-                    <p className="mt-2 font-bold">예상 정산 금액 (원화 기준)</p>
-                    <input
-                        type="text"
-                        className="p-2 mt-1 w-full text-right text-2xl font-bold border rounded"
-                        value={settlementAmount.toLocaleString()}
-                        readOnly
-                    />
-                    <p className="text-right text-sm text-gray-500">{selectedGroupAccount?.currency.currencyCode}</p>
-                </div>
-            )}
-            <button
-                className="mt-4 py-3 w-full bg-[#0046FF] text-white font-bold rounded-lg"
-                onClick={handleSettlement}
-                disabled={isLoading || !selectedGroupAccount || !selectedForeignAccount}
-            >
-                {isLoading ? '처리 중...' : '정산하기'}
-            </button>
+                )}
+                
+                {participants && (
+                    <div className="mb-6 p-4 bg-white rounded-lg shadow">
+                        <p className="font-bold mb-2">모임 통장 인원: {participants.participants.length}명</p>
+                        <p className="font-bold mb-2">예상 정산 금액 (원화 기준)</p>
+                        <h6 className='mb-3 text-red-500'>외화 모임 통장에 잔액이 있을 경우 예상 정산 금액과 정산된 금액이 상이할 수 있습니다.</h6>
+                        <input
+                            type="text"
+                            className="p-2 w-full text-right text-2xl font-bold border rounded"
+                            value={settlementAmount.toLocaleString()}
+                            readOnly
+                        />
+                        <p className="text-right text-sm text-gray-500">{selectedGroupAccount?.currency.currencyCode}</p>
+                    </div>
+                )}
+
+                <button
+                    className="mt-4 py-3 w-full bg-[#0046FF] text-white font-bold rounded-lg"
+                    onClick={handleSettlement}
+                    disabled={isLoading || !selectedGroupAccount || !selectedForeignAccount}
+                >
+                    {isLoading ? '처리 중...' : '정산하기'}
+                </button>
+            </div>
         </div>
     );
 };

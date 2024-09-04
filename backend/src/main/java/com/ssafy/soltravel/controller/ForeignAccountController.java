@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "ForeignAccount API", description = "외화 계좌 관련 API")
@@ -55,7 +56,7 @@ public class ForeignAccountController {
         return responseEntity;
     }
 
-    @Operation(summary = "외환 계좌 조회", description = "계좌 번호를 사용하여 외환 계좌를 조회하는 API.")
+    @Operation(summary = "외화 계좌 조회 - (AccountNo)", description = "외화 계좌 번호를 사용하여 외환 계좌를 조회하는 API.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = AccountDto.class))),
         @ApiResponse(responseCode = "404", description = "계좌를 찾을 수 없음", content = @Content),
@@ -72,7 +73,25 @@ public class ForeignAccountController {
         return responseEntity;
     }
 
-    @Operation(summary = "외환 계좌 삭제", description = "외환 계좌를 삭제하는 API.")
+    @Operation(summary = "외화 계좌 조회 - (AccountId)", description = "외화 계좌 Id를 사용하여 외환 계좌를 조회하는 API.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = AccountDto.class))),
+        @ApiResponse(responseCode = "404", description = "계좌를 찾을 수 없음", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @GetMapping("/accountId/{accountId}")
+    public ResponseEntity<AccountDto> getForeignByAccountId(
+        @Parameter(description = "사용자의 외화 계좌 AccountId(계좌Id)", example = "1")
+        @PathVariable String accountId
+    ) {
+
+        ResponseEntity<AccountDto> responseEntity = accountService.getForeignByAccountId(Long.valueOf(accountId));
+
+        return responseEntity;
+    }
+
+
+    @Operation(summary = "외화 계좌 삭제", description = "외환 계좌를 삭제하는 API.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "계좌 삭제 성공", content = @Content(schema = @Schema(implementation = DeleteAccountResponseDto.class))),
         @ApiResponse(responseCode = "404", description = "계좌를 찾을 수 없음", content = @Content),

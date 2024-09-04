@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
+import { RiHome5Line } from 'react-icons/ri';
 import { accountApi } from '../../api/account';
 import { transactionApi } from '../../api/transaction';
 import { AccountInfo } from '../../types/account';
@@ -47,6 +48,11 @@ const Transaction: React.FC = () => {
 
     fetchAccounts();
   }, [userId]);
+
+  const formatAccountNumber = (accountNo: string) => {
+    // 계좌번호를 각 4자리씩 나누고 '-'로 연결
+    return accountNo.replace(/(\d{3})(\d{4})(\d{4})(\d{5})/, "$1-$2-$3-$4");
+  };
 
   const handleGroupAccountChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const account = groupAccounts.find(acc => acc.id === parseInt(e.target.value));
@@ -98,67 +104,84 @@ const Transaction: React.FC = () => {
   }
 
   return (
-    <div className="p-4 max-w-md mx-auto bg-gray-100 min-h-screen">
-      <h1 className="mb-6 text-2xl font-bold">모임통장 입금</h1>
+    <div className="w-full h-full pb-16 bg-[#EFEFF5]">
+      <div className="p-5 flex flex-col bg-[#c3d8eb]">
+        <div className="mb-12 flex space-x-2 items-center justify-start">
+          <RiHome5Line
+            onClick={() => navigate("/")}
+            className="text-2xl text-zinc-600 cursor-pointer"
+          />
+          <p className="text-sm font-bold flex items-center">모임통장 입금</p>
+        </div>
+      </div>
+      
+      <div className="w-full p-5 flex flex-col">
+        <div className="mb-6 p-4 bg-white rounded-lg shadow">
+          <h2 className="mb-4 text-lg font-semibold">출금 계좌 선택</h2>
+          <div className='mb-2'> 올인원머니통장 </div>
+          <select
+            className="mb-4 p-2 w-full border rounded"
+            value={selectedIndividualAccount?.id || ''}
+            onChange={handleIndividualAccountChange}
+          >
+            {individualAccounts.map(account => (
+              <option key={account.id} value={account.id}>
+                {account.accountName} ({formatAccountNumber(account.accountNo)})
+              </option>
+            ))}
+          </select>
+          {selectedIndividualAccount && (
+            <p className="ml-2 text-sm font-bold text-gray-600">
+              출금 가능 잔액: {selectedIndividualAccount.balance.toLocaleString()}
+              {/* {selectedIndividualAccount.currency.currencyCode} */}
+              원
+            </p>
+          )}
+       </div>
+        <div className="mb-6 p-4 bg-white rounded-lg shadow">
+          <h2 className="mb-4 text-lg font-semibold">입금 계좌 선택</h2>
+          <div className='mb-2'> 올인원모임통장 </div>
+          <select
+            className="mb-4 p-2 w-full border rounded"
+            value={selectedGroupAccount?.id || ''}
+            onChange={handleGroupAccountChange}
+          >
+            {groupAccounts.map(account => (
+              <option key={account.id} value={account.id}>
+                {account.accountName} ({formatAccountNumber(account.accountNo)})
+              </option>
+            ))}
+          </select>
+          {selectedGroupAccount && (
+            <p className="ml-2 mb-4 text-sm font-bold text-gray-600">
+              현재 잔액: {selectedGroupAccount.balance.toLocaleString()} 
+              {/* {selectedGroupAccount.currency.currencyCode} */}
+              원
+            </p>
+          )}
 
-      <div className="mb-6 p-4 bg-white rounded-lg shadow">
-        <h2 className="mb-4 text-xl font-semibold">출금 계좌 선택 (개인계좌)</h2>
-        <select
-          className="mb-4 p-2 w-full border rounded"
-          value={selectedIndividualAccount?.id || ''}
-          onChange={handleIndividualAccountChange}
-        >
-          {individualAccounts.map(account => (
-            <option key={account.id} value={account.id}>
-              {account.accountName} ({account.accountNo})
-            </option>
-          ))}
-        </select>
-        {selectedIndividualAccount && (
-          <p className="mb-4 text-sm text-gray-600">
-            출금계좌 잔액: {selectedIndividualAccount.balance.toLocaleString()} {selectedIndividualAccount.currency.currencyCode}
-          </p>
-        )}
-
-        <h2 className="mb-4 text-xl font-semibold">입금 계좌 선택 (모임통장)</h2>
-        <select
-          className="mb-4 p-2 w-full border rounded"
-          value={selectedGroupAccount?.id || ''}
-          onChange={handleGroupAccountChange}
-        >
-          {groupAccounts.map(account => (
-            <option key={account.id} value={account.id}>
-              {account.accountName} ({account.accountNo})
-            </option>
-          ))}
-        </select>
-        {selectedGroupAccount && (
-          <p className="mb-4 text-sm text-gray-600">
-            입금계좌 잔액: {selectedGroupAccount.balance.toLocaleString()} {selectedGroupAccount.currency.currencyCode}
-          </p>
-        )}
-
-        <input
-          type="number"
-          className="mb-4 p-2 w-full border rounded"
-          value={transferAmount}
-          onChange={(e) => setTransferAmount(e.target.value)}
-          placeholder="이체 금액"
-        />
-        <input
-          type="text"
-          className="mb-4 p-2 w-full border rounded"
-          value={transactionSummary}
-          onChange={(e) => setTransactionSummary(e.target.value)}
-          placeholder="거래 내용 (선택사항)"
-        />
-        <button
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-200"
-          onClick={handleTransfer}
-          disabled={isLoading}
-        >
-          {isLoading ? '처리 중...' : '이체하기'}
-        </button>
+          <input
+            type="number"
+            className="mb-4 p-2 text-right w-full border rounded"
+            value={transferAmount}
+            onChange={(e) => setTransferAmount(e.target.value)}
+            placeholder="이체 금액 (원)"
+          />
+          <input
+            type="text"
+            className="mb-4 p-2 text-right w-full border rounded"
+            value={transactionSummary}
+            onChange={(e) => setTransactionSummary(e.target.value)}
+            placeholder="거래 내용 (선택사항)"
+          />
+          <button
+            className="mt-5 w-full bg-[#0046FF] text-white py-2 font-bold rounded hover:bg-blue-600 transition duration-200"
+            onClick={handleTransfer}
+            disabled={isLoading}
+          >
+            {isLoading ? '처리 중...' : '이체하기'}
+          </button>
+        </div>
       </div>
     </div>
   );

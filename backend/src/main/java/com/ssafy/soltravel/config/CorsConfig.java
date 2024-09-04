@@ -19,7 +19,7 @@ public class CorsConfig {
     CorsConfiguration config = new CorsConfiguration();
 
     config.setAllowCredentials(true);
-    config.setAllowedOrigins(List.of(FRONT_URL));
+    config.setAllowedOrigins(List.of("https://soltravel.shop", FRONT_URL));
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     config.addAllowedHeader("*");
     config.setExposedHeaders(List.of("*"));

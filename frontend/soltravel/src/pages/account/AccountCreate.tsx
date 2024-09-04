@@ -70,7 +70,12 @@ const AccountCreate = () => {
       <div className="flex flex-col space-y-5">
         <div className="p-5 grid grid-cols-[1fr_8fr_1fr]">
           <div className="flex items-center">
-            <RiHome5Line className="text-2xl" />
+            <RiHome5Line
+              onClick={() => {
+                navigate("/");
+              }}
+              className="text-2xl"
+            />
           </div>
           <p className="text-xl text-center font-semibold">입출금통장 가입정보</p>
         </div>

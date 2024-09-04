@@ -38,6 +38,7 @@ const MemberSelect: React.FC<MemberSelectProps> = ({
           userId: response.data.userId,
           accountId: response.data.accountId,
           accountNo: response.data.accountNo,
+          userName: response.data.userName,
         };
         onChange(response.data.userName, participantInfo);
       }

@@ -2,21 +2,25 @@ package com.ssafy.soltravel.mapper;
 
 import com.ssafy.soltravel.domain.Currency;
 import com.ssafy.soltravel.domain.Enum.AccountType;
-import com.ssafy.soltravel.domain.Enum.CurrencyType;
 import com.ssafy.soltravel.domain.ForeignAccount;
 import com.ssafy.soltravel.domain.GeneralAccount;
 import com.ssafy.soltravel.domain.User;
 import com.ssafy.soltravel.dto.account.AccountDto;
 import com.ssafy.soltravel.dto.account.request.CreateAccountRequestDto;
 import com.ssafy.soltravel.dto.currency.CurrencyDto;
+import com.ssafy.soltravel.repository.CurrencyRepository;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
+@Component
 @RequiredArgsConstructor
 public class AccountMapper {
 
-    public static AccountDto toCreateAccountDto(GeneralAccount generalAccount) {
+    private final CurrencyRepository currencyRepository;
+
+    public AccountDto toCreateAccountDto(GeneralAccount generalAccount) {
 
         CurrencyDto currencyDto = new CurrencyDto("KRW", "원화");
 
@@ -35,12 +39,13 @@ public class AccountMapper {
             .currency(currencyDto)
             .createdAt(String.valueOf(generalAccount.getCreatedAt()))
             .updatedAt(String.valueOf(generalAccount.getUpdatedAt()))
+            .preferenceExchange(generalAccount.getPreferenceRate() == null ? 0.0f : generalAccount.getPreferenceRate())
             .build();
 
         return accountDto;
     }
 
-    public static AccountDto toCreateAccountDto(ForeignAccount foreignAccount) {
+    public AccountDto toCreateAccountDto(ForeignAccount foreignAccount) {
 
         CurrencyDto currencyDto = new CurrencyDto(
             foreignAccount.getCurrency().getCurrencyCode(),
@@ -67,17 +72,14 @@ public class AccountMapper {
         return accountDto;
     }
 
-    public static ForeignAccount toForeignAccountEntitiy(
+    public ForeignAccount toForeignAccountEntitiy(
         Map<String, String> recObject,
         GeneralAccount generalAccount,
         CreateAccountRequestDto requestDto
     ) {
 
-        CurrencyType currencyType = CurrencyType.fromCode(requestDto.getCurrencyCode());
-
-        Currency currency = new Currency();
-        currency.setCurrencyCode(currencyType.getCurrencyCode());
-        currency.setCurrencyName(currencyType.getCurrencyName());
+        Currency currency = currencyRepository.findFirstByCurrencyCode(requestDto.getCurrencyCode()).orElseThrow(
+            () -> new IllegalArgumentException("Currency Does Not Exist" + requestDto.getCurrencyCode()));
 
         ForeignAccount foreignAccount = ForeignAccount.builder()
             .id(generalAccount.getId())
@@ -89,16 +91,16 @@ public class AccountMapper {
             .generalAccount(generalAccount)
             .travelStartDate(requestDto.getTravelStartDate())
             .travelEndDate(requestDto.getTravelEndDate())
+            .currency(currency)
             .groupName(requestDto.getGroupName())
             .iconName(requestDto.getIconName())
-            .currency(currency)
             .build();
 
         return foreignAccount;
     }
 
 
-    public static GeneralAccount toGeneralAccountEntitiy(
+    public GeneralAccount toGeneralAccountEntitiy(
         Map<String, String> recObject,
         User user,
         CreateAccountRequestDto requestDto
@@ -112,6 +114,7 @@ public class AccountMapper {
         generalAccount.setUser(user);
         generalAccount.setAccountType(requestDto.getAccountType());
         generalAccount.setAccountPassword(requestDto.getAccountPassword());
+        generalAccount.setPreferenceRate(requestDto.getExchangeRate());
 
         if(generalAccount.getAccountType().equals(AccountType.INDIVIDUAL)) {
             generalAccount.setAccountName("신한은행 일반 개인통장");

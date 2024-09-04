@@ -42,12 +42,11 @@ public class UserController {
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
     @PostMapping(value="/join", consumes = "multipart/form-data")
-    public ResponseEntity<ResponseDto> createUser(@ModelAttribute UserCreateRequestDto joinDto)
+    public ResponseEntity<?> createUser(@ModelAttribute UserCreateRequestDto joinDto)
         throws IOException {
 
         LogUtil.info("requested", joinDto.toString());
-        userService.createUser(joinDto);
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto());
+        return ResponseEntity.status(HttpStatus.OK).body(userService.createUser(joinDto));
     }
 
     @Operation(summary = "회원가입 테스트", description = "새로운 사용자를 등록합니다.(신한 api 사용하지 않는 버전)")

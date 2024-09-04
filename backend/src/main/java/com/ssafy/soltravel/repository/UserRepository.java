@@ -18,8 +18,9 @@ public class UserRepository {
   private final EntityManager em;
   private final JPAQueryFactory queryFactory;
 
-  public void save(User user) {
+  public long save(User user) {
     em.persist(user);
+    return user.getUserId();
   }
 
   public Optional<User> findByName(String name) {

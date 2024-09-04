@@ -4,6 +4,7 @@ import { RiHome5Line } from "react-icons/ri";
 import { IoPeople } from "react-icons/io5";
 import { MdOutlineEventNote } from "react-icons/md";
 import { BsThreeDots } from "react-icons/bs";
+import { GoGraph } from "react-icons/go";
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -30,7 +31,8 @@ const Footer = () => {
   };
 
   const handleMenuConversation = () => {
-    setCurrentMenu("전체");
+    navigate("/exchangerate");
+    setCurrentMenu("환율");
   };
 
   return (
@@ -54,10 +56,10 @@ const Footer = () => {
         <p className="text-sm font-medium">가계부</p>
       </button>
       <button
-        className={`flex flex-col items-center ${currentMenu === "전체" ? "" : "text-[#9E9E9E]"} duration-200`}
+        className={`flex flex-col items-center ${currentMenu === "환율" ? "" : "text-[#9E9E9E]"} duration-200`}
         onClick={() => handleMenuConversation()}>
-        <BsThreeDots className="text-2xl" />
-        <p className="text-sm font-medium">전체</p>
+        <GoGraph className="text-2xl" />
+        <p className="text-sm font-medium">환율</p>
       </button>
     </div>
   );

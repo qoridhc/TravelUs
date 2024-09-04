@@ -20,6 +20,7 @@ const AccountBookDetail = () => {
     setAccountNo(accountNo);
   };
 
+
   return (
     <div>
       <div className="p-5 flex flex-col items-center space-y-8">

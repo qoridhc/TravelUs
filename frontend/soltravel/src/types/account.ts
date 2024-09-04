@@ -17,6 +17,7 @@ export interface AccountInfo {
   }
   createdAt: string;
   updatedAt: string;
+  preferenceExchange: string;
 }
 
 

@@ -79,4 +79,6 @@ public class GeneralAccount {
     @OneToOne(mappedBy = "generalAccount", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private ForeignAccount foreignAccount;
+
+    private Float preferenceRate;
 }

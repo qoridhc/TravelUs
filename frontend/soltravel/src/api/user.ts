@@ -9,6 +9,17 @@ export const userApi = {
       },
     });
   },
+    
+  // SMS 인증 전송
+  fetchSendSmsValidation: (phone: string) => {
+    return api.post(`/auth/verify/phone/send`, { phone });
+  },
+
+  // 인증 검사
+  fetchVerifySmsCode: (phone: string, authCode: string) => {
+
+    return api.post(`/auth/verify/phone/code`, { phone, authCode });
+  },
 
   // 로그인
   fetchLogin: (email: string, password: string) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { format } from "date-fns";
@@ -9,6 +9,7 @@ import { BuyItemInfo, DayHistory } from "../../types/accountBook";
 import { useDispatch } from "react-redux";
 import { setDayHistoryDetailList } from "../../redux/accountBookSlice";
 import AccountBookInputModal from "./AccountBookInputModal";
+import AccountBookDetailModal from "./AccountBookDetailModal";
 
 type ValuePiece = Date | null;
 
@@ -21,62 +22,74 @@ interface Props {
 const AccountBookCalendar = ({ accountNo }: Props) => {
   const dispatch = useDispatch();
   const [value, onChange] = useState<Value>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [activeStartDate, setActiveStartDate] = useState("");
   const [activeEndDate, setActiveEndDate] = useState("");
-  const [monthlyTransaction, setMonthlyTransaction] = useState<Array<DayHistory>>([]);
+  const [monthlyTransaction, setMonthlyTransaction] = useState<Array<any>>([]);
+  const [selectedDate, setSelectedDate] = useState<ValuePiece>(null);
 
-  const handleActiveDateChange = (date: any) => {
+  const handleActiveDateChange = useCallback((date: any) => {
     setActiveStartDate(format(date.activeStartDate, "yyyyMMdd"));
-    let last = new Date(Number(format(date.activeStartDate, "yyyy")), Number(format(date.activeStartDate, "M")), 0);
+    const last = new Date(Number(format(date.activeStartDate, "yyyy")), Number(format(date.activeStartDate, "M")), 0);
     setActiveEndDate(format(date.activeStartDate, "yyyyMM") + last.getDate());
-  };
+  }, []);
 
-  const handleDateDetail = async (date: any) => {
-    if (accountNo !== "") {
-      let clickDate = format(date, "yyyyMMdd");
-      try {
-        const data = {
-          date: clickDate,
-          transactionType: "A",
-        };
-        const response = await accountBookApi.fetchAccountBookDayInfo(accountNo, data);
-        dispatch(setDayHistoryDetailList(response.data));
-      } catch (error) {
-        console.log("accountBookApi의 fetchAccountBookDayInfo : ", error);
+  const handleDateDetail = useCallback(
+    async (date: any) => {
+      if (accountNo !== "") {
+        const clickDate = format(date, "yyyyMMdd");
+        try {
+          const data = {
+            date: clickDate,
+            transactionType: "A",
+          };
+          const response = await accountBookApi.fetchAccountBookDayInfo(accountNo, data);
+          dispatch(setDayHistoryDetailList(response.data));
+          setIsDetailModalOpen(true);
+          setSelectedDate(date);
+        } catch (error) {
+          console.error("accountBookApi의 fetchAccountBookDayInfo:", error);
+        }
       }
-    }
-  };
+    },
+    [accountNo, dispatch]
+  );
 
-  const getAccountBookInfo = async () => {
+  const getAccountBookInfo = useCallback(async () => {
     try {
       setIsLoading(true);
-      const data = { startDate: activeStartDate, endDate: activeEndDate, transactionType: "A", orderByType: "ASC" };
+      const data = {
+        startDate: activeStartDate,
+        endDate: activeEndDate,
+        transactionType: "A",
+        orderByType: "ASC",
+      };
       const response = await accountBookApi.fetchAccountBookInfo(accountNo, data);
       setMonthlyTransaction(response.data.monthHistoryList);
     } catch (error) {
-      console.log("accountBook의 fetchAccountBookInfo : ", error);
+      console.error("accountBook의 fetchAccountBookInfo:", error);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [activeStartDate, activeEndDate, accountNo]);
 
   useEffect(() => {
     const initDates = () => {
       const today = new Date();
       const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
       const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-
       setActiveStartDate(format(firstDay, "yyyyMMdd"));
       setActiveEndDate(format(lastDay, "yyyyMMdd"));
     };
 
-    initDates(); // 컴포넌트가 처음 렌더링될 때 실행
+    initDates();
 
     if (accountNo !== "") {
       getAccountBookInfo();
     }
-  }, [accountNo]);
+  }, [accountNo, getAccountBookInfo]);
 
   return isLoading ? (
     <p>Loading...</p>
@@ -87,36 +100,44 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
         value={value}
         onChange={onChange}
         formatDay={(locale, date) => format(date, "d")}
-        calendarType="gregory" // 일요일 부터 시작
-        showNeighboringMonth={false} // 전달, 다음달 날짜 숨기기
-        next2Label={null} // +1년 & +10년 이동 버튼 숨기기
-        prev2Label={null} // -1년 & -10년 이동 버튼 숨기기
-        minDetail="year" // 10년단위 년도 숨기기
-        tileContent={({ activeStartDate, date, view }) => (
+        calendarType="gregory"
+        showNeighboringMonth={false}
+        next2Label={null}
+        prev2Label={null}
+        minDetail="year"
+        tileContent={({ date }) => (
           <div>
             <div className="text-xs text-left font-semibold">
               <p className="text-[#FF5F5F]">
-                {monthlyTransaction[date.getDate()] !== undefined &&
-                monthlyTransaction[date.getDate()].totalExpenditure !== 0
-                  ? `+ ${monthlyTransaction[date.getDate()].totalExpenditure}`
+                {monthlyTransaction[date.getDate()] && monthlyTransaction[date.getDate()].totalExpenditure !== 0
+                  ? `- ${monthlyTransaction[date.getDate()].totalExpenditure.toFixed(1)}`
                   : ""}
               </p>
               <p className="text-[#0471E9]">
-                {monthlyTransaction[date.getDate()] !== undefined &&
-                monthlyTransaction[date.getDate()].totalIncome !== 0
-                  ? `- ${monthlyTransaction[date.getDate()].totalIncome}`
+                {monthlyTransaction[date.getDate()] && monthlyTransaction[date.getDate()].totalIncome !== 0
+                  ? `+ ${monthlyTransaction[date.getDate()].totalIncome.toFixed(1)}`
                   : ""}
               </p>
             </div>
-
-            {/* {today === date ? <p>오늘</p> : <></>} */}
           </div>
         )}
-        onActiveStartDateChange={(activeStartDate) => handleActiveDateChange(activeStartDate)}
-        onClickDay={(value, event) => handleDateDetail(value)}
+        onActiveStartDateChange={handleActiveDateChange}
+        onClickDay={handleDateDetail}
       />
 
-      <AccountBookInputModal accountNo={accountNo} />
+      <AccountBookInputModal
+        accountNo={accountNo}
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+        getAccountBookInfo={getAccountBookInfo}
+      />
+
+      <AccountBookDetailModal
+        accountNo={accountNo}
+        isModalOpen={isDetailModalOpen}
+        setIsModalOpen={setIsDetailModalOpen}
+        selectedDate={selectedDate}
+      />
     </div>
   );
 };

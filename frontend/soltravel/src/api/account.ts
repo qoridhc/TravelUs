@@ -26,4 +26,16 @@ export const accountApi = {
     const response = await api.post(`/account/general/${userId}`, data);
     return response.data;
   },
+
+  // 가입한 모임통장 정보 가져오기 (모임원인 경우)
+  fetchJoinedMeetingAccount: async (userId: number): Promise<AccountInfo[]> => {
+    const response = await api.get(`/account/${userId}/participants/all`);
+    return response.data;
+  },
+
+  // 특정 외화모임통장 조회
+  fetchForeignMeetingAccount: async (accountId: number): Promise<AccountInfo> => {
+    const response = await api.get(`/account/foreign/accountId/${accountId}`);
+    return response.data;
+  },
 };

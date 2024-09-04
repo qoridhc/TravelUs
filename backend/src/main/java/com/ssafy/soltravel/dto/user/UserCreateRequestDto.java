@@ -50,4 +50,9 @@ public class UserCreateRequestDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Schema(description = "사용자의 생년월일", example = "1990-01-01")
     private LocalDate birth;
+
+    @NotNull
+    @NotBlank
+    @Schema(description = "새로 생성할 계좌 비밀번호", example = "1234")
+    private String accountPwd;
 }

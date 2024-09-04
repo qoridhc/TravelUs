@@ -16,7 +16,7 @@ interface DropdownInputProps {
 const DropdownInput: React.FC<DropdownInputProps> = ({ accountList, selectedOption, onChange }) => {
   const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
   const handleChange = (selected: string) => {
-    const selectedIndex = accountList.findIndex((account) => account.accountName === selected);
+    const selectedIndex = accountList.findIndex((account) => account.groupName === selected);
     onChange(selected, selectedIndex, foreignAccountList[selectedIndex - 1].accountNo);
   };
 
@@ -58,7 +58,7 @@ const DropdownInput: React.FC<DropdownInputProps> = ({ accountList, selectedOpti
         }}>
         {accountList.map((account, index) =>
           index !== 0 ? (
-            <MenuItem value={account.accountName} key={index}>
+            <MenuItem value={account.groupName} key={index}>
               {account.groupName}
             </MenuItem>
           ) : (
