@@ -1,0 +1,43 @@
+spring:
+  sql:
+    init:
+      mode: always
+
+  mvc:
+    servlet:
+      path: /api/v1/bank
+    async:
+      request-timeout: 3000000
+
+  application:
+    name: backend
+
+  profiles:
+    active: dev
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/tunabank?serverTimezone=Asia/Seoul&useUniCode=yes&characterEncoding=UTF-8
+    username: root
+    password: 1234
+    hikari:
+      pool-name: hikari-pool
+      maximum-pool-size: 50
+      minimum-idle: 50
+      connection-timeout: 5000
+      connection-init-sql: SELECT 1
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      auto-commit: true
+
+  # JPA 설정
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+        default_batch_fetch_size: 100 #fetch join 후 지연로딩하는 entity을 in 절로 미리 영속성 컨텍스트에 저장
+
