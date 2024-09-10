@@ -1,4 +1,8 @@
 spring:
+  sql:
+    init:
+      mode: always
+
   mvc:
     servlet:
       path: /api/v1/bank
@@ -28,10 +32,12 @@ spring:
 
   # JPA 설정
   jpa:
+    defer-datasource-initialization: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
         default_batch_fetch_size: 100 #fetch join 후 지연로딩하는 entity을 in 절로 미리 영속성 컨텍스트에 저장
+
