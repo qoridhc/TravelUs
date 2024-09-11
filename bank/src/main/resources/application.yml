@@ -3,6 +3,11 @@ spring:
     init:
       mode: always
 
+  data:
+    redis:
+      host: redis
+      port: 6379
+
   mvc:
     servlet:
       path: /api/v1/bank
