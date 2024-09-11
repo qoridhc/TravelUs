@@ -21,7 +21,6 @@ interface InputState {
 const SignUp = () => {
   const navigate = useNavigate();
   const [isFormValid, setIsFormValid] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
 
   const [inputs, setInputs] = useState<InputState>({
     file: null,
@@ -45,27 +44,18 @@ const SignUp = () => {
       const formattedValue = inputs.phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
       const response = await userApi.fetchVerifySmsCode(formattedValue, inputs.verificationCode!);
 
+      console.log("인증번호응답", response);
       if (response.status === 200) {
         console.log("휴대폰 인증이 성공적으로 완료되었습니다!");
         return true;
-      } else {
-        alert("인증번호를 다시 확인해주세요");
-        return false;
       }
     } catch (error) {
-      console.error("Error creating user:", error);
       alert("인증번호를 다시 확인해주세요");
+      return false;
     }
   };
 
   const handleSignUp = async () => {
-
-    // // 인증 코드 검증
-    // const isCodeVerified = await fetchVerifySmsCode();
-  
-    // if (!isCodeVerified) 
-    //   return;
-
     const formData = new FormData();
 
     // formData.append("file", inputs.file as Blob);
@@ -78,7 +68,14 @@ const SignUp = () => {
     formData.append("accountPassword", inputs.accountPassword);
 
     try {
+      const isVerified = await fetchVerifySmsCode();
+
+      if (!isVerified) {
+        return;
+      }
+
       const response = await userApi.fetchSignUp(formData);
+
       if (response.status === 200) {
         console.log("회원가입이 성공적으로 완료되었습니다!");
 
@@ -89,9 +86,9 @@ const SignUp = () => {
           console.log("SSE connection opened:", event);
         };
 
-        eventSource.addEventListener("all", function(event){
-          console.log("all: ",event.data);
-        })
+        eventSource.addEventListener("all", function (event) {
+          console.log("all: ", event.data);
+        });
 
         eventSource.addEventListener("Exchange", function (event) {
           const data = JSON.parse(event.data);
@@ -116,11 +113,11 @@ const SignUp = () => {
           eventSource.close(); // 오류 발생 시 SSE 연결 닫기
         };
 
-        eventSource.close = function() {
+        eventSource.close = function () {
           console.log("SSE connection closed");
           // 재연결 로직을 추가할 수 있습니다.
         };
-        
+
         navigate("/login");
       }
     } catch (error) {
@@ -129,9 +126,8 @@ const SignUp = () => {
     }
   };
 
-
   return (
-    <div className="w-full min-h-screen p-5 bg-[#EFEFF5]">
+    <div className="w-full min-h-screen p-5 bg-[#F3F4F6]">
       <div className="flex flex-col justify-center space-y-8">
         <p className="text-xl font-bold">회원가입</p>
         <UserForm inputs={inputs} setInputs={setInputs} setIsFormValid={setIsFormValid} />
