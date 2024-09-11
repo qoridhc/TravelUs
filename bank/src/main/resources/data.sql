@@ -1,7 +1,3 @@
--- 기존 데이터 삭제
-DELETE FROM currency;
-DELETE FROM country;
-
 -- country 데이터 삽입 (명시적으로 컬럼을 지정)
 INSERT IGNORE INTO country (country_id, country_code, country_name) VALUES (1, 'KOR', 'Korea');
 INSERT IGNORE INTO country (country_id, country_code, country_name) VALUES (2, 'USA', 'United States');
