@@ -5,6 +5,7 @@ import com.goofy.tunabank.domain.AccountId;
 import com.goofy.tunabank.domain.Country;
 import com.goofy.tunabank.domain.Currency;
 import com.goofy.tunabank.domain.Enum.AccountType;
+import com.goofy.tunabank.domain.Enum.CurrencyType;
 import com.goofy.tunabank.dto.ResponseDto;
 import com.goofy.tunabank.dto.account.request.CreateAccountRequestDto;
 import com.goofy.tunabank.repository.AccountRepository;
@@ -21,33 +22,51 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final CurrencyRepository currencyRepository;
 
+    // ==== 계좌 생성 관련 메서드 ====
     public ResponseDto crateNewAccount(CreateAccountRequestDto requestDto) {
 
-        // 통화 코드에 맞는 Country 객체 자동 생성
-        Currency currency = currencyRepository.findByCurrencyCode(requestDto.getCurrencyType());
+        // 다음 id값 추출
+        Long nextAccountId = accountRepository.findMaxAccountId();
+
+        if(nextAccountId == null)
+            nextAccountId = 0L;
+
+        nextAccountId++;
+
+        // 일반 계좌 생성
+        Currency currency = currencyRepository.findByCurrencyCode(CurrencyType.KOR);
+        Account generalAccount = createAccount(nextAccountId, currency, requestDto.getAccountType());
+
+        // 계좌 save
+        Account saved = accountRepository.save(generalAccount);
+
+        // 만약 그룹 계좌인경우 외화 계좌도 자동 생성 (동일 accountId)
+        if(requestDto.getAccountType().equals(AccountType.G)){
+            Currency foreignCurrency = currencyRepository.findByCurrencyCode(requestDto.getCurrencyType());
+
+            Account ForeignAccount = createAccount(nextAccountId, currency, AccountType.F);
+
+            accountRepository.save(ForeignAccount);
+        }
+
+        return ResponseDto.success();
+    }
+
+    // 계좌 생성 공통 메서드
+    private Account createAccount(Long nextId, Currency currency, AccountType accountType) {
+
         Country country = currency.getCountry();
-
-        Long nextAccountid = accountRepository.findMaxAccountId();
-
-        if(nextAccountid == null)
-            nextAccountid = 0L;
-
-        nextAccountid++;
 
         // Account 객체 생성
         Account account = Account.builder()
-            .id(nextAccountid)
-            .accountType(requestDto.getAccountType())
-            .accountNo(createAccountNumber(requestDto.getAccountType()))  // 계좌 번호 생성
+            .id(nextId)
+            .accountType(accountType)
+            .accountNo(createAccountNumber(accountType))  // 계좌 번호 생성
             .balance(0L)  // 기본 잔액 설정
             .currency(currency)
             .build();
 
-        Account saved = accountRepository.save(account);
-
-        LogUtil.info("save Id : " , saved);
-
-        return ResponseDto.success();
+        return account;
     }
 
     private String createAccountNumber(AccountType accountType){
