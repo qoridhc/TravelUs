@@ -65,5 +65,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
-        exclude: '*'
+        include: health,info  # 헬스체크와 정보 엔드포인트를 노출
+  endpoint:
+    health:
+      show-details: always     # health 엔드포인트에서 세부 정보 표시
