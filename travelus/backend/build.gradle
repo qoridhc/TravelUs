@@ -75,6 +75,10 @@ dependencies {
     //flyway
     implementation 'org.flywaydb:flyway-mysql'
     implementation 'org.flywaydb:flyway-core'
+
+    //rabbitmq
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
 }
 
 test {
