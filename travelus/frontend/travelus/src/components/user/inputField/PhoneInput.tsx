@@ -1,19 +1,17 @@
 import React from "react";
 import { TextField } from "@mui/material";
 
-interface NameInputProps {
+interface PhoneInputProps {
   labelName: string;
   name: string;
-  error: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleIsIdDuplicated: () => void;
+  handleSendVerificationCode: () => void;
 }
 
-const IdInput: React.FC<NameInputProps> = ({ labelName, name, error, onChange, handleIsIdDuplicated }) => {
+const PhoneInput: React.FC<PhoneInputProps> = ({ labelName, name, onChange, handleSendVerificationCode }) => {
   return (
     <div className="flex justify-between items-start space-x-3">
       <TextField
-        className="w-full"
         sx={{
           width: "100%",
           backgroundColor: "white",
@@ -27,7 +25,7 @@ const IdInput: React.FC<NameInputProps> = ({ labelName, name, error, onChange, h
             backgroundColor: "white",
             fontSize: "18px",
             fontWeight: "bold",
-            border: (theme) => `1px solid ${error ? theme.palette.error.main : "#9E9E9E"}`,
+            border: "1px solid #9E9E9E",
             borderRadius: "10px",
           },
           "& .MuiInputLabel-root": {
@@ -41,22 +39,21 @@ const IdInput: React.FC<NameInputProps> = ({ labelName, name, error, onChange, h
             display: "none",
           },
         }}
-        id="id"
+        id="phone"
         label={labelName}
         variant="filled"
         value={name}
+        helperText="숫자만 입력해주세요."
         onChange={onChange}
         autoComplete="off"
-        helperText="영문 소문자 6~13자 (숫자 조합 가능)"
-        error={error}
       />
       <button
-        onClick={handleIsIdDuplicated}
+        onClick={handleSendVerificationCode}
         className="w-24 h-[3.9rem] px-3 p-2 bg-[#1429A0] border rounded-lg text-white text-sm">
-        중복확인
+        인증번호 전송
       </button>
     </div>
   );
 };
 
-export default IdInput;
+export default PhoneInput;

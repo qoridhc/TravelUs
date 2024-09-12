@@ -4,6 +4,7 @@ import MainPage from "../src/pages/MainPage";
 import Login from "./pages/user/Login";
 import SignUp from "./pages/user/SignUp";
 import SignUpBasicInformation from "./pages/user/SignUpBasicInformation";
+import SignUpAddress from "./pages/user/SignUpAddress";
 import MyPage from "./pages/user/MyPage";
 import UserUpdate from "./pages/user/UserUpdate";
 import MeetingAccountList from "./pages/account/MeetingAccountList";
@@ -59,7 +60,8 @@ function App() {
 
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/signupbasicinformation" element={<SignUpBasicInformation />} />
+          <Route path="/signup/basicinformation" element={<SignUpBasicInformation />} />
+          <Route path="/signup/address" element={<SignUpAddress />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/userupdate" element={<UserUpdate />} />
 

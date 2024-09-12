@@ -1,13 +1,13 @@
 import React from "react";
 import { TextField } from "@mui/material";
 
-interface BirthdayInputProps {
+interface VerificationCodeInputProps {
   labelName: string;
   name: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const BirthdayInput: React.FC<BirthdayInputProps> = ({ labelName, name, onChange }) => {
+const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({ labelName, name, onChange }) => {
   return (
     <TextField
       sx={{
@@ -37,15 +37,14 @@ const BirthdayInput: React.FC<BirthdayInputProps> = ({ labelName, name, onChange
           display: "none",
         },
       }}
-      id="birthday"
+      id="verificationCode"
       label={labelName}
       variant="filled"
       value={name}
-      helperText="ex) 19990101"
       onChange={onChange}
       autoComplete="off"
     />
   );
 };
 
-export default BirthdayInput;
+export default VerificationCodeInput;

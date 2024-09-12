@@ -1,15 +1,19 @@
 import React from "react";
 import { TextField } from "@mui/material";
+import style from "./DaumPost.module.css";
+import { useDaumPostcodePopup } from "react-daum-postcode";
 
-interface BirthdayInputProps {
+interface AddressDetailInputProps {
   labelName: string;
   name: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  setAddress: (address: string) => void;
 }
 
-const BirthdayInput: React.FC<BirthdayInputProps> = ({ labelName, name, onChange }) => {
+const AddressDetailInput: React.FC<AddressDetailInputProps> = ({ labelName, name, onChange }) => {
   return (
     <TextField
+      className="w-full"
       sx={{
         width: "100%",
         backgroundColor: "white",
@@ -21,8 +25,9 @@ const BirthdayInput: React.FC<BirthdayInputProps> = ({ labelName, name, onChange
         },
         "& .MuiInputBase-input": {
           backgroundColor: "white",
-          fontSize: "18px",
+          fontSize: "16px",
           fontWeight: "bold",
+          // border: (theme) => `1px solid ${error ? theme.palette.error.main : "#9E9E9E"}`,
           border: "1px solid #9E9E9E",
           borderRadius: "10px",
         },
@@ -37,15 +42,15 @@ const BirthdayInput: React.FC<BirthdayInputProps> = ({ labelName, name, onChange
           display: "none",
         },
       }}
-      id="birthday"
+      id="addressDetail"
       label={labelName}
       variant="filled"
       value={name}
-      helperText="ex) 19990101"
       onChange={onChange}
       autoComplete="off"
+      // helperText="영문 소문자 6~13자 (숫자 조합 가능)"
     />
   );
 };
 
-export default BirthdayInput;
+export default AddressDetailInput;
