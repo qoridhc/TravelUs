@@ -1,7 +1,7 @@
 spring:
   mvc:
     servlet:
-      path: /api/v1
+      path: /api
     async:
       request-timeout: 3000000
 
@@ -9,7 +9,7 @@ spring:
     name: backend
 
   profiles:
-    active: dev
+    active: v2
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -80,6 +80,7 @@ jwt:
 server:
   front:
     url: http://localhost:3000
+  port: 8082
 
   servlet:
     session:
