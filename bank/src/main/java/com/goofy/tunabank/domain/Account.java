@@ -14,7 +14,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -60,4 +62,6 @@ public class Account {
     @JoinColumn(name = "currency_id")
     private Currency currency;
 
+    @OneToMany(mappedBy = "account")
+    private List<TransactionHistory> transactions;
 }
