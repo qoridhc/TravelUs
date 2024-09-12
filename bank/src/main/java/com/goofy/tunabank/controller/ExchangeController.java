@@ -1,10 +1,12 @@
 package com.goofy.tunabank.controller;
 
+import com.goofy.tunabank.dto.exchange.ExchangeRateCacheDTO;
 import com.goofy.tunabank.service.ExchangeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,9 +21,15 @@ public class ExchangeController {
   /**
    * 테스트용입니다. 삭제할 예정
    */
-  @GetMapping
+  @GetMapping()
   public ResponseEntity<?> getExchangeRateAll() {
 
     return ResponseEntity.ok().body(exchangeService.updateExchangeRates());
+  }
+
+  @GetMapping("/{currencyCode}")
+  public ResponseEntity<ExchangeRateCacheDTO> getExchangeRatebyCurrencyCode(@PathVariable String currencyCode) {
+
+    return ResponseEntity.ok().body(exchangeService.getExchangeRateByCurrencyCode(currencyCode));
   }
 }
