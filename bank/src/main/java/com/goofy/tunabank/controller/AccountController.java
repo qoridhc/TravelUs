@@ -2,6 +2,7 @@ package com.goofy.tunabank.controller;
 
 import com.goofy.tunabank.dto.ResponseDto;
 import com.goofy.tunabank.dto.account.request.CreateAccountRequestDto;
+import com.goofy.tunabank.dto.account.response.CreateAccountResponseDto;
 import com.goofy.tunabank.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,11 +20,11 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping("/{userId}")
-    public ResponseEntity<ResponseDto> crateNewAccount(
+    public ResponseEntity<CreateAccountResponseDto> crateNewAccount(
         @RequestBody CreateAccountRequestDto requestDto
     ) {
 
-        ResponseDto responseDto = accountService.crateNewAccount(requestDto);
+        CreateAccountResponseDto responseDto = accountService.crateNewAccount(requestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
