@@ -1,6 +1,9 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../redux/store";
+import { editSignUpUserInformation } from "../../redux/userInformationSlice";
 import { IoIosArrowBack } from "react-icons/io";
 import IdInput from "../../components/user/inputField/IdInput";
 import UserPasswordInput from "../../components/user/inputField/UserPasswordInput";
@@ -22,6 +25,7 @@ interface InputState {
 
 const SignUpBasicInformation = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [step, setStep] = useState(0);
   const stepList = [
     "아이디를 입력해주세요",
@@ -51,11 +55,23 @@ const SignUpBasicInformation = () => {
     birthday: false,
   });
 
+  useEffect(() => {
+    // redux store의 기존 저장되어있던 정보 제거
+    dispatch(
+      editSignUpUserInformation({
+        id: "",
+        password: "",
+        passwordConfirm: "",
+        name: "",
+        birthday: "",
+      })
+    );
+  }, []);
+
   const handleValidation = (id: string, value: string) => {
     let error = false;
 
-    const hasEnglishLetters = /[a-zA-Z]/.test(value);
-    const hasNumbers = /\d/.test(value);
+    const isKorean = /^[가-힣]+$/.test(value);
 
     switch (id) {
       case "id":
@@ -70,7 +86,7 @@ const SignUpBasicInformation = () => {
         error = value !== inputs.password; // 패스워드 확인이 일치하는지 확인
         break;
       case "name":
-        error = hasEnglishLetters || hasNumbers || value.trim() === "";
+        error = !isKorean || value.trim() === "";
         break;
       case "birthday":
         // 생년월일 유효성 검사
@@ -143,7 +159,19 @@ const SignUpBasicInformation = () => {
     }
   }, [inputs.birthday, errors.birthday, step]);
 
-  const handleNext = () => {};
+  const handleNext = () => {
+    dispatch(
+      editSignUpUserInformation({
+        id: inputs.id,
+        password: inputs.password,
+        passwordConfirm: inputs.confirmPassword,
+        name: inputs.name,
+        birthday: inputs.birthday.replace(/-/g, ""),
+      })
+    );
+
+    // navigate("/signup/additional-information");
+  };
 
   const handleIsIdDuplicated = () => {
     console.log("중복확인");
@@ -171,7 +199,9 @@ const SignUpBasicInformation = () => {
               className={`transition-transform duration-300 ease-in-out ${
                 step > 2 ? "translate-y-[3px]" : "translate-y-0"
               }`}>
-              {step > 2 && <NameInput labelName="이름" name={inputs.name} onChange={handleChange} />}
+              {step > 2 && (
+                <NameInput labelName="이름" name={inputs.name} onChange={handleChange} error={errors.name} />
+              )}
             </div>
 
             <div
@@ -182,6 +212,7 @@ const SignUpBasicInformation = () => {
                 <UserPasswordConfirmInput
                   labelName="비밀번호 확인"
                   name={inputs.confirmPassword}
+                  error={errors.confirmPassword}
                   onChange={handleChange}
                 />
               )}
@@ -219,8 +250,8 @@ const SignUpBasicInformation = () => {
 
       <div className="py-5">
         <button
-          className={`w-full py-3 text-white rounded-lg ${step !== 5 ? "bg-gray-300" : "bg-[#1429A0]"}`}
-          onClick={() => setStep(5)}
+          className={`w-full py-3 text-white rounded-lg ${step === 5 && isFormValid ? "bg-[#1429A0]" : "bg-gray-300"}`}
+          onClick={handleNext}
           disabled={step !== 5}>
           다음
         </button>

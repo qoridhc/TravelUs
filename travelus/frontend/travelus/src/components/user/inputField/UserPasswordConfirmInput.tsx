@@ -4,10 +4,11 @@ import { TextField } from "@mui/material";
 interface UserPasswordConfirmInputProps {
   labelName: string;
   name: string;
+  error: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const UserPasswordConfirmInput: React.FC<UserPasswordConfirmInputProps> = ({ labelName, name, onChange }) => {
+const UserPasswordConfirmInput: React.FC<UserPasswordConfirmInputProps> = ({ labelName, name, error, onChange }) => {
   return (
     <TextField
       sx={{
@@ -20,7 +21,7 @@ const UserPasswordConfirmInput: React.FC<UserPasswordConfirmInputProps> = ({ lab
           backgroundColor: "white",
           fontSize: "18px",
           fontWeight: "bold",
-          border: "1px solid #9E9E9E",
+          border: (theme) => `1px solid ${error ? theme.palette.error.main : "#9E9E9E"}`,
           borderRadius: "10px",
         },
         "& .MuiInputLabel-root": {
@@ -41,6 +42,8 @@ const UserPasswordConfirmInput: React.FC<UserPasswordConfirmInputProps> = ({ lab
       value={name}
       onChange={onChange}
       autoComplete="off"
+      helperText={`${error ? "비밀번호가 일치하지 않습니다." : " "}`}
+      error={error}
     />
   );
 };

@@ -4,10 +4,11 @@ import { TextField } from "@mui/material";
 interface NameInputProps {
   labelName: string;
   name: string;
+  error: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const NameInput: React.FC<NameInputProps> = ({ labelName, name, onChange }) => {
+const NameInput: React.FC<NameInputProps> = ({ labelName, name, error, onChange }) => {
   return (
     <TextField
       sx={{
@@ -20,7 +21,7 @@ const NameInput: React.FC<NameInputProps> = ({ labelName, name, onChange }) => {
           backgroundColor: "white",
           fontSize: "18px",
           fontWeight: "bold",
-          border: "1px solid #9E9E9E",
+          border: (theme) => `1px solid ${error ? theme.palette.error.main : "#9E9E9E"}`,
           borderRadius: "10px",
         },
         "& .MuiInputLabel-root": {
@@ -41,6 +42,7 @@ const NameInput: React.FC<NameInputProps> = ({ labelName, name, onChange }) => {
       helperText="한글 2~8자"
       onChange={onChange}
       autoComplete="off"
+      error={error}
     />
   );
 };
