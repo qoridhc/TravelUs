@@ -14,7 +14,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({ labelName, name, onChange, hand
       <TextField
         sx={{
           width: "100%",
-          backgroundColor: "#F3F4F6",
+          backgroundColor: "white",
           borderRadius: "10px",
           "& .MuiInputBase-root": {
             backgroundColor: "white",

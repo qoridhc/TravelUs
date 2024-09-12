@@ -212,7 +212,7 @@ const SignUpBasicInformation = () => {
   };
 
   return (
-    <div className="w-full min-h-screen p-5 bg-[#F3F4F6] flex flex-col justify-between">
+    <div className="w-full min-h-screen p-5 bg-white flex flex-col justify-between">
       <div className="flex flex-col space-y-5">
         <div className="grid gap-8">
           <div className="mt-16 text-2xl font-semibold">

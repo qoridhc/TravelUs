@@ -4,45 +4,77 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/store";
 import { editSignUpUserInformation } from "../../redux/userInformationSlice";
-import { IoIosArrowBack } from "react-icons/io";
 import { userApi } from "../../api/user";
-import IdInput from "../../components/user/inputField/IdInput";
-import UserPasswordInput from "../../components/user/inputField/UserPasswordInput";
-import UserPasswordConfirmInput from "../../components/user/inputField/UserPasswordConfirmInput";
-import NameInput from "../../components/user/inputField/NameInput";
-import BirthdayInput from "../../components/user/inputField/BirthdayInput";
-import PhoneInput from "../../components/user/inputField/PhoneInput";
-import VerificationCodeInput from "../../components/user/inputField/VerificationCodeInput";
-import { set } from "date-fns";
+import AddressInput from "../../components/user/inputField/AddressInput";
+import AddressDetailInput from "../../components/user/inputField/AddressDetailInput";
+import { add } from "date-fns";
 
 interface SignUpAddressProps {
   // Define your props here
 }
 
-interface InputState {
-  id: string;
-  password: string;
-  confirmPassword: string;
-  name: string;
-  birthday: string;
-  phone: string;
-  verificationCode: string;
-}
-
 const SignUpAddress = () => {
+  const [address, setAddress] = useState<string>("");
+  const [addressDetail, setAddressDetail] = useState<string>("");
+  const [step, setStep] = useState<number>(0);
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  useEffect(() => {
+    if (step === 0 && address !== "") {
+      setStep(1);
+    }
+  }, [address, step]);
+
+  useEffect(() => {
+    // 모든 필드가 유효한지 확인
+    // const allFieldsValid = Object.values(errors).every((error) => !error);
+    // const allFieldsFilled = Object.values(inputs).every((value) => value !== "");
+
+    const allFieldsFilled = address !== "" && addressDetail !== "";
+
+    setIsFormValid(allFieldsFilled);
+  }, [address, addressDetail]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const id = e.target.id;
+    if (id === "address") {
+      const address = e.target.value;
+      setAddress(address);
+    } else if (id === "addressDetail") {
+      const addressDetail = e.target.value;
+      setAddressDetail(addressDetail);
+    }
+  };
+
   return (
-    <div className="w-full min-h-screen p-5 bg-[#F3F4F6] flex flex-col justify-between">
-      <div className="flex flex-col space-y-10">
+    <div className="w-full min-h-screen p-5 bg-white flex flex-col justify-between">
+      <div className="flex flex-col space-y-20">
         <div className="mt-16 text-2xl font-semibold">
           <p>주소를 입력해주세요</p>
         </div>
 
-        <div className="transition-transform duration-300 ease-in-out translate-y-[3px]">
-          <p>폼 자리임</p>
-        </div>
+        <div className="flex flex-col space-y-5">
+          {step > 0 && (
+            <div>
+              <AddressDetailInput
+                labelName="상세 주소"
+                name={addressDetail}
+                onChange={handleChange}
+                setAddress={setAddressDetail}
+              />
+            </div>
+          )}
 
+          <div className="transition-transform duration-300 ease-in-out translate-y-[3px]">
+            <AddressInput labelName="주소" name={address} onChange={handleChange} setAddress={setAddress} />
+          </div>
+        </div>
       </div>
-      <button className={`w-full mb-5 py-3 text-white rounded-lg bg-[#1429A0]`}>다음</button>
+      <button
+        className={`w-full mb-5 py-3 text-white rounded-lg ${isFormValid ? "bg-[#1429A0]" : "bg-gray-300"}`}
+        disabled={!isFormValid}>
+        가입하기
+      </button>
     </div>
   );
 };
