@@ -13,9 +13,12 @@ const UserPasswordConfirmInput: React.FC<UserPasswordConfirmInputProps> = ({ lab
     <TextField
       sx={{
         width: "100%",
+        backgroundColor: "#F3F4F6",
+        borderRadius: "10px",
         "& .MuiInputBase-root": {
           backgroundColor: "white",
           height: "100%",
+          borderRadius: "inherit",
         },
         "& .MuiInputBase-input": {
           backgroundColor: "white",

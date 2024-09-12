@@ -5,11 +5,15 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/store";
 import { editSignUpUserInformation } from "../../redux/userInformationSlice";
 import { IoIosArrowBack } from "react-icons/io";
+import { userApi } from "../../api/user";
 import IdInput from "../../components/user/inputField/IdInput";
 import UserPasswordInput from "../../components/user/inputField/UserPasswordInput";
 import UserPasswordConfirmInput from "../../components/user/inputField/UserPasswordConfirmInput";
 import NameInput from "../../components/user/inputField/NameInput";
 import BirthdayInput from "../../components/user/inputField/BirthdayInput";
+import PhoneInput from "../../components/user/inputField/PhoneInput";
+import VerificationCodeInput from "../../components/user/inputField/VerificationCodeInput";
+import { set } from "date-fns";
 
 interface SignUpBasicInformationProps {
   // Define your props here
@@ -21,6 +25,8 @@ interface InputState {
   confirmPassword: string;
   name: string;
   birthday: string;
+  phone: string;
+  verificationCode: string;
 }
 
 const SignUpBasicInformation = () => {
@@ -33,10 +39,12 @@ const SignUpBasicInformation = () => {
     "비밀번호를 확인해주세요",
     "이름을 알려주세요",
     "생년월일을 알려주세요",
-    "생년월일을 알려주세요",
+    "휴대폰 인증을 진행해주세요",
+    "전송된 인증번호를 입력해주세요",
   ];
 
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isBasicFormValid, setIsBasicFormValid] = useState(false);
   const [isIdDuplicated, setIsIdDuplicated] = useState(true);
 
   const [inputs, setInputs] = useState<InputState>({
@@ -45,6 +53,8 @@ const SignUpBasicInformation = () => {
     confirmPassword: "",
     name: "",
     birthday: "",
+    phone: "",
+    verificationCode: "",
   });
 
   const [errors, setErrors] = useState({
@@ -53,6 +63,8 @@ const SignUpBasicInformation = () => {
     confirmPassword: false,
     name: false,
     birthday: false,
+    phone: false,
+    verificationCode: false,
   });
 
   useEffect(() => {
@@ -61,9 +73,11 @@ const SignUpBasicInformation = () => {
       editSignUpUserInformation({
         id: "",
         password: "",
-        passwordConfirm: "",
+        confirmPassword: "",
         name: "",
         birthday: "",
+        phone: "",
+        verificationCode: "",
       })
     );
   }, []);
@@ -111,6 +125,21 @@ const SignUpBasicInformation = () => {
     }
   };
 
+  // 인증번호 전송
+  const handleSendVerificationCode = async () => {
+    // try {
+    //   const formattedValue = inputs.phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+    //   const response = await userApi.fetchSendSmsValidation(formattedValue);
+    //   if (response.status === 200) {
+    //     alert("인증 코드가  발송되었습니다. 확인해주세요.");
+    //   }
+    // } catch (error) {
+    //   console.error("Error sending verification code:", error);
+    //   alert("인증 코드 발송 중 오류가 발생했습니다. 다시 시도해주세요.");
+    // }
+    setStep(6);
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
 
@@ -124,10 +153,18 @@ const SignUpBasicInformation = () => {
   };
 
   useEffect(() => {
+    const requiredFields: (keyof typeof errors)[] = ["id", "password", "confirmPassword", "name", "birthday"];
+
+    // 기본 정보 필드가 유효한지 확인
+    const basicFieldsValid = requiredFields.every((field) => !errors[field]);
+    // inputs 객체에서 해당 필드들이 모두 채워졌는지 확인
+    const basicFieldsFilled = requiredFields.every((field) => inputs[field] !== "");
+
     // 모든 필드가 유효한지 확인
     const allFieldsValid = Object.values(errors).every((error) => !error);
     const allFieldsFilled = Object.values(inputs).every((value) => value !== "");
 
+    setIsBasicFormValid(basicFieldsValid && basicFieldsFilled);
     setIsFormValid(allFieldsValid && allFieldsFilled);
   }, [errors, inputs]);
 
@@ -152,21 +189,16 @@ const SignUpBasicInformation = () => {
     }
   }, [inputs.name, errors.name, step]);
 
-  // 생년월일 입력 처리
-  useEffect(() => {
-    if (step === 4 && inputs.birthday.length === 10 && !errors.birthday) {
-      setStep(5);
-    }
-  }, [inputs.birthday, errors.birthday, step]);
-
   const handleNext = () => {
     dispatch(
       editSignUpUserInformation({
         id: inputs.id,
         password: inputs.password,
-        passwordConfirm: inputs.confirmPassword,
+        confirmPassword: inputs.confirmPassword,
         name: inputs.name,
         birthday: inputs.birthday.replace(/-/g, ""),
+        phone: "",
+        verificationCode: "",
       })
     );
 
@@ -188,73 +220,123 @@ const SignUpBasicInformation = () => {
           </div>
 
           <div className="grid gap-3">
-            <div
-              className={`transition-transform duration-300 ease-in-out ${
-                step > 3 ? "translate-y-[3px]" : "translate-y-0"
-              }`}>
-              {step > 3 && <BirthdayInput labelName="생년월일" name={inputs.birthday} onChange={handleChange} />}
-            </div>
+            {step < 5 ? (
+              <>
+                <div
+                  className={`transition-transform duration-300 ease-in-out ${
+                    step > 3 ? "translate-y-[3px]" : "translate-y-0"
+                  }`}>
+                  {step > 3 && <BirthdayInput labelName="생년월일" name={inputs.birthday} onChange={handleChange} />}
+                </div>
 
-            <div
-              className={`transition-transform duration-300 ease-in-out ${
-                step > 2 ? "translate-y-[3px]" : "translate-y-0"
-              }`}>
-              {step > 2 && (
-                <NameInput labelName="이름" name={inputs.name} onChange={handleChange} error={errors.name} />
-              )}
-            </div>
+                <div
+                  className={`transition-transform duration-300 ease-in-out ${
+                    step > 2 ? "translate-y-[3px]" : "translate-y-0"
+                  }`}>
+                  {step > 2 && (
+                    <NameInput labelName="이름" name={inputs.name} onChange={handleChange} error={errors.name} />
+                  )}
+                </div>
 
-            <div
-              className={`transition-transform duration-300 ease-in-out ${
-                step > 1 ? "translate-y-0" : "translate-y-[3px]"
-              }`}>
-              {step > 1 && (
-                <UserPasswordConfirmInput
-                  labelName="비밀번호 확인"
-                  name={inputs.confirmPassword}
-                  error={errors.confirmPassword}
-                  onChange={handleChange}
-                />
-              )}
-            </div>
+                <div
+                  className={`transition-transform duration-300 ease-in-out ${
+                    step > 1 ? "translate-y-0" : "translate-y-[3px]"
+                  }`}>
+                  {step > 1 && (
+                    <UserPasswordConfirmInput
+                      labelName="비밀번호 확인"
+                      name={inputs.confirmPassword}
+                      error={errors.confirmPassword}
+                      onChange={handleChange}
+                    />
+                  )}
+                </div>
 
-            <div
-              className={`transition-transform duration-300 ease-in-out ${
-                step > 0 ? "translate-y-0" : "translate-y-[3px]"
-              }`}>
-              {step > 0 && (
-                <UserPasswordInput
-                  labelName="비밀번호"
-                  name={inputs.password}
-                  error={errors.password}
-                  onChange={handleChange}
-                />
-              )}
-            </div>
+                <div
+                  className={`transition-transform duration-300 ease-in-out ${
+                    step > 0 ? "translate-y-0" : "translate-y-[3px]"
+                  }`}>
+                  {step > 0 && (
+                    <UserPasswordInput
+                      labelName="비밀번호"
+                      name={inputs.password}
+                      error={errors.password}
+                      onChange={handleChange}
+                    />
+                  )}
+                </div>
 
-            <div
-              className={`transition-transform duration-300 ease-in-out ${
-                step === 0 ? "translate-y-0" : "translate-y-[3px]"
-              }`}>
-              <IdInput
-                labelName="아이디"
-                name={inputs.id}
-                error={errors.id}
-                onChange={handleChange}
-                handleIsIdDuplicated={handleIsIdDuplicated}
-              />
-            </div>
+                <div
+                  className={`transition-transform duration-300 ease-in-out ${
+                    step === 0 ? "translate-y-0" : "translate-y-[3px]"
+                  }`}>
+                  <IdInput
+                    labelName="아이디"
+                    name={inputs.id}
+                    error={errors.id}
+                    onChange={handleChange}
+                    handleIsIdDuplicated={handleIsIdDuplicated}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <div
+                  className={`transition-transform duration-300 ease-in-out ${
+                    step > 5 ? "translate-y-0" : "translate-y-[3px]"
+                  }`}>
+                  {step > 5 && (
+                    <VerificationCodeInput
+                      labelName="인증번호 입력"
+                      name={inputs.verificationCode}
+                      onChange={handleChange}
+                    />
+                  )}
+                </div>
+
+                <div
+                  className={`transition-transform duration-300 ease-in-out ${
+                    step > 4 ? "translate-y-[3px]" : "translate-y-0"
+                  }`}>
+                  {step > 4 && (
+                    <PhoneInput
+                      labelName="휴대폰 번호"
+                      name={inputs.phone}
+                      onChange={handleChange}
+                      handleSendVerificationCode={handleSendVerificationCode}
+                    />
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
 
       <div className="py-5">
-        <button
-          className={`w-full py-3 text-white rounded-lg ${step === 5 && isFormValid ? "bg-[#1429A0]" : "bg-gray-300"}`}
-          onClick={handleNext}
-          disabled={step !== 5}>
-          다음
-        </button>
+        {step < 5 ? (
+          <>
+            <button
+              className={`w-full py-3 text-white rounded-lg ${isBasicFormValid ? "bg-[#1429A0]" : "bg-gray-300"}`}
+              onClick={() => {
+                setStep(5);
+              }}
+              disabled={!isBasicFormValid}>
+              다음
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              className={`w-full py-3 text-white rounded-lg ${isFormValid ? "bg-[#1429A0]" : "bg-gray-300"}`}
+              onClick={() => {
+                navigate("/signup/address");
+              }}
+              disabled={!isFormValid}>
+              다음
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

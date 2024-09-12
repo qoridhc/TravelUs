@@ -1,14 +1,13 @@
 import React from "react";
 import { TextField } from "@mui/material";
 
-interface UserPasswordInputProps {
+interface VerificationCodeInputProps {
   labelName: string;
   name: string;
-  error: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const UserPasswordInput: React.FC<UserPasswordInputProps> = ({ labelName, name, error, onChange }) => {
+const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({ labelName, name, onChange }) => {
   return (
     <TextField
       sx={{
@@ -24,7 +23,7 @@ const UserPasswordInput: React.FC<UserPasswordInputProps> = ({ labelName, name, 
           backgroundColor: "white",
           fontSize: "18px",
           fontWeight: "bold",
-          border: (theme) => `1px solid ${error ? theme.palette.error.main : "#9E9E9E"}`,
+          border: "1px solid #9E9E9E",
           borderRadius: "10px",
         },
         "& .MuiInputLabel-root": {
@@ -38,17 +37,14 @@ const UserPasswordInput: React.FC<UserPasswordInputProps> = ({ labelName, name, 
           display: "none",
         },
       }}
-      id="password"
-      type="password"
+      id="verificationCode"
       label={labelName}
       variant="filled"
       value={name}
       onChange={onChange}
       autoComplete="off"
-      helperText="8~15자 | 특수문자, 영문 소/대문자, 숫자 1개 이상씩 조합"
-      error={error}
     />
   );
 };
 
-export default UserPasswordInput;
+export default VerificationCodeInput;

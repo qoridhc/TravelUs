@@ -10,9 +10,11 @@ const initialState: UserInformationState = {
   SignUpUserInformation: {
     id: "",
     password: "",
-    passwordConfirm: "",
+    confirmPassword: "",
     name: "",
     birthday: "",
+    phone: "",
+    verificationCode: "",
   },
 };
     
