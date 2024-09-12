@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Travelus",
+  "name": "Travelus",
   "icons": [
     {
       "src": "./icons/apple-touch-icon-57x57.png",
@@ -44,8 +44,8 @@
       "type": "image/png"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",
+  "theme_color": "#1429A0",
   "background_color": "#ffffff"
 }
