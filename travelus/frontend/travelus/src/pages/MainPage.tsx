@@ -126,7 +126,7 @@ const MainPage = () => {
             }}>
               <div className="flex justify-between items-center">
                 <div className="flex flex-col">
-                  <p className="font-bold">올인원머니통장</p>
+                  <p className="font-bold">트래블러스머니통장</p>
                   <p className="text-sm text-zinc-500">입출금 {formatAccountNumber(accountList[0].accountNo)}</p>
                 </div>
               </div>

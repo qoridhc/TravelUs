@@ -9,7 +9,7 @@ const Header = () => {
   const userName = localStorage.getItem("userName");
 
   return (
-    <div className="h-16 p-5 bg-[#EFEFF5] sticky top-0 flex justify-between items-center z-50">
+    <div className="h-16 p-5 bg-[#F3F4F6] sticky top-0 flex justify-between items-center z-50">
       <button
         onClick={() => {
           navigate("/mypage");

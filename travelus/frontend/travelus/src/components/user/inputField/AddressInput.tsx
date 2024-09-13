@@ -40,6 +40,8 @@ const AddressInput: React.FC<AddressInputProps> = ({ labelName, name, onChange, 
       fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
     }
 
+    fullAddress = `${data.sido} ${data.sigungu}${fullAddress}`.trim();
+
     setAddress(fullAddress.trim()); // setAddress를 호출하여 부모 컴포넌트의 상태를 업데이트
   };
 
