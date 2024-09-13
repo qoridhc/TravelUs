@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v2/account-book")
+@RequestMapping("/account-book")
 @RequiredArgsConstructor
 @Tag(name = "AccountBook", description = "가계부 관련 API")
 public class AccountBookController {
