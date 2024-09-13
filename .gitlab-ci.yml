@@ -5,7 +5,7 @@ stages:
 frontend_pipeline:
   stage: trigger
   script:
-    - curl -X POST "http://j11d209.p.ssafy.io/job/travelus-backend/build?token=${JENKINS_API_TOKEN}"
+    - curl -X POST "http://j11d209.p.ssafy.io:9090/job/travelus-backend/build?token=${JENKINS_API_TOKEN}"
   only:
     refs:
       - /^release.*$/
@@ -16,7 +16,7 @@ frontend_pipeline:
 backend_pipeline:
   stage: trigger
   script:
-    - curl -X POST "http://j11d209.p.ssafy.io/job/tunabank/build?token=${JENKINS_API_TOKEN}"
+    - curl -X POST "http://j11d209.p.ssafy.io:9090/job/tunabank/build?token=${JENKINS_API_TOKEN}"
   only:
     refs:
       - /^release.*$/
