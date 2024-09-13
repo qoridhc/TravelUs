@@ -1,6 +1,7 @@
 package com.goofy.tunabank.domain;
 
 import com.goofy.tunabank.domain.Enum.AccountType;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -62,6 +63,9 @@ public class Account {
     @JoinColumn(name = "currency_id")
     private Currency currency;
 
-    @OneToMany(mappedBy = "account")
-    private List<TransactionHistory> transactions;
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TransactionHistory> transactionHistories;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TransferHistory> transferHistories;
 }

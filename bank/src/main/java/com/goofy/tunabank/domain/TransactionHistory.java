@@ -8,6 +8,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -29,7 +30,10 @@ public class TransactionHistory {
 
   //통장
   @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(name = "account_id")
+  @JoinColumns({
+      @JoinColumn(name = "account_id", referencedColumnName = "account_id"),
+      @JoinColumn(name = "account_type", referencedColumnName = "account_type")
+  })
   private Account account;
 
   //가맹점
