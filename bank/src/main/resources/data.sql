@@ -4,6 +4,6 @@ INSERT IGNORE INTO country (country_id, country_code, country_name) VALUES (2, '
 INSERT IGNORE INTO country (country_id, country_code, country_name) VALUES (3, 'JPN', 'Japan');
 
 -- currency 데이터 삽입
-INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate) VALUES ('1','KRW', 1, 1.0);
-INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate) VALUES ('2','USD', 2, 1200.0);
-INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate) VALUES ('3','JPY', 3, 100.0);
+INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate) VALUES (1,'KRW', 1, 1.0);
+INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate) VALUES (2,'USD', 2, 1200.0);
+INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate) VALUES (3,'JPY', 3, 100.0);
