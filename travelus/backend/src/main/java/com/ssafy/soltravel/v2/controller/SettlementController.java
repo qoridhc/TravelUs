@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v2/settlement")
+@RequestMapping("/settlement")
 @Slf4j
 @Tag(name = "Settlement API", description = "정산 관련 API")
 public class SettlementController {
