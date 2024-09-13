@@ -1,0 +1,24 @@
+stages:
+  - trigger
+
+# 백엔드 변경 시 프론트엔드 파이프라인 트리거
+frontend_pipeline:
+  stage: trigger
+  script:
+    - curl -X POST "http://j11d209.p.ssafy.io/job/travelus-backend/build?token=${JENKINS_API_TOKEN}"
+  only:
+    refs:
+      - /^release.*$/
+    changes:
+      - travelus/backend/**
+
+# 은행 API 변경 시 백엔드 파이프라인 트리거
+backend_pipeline:
+  stage: trigger
+  script:
+    - curl -X POST "http://j11d209.p.ssafy.io/job/tunabank/build?token=${JENKINS_API_TOKEN}"
+  only:
+    refs:
+      - /^release.*$/
+    changes:
+      - bank/**
