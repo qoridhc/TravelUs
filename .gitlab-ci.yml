@@ -1,11 +1,22 @@
 stages:
   - trigger
 
-# 백엔드 변경 시 프론트엔드 파이프라인 트리거
+# 프론트엔드 변경 시 프론트엔드 파이프라인 트리거
 frontend_pipeline:
   stage: trigger
   script:
-    - curl -X POST "http://j11d209.p.ssafy.io:9090/job/travelus-backend/build?token=${JENKINS_API_TOKEN}"
+    - curl -u "travelus:${JENKINS_API_TOKEN}" -H "${JENKINS_CRUMB}" -X POST "http://j11d209.p.ssafy.io:9090/job/travelus-frontend/build?token=${JENKINS_API_TOKEN}" 
+  only:
+    refs:
+      - /^release.*$/
+    changes:
+      - travelus/frontend/**
+
+# 백엔드 변경 시 프론트엔드 파이프라인 트리거
+backend_pipeline:
+  stage: trigger
+  script:
+    - curl -u "travelus:${JENKINS_API_TOKEN}" -H "${JENKINS_CRUMB}" -X POST "http://j11d209.p.ssafy.io:9090/job/travelus-backend/build?token=${JENKINS_API_TOKEN}" 
   only:
     refs:
       - /^release.*$/
@@ -13,10 +24,10 @@ frontend_pipeline:
       - travelus/backend/**
 
 # 은행 API 변경 시 백엔드 파이프라인 트리거
-backend_pipeline:
+bank_pipeline:
   stage: trigger
   script:
-    - curl -X POST "http://j11d209.p.ssafy.io:9090/job/tunabank/build?token=${JENKINS_API_TOKEN}"
+    - curl -u "travelus:${JENKINS_API_TOKEN}" -H "${JENKINS_CRUMB}" -X POST "http://j11d209.p.ssafy.io:9090/job/tunabank/build?token=${JENKINS_API_TOKEN}" 
   only:
     refs:
       - /^release.*$/
