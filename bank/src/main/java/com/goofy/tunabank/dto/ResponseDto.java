@@ -1,16 +1,10 @@
 package com.goofy.tunabank.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
-@ToString
 public class ResponseDto {
 
     private String status;
@@ -24,15 +18,5 @@ public class ResponseDto {
 
     public static ResponseDto success() {
         return new ResponseDto();
-    }
-
-    public static ResponseEntity<ResponseDto> databaseError(String message) {
-        ResponseDto responseBody = new ResponseDto("Database Error", message);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
-    }
-
-    public static ResponseEntity<ResponseDto> validationFail(String message) {
-        ResponseDto responseBody = new ResponseDto("Validation Failed", message);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
     }
 }

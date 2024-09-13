@@ -3,6 +3,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import MainPage from "../src/pages/MainPage";
 import Login from "./pages/user/Login";
 import SignUp from "./pages/user/SignUp";
+import SignUpBasicInformation from "./pages/user/SignUpBasicInformation";
+import SignUpAddress from "./pages/user/SignUpAddress";
 import MyPage from "./pages/user/MyPage";
 import UserUpdate from "./pages/user/UserUpdate";
 import MeetingAccountList from "./pages/account/MeetingAccountList";
@@ -27,6 +29,7 @@ import MeetingAccountCreateComplete from "./pages/account/MeetingAccountCreateCo
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
 import Transaction from "./pages/transaction/Transaction"
 import PrivateRoute from "./pages/user/PrivateRoute";
+import { Sign } from "crypto";
 
 function App() {
   return (
@@ -39,7 +42,7 @@ function App() {
             element={
               <>
                 <Header />
-                <div style={{ paddingBottom: "64px", backgroundColor: "#EFEFF5", minHeight: "100vh" }}>
+                <div style={{ paddingBottom: "64px", backgroundColor: "#F3F4F6", minHeight: "100vh" }}>
                   <Routes>
                     <Route element={<PrivateRoute />}>
                       <Route path="/" element={<MainPage />} />
@@ -57,6 +60,8 @@ function App() {
 
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/signup/basicinformation" element={<SignUpBasicInformation />} />
+          <Route path="/signup/address" element={<SignUpAddress />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/userupdate" element={<UserUpdate />} />
 

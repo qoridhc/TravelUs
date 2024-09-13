@@ -51,7 +51,7 @@ public class Account {
 
     private String accountPassword;
 
-    private Long balance;
+    private double balance;
 
     @CreatedDate
     private LocalDateTime createdAt;

@@ -23,7 +23,7 @@ public class Currency {
 
     @Id
     @Column(name = "currency_id")
-    private Long id;
+    private int id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "currency_code")

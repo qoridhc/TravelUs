@@ -9,6 +9,8 @@ public class CreateAccountRequestDto {
 
     private AccountType accountType;
 
+    private String accountPassword;
+
     private CurrencyType currencyType;
 
 }

@@ -5,13 +5,13 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-src/main/resources/application-*.yml
-
 encrypt.py
 
 .env
 
 api-key.txt
+
+/src/main/resources/application-dev.yml
 
 ### STS ###
 .apt_generated

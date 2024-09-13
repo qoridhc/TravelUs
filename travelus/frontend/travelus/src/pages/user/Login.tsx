@@ -31,13 +31,12 @@ const Login = () => {
   };
 
   return (
-    <div className="w-full h-full bg-[#EFEFF5]">
+    <div className="w-full h-full bg-[#F3F4F6]">
       <div className="w-full h-full flex flex-col justify-center items-center">
         <div className="w-full h-[50%] flex flex-col justify-between items-center">
           <div className="w-[90%] h-[78%] flex flex-col items-center justify-around rounded-xl bg-white shadow-sm">
             <div className="flex items-center space-x-1">
-              <img className="w-7" src="/assets/shc_symbol_ci.png" alt="" />
-              <p className="text-[1.4rem] font-bold">신한은행 로그인</p>
+              <p className="text-[1.4rem] font-bold">TravelUs 로그인</p>
             </div>
             <div className="w-[83%] h-[50%] flex flex-col justify-around text-zinc-500">
               <label htmlFor="email" className="text-sm font-semibold cursor-pointer">
@@ -62,7 +61,7 @@ const Login = () => {
                   handleChange(e);
                 }}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     handleLogin();
                   }
                 }}
@@ -78,7 +77,7 @@ const Login = () => {
               onClick={() => {
                 handleLogin();
               }}
-              className="w-[92%] h-12 rounded-md bg-[#0046FF] font-bold text-white text-sm">
+              className="w-[92%] h-12 rounded-md bg-[#1429A0] font-bold text-white text-sm">
               로그인
             </button>
           </div>
