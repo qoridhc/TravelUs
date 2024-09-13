@@ -16,8 +16,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://mysql:3306/soltravel?serverTimezone=Asia/Seoul&useUniCode=yes&characterEncoding=UTF-8
-    username: root
-    password: thfxmfpqmf225!@
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     hikari:
       pool-name: hikari-pool
       maximum-pool-size: 50
@@ -36,10 +36,6 @@ spring:
       host: redis
       port: 6379
 
-
-
-
-
   # JPA 설정  
   jpa:
     hibernate:
@@ -50,9 +46,6 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100 #fetch join 후 지연로딩하는 entity을 in 절로 미리 영속성 컨텍스트에 저장
 
-
-
-
 # Log 출력 설정
 logging:
   level:
@@ -62,8 +55,6 @@ logging:
       hibernate:
         SQL: debug
         type: trace
-
-
 
 # 프론트엔드 프로젝트 관련 환경 변수
 server:

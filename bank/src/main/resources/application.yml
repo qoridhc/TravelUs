@@ -1,4 +1,21 @@
 spring:
+  application:
+    name: bank
+
+  mvc:
+    servlet:
+      path: /api/v1/bank
+    async:
+      request-timeout: 3000000
+
+  config:
+    import:
+      - classpath:/yml/application-dev.yml
+    profiles:
+      group:
+        logging: dev
+      active: logging
+
   sql:
     init:
       mode: always
@@ -13,18 +30,6 @@ spring:
     port: 5672
     username: guest
     password: guest
-
-  mvc:
-    servlet:
-      path: /api/v1/bank
-    async:
-      request-timeout: 3000000
-
-  application:
-    name: backend
-
-  profiles:
-    active: dev
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -51,4 +56,3 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
         default_batch_fetch_size: 100 #fetch join 후 지연로딩하는 entity을 in 절로 미리 영속성 컨텍스트에 저장
-
