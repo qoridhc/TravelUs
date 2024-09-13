@@ -5,6 +5,16 @@ import { useNavigate } from "react-router";
 const MeetingAccountCreateComplete = () => {
   const navigate = useNavigate();
 
+  const shareKakao = () => {
+    window.Kakao.Link.sendCustom({
+      templateId: 112239,
+      templateArgs: {
+        hostName: "이예림",
+        groupName: "구미 2반 D209",
+      },
+    });
+  };
+
   return (
     <div className="h-full p-5 grid grid-rows-3">
       <div className="row-start-2 flex flex-col justify-center items-center space-y-5">
@@ -24,6 +34,16 @@ const MeetingAccountCreateComplete = () => {
       </div>
 
       <div className="w-full font-semibold row-start-3 flex flex-col justify-end space-y-3">
+        <button
+          className="w-full py-3 text-[#565656] border-2 rounded-lg flex justify-center items-center space-x-2"
+          onClick={() => shareKakao()}>
+          <img
+            className="w-5"
+            src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png"
+            alt="카카오링크 보내기 버튼"
+          />
+          <p>카카오톡으로 초대장 공유하기</p>
+        </button>
         <button className="w-full py-3 text-[#565656] border-2 rounded-lg" onClick={() => navigate("/")}>
           홈으로
         </button>
