@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: blue
+    active: dev
 
   sql:
     init:
@@ -40,6 +40,16 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
         default_batch_fetch_size: 100 #fetch join 후 지연로딩하는 entity을 in 절로 미리 영속성 컨텍스트에 저장
+
+# Log 출력 설정
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+      hibernate:
+        SQL: debug
+        type: trace
 
 ---
 # 프로파일 dev-blue 설정
