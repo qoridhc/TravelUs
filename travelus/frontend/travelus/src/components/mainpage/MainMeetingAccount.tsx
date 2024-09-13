@@ -82,13 +82,13 @@ const MainMeetingAccount = ({ index, account, foreignAccount }: Props) => {
           }}
           className="w-full py-5 pb-10 px-5 flex flex-col rounded-xl bg-white shadow-md">
           <div className="flex flex-col space-y-4">
-            <div className="flex items-center space-x-1 mb-1">
+            <div className="flex items-center space-x-2 mb-1">
               {getIcon(account.iconName)}
               <p className="font-bold">{account.groupName}</p>
             </div>
             <div className="rounded-md flex justify-between">
               <div>
-                <p className="text-sm font-bold">올인원 일반모임통장</p>
+                <p className="text-sm font-bold">일반모임통장</p>
                 <p className="text-sm text-zinc-500">{formatAccountNumber(account.accountNo)}</p>
               </div>
               <div className="flex items-center space-x-1">
@@ -100,7 +100,7 @@ const MainMeetingAccount = ({ index, account, foreignAccount }: Props) => {
             {foreignAccount && (
               <div className="rounded-md flex justify-between">
                 <div className="flex flex-col">
-                  <p className="text-sm font-bold">올인원 외화모임통장</p>
+                  <p className="text-sm font-bold">외화모임통장</p>
                   <p className="text-sm text-zinc-500">{formatAccountNumber(foreignAccount.accountNo)}</p>
                 </div>
 
