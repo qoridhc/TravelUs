@@ -1,7 +1,7 @@
 package com.goofy.tunabank.v1.handler;
 
 import com.goofy.tunabank.v1.dto.ErrorResponseDto;
-import com.goofy.tunabank.v1.account.InvalidAccountIdOrTypeException;
+import com.goofy.tunabank.v1.exception.account.InvalidAccountIdOrTypeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;

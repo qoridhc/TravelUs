@@ -8,7 +8,7 @@ import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
 import com.goofy.tunabank.v1.dto.account.AccountDto;
 import com.goofy.tunabank.v1.dto.account.request.CreateAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.response.CreateAccountResponseDto;
-import com.goofy.tunabank.v1.account.InvalidAccountIdOrTypeException;
+import com.goofy.tunabank.v1.exception.account.InvalidAccountIdOrTypeException;
 import com.goofy.tunabank.v1.mapper.AccountMapper;
 import com.goofy.tunabank.v1.repository.AccountRepository;
 import com.goofy.tunabank.v1.repository.CurrencyRepository;

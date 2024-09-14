@@ -1,4 +1,4 @@
-package com.goofy.tunabank.v1.account;
+package com.goofy.tunabank.v1.exception.account;
 
 import com.goofy.tunabank.v1.domain.Enum.AccountType;
 
