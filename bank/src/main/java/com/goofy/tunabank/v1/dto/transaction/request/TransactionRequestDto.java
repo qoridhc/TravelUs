@@ -14,7 +14,7 @@ public class TransactionRequestDto {
   private AccountType accountType;
 
   //거래 타입
-  private TransactionType type;
+  private TransactionType transactionType;
 
   //금액
   private double amount;
