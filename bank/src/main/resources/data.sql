@@ -13,7 +13,7 @@ INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_ra
 INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate) VALUES ('5','CNY', 5, 180.0);
 
 -- merchant 데이터 삽입
-INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (1,'입금','OTHER','주소',0,0);
-INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (2,'출금','OTHER','주소',0,0);
-INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (3,'이체 입금','OTHER','주소',0,0);
-INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (4,'이체 출금','OTHER','주소',0,0);
+INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (1,'입금','BANK','주소',0,0);
+INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (2,'출금','BANK','주소',0,0);
+INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (3,'이체 입금','BANK','주소',0,0);
+INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (4,'이체 출금','BANK','주소',0,0);

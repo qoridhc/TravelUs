@@ -24,7 +24,6 @@ public class ExchangeService {
   private final WebClient ExchangewebClient;
   private final CurrencyRepository currencyRepository;
   private final RabbitTemplate rabbitTemplate;
-  private final RabbitMQConfig rabbitMQConfig;
 
 
   private List<String> desiredCurrencies = List.of("USD", "JPY", "EUR", "CNY");
