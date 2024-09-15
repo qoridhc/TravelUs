@@ -22,8 +22,7 @@ public class TransactionController {
    * 입금 및 출금
    */
   @PostMapping("/deposit")
-  public ResponseEntity<TransactionResponseDto> processTransaction(@RequestBody TransactionRequestDto requestDto)
-      throws InvalidWithdrawalAmount {
+  public ResponseEntity<TransactionResponseDto> processTransaction(@RequestBody TransactionRequestDto requestDto) {
 
     return ResponseEntity.ok().body(transactionService.processTransaction(requestDto));
   }

@@ -41,7 +41,7 @@ public class TransactionService {
     Account account = accountRepository.findByIdAndAccountType(accountId, accountType)
         .orElseThrow(() -> new InvalidAccountIdOrTypeException(accountId, accountType));
 
-    //TODO:Account 잔액 및 수정시간 업데이트 유효성검사왜안먹냐
+
     TransactionType transactionType = requestDto.getTransactionType();
 
     double currentBalance = account.getBalance();
@@ -96,8 +96,7 @@ public class TransactionService {
    * 이체
    */
 
-  private void validateWithdrawal(double currentBalance, double amount)
-      throws InvalidWithdrawalAmount {
+  private void validateWithdrawal(double currentBalance, double amount){
     if (amount <= 0)
       throw new InvalidWithdrawalAmount(amount);
 
