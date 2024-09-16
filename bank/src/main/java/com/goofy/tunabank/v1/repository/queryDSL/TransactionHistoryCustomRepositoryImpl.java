@@ -26,16 +26,22 @@ public class TransactionHistoryCustomRepositoryImpl implements TransactionHistor
 
     BooleanBuilder whereClause = new BooleanBuilder();
 
-    // 복합키 필드 (accountId와 transactionType) 조건 추가
+    // 복합키 필드 (accountId와 accountType) 조건
     if (requestDto.getAccountId() != null) {
       whereClause.and(qTransactionHistory.account.id.eq(requestDto.getAccountId()));
     }
 
+    if (requestDto.getAccountType() != null) {
+      whereClause.and(qTransactionHistory.account.accountType.eq(requestDto.getAccountType()));
+    }
+
+    // 거래 타입 조건 (null일 경우 전체 조회)
     if (requestDto.getTransactionType() != null) {
       whereClause.and(qTransactionHistory.transactionType.eq(requestDto.getTransactionType()));
     }
 
-    // 거래 일시 범위 조건 추가
+
+    // 거래 일시 범위 조건
     if (requestDto.getStartDate() != null && requestDto.getEndDate() != null) {
 
       LocalDateTime startDateTime = requestDto.getStartDate().atStartOfDay();
@@ -45,7 +51,7 @@ public class TransactionHistoryCustomRepositoryImpl implements TransactionHistor
           endDateTime));
     }
 
-    // 정렬 기준 추가
+    // 정렬 기준
     List<TransactionHistory> transactionHistories = queryFactory
         .selectFrom(qTransactionHistory)
         .where(whereClause)
