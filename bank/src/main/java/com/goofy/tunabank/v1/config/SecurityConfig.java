@@ -1,11 +1,7 @@
 package com.goofy.tunabank.v1.config;
 
-import com.ssafy.soltravel.v1.filter.ExceptionHandlerFilter;
-import com.ssafy.soltravel.v1.filter.JwtAutheticationFilter;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import com.goofy.tunabank.v1.filter.ExceptionHandlerFilter;
+import com.goofy.tunabank.v1.filter.KeyAutheticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -15,8 +11,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -26,7 +20,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  private final JwtAutheticationFilter jwtAutheticationFilter;
+  private final KeyAutheticationFilter keyAutheticationFilter;
   private final ExceptionHandlerFilter exceptionHandlerFilter;
 
   @Bean
@@ -37,29 +31,18 @@ public class SecurityConfig {
         .httpBasic(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(requests -> requests      //특정 uri만 허용하고 나머지는 인증받아야함
                 .requestMatchers(
-                    new AntPathRequestMatcher("/api/v1/auth/**"),
-                    new AntPathRequestMatcher("/api/v1/user/join"),
-                    new AntPathRequestMatcher("/api/v1/user/join/test"),
-                    new AntPathRequestMatcher("/api/v1/swagger-ui/**"),
-                    new AntPathRequestMatcher("/api/v1/v3/api-docs/**"),
-                    new AntPathRequestMatcher("/api/v1/notification/subscribe/**")
+                    new AntPathRequestMatcher("/api/v1/bank/auth/**"),
+                    new AntPathRequestMatcher("/api/v1/bank/user/join"),
+                    new AntPathRequestMatcher("/api/v1/bank/swagger-ui/**"),
+                    new AntPathRequestMatcher("/api/v1/bank/v3/api-docs/**")
                 ).permitAll()
                 .anyRequest().authenticated()
-            //.anyRequest().authenticated()
-        ).formLogin(form -> form
-            .defaultSuccessUrl("/api/v1/auth/test-ok", true)
-            .failureUrl("/api/v1/error")
-            .permitAll()
-        ).logout(logout -> logout
-            .permitAll()
         ).addFilterBefore(
-            jwtAutheticationFilter,
+            keyAutheticationFilter,
             UsernamePasswordAuthenticationFilter.class
         ).addFilterBefore(
             exceptionHandlerFilter,
-            JwtAutheticationFilter.class
-        ).exceptionHandling(handle -> handle.authenticationEntryPoint(
-            new FailedAuthenticatoinEntryPoint())
+            KeyAutheticationFilter.class
         );
     return http.build();
   }
@@ -68,18 +51,5 @@ public class SecurityConfig {
   public WebSecurityCustomizer webSecurityCustomizer() {
     return (web) -> web.ignoring()
         .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-  }
-}
-
-class FailedAuthenticatoinEntryPoint implements AuthenticationEntryPoint {
-
-  @Override
-  public void commence(HttpServletRequest request, HttpServletResponse response,
-      AuthenticationException authException) throws IOException, ServletException {
-    response.setContentType("application/json"); // 응답 콘텐츠 타입을 JSON으로 설정
-    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 응답 상태 코드를 401으로 설정
-    response.getWriter()
-        .write("{\"code\" : \"UA\", \"message\" : \"UnAuthorized.\"}"); // 응답 바디에 JSON 형태로 메시지 작성
-
   }
 }
