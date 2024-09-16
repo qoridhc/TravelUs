@@ -50,6 +50,9 @@ dependencies {
     // Gson
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
 
+    // Jankson
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+
     // RabbitMQ
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
