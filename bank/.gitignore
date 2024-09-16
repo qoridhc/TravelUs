@@ -11,7 +11,7 @@ encrypt.py
 
 api-key.txt
 
-/src/main/resources/application-dev.yml
+/src/main/resources/yml/application-dev.yml
 
 ### STS ###
 .apt_generated
