@@ -17,5 +17,8 @@ public class TransactionRequestDto {
   private TransactionType transactionType;
 
   //금액
-  private double amount;
+  private double transactionBalance;
+
+  //메모
+  private String transactionSummary;
 }

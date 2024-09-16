@@ -61,4 +61,7 @@ public class TransactionHistory {
 
   //잔액
   private double balance;
+
+  //메모
+  private String summary;
 }
