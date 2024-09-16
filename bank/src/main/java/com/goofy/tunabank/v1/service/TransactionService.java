@@ -122,9 +122,8 @@ public class TransactionService {
     }
     nextId++;
 
-    long merchantId = 3L;
-    Merchant merchant = merchantRepository.findById(merchantId)
-        .orElseThrow(() -> new InvalidMerchantIdException(merchantId));
+    Merchant merchant = merchantRepository.findById(4L)
+        .orElseThrow(() -> new InvalidMerchantIdException(4L));
 
     // 출금 기록 저장
     TransactionHistory withdrawalTransactionHistory = TransactionHistory.builder()
@@ -139,16 +138,19 @@ public class TransactionService {
         .build();
     TransactionHistory withdrawalTh=transactionHistoryRepository.save(withdrawalTransactionHistory);
 
+    merchant = merchantRepository.findById(3L)
+        .orElseThrow(() -> new InvalidMerchantIdException(3L));
     // 입금 기록 저장
     TransactionHistory depositTransactionHistory = TransactionHistory.builder()
         .id(nextId)
         .transactionType(TransactionType.TD)
         .account(depositAccount)
         .merchant(merchant)
-        .transactionAt(LocalDateTime.now())
+        .transactionAt(LocalDateTime.now())//TODO:추후변경예정
         .amount(amount)
         .balance(depositAfterBalance)
         .build();
+    //TODO: summary 넣을것인가?
     TransactionHistory depositTh=transactionHistoryRepository.save(depositTransactionHistory);
 
     // response 변환
@@ -156,6 +158,7 @@ public class TransactionService {
   }
 
   /**
+   * ------------------------------------------------------------------------------------------
    * 아래 부터는 업데이트 관련 로직
    */
 
@@ -201,19 +204,5 @@ public class TransactionService {
     if (amount > currentBalance) {
       throw new InsufficientBalanceException(currentBalance, amount);
     }
-  }
-
-  /**
-   * 가맹점 Id반환
-   */
-  private Long getMerchantId(TransactionType transactionType) {
-
-    return switch (transactionType) {
-      case D -> 1L;
-      case W -> 2L;
-      case TD -> 3L;
-      case TW -> 4L;
-      case CW -> null;
-    };
   }
 }
