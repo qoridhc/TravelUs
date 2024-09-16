@@ -5,13 +5,15 @@ import com.goofy.tunabank.v1.domain.Enum.AccountType;
 import com.goofy.tunabank.v1.domain.Enum.TransactionType;
 import com.goofy.tunabank.v1.domain.Merchant;
 import com.goofy.tunabank.v1.domain.TransactionHistory;
+import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.response.TransactionResponseDto;
 import com.goofy.tunabank.v1.dto.transaction.response.TransferResponseDto;
 import com.goofy.tunabank.v1.exception.Transaction.InsufficientBalanceException;
 import com.goofy.tunabank.v1.exception.Transaction.InvalidMerchantIdException;
-import com.goofy.tunabank.v1.exception.Transaction.InvalidWithdrawalAmount;
+import com.goofy.tunabank.v1.exception.Transaction.InvalidWithdrawalAmountException;
+import com.goofy.tunabank.v1.exception.Transaction.TransactionHistoryNotFoundException;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountIdOrTypeException;
 import com.goofy.tunabank.v1.mapper.TransactionMapper;
 import com.goofy.tunabank.v1.repository.AccountRepository;
@@ -69,16 +71,10 @@ public class TransactionService {
     Merchant merchant = merchantRepository.findById(merchantId)
         .orElseThrow(() -> new InvalidMerchantIdException(merchantId));
 
-    TransactionHistory transactionHistory = TransactionHistory.builder()
-        .id(nextId)
-        .transactionType(transactionType)
-        .account(account)
-        .merchant(merchant)
-        .transactionAt(LocalDateTime.now())
-        .amount(amount)
-        .balance(afterBalance)
-        .summary(requestDto.getTransactionSummary())
-        .build();
+    TransactionHistory transactionHistory = TransactionHistory.builder().id(nextId)
+        .transactionType(transactionType).account(account).merchant(merchant)
+        .transactionAt(LocalDateTime.now()).amount(amount).balance(afterBalance)
+        .summary(requestDto.getTransactionSummary()).build();
 
     TransactionHistory th = transactionHistoryRepository.save(transactionHistory);
     return transactionMapper.convertTransactionHistoryToTransactionResponseDto(th);
@@ -99,15 +95,13 @@ public class TransactionService {
 
     // 출금 계좌
     Account withdrawalAccount = accountRepository.findByIdAndAccountType(withdrawalAccountId,
-            withdrawalAccountType)
-        .orElseThrow(
-            () -> new InvalidAccountIdOrTypeException(withdrawalAccountId, withdrawalAccountType));
+        withdrawalAccountType).orElseThrow(
+        () -> new InvalidAccountIdOrTypeException(withdrawalAccountId, withdrawalAccountType));
 
     // 입금 계좌
     Account depositAccount = accountRepository.findByIdAndAccountType(depositAccountId,
-            depositAccountType)
-        .orElseThrow(
-            () -> new InvalidAccountIdOrTypeException(depositAccountId, depositAccountType));
+        depositAccountType).orElseThrow(
+        () -> new InvalidAccountIdOrTypeException(depositAccountId, depositAccountType));
 
     // 출금 처리
     double withdrawalAfterBalance = processWithdrawal(withdrawalAccount, amount);
@@ -126,35 +120,42 @@ public class TransactionService {
         .orElseThrow(() -> new InvalidMerchantIdException(4L));
 
     // 출금 기록 저장
-    TransactionHistory withdrawalTransactionHistory = TransactionHistory.builder()
-        .id(nextId)
-        .transactionType(TransactionType.TW)
-        .account(withdrawalAccount)
-        .merchant(merchant)
+    TransactionHistory withdrawalTransactionHistory = TransactionHistory.builder().id(nextId)
+        .transactionType(TransactionType.TW).account(withdrawalAccount).merchant(merchant)
         .transactionAt(LocalDateTime.now())//TODO:추후변경예정
-        .amount(amount)
-        .balance(withdrawalAfterBalance)
-        .summary(summary)
-        .build();
-    TransactionHistory withdrawalTh=transactionHistoryRepository.save(withdrawalTransactionHistory);
+        .amount(amount).balance(withdrawalAfterBalance).summary(summary).build();
+    TransactionHistory withdrawalTh = transactionHistoryRepository.save(
+        withdrawalTransactionHistory);
 
     merchant = merchantRepository.findById(3L)
         .orElseThrow(() -> new InvalidMerchantIdException(3L));
     // 입금 기록 저장
-    TransactionHistory depositTransactionHistory = TransactionHistory.builder()
-        .id(nextId)
-        .transactionType(TransactionType.TD)
-        .account(depositAccount)
-        .merchant(merchant)
+    TransactionHistory depositTransactionHistory = TransactionHistory.builder().id(nextId)
+        .transactionType(TransactionType.TD).account(depositAccount).merchant(merchant)
         .transactionAt(LocalDateTime.now())//TODO:추후변경예정
-        .amount(amount)
-        .balance(depositAfterBalance)
-        .build();
+        .amount(amount).balance(depositAfterBalance).build();
     //TODO: summary 넣을것인가?
-    TransactionHistory depositTh=transactionHistoryRepository.save(depositTransactionHistory);
+    TransactionHistory depositTh = transactionHistoryRepository.save(depositTransactionHistory);
 
     // response 변환
-   return transactionMapper.convertToTransferResponseDto(withdrawalTh, depositTh);
+    return transactionMapper.convertToTransferResponseDto(withdrawalTh, depositTh);
+  }
+
+  /**
+   * 복합키와 날짜 범위를 고려한 동적 쿼리
+   */
+  @Transactional(readOnly = true)
+  public List<TransactionResponseDto> getTransactionHistory(
+      TransactionHistoryRequestDto requestDto
+  ) {
+
+    //TODO: repository호출 하고 매핑호출할것
+    List<TransactionHistory> transactionHistories =
+        transactionHistoryRepository.findByCustomOrder(requestDto)
+            .orElseThrow(TransactionHistoryNotFoundException::new);
+
+
+    return transactionMapper.convertTransactionHistoriesToResponseDtos(transactionHistories);
   }
 
   /**
@@ -174,7 +175,7 @@ public class TransactionService {
    * 출금 처리
    */
   @Transactional
-  public double processWithdrawal(Account account, double amount) throws InvalidWithdrawalAmount {
+  public double processWithdrawal(Account account, double amount) throws InvalidWithdrawalAmountException {
 
     // 출금 금액 검증
     validateWithdrawal(account.getBalance(), amount);
@@ -198,7 +199,7 @@ public class TransactionService {
    */
   private void validateWithdrawal(double currentBalance, double amount) {
     if (amount <= 0) {
-      throw new InvalidWithdrawalAmount(amount);
+      throw new InvalidWithdrawalAmountException(amount);
     }
 
     if (amount > currentBalance) {

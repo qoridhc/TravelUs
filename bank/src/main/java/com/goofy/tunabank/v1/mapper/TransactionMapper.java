@@ -19,6 +19,8 @@ public interface TransactionMapper {
   @Mapping(target = "summary", source = "th.summary")
   TransactionResponseDto convertTransactionHistoryToTransactionResponseDto(TransactionHistory th);
 
+  List<TransactionResponseDto> convertTransactionHistoriesToResponseDtos(List<TransactionHistory> histories);
+
   default TransferResponseDto convertToTransferResponseDto(TransactionHistory withdrawalTh,
       TransactionHistory depositTh) {
 
