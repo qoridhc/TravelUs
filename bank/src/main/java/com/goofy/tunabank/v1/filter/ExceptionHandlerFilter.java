@@ -1,9 +1,7 @@
 package com.goofy.tunabank.v1.filter;
 
-import com.ssafy.soltravel.v1.exception.InvalidTokenException;
-import com.ssafy.soltravel.v1.exception.UserNotFoundException;
-import com.ssafy.soltravel.v1.util.LogUtil;
-import io.jsonwebtoken.ExpiredJwtException;
+import com.goofy.tunabank.v1.exception.auth.AuthException;
+import com.goofy.tunabank.v1.util.LogUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,29 +14,35 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
   @Override
-  protected void doFilterInternal(
-      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
-  ) throws ServletException, IOException {
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException
+  {
     try {
       filterChain.doFilter(request, response);
 
-    } catch (ExpiredJwtException expiredJwtException) {
-      LogUtil.error(expiredJwtException.getMessage());
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "만료된 토큰입니다");
-
-    } catch (InvalidTokenException invalidTokenException) {
-      String msg = String.format("유효하지 않은 토큰입니다: %s", invalidTokenException.getToken());
-      LogUtil.error(invalidTokenException.getMessage());
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, msg);
-
-    } catch (UserNotFoundException userNotFoundException) {
-      String msg = String.format("유효하지 않은 토큰/유저번호입니다: %d", userNotFoundException.getUserId());
-      LogUtil.error(userNotFoundException.getMessage());
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, msg);
+    } catch(AuthException e) {
+      LogUtil.warn(e.getMessage(), e.getApiKey());
+      setErrorResponse(response, e);
 
     } catch (Exception e) {
       LogUtil.error(e.getMessage());
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "서버에서 오류가 발생했습니다");
+
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      response.setContentType("application/json");
+      response.getWriter().write(String.format("{\"code\": \"%s\", \"status\": %d, \"message\": \"%s\"}", 500, "IS", "Internal Server Error"));
     }
+  }
+
+  private void setErrorResponse(HttpServletResponse response, AuthException e) throws IOException {
+    response.setStatus(e.getStatus());
+    response.setContentType("application/json");
+
+    String json = String.format(
+        "{\"status\": \"%s\", \"code\": \"%s\", \"message\": \"%s\"}",
+        e.getStatus(),
+        e.getCode(),
+        e.getMessage()
+    );
+    response.getWriter().write(json);
   }
 }
