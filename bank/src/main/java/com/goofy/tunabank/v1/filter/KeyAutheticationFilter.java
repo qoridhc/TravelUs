@@ -3,7 +3,7 @@ package com.goofy.tunabank.v1.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goofy.tunabank.v1.domain.Key;
 import com.goofy.tunabank.v1.dto.ApiRequestBody;
-import com.goofy.tunabank.v1.exception.auth.NotFoundApiKeyException;
+import com.goofy.tunabank.v1.exception.auth.ApiKeyNotFoundException;
 import com.goofy.tunabank.v1.provider.KeyProvider;
 import com.goofy.tunabank.v1.repository.KeyRepository;
 import jakarta.servlet.FilterChain;
@@ -39,7 +39,7 @@ public class KeyAutheticationFilter extends OncePerRequestFilter {
 
     // 키 존재 유무 검사
     Key key = keyRepository.findByKeyValue(header.getApikey()).orElseThrow(
-        () -> new NotFoundApiKeyException(header.getApikey())
+        () -> new ApiKeyNotFoundException(header.getApikey())
     );
 
     // api key 유효성 검사 & 인증 정보 설정

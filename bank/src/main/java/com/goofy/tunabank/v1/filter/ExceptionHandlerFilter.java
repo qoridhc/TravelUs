@@ -1,6 +1,6 @@
 package com.goofy.tunabank.v1.filter;
 
-import com.goofy.tunabank.v1.exception.auth.AuthException;
+import com.goofy.tunabank.v1.exception.CustomException;
 import com.goofy.tunabank.v1.util.LogUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,8 +20,8 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
     try {
       filterChain.doFilter(request, response);
 
-    } catch(AuthException e) {
-      LogUtil.warn(e.getMessage(), e.getApiKey());
+    } catch(CustomException e) {
+      LogUtil.warn(e.getInfo());
       setErrorResponse(response, e);
 
     } catch (Exception e) {
@@ -33,7 +33,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
     }
   }
 
-  private void setErrorResponse(HttpServletResponse response, AuthException e) throws IOException {
+  private void setErrorResponse(HttpServletResponse response, CustomException e) throws IOException {
     response.setStatus(e.getStatus());
     response.setContentType("application/json");
 

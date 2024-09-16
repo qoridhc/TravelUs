@@ -1,23 +1,15 @@
 package com.goofy.tunabank.v1.exception.auth;
 
+import com.goofy.tunabank.v1.exception.CustomException;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-public abstract class AuthException extends RuntimeException {
-
-  private String message;
+public abstract class AuthException extends CustomException {
   private String apiKey;
-  private String code;
-  private int status;
 
-  public AuthException(String message, String apiKey, String code, int status) {
-    super(message);
-    this.message = message;
+  public AuthException(String message, String apiKey, String code, int status, String info) {
+    super(message, code, status, info);
     this.apiKey = apiKey;
-    this.code = code;
-    this.status = status;
   }
 }
 

@@ -1,9 +1,9 @@
 package com.goofy.tunabank.v1.exception.auth;
 
-public class InvalidApiKeyException extends AuthException {
-  private static final String MESSAGE = "Invalid Api Key";
+public class ApiKeyNotFoundException extends AuthException {
+  private static final String MESSAGE = "Api Key does not exist";
 
-  public InvalidApiKeyException(String apiKey) {
+  public ApiKeyNotFoundException(String apiKey) {
     super(
         MESSAGE,
         apiKey,
