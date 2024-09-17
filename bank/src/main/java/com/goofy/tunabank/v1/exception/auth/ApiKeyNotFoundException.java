@@ -12,4 +12,14 @@ public class ApiKeyNotFoundException extends AuthException {
         String.format("%s: %s", MESSAGE, apiKey)
     );
   }
+
+  public ApiKeyNotFoundException(String message, String apiKey) {
+    super(
+        message,
+        apiKey,
+        "UNAUTHORIZED",
+        401,
+        String.format("%s: %s", message, apiKey)
+    );
+  }
 }

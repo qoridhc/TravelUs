@@ -1,7 +1,7 @@
 package com.goofy.tunabank.v1.config;
 
-import com.goofy.tunabank.v1.filter.ExceptionHandlerFilter;
 import com.goofy.tunabank.v1.filter.KeyAutheticationFilter;
+import com.goofy.tunabank.v1.handler.FailedAuthenticatoinEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +21,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig {
 
   private final KeyAutheticationFilter keyAutheticationFilter;
-  private final ExceptionHandlerFilter exceptionHandlerFilter;
+  private final FailedAuthenticatoinEntryPoint failedAuthenticatoinEntryPoint;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -40,9 +40,8 @@ public class SecurityConfig {
         ).addFilterBefore(
             keyAutheticationFilter,
             UsernamePasswordAuthenticationFilter.class
-        ).addFilterBefore(
-            exceptionHandlerFilter,
-            KeyAutheticationFilter.class
+        ).exceptionHandling(exceptionHandling ->
+            exceptionHandling.authenticationEntryPoint(failedAuthenticatoinEntryPoint)
         );
     return http.build();
   }
