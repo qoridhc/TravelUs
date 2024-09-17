@@ -2,6 +2,7 @@ package com.goofy.tunabank.v1.handler;
 
 import com.goofy.tunabank.v1.dto.ErrorResponseDto;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountIdOrTypeException;
+import com.goofy.tunabank.v1.exception.auth.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -33,5 +34,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidAccountIdOrTypeException.class)
     public ResponseEntity<ErrorResponseDto> handleInvalidAccountIdException(Exception e) {
         return buildErrorResponse(e,null, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleUserNotFoundException(UserNotFoundException e) {
+        return buildErrorResponse(e, e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 }
