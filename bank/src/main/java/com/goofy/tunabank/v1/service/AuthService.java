@@ -5,6 +5,9 @@ import com.goofy.tunabank.v1.dto.auth.ApiKeyIssueReponseDto;
 import com.goofy.tunabank.v1.dto.auth.ApiKeyIssueRequestDto;
 import com.goofy.tunabank.v1.exception.auth.UserNotFoundException;
 import com.goofy.tunabank.v1.repository.UserRepository;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,14 +26,19 @@ public class AuthService {
         () -> new UserNotFoundException(request)
     );
 
-
     // 3. API KEY 발급
+    SecureRandom random = new SecureRandom();
+    byte[] bytes = new byte[48];
 
+    random.nextBytes(bytes);
+    String apiKey = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
 
     // 4. 저장 및 응답
-
-
-    return null;
+    return ApiKeyIssueReponseDto.builder()
+        .managerId(request.getManagerId())
+        .apiKey(apiKey)
+        .createAt(LocalDateTime.now())
+        .expireAt(LocalDateTime.now().plusYears(1))
+        .build();
   }
-
 }
