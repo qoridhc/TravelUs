@@ -1,15 +1,17 @@
 package com.goofy.tunabank.v1.exception.auth;
 
 public class ApiKeyNotFoundException extends AuthException {
-  private static final String MESSAGE = "Api Key does not exist";
+  private static final String DEFAULT_MESSAGE = "Api Key does not exist";
+  private static final String DEFAULT_CODE = "API_KEY_NOT_FOUND";
+  private static final int DEFAULT_STATUS = 401;
 
   public ApiKeyNotFoundException(String apiKey) {
     super(
-        MESSAGE,
+        DEFAULT_MESSAGE,
         apiKey,
-        "UNAUTHORIZED",
-        401,
-        String.format("%s: %s", MESSAGE, apiKey)
+        DEFAULT_CODE,
+        DEFAULT_STATUS,
+        String.format("%s: %s", DEFAULT_MESSAGE, apiKey)
     );
   }
 
@@ -17,8 +19,8 @@ public class ApiKeyNotFoundException extends AuthException {
     super(
         message,
         apiKey,
-        "UNAUTHORIZED",
-        401,
+        DEFAULT_CODE,
+        DEFAULT_STATUS,
         String.format("%s: %s", message, apiKey)
     );
   }

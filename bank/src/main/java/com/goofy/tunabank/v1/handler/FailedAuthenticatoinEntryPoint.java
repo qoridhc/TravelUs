@@ -17,15 +17,19 @@ public class FailedAuthenticatoinEntryPoint implements AuthenticationEntryPoint 
       AuthenticationException e
   ) throws IOException {
 
-    // HttpServletRequest에서 AuthException을 가져옴
-    String exceptionMsg = (String) request.getAttribute("exceptionMsg");
+    // HttpServletRequest에서 AuthException 관련 Info 가져옴
+    String code = (String) request.getAttribute("exceptionCode");
+    String errorMessage = (String) request.getAttribute("exceptionMsg");
+
     response.setContentType("application/json");
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-    String message = (exceptionMsg != null) ? (exceptionMsg):(e.getMessage());
+    code = (code != null) ? (code):("INTERNAL_SERVER_ERROR");
+    errorMessage = (errorMessage != null) ? (errorMessage):(e.getMessage());
+
     String body = String.format(
-        "{\"status\": \"UNAUTHORIZED\", \"code\": \"401\", \"message\": \"%s\"}",
-        message
+        "{\"status\": \"Unauthorized\", \"message\": \"%s\", \"errorMessage\": \"%s\"}",
+        code, errorMessage
     );
 
     response.getWriter().write(body);

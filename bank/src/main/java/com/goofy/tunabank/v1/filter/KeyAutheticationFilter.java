@@ -62,9 +62,11 @@ public class KeyAutheticationFilter extends OncePerRequestFilter {
       }
     } catch (AuthException e) {
       LogUtil.warn(e.getInfo());
+      cachedRequest.setAttribute("exceptionCode", e.getCode());
       cachedRequest.setAttribute("exceptionMsg", e.getMessage());  // cachedRequest에 예외 설정
     } catch (Exception e) {
       e.printStackTrace();
+      cachedRequest.setAttribute("exceptionCode", "INTERNAL_SERVER_ERROR");
       cachedRequest.setAttribute("exceptionMsg", e.getMessage());  // cachedRequest에 예외 설정
     } finally {
       filterChain.doFilter(cachedRequest, response);
