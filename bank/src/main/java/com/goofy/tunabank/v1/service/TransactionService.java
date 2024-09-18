@@ -12,6 +12,7 @@ import com.goofy.tunabank.v1.dto.transaction.response.TransactionResponseDto;
 import com.goofy.tunabank.v1.dto.transaction.response.TransferResponseDto;
 import com.goofy.tunabank.v1.exception.Transaction.InsufficientBalanceException;
 import com.goofy.tunabank.v1.exception.Transaction.InvalidMerchantIdException;
+import com.goofy.tunabank.v1.exception.Transaction.InvalidTransactionTypeException;
 import com.goofy.tunabank.v1.exception.Transaction.InvalidWithdrawalAmountException;
 import com.goofy.tunabank.v1.exception.Transaction.TransactionHistoryNotFoundException;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountIdOrTypeException;
@@ -57,7 +58,7 @@ public class TransactionService {
     } else if (transactionType == TransactionType.W) {
       afterBalance = processWithdrawal(account, amount);
     } else {
-      throw new IllegalArgumentException("Invalid transaction type");
+      throw new InvalidTransactionTypeException(transactionType);
     }
 
     // 거래 기록을 위한 다음 id값 추출
@@ -146,14 +147,9 @@ public class TransactionService {
    */
   @Transactional(readOnly = true)
   public List<TransactionResponseDto> getTransactionHistory(
-      TransactionHistoryRequestDto requestDto
-  ) {
-
-    //TODO: repository호출 하고 매핑호출할것
-    List<TransactionHistory> transactionHistories =
-        transactionHistoryRepository.findByCustomOrder(requestDto)
-            .orElseThrow(TransactionHistoryNotFoundException::new);
-
+      TransactionHistoryRequestDto requestDto) {
+    List<TransactionHistory> transactionHistories = transactionHistoryRepository.findByCustomOrder(
+        requestDto).orElseThrow(TransactionHistoryNotFoundException::new);
 
     return transactionMapper.convertTransactionHistoriesToResponseDtos(transactionHistories);
   }
@@ -175,7 +171,8 @@ public class TransactionService {
    * 출금 처리
    */
   @Transactional
-  public double processWithdrawal(Account account, double amount) throws InvalidWithdrawalAmountException {
+  public double processWithdrawal(Account account, double amount)
+      throws InvalidWithdrawalAmountException {
 
     // 출금 금액 검증
     validateWithdrawal(account.getBalance(), amount);
