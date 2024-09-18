@@ -19,4 +19,8 @@ public class KeyRepository {
         .getResultList();
     return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
   }
+
+  public void save(Key key) {
+    em.persist(key);
+  }
 }

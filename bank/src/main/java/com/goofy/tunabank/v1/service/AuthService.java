@@ -1,13 +1,15 @@
 package com.goofy.tunabank.v1.service;
 
+import com.goofy.tunabank.v1.domain.Enum.KeyType;
+import com.goofy.tunabank.v1.domain.Key;
 import com.goofy.tunabank.v1.domain.User;
 import com.goofy.tunabank.v1.dto.auth.ApiKeyIssueReponseDto;
 import com.goofy.tunabank.v1.dto.auth.ApiKeyIssueRequestDto;
 import com.goofy.tunabank.v1.exception.auth.UserNotFoundException;
+import com.goofy.tunabank.v1.provider.KeyProvider;
+import com.goofy.tunabank.v1.repository.KeyRepository;
 import com.goofy.tunabank.v1.repository.UserRepository;
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,25 +20,29 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
   private final UserRepository userRepository;
+  private final KeyRepository keyRepository;
+  private final KeyProvider keyProvider;
 
   public ApiKeyIssueReponseDto issueApiKey(ApiKeyIssueRequestDto request) {
 
-    // 2. 이메일 등록 유무 검증
+    // 1. 이메일 등록 유무 검증
     User user = userRepository.findByEmail(request.getManagerId()).orElseThrow(
         () -> new UserNotFoundException(request)
     );
 
-    // 3. API KEY 발급
-    SecureRandom random = new SecureRandom();
-    byte[] bytes = new byte[48];
 
-    random.nextBytes(bytes);
-    String apiKey = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
 
-    // 4. 저장 및 응답
+    // 2. API KEY 발급
+    String keyValue = keyProvider.generateApiKey();
+
+    // 3. 저장
+    Key key = Key.createKey(user, KeyType.API, keyValue);
+    keyRepository.save(key);
+
+    // 4. 응답
     return ApiKeyIssueReponseDto.builder()
         .managerId(request.getManagerId())
-        .apiKey(apiKey)
+        .apiKey(keyValue)
         .createAt(LocalDateTime.now())
         .expireAt(LocalDateTime.now().plusYears(1))
         .build();

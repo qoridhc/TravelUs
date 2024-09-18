@@ -14,11 +14,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @Table(name = "api_key")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Key {
 
   @Id
@@ -45,4 +48,29 @@ public class Key {
 
   @Column(name = "expire_at")
   private LocalDateTime expireAt;
+
+
+  /*
+  * 연관관계 편의 메서드
+  */
+  public void setUser(User user) {
+    this.user = user;
+    user.getKeys().add(this);
+  }
+
+
+  /*
+  *  생성 메서드
+  */
+  public static Key createKey(User user, KeyType type, String value) {
+    Key key = new Key();
+    key.setUser(user);
+    key.type = type;
+    key.value = value;
+
+    key.status = KeyStatus.ACTIVE;
+    key.createAt = LocalDateTime.now();
+    key.expireAt = LocalDateTime.now().plusYears(1);
+    return key;
+  }
 }
