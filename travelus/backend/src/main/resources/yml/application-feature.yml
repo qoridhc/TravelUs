@@ -5,6 +5,7 @@ spring:
     enabled: true
     locations: classpath:db/
     baseline-on-migrate: true
+    schemas: soltravel
 
   # Multipart File 설정
   servlet:
