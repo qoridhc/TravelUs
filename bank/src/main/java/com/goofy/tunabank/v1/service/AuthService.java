@@ -1,11 +1,13 @@
 package com.goofy.tunabank.v1.service;
 
 import com.goofy.tunabank.v1.domain.Enum.KeyType;
+import com.goofy.tunabank.v1.domain.Enum.Role;
 import com.goofy.tunabank.v1.domain.Key;
 import com.goofy.tunabank.v1.domain.User;
 import com.goofy.tunabank.v1.dto.auth.ApiKeyIssueReponseDto;
 import com.goofy.tunabank.v1.dto.auth.ApiKeyIssueRequestDto;
 import com.goofy.tunabank.v1.exception.auth.ApiKeyLimitExceededException;
+import com.goofy.tunabank.v1.exception.auth.NotAdminException;
 import com.goofy.tunabank.v1.exception.auth.UserNotFoundException;
 import com.goofy.tunabank.v1.provider.KeyProvider;
 import com.goofy.tunabank.v1.repository.KeyRepository;
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.usertype.UserType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,20 +36,25 @@ public class AuthService {
         () -> new UserNotFoundException(request)
     );
 
-    // 2. 발급한 API KEY 개수가 5개 이상인 경우 발급 X
+    // 2. ADMIN 유저인지 확인
+    if(user.getRole() != Role.ADMIN){
+      throw new NotAdminException(request.getManagerId());
+    }
+
+    // 3. 발급한 API KEY 개수가 5개 이상인 경우 발급 X
     int len = filterApiKeyType(user.getKeys()).size();
     if(len >= 5){
       throw new ApiKeyLimitExceededException(request.getManagerId());
     }
 
-    // 2. API KEY 발급
+    // 4. API KEY 발급
     String keyValue = keyProvider.generateApiKey();
 
-    // 3. 저장
+    // 5. 저장
     Key key = Key.createKey(user, KeyType.API, keyValue);
     keyRepository.save(key);
 
-    // 4. 응답
+    // 6. 응답
     return ApiKeyIssueReponseDto.builder()
         .managerId(request.getManagerId())
         .apiKey(keyValue)
