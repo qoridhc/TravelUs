@@ -7,7 +7,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
@@ -22,12 +25,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@IdClass(TransactionHistoryId.class)
 public class TransactionHistory {
 
   //거래 기록 id
   @Id
   @Column(name = "transaction_history_id")
-  private Long Id;
+  private Long id;
 
   //거래 종류
   @Id
@@ -57,4 +61,7 @@ public class TransactionHistory {
 
   //잔액
   private double balance;
+
+  //메모
+  private String summary;
 }
