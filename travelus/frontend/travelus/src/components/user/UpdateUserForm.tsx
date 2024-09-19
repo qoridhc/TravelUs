@@ -241,7 +241,7 @@ const UpdateUserForm = () => {
           variant="outlined"
           value={inputs.address}
           onClick={() => {
-            navigate("/");
+            navigate("/userupdate/address");
           }}
           onChange={handleChange}
           error={errors.address}
@@ -260,7 +260,7 @@ const UpdateUserForm = () => {
               cursor: "pointer",
             },
             "& input": {
-              cursor: "pointer", // 입력 필드에 커서 스타일을 적용
+              cursor: "pointer",
             },
             "& .MuiFormHelperText-root": {
               fontSize: "0.7rem",
@@ -268,7 +268,15 @@ const UpdateUserForm = () => {
             },
           }}
         />
-        <button className="w-full px-5 text-[#1429A0] flex justify-end">비밀번호 변경</button>
+        <div className="w-full flex justify-end">
+          <button
+            onClick={() => {
+              navigate("/userupdate/password");
+            }}
+            className="w-auto px-5 text-[#1429A0]">
+            비밀번호 변경
+          </button>
+        </div>
       </Box>
     </>
   );

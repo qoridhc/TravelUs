@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import PhoneInput from "../../components/user/inputField/PhoneInput";
 import VerificationCodeInput from "../../components/user/inputField/VerificationCodeInput";
+import { IoIosArrowBack } from "react-icons/io";
 
 interface InputState {
   phone: string;
@@ -11,15 +12,18 @@ interface InputState {
 const UserPhoneUpdate = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  const stepList = [
-    "휴대폰 인증을 진행해주세요",
-    "전송된 인증번호를 입력해주세요",
-  ];
+  const stepList = ["휴대폰 인증을 진행해주세요", "전송된 인증번호를 입력해주세요"];
   const [isFormValid, setIsFormValid] = useState(false);
   const [inputs, setInputs] = useState<InputState>({
     phone: "",
     verificationCode: "",
   });
+
+  useEffect(() => {
+    const allFieldsFilled = Object.values(inputs).every((value) => value !== "");
+
+    setIsFormValid(allFieldsFilled);
+  }, [inputs]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -45,20 +49,35 @@ const UserPhoneUpdate = () => {
     //   console.error("Error sending verification code:", error);
     //   alert("인증 코드 발송 중 오류가 발생했습니다. 다시 시도해주세요.");
     // }
+    setStep(1);
   };
 
   return (
-    <div className="w-full min-h-screen p-5 bg-white flex flex-col justify-between">
-      <div className="flex flex-col space-y-5">
-        <div className="grid gap-8">
+    <div className="w-full min-h-screen p-5 pb-8 bg-white flex flex-col justify-between">
+      <div className="flex flex-col">
+        <div className="flex items-center mt-[0.14rem]">
+          <IoIosArrowBack
+            onClick={() => {
+              navigate("/userupdate");
+            }}
+            className="text-2xl"
+          />
+        </div>
+        <div className="grid gap-5">
           <div className="mt-16 text-2xl font-semibold">
             <p>{stepList[step]}</p>
           </div>
 
           <div className="grid gap-3">
-            <div className={`transition-transform duration-300 ease-in-out translate-y-[3px]`}>
-              <VerificationCodeInput labelName="인증번호 입력" name={inputs.verificationCode} onChange={handleChange} />
-            </div>
+            {step > 0 && (
+              <div className={`transition-transform duration-300 ease-in-out translate-y-[3px]`}>
+                <VerificationCodeInput
+                  labelName="인증번호 입력"
+                  name={inputs.verificationCode}
+                  onChange={handleChange}
+                />
+              </div>
+            )}
 
             <div className={`transition-transform duration-300 ease-in-out translate-y-[3px]`}>
               <PhoneInput
@@ -74,10 +93,10 @@ const UserPhoneUpdate = () => {
       <button
         className={`w-full py-3 text-white rounded-lg ${isFormValid ? "bg-[#1429A0]" : "bg-gray-300"}`}
         onClick={() => {
-          navigate("/signup/address");
+          navigate("/userupdate");
         }}
         disabled={!isFormValid}>
-        다음
+        확인
       </button>
     </div>
   );

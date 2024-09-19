@@ -7,12 +7,12 @@ const UserUpdate = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="w-full h-full p-5 bg-white flex flex-col justify-between">
+    <div className="w-full h-full p-5 pb-8 bg-white flex flex-col justify-between">
       <div className="flex flex-col space-y-10">
-        <div className="mt-1 flex space-x-1">
+        <div className="flex items-center space-x-1">
           <IoIosArrowBack
             onClick={() => {
-              navigate(-1);
+              navigate("/mypage");
             }}
             className="text-2xl"
           />
