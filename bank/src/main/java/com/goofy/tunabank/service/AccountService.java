@@ -34,7 +34,7 @@ public class AccountService {
         nextAccountId++;
 
         // 일반 계좌 생성
-        Currency currency = currencyRepository.findByCurrencyCode(CurrencyType.KOR);
+        Currency currency = currencyRepository.findByCurrencyCode(CurrencyType.KRW);
         Account generalAccount = createAccount(nextAccountId, currency, requestDto.getAccountType());
 
         // 계좌 save
