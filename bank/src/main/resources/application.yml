@@ -11,10 +11,8 @@ spring:
   config:
     import:
       - classpath:/yml/application-dev.yml
-    profiles:
-      group:
-        logging: dev
-      active: logging
+  profiles:
+    active: dev
 
   sql:
     init:
