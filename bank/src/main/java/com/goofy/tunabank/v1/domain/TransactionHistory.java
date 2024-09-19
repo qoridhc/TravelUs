@@ -7,12 +7,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -39,18 +36,10 @@ public class TransactionHistory {
   @Column(name = "transaction_type")
   private TransactionType transactionType;
 
-  //통장
+  //돈통 id
   @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumns({
-      @JoinColumn(name = "account_id", referencedColumnName = "account_id"),
-      @JoinColumn(name = "account_type", referencedColumnName = "account_type")
-  })
-  private Account account;
-
-  //가맹점
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(name = "merchant_id")
-  private Merchant merchant;
+  @JoinColumn(name = "money_box_id")
+  private MoneyBox moneyBox;
 
   //거래 일시
   @Column(name = "transaction_at")
@@ -64,4 +53,9 @@ public class TransactionHistory {
 
   //메모
   private String summary;
+
+//  //가맹점
+//  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//  @JoinColumn(name = "merchant_id")
+//  private Merchant merchant;
 }

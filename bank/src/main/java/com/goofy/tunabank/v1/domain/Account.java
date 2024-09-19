@@ -13,6 +13,7 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -32,33 +33,35 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @IdClass(AccountId.class)
 public class Account {
 
-    @Id
-    @Column(name = "account_id")
-    private Long id;
+  @Id
+  @Column(name = "account_id")
+  private Long id;
 
-    @Id
-    @Enumerated(EnumType.STRING)
-    @Column(name = "account_type")
-    private AccountType accountType;
+  private String accountNo;
 
-    private int bankCode;
+  private String accountPassword;
 
-    private String accountNo;
+  @CreatedDate
+  private LocalDateTime createdAt;
 
-    private String accountPassword;
+  @LastModifiedDate
+  private LocalDateTime updatedAt;
 
-    private double balance;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "account_type")
+  private AccountType accountType;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "bank_id")
+  private Bank bank;
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "currency_id")
+  private Currency currency;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "currency_id")
-    private Currency currency;
+  @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<TransactionHistory> transactionHistories;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TransactionHistory> transactionHistories;
+  @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<MoneyBox> moneyBoxes;
 }
