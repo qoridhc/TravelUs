@@ -9,8 +9,10 @@ import com.goofy.tunabank.v1.domain.MoneyBox;
 import com.goofy.tunabank.v1.dto.account.AccountDto;
 import com.goofy.tunabank.v1.dto.account.request.AddMoneyBoxRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
+import com.goofy.tunabank.v1.dto.account.request.InquireAccountRequestDto;
 import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
 import com.goofy.tunabank.v1.exception.account.DuplicateCurrencyException;
+import com.goofy.tunabank.v1.exception.account.InvalidAccountIdException;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountPasswordException;
 import com.goofy.tunabank.v1.exception.account.InvalidBankIdException;
 import com.goofy.tunabank.v1.exception.account.InvalidGroupAccountIdException;
@@ -147,10 +149,21 @@ public class AccountService {
 
     }
 
-//    // ==== 계좌 조회 ====
-//    public AccountDto getAccountByIdAndType(Long accountId, AccountType accountType) {
-//        Account account = accountRepository.findByIdAndAccountType(accountId, accountType).orElseThrow(() -> new InvalidAccountIdOrTypeException(accountId, accountType));
-//
-//        return accountMapper.toDto(account);
-//    }
+    // ==== 계좌 조회 ====
+    public AccountDto inquireAccount(InquireAccountRequestDto requestDto) {
+
+        Account account = accountRepository.findById(requestDto.getAccountId())
+            .orElseThrow(() -> new InvalidAccountIdException(requestDto.getAccountId()));
+
+        if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
+            throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
+        }
+
+        AccountDto accountDto = accountMapper.toDto(account);
+
+        List<MoneyBox> moneyBoxDtoList = account.getMoneyBoxes();
+        accountDto.setMoneyBoxDtos(moneyBoxMapper.toDtoList(moneyBoxDtoList));
+
+        return accountDto;
+    }
 }

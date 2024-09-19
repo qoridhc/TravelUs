@@ -27,4 +27,18 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 
         return Optional.ofNullable(result);
     }
+
+    @Override
+    public Optional<Account> fetchAccountWithMoneyBoxes(Long accountId) {
+        QAccount account = QAccount.account;
+        QMoneyBox moneyBox = QMoneyBox.moneyBox;
+
+        Account result = queryFactory.selectFrom(account)
+            .leftJoin(account.moneyBoxes, moneyBox).fetchJoin()  // MoneyBox 리스트를 조인하여 가져옴
+            .where(account.id.eq(accountId))
+            .fetchOne();
+
+        return Optional.ofNullable(result);
+    }
+
 }

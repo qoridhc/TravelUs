@@ -3,6 +3,7 @@ package com.goofy.tunabank.v1.controller;
 import com.goofy.tunabank.v1.dto.account.AccountDto;
 import com.goofy.tunabank.v1.dto.account.request.AddMoneyBoxRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
+import com.goofy.tunabank.v1.dto.account.request.InquireAccountRequestDto;
 import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
 import com.goofy.tunabank.v1.service.AccountService;
 import java.util.List;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 
 @Controller
@@ -49,18 +49,15 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
-//    // 계좌 조회
-//    @PostMapping("/inquireAccount")
-//    public ResponseEntity<AccountDto> inquireAccount(
-//        @RequestBody AddMoneyBoxRequestDto requestDto
-//    ) {
-//
-//        AccountDto responseDto = accountService.addAccountMoneyBox(requestDto);
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
-//    }
+    // 계좌 조회
+    @PostMapping("/inquireAccount")
+    public ResponseEntity<AccountDto> inquireAccount(
+        @RequestBody InquireAccountRequestDto requestDto
+    ) {
+        AccountDto responseDto = accountService.inquireAccount(requestDto);
 
-
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
 
 
 }

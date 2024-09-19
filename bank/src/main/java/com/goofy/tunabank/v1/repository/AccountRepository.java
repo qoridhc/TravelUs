@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AccountRepository extends JpaRepository<Account, Long>, AccountRepositoryCustom {
+
     // 간단한 JPA 쿼리 메소드
     Optional<Account> findById(Long accountId);
 }
