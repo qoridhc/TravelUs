@@ -19,4 +19,4 @@ INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat,
 INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (4,'이체 출금','BANK','주소',0,0);
 
 -- user 데이터 삽입
-INSERT IGNORE INTO `user` (email, role, is_exit, create_at, update_at, exit_at) VALUES ('heo_dongwon@naver.com', 'ADMIN', null, null, null, null)
+INSERT IGNORE INTO `user` (user_id, email, role, is_exit, create_at, update_at, exit_at) VALUES (1, 'heo_dongwon@naver.com', 'ADMIN', null, null, null, null);

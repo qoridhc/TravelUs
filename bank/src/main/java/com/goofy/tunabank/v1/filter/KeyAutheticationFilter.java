@@ -51,7 +51,7 @@ public class KeyAutheticationFilter extends OncePerRequestFilter {
       );
 
       // 키 존재 유무 검사
-      Key key = keyRepository.findByKeyValue(apiKey).orElseThrow(
+      Key key = keyRepository.findByKeyValueWithUser(apiKey).orElseThrow(
           () -> new ApiKeyNotFoundException(apiKey)
       );
 
@@ -60,14 +60,17 @@ public class KeyAutheticationFilter extends OncePerRequestFilter {
         Authentication auth = getAuthentication(key.getUser());
         SecurityContextHolder.getContext().setAuthentication(auth);
       }
+
     } catch (AuthException e) {
       LogUtil.warn(e.getInfo());
       cachedRequest.setAttribute("exceptionCode", e.getCode());
       cachedRequest.setAttribute("exceptionMsg", e.getMessage());  // cachedRequest에 예외 설정
+
     } catch (Exception e) {
       e.printStackTrace();
       cachedRequest.setAttribute("exceptionCode", "INTERNAL_SERVER_ERROR");
       cachedRequest.setAttribute("exceptionMsg", e.getMessage());  // cachedRequest에 예외 설정
+
     } finally {
       filterChain.doFilter(cachedRequest, response);
     }
