@@ -1,11 +1,15 @@
 package com.goofy.tunabank.v1.repository.transaction;
 
+import com.goofy.tunabank.v1.domain.Enum.AccountType;
 import com.goofy.tunabank.v1.domain.Enum.OrderByType;
+import com.goofy.tunabank.v1.domain.Enum.TransactionType;
 import com.goofy.tunabank.v1.domain.QTransactionHistory;
 import com.goofy.tunabank.v1.domain.TransactionHistory;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDto;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -24,43 +28,52 @@ public class TransactionHistoryCustomRepositoryImpl implements TransactionHistor
       TransactionHistoryRequestDto requestDto) {
     QTransactionHistory qTransactionHistory = QTransactionHistory.transactionHistory;
 
-    BooleanBuilder whereClause = new BooleanBuilder();
-
-    // 복합키 필드 (accountId와 accountType) 조건
-    if (requestDto.getAccountId() != null) {
-      whereClause.and(qTransactionHistory.account.id.eq(requestDto.getAccountId()));
-    }
-
-    if (requestDto.getAccountType() != null) {
-      whereClause.and(qTransactionHistory.account.accountType.eq(requestDto.getAccountType()));
-    }
-
-    // 거래 타입 조건 (null일 경우 전체 조회)
-    if (requestDto.getTransactionType() != null) {
-      whereClause.and(qTransactionHistory.transactionType.eq(requestDto.getTransactionType()));
-    }
-
-
-    // 거래 일시 범위 조건
-    if (requestDto.getStartDate() != null && requestDto.getEndDate() != null) {
-
-      LocalDateTime startDateTime = requestDto.getStartDate().atStartOfDay();
-      LocalDateTime endDateTime = requestDto.getEndDate().atTime(LocalTime.MAX);
-
-      whereClause.and(qTransactionHistory.transactionAt.between(startDateTime,
-          endDateTime));
-    }
-
-    // 정렬 기준
     List<TransactionHistory> transactionHistories = queryFactory
         .selectFrom(qTransactionHistory)
-        .where(whereClause)
-        .orderBy(
-            requestDto.getOrderByType() == OrderByType.ASC ? qTransactionHistory.transactionAt.asc()
-                : qTransactionHistory.transactionAt.desc())
+        .where(
+            accountIdEq(qTransactionHistory, requestDto.getAccountId()),
+            accountTypeEq(qTransactionHistory, requestDto.getAccountType()),
+            transactionTypeEq(qTransactionHistory, requestDto.getTransactionType()),
+            transactionDateRangeEq(qTransactionHistory, requestDto.getStartDate(),
+                requestDto.getEndDate())
+        )
+        .orderBy(getOrderByExpression(qTransactionHistory, requestDto.getOrderByType()))
         .fetch();
 
-    return
-        transactionHistories.isEmpty() ? Optional.empty() : Optional.of(transactionHistories);
+    return transactionHistories.isEmpty() ? Optional.empty() : Optional.of(transactionHistories);
+  }
+
+  private BooleanBuilder accountIdEq(QTransactionHistory qTransactionHistory, Long accountId) {
+    return accountId != null ? new BooleanBuilder(qTransactionHistory.account.id.eq(accountId))
+        : new BooleanBuilder();
+  }
+
+  private BooleanBuilder accountTypeEq(QTransactionHistory qTransactionHistory,
+      AccountType accountType) {
+    return accountType != null ? new BooleanBuilder(
+        qTransactionHistory.account.accountType.eq(accountType)) : new BooleanBuilder();
+  }
+
+  private BooleanBuilder transactionTypeEq(QTransactionHistory qTransactionHistory,
+      TransactionType transactionType) {
+    return transactionType != null ? new BooleanBuilder(
+        qTransactionHistory.transactionType.eq(transactionType)) : new BooleanBuilder();
+  }
+
+  private BooleanBuilder transactionDateRangeEq(QTransactionHistory qTransactionHistory,
+      LocalDate startDate, LocalDate endDate) {
+    if (startDate != null && endDate != null) {
+      LocalDateTime startDateTime = startDate.atStartOfDay();
+      LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+      return new BooleanBuilder(
+          qTransactionHistory.transactionAt.between(startDateTime, endDateTime));
+    }
+    return new BooleanBuilder();
+  }
+
+  private OrderSpecifier<LocalDateTime> getOrderByExpression(
+      QTransactionHistory qTransactionHistory, OrderByType orderByType) {
+    return orderByType == OrderByType.ASC ? qTransactionHistory.transactionAt.asc()
+        : qTransactionHistory.transactionAt.desc();
   }
 }
