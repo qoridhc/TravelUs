@@ -1,5 +1,6 @@
 package com.goofy.tunabank.v1.domain;
 
+import com.goofy.tunabank.v1.domain.Enum.KeyType;
 import com.goofy.tunabank.v1.domain.Enum.Role;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -44,5 +45,17 @@ public class User {
 
   @Column(name = "exit_at")
   private LocalDateTime exitAt;
+
+
+  public static User createUser(String email, Role role){
+    User user = new User();
+    user.email = email;
+    user.role = role;
+    user.isExit = false;
+    user.createdAt = LocalDateTime.now();
+    user.updateAt = LocalDateTime.now();
+    user.exitAt = null;
+    return user;
+  }
 
 }
