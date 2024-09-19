@@ -1,21 +1,21 @@
 spring:
-  mvc:
-    servlet:
-      path: /api
-    async:
-      request-timeout: 3000000
-
   application:
     name: backend
 
+  config:
+    import:
+      - classpath:/yml/application-v1.yml
+      - classpath:/yml/application-v2.yml
+      - classpath:/yml/application-dev.yml
+      - classpath:/yml/application-feature.yml
   profiles:
-    active: v2
+    active : v2, dev, feature
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://mysql:3306/soltravel?serverTimezone=Asia/Seoul&useUniCode=yes&characterEncoding=UTF-8
-    username: root
-    password: thfxmfpqmf225!@
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     hikari:
       pool-name: hikari-pool
       maximum-pool-size: 50
@@ -34,14 +34,6 @@ spring:
       host: redis
       port: 6379
 
-  # Flyway 설정
-  flyway:
-    enabled: true
-    locations: classpath:db/
-    baseline-on-migrate: true
-
-
-
   # JPA 설정  
   jpa:
     hibernate:
@@ -51,15 +43,6 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
         default_batch_fetch_size: 100 #fetch join 후 지연로딩하는 entity을 in 절로 미리 영속성 컨텍스트에 저장
-
-  # Multipart File 설정
-  servlet:
-    multipart:
-      enabled: true
-      file-size-threshold: 2KB
-      max-file-size: 10MB
-      max-request-size: 10MB
-
 
 # Log 출력 설정
 logging:
@@ -71,11 +54,6 @@ logging:
         SQL: debug
         type: trace
 
-# JWT 설정
-jwt:
-  secret: { JWT_SECRET_KEY }
-  expiration-time: 108000000
-
 # 프론트엔드 프로젝트 관련 환경 변수
 server:
   front:
@@ -85,13 +63,3 @@ server:
   servlet:
     session:
       timeout: 30m
-
-# S3 설정
-cloud:
-  aws:
-    s3:
-      bucket: my-s3-mingyu
-    stack:
-      auto: false
-    region:
-      static: ap-southeast-2

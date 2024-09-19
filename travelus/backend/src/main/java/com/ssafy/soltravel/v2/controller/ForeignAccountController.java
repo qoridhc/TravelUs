@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v2/account/foreign")
+@RequestMapping("/account/foreign")
 public class ForeignAccountController {
 
     private final AccountService accountService;

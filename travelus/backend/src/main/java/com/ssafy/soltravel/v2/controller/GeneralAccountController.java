@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v2/account/general")
+@RequestMapping("/account/general")
 public class GeneralAccountController {
 
     private final AccountService accountService;

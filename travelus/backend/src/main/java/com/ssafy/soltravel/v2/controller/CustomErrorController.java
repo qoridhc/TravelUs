@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CustomErrorController implements ErrorController {
 
-  @RequestMapping("/v2/error")
+  @RequestMapping("/error")
   @ResponseBody
   public String handleError() {
     return "Custom error message";

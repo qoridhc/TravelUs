@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Transactional
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v2/account")
+@RequestMapping("/account")
 public class ParticipantController {
 
     private final AccountService accountService;

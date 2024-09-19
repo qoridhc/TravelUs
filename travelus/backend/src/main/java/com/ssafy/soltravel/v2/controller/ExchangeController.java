@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v2/exchange")
+@RequestMapping("/exchange")
 @Slf4j
 @Tag(name = "Exchange API", description = "환전 관련 API")
 public class ExchangeController {

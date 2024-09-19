@@ -13,9 +13,12 @@ const UserPasswordInput: React.FC<UserPasswordInputProps> = ({ labelName, name, 
     <TextField
       sx={{
         width: "100%",
+        backgroundColor: "white",
+        borderRadius: "10px",
         "& .MuiInputBase-root": {
           backgroundColor: "white",
           height: "100%",
+          borderRadius: "inherit",
         },
         "& .MuiInputBase-input": {
           backgroundColor: "white",
