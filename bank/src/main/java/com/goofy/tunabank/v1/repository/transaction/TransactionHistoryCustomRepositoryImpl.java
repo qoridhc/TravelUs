@@ -1,4 +1,4 @@
-package com.goofy.tunabank.v1.repository.queryDSL;
+package com.goofy.tunabank.v1.repository.transaction;
 
 import com.goofy.tunabank.v1.domain.Enum.OrderByType;
 import com.goofy.tunabank.v1.domain.QTransactionHistory;

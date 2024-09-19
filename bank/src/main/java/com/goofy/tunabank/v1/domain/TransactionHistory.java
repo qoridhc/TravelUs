@@ -53,9 +53,4 @@ public class TransactionHistory {
 
   //메모
   private String summary;
-
-//  //가맹점
-//  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//  @JoinColumn(name = "merchant_id")
-//  private Merchant merchant;
 }

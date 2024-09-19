@@ -10,8 +10,8 @@ public class TransactionRequestDto {
   //계좌 Id
   private Long accountId;
 
-  //계좌 Type
-  private AccountType accountType;
+  //통화 Id
+  private int currencyId;
 
   //거래 타입
   private TransactionType transactionType;
