@@ -1,22 +1,17 @@
 import React, { useRef } from "react";
-import { useNavigate } from "react-router";
-import { IoIosArrowBack } from "react-icons/io";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { editUserInformation } from "../../redux/userInformationSlice";
+import { IoIosArrowBack } from "react-icons/io";
 import { userApi } from "../../api/user";
 import { IoCamera } from "react-icons/io5";
-
-interface UserData {
-  name: string;
-  birth: string;
-  phone: string;
-  email: string;
-  address: string;
-  profileImage: string;
-}
+import { UserInfo } from "../../types/userInformation";
 
 const MyPage = () => {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const dispatch = useDispatch();
+  const [userData, setUserData] = useState<UserInfo | null>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -33,6 +28,7 @@ const MyPage = () => {
         .fetchUser(userId)
         .then((response) => {
           setUserData(response.data); // API 응답 데이터를 상태로 설정
+          dispatch(editUserInformation(response.data)); // Redux 스토어에 유저 정보 저장
         })
         .catch((error) => {
           console.error("Failed to fetch user data: ", error);
@@ -75,7 +71,7 @@ const MyPage = () => {
         <div className="flex space-x-1 items-center">
           <IoIosArrowBack
             onClick={() => {
-              navigate(-1);
+              navigate("/");
             }}
             className="text-2xl"
           />
