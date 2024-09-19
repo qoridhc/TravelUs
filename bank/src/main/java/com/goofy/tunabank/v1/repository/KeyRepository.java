@@ -20,6 +20,14 @@ public class KeyRepository {
     return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
   }
 
+  public Optional<Key> findByKeyValueWithUser(String keyValue) {
+    List<Key> result = em.createQuery("select k from Key k join fetch k.user where k.value = :keyValue", Key.class)
+        .setParameter("keyValue", keyValue)
+        .getResultList();
+
+    return result.stream().findFirst();
+  }
+
   public void save(Key key) {
     em.persist(key);
   }
