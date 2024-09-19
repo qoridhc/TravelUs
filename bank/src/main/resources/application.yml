@@ -19,8 +19,6 @@ spring:
   config:
     import:
       - classpath:/yml/application-dev.yml
-  profiles:
-    active: dev
 
   data:
     redis:
