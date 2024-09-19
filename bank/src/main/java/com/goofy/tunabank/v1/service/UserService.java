@@ -1,9 +1,11 @@
 package com.goofy.tunabank.v1.service;
 
+import com.goofy.tunabank.v1.controller.UserDeleteResponseDto;
 import com.goofy.tunabank.v1.domain.Enum.KeyType;
 import com.goofy.tunabank.v1.domain.Enum.Role;
 import com.goofy.tunabank.v1.domain.Key;
 import com.goofy.tunabank.v1.domain.User;
+import com.goofy.tunabank.v1.dto.user.UserDeleteRequestDto;
 import com.goofy.tunabank.v1.dto.user.UserJoinRequestDto;
 import com.goofy.tunabank.v1.dto.user.UserJoinResponseDto;
 import com.goofy.tunabank.v1.dto.user.UserSearchRequestDto;
@@ -16,6 +18,7 @@ import com.goofy.tunabank.v1.provider.KeyProvider;
 import com.goofy.tunabank.v1.repository.KeyRepository;
 import com.goofy.tunabank.v1.repository.UserRepository;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,9 @@ public class UserService {
 
   private final UserMapper userMapper;
 
+  /*
+  * 회원 가입
+  * */
   public UserJoinResponseDto createUser(UserJoinRequestDto request) {
 
     // 1. 이메일 중복 검사
@@ -57,6 +63,9 @@ public class UserService {
     return userMapper.toUserJoinResponseDto(createdUser, createdKey);
   }
 
+  /*
+  * 유저 조회
+  * */
   public UserSearchResponseDto searchUser(UserSearchRequestDto request) {
 
     // 유저 조회
@@ -77,5 +86,18 @@ public class UserService {
 
     // 반환
     return userMapper.toUserSearchResponseDto(user, key);
+  }
+
+  public UserDeleteResponseDto deleteUser(UserDeleteRequestDto request) {
+
+    // 유저 조회
+    User user = userRepository.findByEmail(request.getUserId()).orElseThrow(
+        () -> new UserNotFoundException(request.getUserId())
+    );
+
+    // 키 검증
+//    if(user.getValidUserKey().isPresent()) {}
+
+    return null;
   }
 }

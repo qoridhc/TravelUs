@@ -1,11 +1,13 @@
 package com.goofy.tunabank.v1.controller;
 
+import com.goofy.tunabank.v1.dto.user.UserDeleteRequestDto;
 import com.goofy.tunabank.v1.dto.user.UserJoinRequestDto;
 import com.goofy.tunabank.v1.dto.user.UserJoinResponseDto;
 import com.goofy.tunabank.v1.dto.user.UserSearchRequestDto;
 import com.goofy.tunabank.v1.dto.user.UserSearchResponseDto;
 import com.goofy.tunabank.v1.service.UserService;
 import com.goofy.tunabank.v1.util.LogUtil;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -33,7 +35,13 @@ public class UserController {
   public ResponseEntity searchUser(@RequestBody UserSearchRequestDto request){
     LogUtil.info("유저 조회 요청", request.getUserId());
     UserSearchResponseDto response = userService.searchUser(request);
-    return new ResponseEntity(response, HttpStatus.CREATED);
+    return new ResponseEntity(response, HttpStatus.OK);
   }
 
+  @PostMapping("/delete")
+  public ResponseEntity deleteUser(@RequestBody UserDeleteRequestDto request){
+    LogUtil.info("유저 삭제 요청", request.getUserId());
+    UserDeleteResponseDto response = userService.deleteUser(request);
+    return new ResponseEntity(response, HttpStatus.OK);
+  }
 }
