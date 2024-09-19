@@ -33,6 +33,7 @@ import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
 import Transaction from "./pages/transaction/Transaction";
 import PrivateRoute from "./pages/user/PrivateRoute";
 import { Sign } from "crypto";
+import SelectSettlementAmount from "./pages/settlement/SelectSettlementAmount";
 
 function App() {
   return (
@@ -56,7 +57,7 @@ function App() {
 
                       {/* 가계부 */}
                       <Route path="/accountbookdetail" element={<AccountBookDetail />} />
-                      
+
                       {/* 환율 */}
                       <Route path="/exchangerate" element={<ExchangeRate />} />
                       {/* Add other protected routes here */}
@@ -97,9 +98,12 @@ function App() {
           {/* 환전 */}
           <Route path="/exchange" element={<Exchange />}></Route>
           <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
-          <Route path="/settlement" element={<Settlement />}></Route>
           <Route path="/detail" element={<Detail />}></Route>
           <Route path="/transaction" element={<Transaction />}></Route>
+
+          {/* 정산 */}
+          <Route path="/selectsettlementamount" element={<SelectSettlementAmount />}></Route>
+          <Route path="/settlement" element={<Settlement />}></Route>
         </Routes>
       </BrowserRouter>
     </div>
