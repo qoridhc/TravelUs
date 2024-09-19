@@ -112,7 +112,7 @@ public class AccountService {
         return (10 - (sum % 10)) % 10;
     }
 
-    public AccountDto addAccountMoneyBox(AddMoneyBoxRequestDto requestDto){
+    public List<MoneyBoxDto> addAccountMoneyBox(AddMoneyBoxRequestDto requestDto){
 
         Account account = accountRepository.findGroupAccountById(requestDto.getAccountId())
             .orElseThrow(() -> new InvalidGroupAccountIdException(requestDto.getAccountId()));
@@ -133,16 +133,10 @@ public class AccountService {
         List<MoneyBox> moneyBoxList = account.getMoneyBoxes();
         moneyBoxList.add(moneyBox);
 
-        AccountDto accountDto = accountMapper.toDto(account);
-        accountDto.setMoneyBoxDtos(moneyBoxMapper.toDtoList(moneyBoxList));
-
-        return accountDto;
+        return moneyBoxMapper.toDtoList(moneyBoxList);
 
     }
 
-
-
-//
 //    // ==== 계좌 조회 ====
 //    public AccountDto getAccountByIdAndType(Long accountId, AccountType accountType) {
 //        Account account = accountRepository.findByIdAndAccountType(accountId, accountType).orElseThrow(() -> new InvalidAccountIdOrTypeException(accountId, accountType));

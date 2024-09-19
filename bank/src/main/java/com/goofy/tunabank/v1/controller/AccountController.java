@@ -3,7 +3,9 @@ package com.goofy.tunabank.v1.controller;
 import com.goofy.tunabank.v1.dto.account.AccountDto;
 import com.goofy.tunabank.v1.dto.account.request.AddMoneyBoxRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
+import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
 import com.goofy.tunabank.v1.service.AccountService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,26 +40,27 @@ public class AccountController {
 
     // 모임 통장 머니박스 추가
     @PostMapping("/addMoneyBox")
-    public ResponseEntity<AccountDto> addAccountMoneyBox(
+    public ResponseEntity<List<MoneyBoxDto>> addAccountMoneyBox(
         @RequestBody AddMoneyBoxRequestDto requestDto
     ) {
 
-        AccountDto responseDto = accountService.addAccountMoneyBox(requestDto);
+        List<MoneyBoxDto> responseDto = accountService.addAccountMoneyBox(requestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
-
-
-//    @GetMapping("/{accountId}")
-//    public ResponseEntity<AccountDto> getAccountByIdAndType(
-//        @PathVariable Long accountId,
-//        @RequestBody GetAccountRequestDto requestDto
+//    // 계좌 조회
+//    @PostMapping("/inquireAccount")
+//    public ResponseEntity<AccountDto> inquireAccount(
+//        @RequestBody AddMoneyBoxRequestDto requestDto
 //    ) {
 //
-//        AccountDto responseDto = accountService.getAccountByIdAndType(accountId, requestDto.getAccountType());
+//        AccountDto responseDto = accountService.addAccountMoneyBox(requestDto);
 //
 //        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 //    }
+
+
+
 
 }
