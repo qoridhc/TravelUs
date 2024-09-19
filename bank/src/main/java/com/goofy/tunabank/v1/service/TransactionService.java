@@ -11,9 +11,9 @@ import com.goofy.tunabank.v1.dto.transaction.response.TransferResponseDto;
 import com.goofy.tunabank.v1.exception.transaction.InsufficientBalanceException;
 import com.goofy.tunabank.v1.exception.transaction.InvalidTransactionTypeException;
 import com.goofy.tunabank.v1.exception.transaction.InvalidWithdrawalAmountException;
+import com.goofy.tunabank.v1.exception.transaction.MoneyBoxNotFoundException;
 import com.goofy.tunabank.v1.exception.transaction.TransactionHistoryNotFoundException;
 import com.goofy.tunabank.v1.mapper.TransactionMapper;
-import com.goofy.tunabank.v1.repository.AccountRepository;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
 import com.goofy.tunabank.v1.repository.transaction.TransactionHistoryRepository;
 import java.time.LocalDateTime;
@@ -28,32 +28,31 @@ import org.springframework.transaction.annotation.Transactional;
 public class TransactionService {
 
   private final TransactionHistoryRepository transactionHistoryRepository;
-  private final AccountRepository accountRepository;
   private final MoneyBoxRepository moneyBoxRepository;
   private final TransactionMapper transactionMapper;
+  private static final int KRW_CURRENCY_ID = 1;
 
   /**
-   * 입금 및 출금
+   * 입금 및 출금(원화, 외화)
    */
   @Transactional
   public TransactionResponseDto processTransaction(TransactionRequestDto requestDto) {
 
     Long accountId = requestDto.getAccountId();
     int currencyId = requestDto.getCurrencyId();
-    MoneyBox moneyBox=moneyBoxRepository.findMoneyBoxByAccountAndCurrency(accountId, currencyId);
+    MoneyBox moneyBox = moneyBoxRepository.findMoneyBoxByAccountAndCurrency(accountId, currencyId)
+        .orElseThrow(() -> new MoneyBoxNotFoundException(accountId, currencyId));
 
     TransactionType transactionType = requestDto.getTransactionType();
     double amount = requestDto.getTransactionBalance();
     double afterBalance = 0L;
 
     // 입금 또는 출금 처리
-    if (transactionType == TransactionType.D) {
-      afterBalance = processDeposit(moneyBox, amount);
-    } else if (transactionType == TransactionType.W) {
-      afterBalance = processWithdrawal(moneyBox, amount);
-    } else {
-      throw new InvalidTransactionTypeException(transactionType);
-    }
+    afterBalance = switch (transactionType) {
+      case D -> processDeposit(moneyBox, amount);
+      case W -> processWithdrawal(moneyBox, amount);
+      default -> throw new InvalidTransactionTypeException(transactionType);
+    };
 
     // 거래 기록을 위한 다음 id값 추출
     Long nextId = transactionHistoryRepository.findMaxAccountId();
@@ -62,12 +61,11 @@ public class TransactionService {
     }
     nextId++;
 
-
     TransactionHistory transactionHistory = TransactionHistory.builder()
         .id(nextId)
         .transactionType(transactionType)
         .moneyBox(moneyBox)
-        .transactionAt(LocalDateTime.now())
+        .transactionAt(requestDto.getHeader().getTransmissionDateTime())
         .amount(amount)
         .balance(afterBalance)
         .summary(requestDto.getTransactionSummary())
@@ -78,21 +76,27 @@ public class TransactionService {
   }
 
   /**
-   * 이체 처리
+   * 이체 처리 :: 원화만 가능
    */
   @Transactional
   public TransferResponseDto processTransfer(TransferRequestDto requestDto) {
 
-    Long withdrawalAccountId = requestDto.getWithdrawalAccountId();
-    Long depositAccountId = requestDto.getDepositAccountId();
+    long withdrawalAccountId = requestDto.getWithdrawalAccountId();
+    long depositAccountId = requestDto.getDepositAccountId();
     double amount = requestDto.getTransactionBalance();
-    String summary = requestDto.getTransactionSummary();
 
-    // 출금 돈통
-    MoneyBox withdrawalBox = moneyBoxRepository.findMoneyBoxByAccountAndCurrency(withdrawalAccountId,1);
+    String withdrawalSummary = requestDto.getWithdrawalTransactionSummary();
+    String depositSummary = requestDto.getDepositTransactionSummary();
 
-    // 입금 돈통
-    MoneyBox depositBox = moneyBoxRepository.findMoneyBoxByAccountAndCurrency(depositAccountId,1);
+    // 출금 머니박스
+    MoneyBox withdrawalBox = moneyBoxRepository.findMoneyBoxByAccountAndCurrency(
+            withdrawalAccountId, KRW_CURRENCY_ID)
+        .orElseThrow(() -> new MoneyBoxNotFoundException(withdrawalAccountId, KRW_CURRENCY_ID));
+
+    // 입금 머니박스
+    MoneyBox depositBox = moneyBoxRepository.findMoneyBoxByAccountAndCurrency(depositAccountId,
+            KRW_CURRENCY_ID)
+        .orElseThrow(() -> new MoneyBoxNotFoundException(withdrawalAccountId, KRW_CURRENCY_ID));
 
     // 출금 처리
     double withdrawalAfterBalance = processWithdrawal(withdrawalBox, amount);
@@ -107,28 +111,33 @@ public class TransactionService {
     }
     nextId++;
 
+    LocalDateTime transmissionDateTime = requestDto.getHeader().getTransmissionDateTime();
+
     // 출금 기록 저장
     TransactionHistory withdrawalTransactionHistory = TransactionHistory.builder()
         .id(nextId)
         .transactionType(TransactionType.TW)
         .moneyBox(withdrawalBox)
-        .transactionAt(LocalDateTime.now())//TODO:추후변경예정
+        .transactionAccountNo(depositBox.getAccount().getAccountNo())//상대 계좌
+        .transactionAt(transmissionDateTime)
         .amount(amount)
         .balance(withdrawalAfterBalance)
-        .summary(summary).build();
+        .summary(withdrawalSummary)
+        .build();
     TransactionHistory withdrawalTh = transactionHistoryRepository.save(
         withdrawalTransactionHistory);
-
 
     // 입금 기록 저장
     TransactionHistory depositTransactionHistory = TransactionHistory.builder()
         .id(nextId)
         .transactionType(TransactionType.TD)
         .moneyBox(depositBox)
-        .transactionAt(LocalDateTime.now())//TODO:추후변경예정
+        .transactionAccountNo(withdrawalBox.getAccount().getAccountNo())
+        .transactionAt(transmissionDateTime)
         .amount(amount)
-        .balance(depositAfterBalance).build();
-    //TODO: summary 넣을것인가?
+        .balance(depositAfterBalance)
+        .summary(depositSummary)
+        .build();
     TransactionHistory depositTh = transactionHistoryRepository.save(depositTransactionHistory);
 
     // response 변환
@@ -141,6 +150,7 @@ public class TransactionService {
   @Transactional(readOnly = true)
   public List<TransactionResponseDto> getTransactionHistory(
       TransactionHistoryRequestDto requestDto) {
+
     List<TransactionHistory> transactionHistories = transactionHistoryRepository.findByCustomOrder(
         requestDto).orElseThrow(TransactionHistoryNotFoundException::new);
 
