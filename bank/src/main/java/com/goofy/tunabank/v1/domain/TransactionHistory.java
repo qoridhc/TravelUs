@@ -41,6 +41,10 @@ public class TransactionHistory {
   @JoinColumn(name = "money_box_id")
   private MoneyBox moneyBox;
 
+  //상대 계좌 번호
+  @JoinColumn(name="transaction_account_no")
+  private String transactionAccountNo;
+
   //거래 일시
   @Column(name = "transaction_at")
   private LocalDateTime transactionAt;

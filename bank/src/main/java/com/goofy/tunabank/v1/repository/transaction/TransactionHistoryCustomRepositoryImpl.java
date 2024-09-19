@@ -1,6 +1,5 @@
 package com.goofy.tunabank.v1.repository.transaction;
 
-import com.goofy.tunabank.v1.domain.Enum.AccountType;
 import com.goofy.tunabank.v1.domain.Enum.OrderByType;
 import com.goofy.tunabank.v1.domain.Enum.TransactionType;
 import com.goofy.tunabank.v1.domain.QTransactionHistory;
@@ -31,8 +30,7 @@ public class TransactionHistoryCustomRepositoryImpl implements TransactionHistor
     List<TransactionHistory> transactionHistories = queryFactory
         .selectFrom(qTransactionHistory)
         .where(
-            accountIdEq(qTransactionHistory, requestDto.getAccountId()),
-            accountTypeEq(qTransactionHistory, requestDto.getAccountType()),
+            moneyBoxIdEq(qTransactionHistory, requestDto.getMoneyBoxId()),
             transactionTypeEq(qTransactionHistory, requestDto.getTransactionType()),
             transactionDateRangeEq(qTransactionHistory, requestDto.getStartDate(),
                 requestDto.getEndDate())
@@ -43,15 +41,9 @@ public class TransactionHistoryCustomRepositoryImpl implements TransactionHistor
     return transactionHistories.isEmpty() ? Optional.empty() : Optional.of(transactionHistories);
   }
 
-  private BooleanBuilder accountIdEq(QTransactionHistory qTransactionHistory, Long accountId) {
-    return accountId != null ? new BooleanBuilder(qTransactionHistory.account.id.eq(accountId))
+  private BooleanBuilder moneyBoxIdEq(QTransactionHistory qTransactionHistory, Long moneyBoxId) {
+    return moneyBoxId != null ? new BooleanBuilder(qTransactionHistory.moneyBox.id.eq(moneyBoxId))
         : new BooleanBuilder();
-  }
-
-  private BooleanBuilder accountTypeEq(QTransactionHistory qTransactionHistory,
-      AccountType accountType) {
-    return accountType != null ? new BooleanBuilder(
-        qTransactionHistory.account.accountType.eq(accountType)) : new BooleanBuilder();
   }
 
   private BooleanBuilder transactionTypeEq(QTransactionHistory qTransactionHistory,
