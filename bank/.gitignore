@@ -13,6 +13,7 @@ api-key.txt
 
 /src/main/resources/yml/application-dev.yml
 
+
 ### STS ###
 .apt_generated
 .classpath
