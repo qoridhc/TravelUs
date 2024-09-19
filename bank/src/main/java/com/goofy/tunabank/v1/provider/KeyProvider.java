@@ -8,6 +8,7 @@ import com.goofy.tunabank.v1.repository.KeyRepository;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -47,9 +48,7 @@ public class KeyProvider {
   }
 
   public String generateUserKey() {
-    byte[] salt = new byte[16]; // 16 바이트 Salt 생성
-    secureRandom.nextBytes(salt);
-    return Base64.getEncoder().encodeToString(salt);
+    return UUID.randomUUID().toString();
   }
 
 
