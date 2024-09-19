@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Transaction API", description = "거래 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v2/transaction")
+@RequestMapping("/transaction")
 public class TransactionController {
 
     private final TransactionService transactionService;

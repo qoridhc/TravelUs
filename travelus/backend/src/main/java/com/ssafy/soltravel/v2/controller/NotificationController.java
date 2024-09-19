@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
-@RequestMapping("/v2/notification")
+@RequestMapping("/notification")
 @RequiredArgsConstructor
 @Tag(name = "Notification API", description = "알림 관련 API")
 public class NotificationController {
