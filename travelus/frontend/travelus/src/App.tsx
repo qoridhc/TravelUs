@@ -7,6 +7,9 @@ import SignUpBasicInformation from "./pages/user/SignUpBasicInformation";
 import SignUpAddress from "./pages/user/SignUpAddress";
 import MyPage from "./pages/user/MyPage";
 import UserUpdate from "./pages/user/UserUpdate";
+import UserPhoneUpdate from "./pages/user/UserPhoneUpdate";
+import UserAddressUpdate from "./pages/user/UserAddressUpdate";
+import UserPasswordUpdate from "./pages/user/UserPasswordUpdate";
 import MeetingAccountList from "./pages/account/MeetingAccountList";
 import MeetingAccountDetail from "./pages/account/MeetingAccountDetail";
 import JoinedMeetingAccountDetail from "./pages/account/JoinedMeetingAccountDetail";
@@ -64,6 +67,9 @@ function App() {
           <Route path="/signup/address" element={<SignUpAddress />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/userupdate" element={<UserUpdate />} />
+          <Route path="/userupdate/phone" element={<UserPhoneUpdate />} />
+          <Route path="/userupdate/address" element={<UserAddressUpdate />} />
+          <Route path="/userupdate/password" element={<UserPasswordUpdate />} />
 
           <Route path="/accountcreate" element={<AccountCreate />} />
           <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />} />
