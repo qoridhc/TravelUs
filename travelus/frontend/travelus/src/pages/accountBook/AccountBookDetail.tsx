@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DropdownInput from "../../components/accountBook/DropdownInput";
-import MeetingAccount from "../../components/account/MeetingAccount";
+import MeetingAccount from "../../components/account/MeetingAccountOld";
 import AccountBookCalendar from "../../components/accountBook/AccountBookCalendar";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
@@ -19,7 +19,6 @@ const AccountBookDetail = () => {
     setAccountIndex(accountIndex);
     setAccountNo(accountNo);
   };
-
 
   return (
     <div>
