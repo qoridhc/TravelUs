@@ -13,10 +13,10 @@ INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_ra
 INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate) VALUES ('5','CNY', 5, 180.0);
 
 -- merchant 데이터 삽입
-INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (1,'입금','OTHER','주소',0,0);
-INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (2,'출금','OTHER','주소',0,0);
-INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (3,'이체 입금','OTHER','주소',0,0);
-INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (4,'이체 출금','OTHER','주소',0,0);
+INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (1,'입금','BANK','주소',0,0);
+INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (2,'출금','BANK','주소',0,0);
+INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (3,'이체 입금','BANK','주소',0,0);
+INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (4,'이체 출금','BANK','주소',0,0);
 
 -- user 데이터 삽입
 INSERT IGNORE INTO `user` (email, role, is_exit, create_at, update_at, exit_at) VALUES ('heo_dongwon@naver.com', 'ADMIN', null, null, null, null)

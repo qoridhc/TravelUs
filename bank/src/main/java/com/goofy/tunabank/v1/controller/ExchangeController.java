@@ -3,7 +3,6 @@ package com.goofy.tunabank.v1.controller;
 import com.goofy.tunabank.v1.dto.exchange.ExchangeRateCacheDTO;
 import com.goofy.tunabank.v1.service.ExchangeService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/exchange")
-@Slf4j
 public class ExchangeController {
 
   private final ExchangeService exchangeService;
