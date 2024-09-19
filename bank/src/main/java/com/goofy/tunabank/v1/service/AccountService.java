@@ -10,6 +10,7 @@ import com.goofy.tunabank.v1.dto.account.AccountDto;
 import com.goofy.tunabank.v1.dto.account.request.AddMoneyBoxRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
 import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
+import com.goofy.tunabank.v1.exception.account.DuplicateCurrencyException;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountPasswordException;
 import com.goofy.tunabank.v1.exception.account.InvalidBankIdException;
 import com.goofy.tunabank.v1.exception.account.InvalidGroupAccountIdException;
@@ -42,7 +43,8 @@ public class AccountService {
         // 일반 계좌 생성
         Currency currency = currencyRepository.findByCurrencyCode(CurrencyType.KRW);
 
-        Bank bank = bankRepository.findById(requestDto.getBankId()).orElseThrow(() -> new InvalidBankIdException(requestDto.getBankId()));
+        Bank bank = bankRepository.findById(requestDto.getBankId())
+            .orElseThrow(() -> new InvalidBankIdException(requestDto.getBankId()));
 
         Account generalAccount = Account.builder()
             .bank(bank)
@@ -112,13 +114,21 @@ public class AccountService {
         return (10 - (sum % 10)) % 10;
     }
 
-    public List<MoneyBoxDto> addAccountMoneyBox(AddMoneyBoxRequestDto requestDto){
+    public List<MoneyBoxDto> addAccountMoneyBox(AddMoneyBoxRequestDto requestDto) {
 
         Account account = accountRepository.findGroupAccountById(requestDto.getAccountId())
             .orElseThrow(() -> new InvalidGroupAccountIdException(requestDto.getAccountId()));
 
-        if(!account.getAccountPassword().equals(requestDto.getAccountPassword()))
+        if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
             throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
+        }
+
+        boolean isExistCurrencyCode = account.getMoneyBoxes().stream()
+            .anyMatch(v -> v.getCurrency().getCurrencyCode().equals(requestDto.getCurrencyCode()));
+
+        if (isExistCurrencyCode) {
+            throw new DuplicateCurrencyException(requestDto.getCurrencyCode());
+        }
 
         Currency currency = currencyRepository.findByCurrencyCode(requestDto.getCurrencyCode());
 
