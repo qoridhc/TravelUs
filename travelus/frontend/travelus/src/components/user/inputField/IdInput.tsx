@@ -11,13 +11,17 @@ interface NameInputProps {
 
 const IdInput: React.FC<NameInputProps> = ({ labelName, name, error, onChange, handleIsIdDuplicated }) => {
   return (
-    <div className="flex items-start space-x-3">
+    <div className="flex justify-between items-start space-x-3">
       <TextField
+        className="w-full"
         sx={{
-          width: "75%",
+          width: "100%",
+          backgroundColor: "white",
+          borderRadius: "10px",
           "& .MuiInputBase-root": {
             backgroundColor: "white",
             height: "100%",
+            borderRadius: "inherit",
           },
           "& .MuiInputBase-input": {
             backgroundColor: "white",
@@ -48,7 +52,7 @@ const IdInput: React.FC<NameInputProps> = ({ labelName, name, error, onChange, h
       />
       <button
         onClick={handleIsIdDuplicated}
-        className="h-[3.9rem] px-3 p-2 bg-[#1429A0] border rounded-lg text-white text-sm">
+        className="w-24 h-[3.9rem] px-3 p-2 bg-[#1429A0] border rounded-lg text-white text-sm">
         중복확인
       </button>
     </div>

@@ -4,8 +4,8 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
- 
-src/main/resources/application-*.yml
+
+src/main/resources/yml/application-dev.yml
 
 src/main/resources/api-key.txt
 
