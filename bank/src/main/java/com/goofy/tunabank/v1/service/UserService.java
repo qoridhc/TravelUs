@@ -46,7 +46,10 @@ public class UserService {
 
     // 5. 응답
     return UserJoinResponseDto.builder()
-        .message("userService")
+        .userId(createdUser.getEmail())
+        .userKey(createdKey.getValue())
+        .created(createdUser.getCreatedAt())
+        .modified(createdUser.getUpdateAt())
         .build();
   }
 }
