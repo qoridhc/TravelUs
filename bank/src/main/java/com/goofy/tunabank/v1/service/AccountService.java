@@ -7,9 +7,12 @@ import com.goofy.tunabank.v1.domain.Enum.AccountType;
 import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
 import com.goofy.tunabank.v1.domain.MoneyBox;
 import com.goofy.tunabank.v1.dto.account.AccountDto;
+import com.goofy.tunabank.v1.dto.account.request.AddMoneyBoxRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
 import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
+import com.goofy.tunabank.v1.exception.account.InvalidAccountPasswordException;
 import com.goofy.tunabank.v1.exception.account.InvalidBankIdException;
+import com.goofy.tunabank.v1.exception.account.InvalidGroupAccountIdException;
 import com.goofy.tunabank.v1.mapper.AccountMapper;
 import com.goofy.tunabank.v1.mapper.MoneyBoxMapper;
 import com.goofy.tunabank.v1.repository.AccountRepository;
@@ -67,8 +70,6 @@ public class AccountService {
         return generalAccountDto;
     }
 
-
-
     private String createAccountNumber(AccountType accountType) {
 
         // 계좌 종류 고유값
@@ -110,6 +111,37 @@ public class AccountService {
         // 10으로 나누어 떨어지게 하는 숫자 반환
         return (10 - (sum % 10)) % 10;
     }
+
+    public AccountDto addAccountMoneyBox(AddMoneyBoxRequestDto requestDto){
+
+        Account account = accountRepository.findGroupAccountById(requestDto.getAccountId())
+            .orElseThrow(() -> new InvalidGroupAccountIdException(requestDto.getAccountId()));
+
+        if(!account.getAccountPassword().equals(requestDto.getAccountPassword()))
+            throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
+
+        Currency currency = currencyRepository.findByCurrencyCode(requestDto.getCurrencyCode());
+
+        MoneyBox moneyBox = MoneyBox.builder()
+            .account(account)
+            .balance(0.0)
+            .currency(currency)
+            .build();
+
+        moneyBoxRepository.save(moneyBox);
+
+        List<MoneyBox> moneyBoxList = account.getMoneyBoxes();
+        moneyBoxList.add(moneyBox);
+
+        AccountDto accountDto = accountMapper.toDto(account);
+        accountDto.setMoneyBoxDtos(moneyBoxMapper.toDtoList(moneyBoxList));
+
+        return accountDto;
+
+    }
+
+
+
 //
 //    // ==== 계좌 조회 ====
 //    public AccountDto getAccountByIdAndType(Long accountId, AccountType accountType) {

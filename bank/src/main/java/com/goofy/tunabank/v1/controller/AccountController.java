@@ -1,6 +1,7 @@
 package com.goofy.tunabank.v1.controller;
 
 import com.goofy.tunabank.v1.dto.account.AccountDto;
+import com.goofy.tunabank.v1.dto.account.request.AddMoneyBoxRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
 import com.goofy.tunabank.v1.service.AccountService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class AccountController {
 
     // 일반 계좌 생성 ( 개인 or 모임 )
     @PostMapping("/{userId}")
-    public ResponseEntity<AccountDto> crateNewAccount(
+    public ResponseEntity<AccountDto> createNewAccount(
         @PathVariable Long userId,
         @RequestBody CreateGeneralAccountRequestDto requestDto
     ) {
@@ -34,6 +35,19 @@ public class AccountController {
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
+
+    // 모임 통장 머니박스 추가
+    @PostMapping("/addMoneyBox")
+    public ResponseEntity<AccountDto> addAccountMoneyBox(
+        @RequestBody AddMoneyBoxRequestDto requestDto
+    ) {
+
+        AccountDto responseDto = accountService.addAccountMoneyBox(requestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
+
 
 //    @GetMapping("/{accountId}")
 //    public ResponseEntity<AccountDto> getAccountByIdAndType(
