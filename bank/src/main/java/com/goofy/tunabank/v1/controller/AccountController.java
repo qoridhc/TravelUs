@@ -1,15 +1,12 @@
 package com.goofy.tunabank.v1.controller;
 
 import com.goofy.tunabank.v1.dto.account.AccountDto;
-import com.goofy.tunabank.v1.dto.account.request.CreateAccountRequestDto;
-import com.goofy.tunabank.v1.dto.account.request.GetAccountRequestDto;
-import com.goofy.tunabank.v1.dto.account.response.CreateAccountResponseDto;
+import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
 import com.goofy.tunabank.v1.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,27 +23,27 @@ public class AccountController {
 
     private final AccountService accountService;
 
-    // 계좌 생성
+    // 일반 계좌 생성 ( 개인 or 모임 )
     @PostMapping("/{userId}")
-    public ResponseEntity<CreateAccountResponseDto> crateNewAccount(
+    public ResponseEntity<AccountDto> crateNewAccount(
         @PathVariable Long userId,
-        @RequestBody CreateAccountRequestDto requestDto
+        @RequestBody CreateGeneralAccountRequestDto requestDto
     ) {
 
-        CreateAccountResponseDto responseDto = accountService.crateNewAccount(requestDto);
+        AccountDto responseDto = accountService.createGeneralAccount(requestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
-    @GetMapping("/{accountId}")
-    public ResponseEntity<AccountDto> getAccountByIdAndType(
-        @PathVariable Long accountId,
-        @RequestBody GetAccountRequestDto requestDto
-    ) {
-
-        AccountDto responseDto = accountService.getAccountByIdAndType(accountId, requestDto.getAccountType());
-
-        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
-    }
+//    @GetMapping("/{accountId}")
+//    public ResponseEntity<AccountDto> getAccountByIdAndType(
+//        @PathVariable Long accountId,
+//        @RequestBody GetAccountRequestDto requestDto
+//    ) {
+//
+//        AccountDto responseDto = accountService.getAccountByIdAndType(accountId, requestDto.getAccountType());
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+//    }
 
 }
