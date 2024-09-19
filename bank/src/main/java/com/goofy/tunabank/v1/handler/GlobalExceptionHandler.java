@@ -1,6 +1,7 @@
 package com.goofy.tunabank.v1.handler;
 
 import com.goofy.tunabank.v1.dto.ErrorResponseDto;
+import com.goofy.tunabank.v1.exception.CustomException;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountIdOrTypeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,5 +34,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidAccountIdOrTypeException.class)
     public ResponseEntity<ErrorResponseDto> handleInvalidAccountIdException(Exception e) {
         return buildErrorResponse(e,null, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ErrorResponseDto> handleCustomException(CustomException e) {
+        return buildErrorResponse(e, e.getCode(), HttpStatus.valueOf(e.getStatus()));
     }
 }
