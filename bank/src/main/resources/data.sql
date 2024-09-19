@@ -20,8 +20,8 @@ INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat,
 
 -- user 데이터 삽입
 INSERT IGNORE INTO user (user_id, email, role, is_exit, create_at, update_at, exit_at) VALUES (1, 'heo_dongwon@naver.com', 'ADMIN', null, null, null, null);
-
 INSERT IGNORE INTO user (user_id, email, role, is_exit, create_at, update_at, exit_at) VALUES (2, '2pearl522@gmail.com', 'ADMIN', null, null, null, null);
+INSERT IGNORE INTO user (user_id, email, role, is_exit, create_at, update_at, exit_at) VALUES (3, 'lsh@gmail.com', 'ADMIN', null, null, null, null);
 
 
 -- bank 데이터 삽입
