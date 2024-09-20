@@ -16,9 +16,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://j11d209.p.ssafy.io:2020/travelus?serverTimezone=Asia/Seoul&useUniCode=yes&characterEncoding=UTF-8
-    username: travelus
-    password: travelus209
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     hikari:
       pool-name: hikari-pool
       maximum-pool-size: 50
@@ -32,15 +32,23 @@ spring:
   sql:
     init:
       mode: always
+
   data:
     redis:
       host: redis
+      password: ${REDIS_PASSWORD}
       port: 6379
 
-  # JPA 설정  
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
+
+    # JPA 설정
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
@@ -60,12 +68,12 @@ logging:
 ## 프론트엔드 프로젝트 관련 환경 변수
 server:
   front:
-    url: http://localhost:3000
-  port: 8085
-
-  servlet:
-    session:
-      timeout: 30m
+    url: j11d209.p.ssafy.io
+#  port: 8085
+#
+#  servlet:
+#    session:
+#      timeout: 30m
 
 ---
 # 프로파일 dev-blue 설정
