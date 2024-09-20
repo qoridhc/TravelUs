@@ -1,10 +1,10 @@
-spring:
+team:
+  private:
+    key: ${TEAM_PRIVATE_KEY}
 
+spring:
   application:
     name: bank
-
-  profiles:
-    active: dev
 
   sql:
     init:
@@ -16,16 +16,11 @@ spring:
     async:
       request-timeout: 3000000
 
-  data:
-    redis:
-      host: redis
-      port: 6379
-
   rabbitmq:
-    host: localhost
+    host: rabbitmq
     port: 5672
-    username: guest
-    password: guest
+    username: ${RABBITMQ_USER}
+    password: ${RABBITMQ_PASSWORD}
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
