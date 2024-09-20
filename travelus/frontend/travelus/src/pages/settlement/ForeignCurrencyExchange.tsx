@@ -16,7 +16,7 @@ const ForeignCurrencyExchange = () => {
           <div className="flex items-center">
             <IoIosArrowBack className="text-2xl" />
           </div>
-          <p className="text-lg text-center">정산하기</p>
+          <p className="text-lg text-center">재환전</p>
         </div>
 
         <div className="grid gap-8">
