@@ -3,7 +3,7 @@ package com.goofy.tunabank.v1.controller;
 import com.goofy.tunabank.v1.common.RecWrapper;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionRequestDto;
-import com.goofy.tunabank.v1.dto.transaction.request.TransferBetweenMoneyBoxesRequestDto;
+import com.goofy.tunabank.v1.dto.transaction.request.TransferMBRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.response.TransactionResponseDto;
 import com.goofy.tunabank.v1.service.TransactionService;
@@ -47,11 +47,11 @@ public class TransactionController {
   /**
    * 이체
    */
-  @PostMapping("/transfer")
+  @PostMapping("/transfer/general")
   public ResponseEntity<RecWrapper<List<TransactionResponseDto>>> transfer(
       @RequestBody TransferRequestDto requestDto) {
 
-    List<TransactionResponseDto> response = transactionService.processTransfer(requestDto);
+    List<TransactionResponseDto> response = transactionService.processGeneralTransfer(requestDto);
     return ResponseEntity.ok(new RecWrapper<>(response));
   }
 
@@ -67,20 +67,21 @@ public class TransactionController {
   }
 
   /**
-   * 원화 <-> 외화 이체
+   * 머니박스 이체
    */
-  @PostMapping("/moneyboxes/transfer")
-  public ResponseEntity<RecWrapper<?>> transferBetweenMoneyBoxes(@RequestBody TransferBetweenMoneyBoxesRequestDto requestDto) {
+  @PostMapping("/transfer/moneybox")
+  public ResponseEntity<RecWrapper<?>> transferBetweenMoneyBoxes(
+      @RequestBody TransferMBRequestDto requestDto) {
 
-    transactionService.processTransferBetweenMoneyBoxes(requestDto);
-    return null;
+    List<TransactionResponseDto> response = transactionService.processMoneyBoxTransfer(requestDto);
+    return ResponseEntity.ok(new RecWrapper<>(response));
   }
 
   /**
    * 환전 예상 금액 조회
    */
   @PostMapping("/exchange/estimate")
-  public ResponseEntity<RecWrapper<?>> getExchangeEstimate(){
+  public ResponseEntity<RecWrapper<?>> getExchangeEstimate() {
 
     return null;
   }

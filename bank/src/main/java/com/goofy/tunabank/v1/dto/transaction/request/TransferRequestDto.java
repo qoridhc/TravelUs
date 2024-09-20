@@ -2,6 +2,7 @@ package com.goofy.tunabank.v1.dto.transaction.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.goofy.tunabank.v1.common.Header;
+import com.goofy.tunabank.v1.domain.Enum.TransferType;
 import lombok.Data;
 
 @Data
@@ -10,6 +11,9 @@ public class TransferRequestDto {
   //헤더
   @JsonProperty("Header")
   private Header header;
+
+  //이체 종류
+  private TransferType transferType;
 
   //출금 계좌 Id
   private Long withdrawalAccountId;
