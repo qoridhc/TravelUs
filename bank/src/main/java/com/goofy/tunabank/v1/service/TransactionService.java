@@ -5,6 +5,7 @@ import com.goofy.tunabank.v1.domain.MoneyBox;
 import com.goofy.tunabank.v1.domain.TransactionHistory;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionRequestDto;
+import com.goofy.tunabank.v1.dto.transaction.request.TransferBetweenMoneyBoxesRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.response.TransactionResponseDto;
 import com.goofy.tunabank.v1.exception.transaction.InsufficientBalanceException;
@@ -71,7 +72,7 @@ public class TransactionService {
   }
 
   /**
-   * 이체 처리 :: 원화만 가능
+   * 일반 이체 처리
    */
   @Transactional
   public List<TransactionResponseDto> processTransfer(TransferRequestDto requestDto) {
@@ -111,7 +112,7 @@ public class TransactionService {
     // 출금 기록 저장
     TransactionHistory withdrawalTransactionHistory = TransactionHistory.createTransactionHistory(
         nextId, TransactionType.TW, withdrawalBox, depositBox.getAccount().getAccountNo(),
-        transmissionDateTime, amount, withdrawalAfterBalance,withdrawalSummary);
+        transmissionDateTime, amount, withdrawalAfterBalance, withdrawalSummary);
 
     TransactionHistory withdrawalTh = transactionHistoryRepository.save(
         withdrawalTransactionHistory);
@@ -119,16 +120,31 @@ public class TransactionService {
     // 입금 기록 저장
     TransactionHistory depositTransactionHistory = TransactionHistory.createTransactionHistory(
         nextId, TransactionType.TD, depositBox, withdrawalBox.getAccount().getAccountNo(),
-        transmissionDateTime, amount, depositAfterBalance,depositSummary);
+        transmissionDateTime, amount, depositAfterBalance, depositSummary);
 
     TransactionHistory depositTh = transactionHistoryRepository.save(depositTransactionHistory);
 
     // response 변환
-    return transactionMapper.convertTransactionHistoriesToResponseDtos(List.of(withdrawalTh, depositTh));
+    return transactionMapper.convertTransactionHistoriesToResponseDtos(
+        List.of(withdrawalTh, depositTh));
   }
 
   /**
-   * 복합키와 날짜 범위를 고려한 동적 쿼리
+   * 머니박스간의 이체
+   */
+  @Transactional
+  public void processTransferBetweenMoneyBoxes(TransferBetweenMoneyBoxesRequestDto requestDto) {
+
+    /**
+     * 1. 환전 금액 계산
+     * 2. 환전 신청 금액 받아둠
+     * 3. 박스간 이체
+     */
+
+  }
+
+  /**
+   * 거래 내역 조회
    */
   @Transactional(readOnly = true)
   public List<TransactionResponseDto> getTransactionHistory(
@@ -139,6 +155,10 @@ public class TransactionService {
 
     return transactionMapper.convertTransactionHistoriesToResponseDtos(transactionHistories);
   }
+
+  /**
+   * 환전 금액 계산
+   */
 
   /**
    * ------------------------------------------------------------------------------------------

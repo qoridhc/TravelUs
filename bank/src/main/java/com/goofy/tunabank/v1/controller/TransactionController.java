@@ -3,10 +3,10 @@ package com.goofy.tunabank.v1.controller;
 import com.goofy.tunabank.v1.common.RecWrapper;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionRequestDto;
+import com.goofy.tunabank.v1.dto.transaction.request.TransferBetweenMoneyBoxesRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.response.TransactionResponseDto;
 import com.goofy.tunabank.v1.service.TransactionService;
-import com.goofy.tunabank.v1.util.LogUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -70,13 +70,18 @@ public class TransactionController {
    * 원화 <-> 외화 이체
    */
   @PostMapping("/moneyboxes/transfer")
-  public ResponseEntity<RecWrapper<?>> transferBetweenMoneyBoxes(@RequestBody TransferRequestDto requestDto) {
+  public ResponseEntity<RecWrapper<?>> transferBetweenMoneyBoxes(@RequestBody TransferBetweenMoneyBoxesRequestDto requestDto) {
 
-
+    transactionService.processTransferBetweenMoneyBoxes(requestDto);
     return null;
   }
 
   /**
    * 환전 예상 금액 조회
    */
+  @PostMapping("/exchange/estimate")
+  public ResponseEntity<RecWrapper<?>> getExchangeEstimate(){
+
+    return null;
+  }
 }
