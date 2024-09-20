@@ -24,6 +24,7 @@ import com.goofy.tunabank.v1.repository.AccountRepository;
 import com.goofy.tunabank.v1.repository.BankRepository;
 import com.goofy.tunabank.v1.repository.CurrencyRepository;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -54,10 +55,19 @@ public class AccountService {
         Bank bank = bankRepository.findById(requestDto.getBankId())
             .orElseThrow(() -> new InvalidBankIdException(requestDto.getBankId()));
 
-        // 계좌 및 MoneyBox 생성
-        Account account = Account.createAccount(requestDto, bank, user, currency);
+        // 계좌 생성
+        Account account = Account.createAccount(requestDto, bank, user);
+
+        // KRW 머니박스 기본 생성
+        MoneyBox moneyBox = MoneyBox.createMoneyBox(account, currency);
+
+        List<MoneyBox> moneyBoxes = new ArrayList<>();
+        moneyBoxes.add(moneyBox);
+
+        account.setMoneyBoxes(moneyBoxes);
 
         accountRepository.save(account);
+        moneyBoxRepository.save(moneyBox);
 
         // DTO 변환
         AccountDto accountDto = accountMapper.toDto(account);
@@ -86,23 +96,20 @@ public class AccountService {
 
         Currency currency = currencyRepository.findByCurrencyCode(requestDto.getCurrencyCode());
 
-        MoneyBox moneyBox = MoneyBox.builder()
-            .account(account)
-            .balance(0.0)
-            .currency(currency)
-            .build();
+        MoneyBox moneyBox = MoneyBox.createMoneyBox(account, currency);
 
-        moneyBoxRepository.save(moneyBox);
+        account.getMoneyBoxes().add(moneyBox);
 
-        List<MoneyBox> moneyBoxList = account.getMoneyBoxes();
-        moneyBoxList.add(moneyBox);
+        accountRepository.save(account);
 
-        return moneyBoxMapper.toDtoList(moneyBoxList);
+        return moneyBoxMapper.toDtoList(account.getMoneyBoxes());
 
     }
 
     // ==== 계좌 조회 ====
     public AccountDto inquireAccount(InquireAccountRequestDto requestDto) {
+
+        userService.findUserByUserKey(requestDto.getHeader().getUserKey());
 
         Account account = accountRepository.findById(requestDto.getAccountId())
             .orElseThrow(() -> new InvalidAccountIdException(requestDto.getAccountId()));
@@ -111,10 +118,11 @@ public class AccountService {
             throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
         }
 
+        // DTO 변환
         AccountDto accountDto = accountMapper.toDto(account);
 
-        List<MoneyBox> moneyBoxDtoList = account.getMoneyBoxes();
-        accountDto.setMoneyBoxDtos(moneyBoxMapper.toDtoList(moneyBoxDtoList));
+        List<MoneyBoxDto> moneyBoxDtoList = moneyBoxMapper.toDtoList(account.getMoneyBoxes());
+        accountDto.setMoneyBoxDtos(moneyBoxDtoList);
 
         return accountDto;
     }
