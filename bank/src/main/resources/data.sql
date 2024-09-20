@@ -26,3 +26,6 @@ INSERT IGNORE INTO user (user_id, email, role, is_exit, create_at, update_at, ex
 
 -- bank 데이터 삽입
 INSERT IGNORE INTO bank (bank_id, bank_name) VALUES (1, '튜나은행');
+
+-- card_product 데이터 삽입
+INSERT IGNORE INTO card_product(card_product_id,card_name, card_description) VALUES (1, '튜나 카드', '튜나뱅크의 카드입니다.');
