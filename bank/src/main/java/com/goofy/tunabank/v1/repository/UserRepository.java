@@ -23,4 +23,8 @@ public class UserRepository {
         .getResultList();
     return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
   }
+
+  public void save(User user) {
+    em.persist(user);
+  }
 }

@@ -2,7 +2,6 @@ package com.goofy.tunabank.v1.handler;
 
 import com.goofy.tunabank.v1.dto.ErrorResponseDto;
 import com.goofy.tunabank.v1.exception.CustomException;
-import com.goofy.tunabank.v1.exception.account.InvalidAccountIdOrTypeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -29,11 +28,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponseDto> handleHttpMessageNotReadableException(Exception e) {
         return buildErrorResponse(e, "잘못된 파라미터 요청입니다. 요청 파라미터를 다시 확인해주세요", HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(InvalidAccountIdOrTypeException.class)
-    public ResponseEntity<ErrorResponseDto> handleInvalidAccountIdException(Exception e) {
-        return buildErrorResponse(e,null, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(CustomException.class)
