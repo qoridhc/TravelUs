@@ -43,4 +43,25 @@ public class Card {
 
   @Column
   private LocalDateTime expireAt;
+
+
+
+
+
+
+  /*
+  * 생성 메서드
+  */
+  public static Card createCard(Account account, CardProduct cardProduct, String cardNo, String cvc){
+    Card card = new Card();
+    card.account = account;
+    card.cardProduct = cardProduct;
+    card.cardNo = cardNo;
+    card.cvc = cvc;
+    card.createAt = LocalDateTime.now();
+    card.expireAt = LocalDateTime.now().plusYears(5);
+    return card;
+  }
+
+
 }

@@ -22,4 +22,7 @@ public class CardProduct {
 
   @Column
   private String cardDescription;
+
+  @Column(length = 16)
+  private String cardUniqueNo;
 }
