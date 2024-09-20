@@ -83,8 +83,8 @@ const MeetingAccount = ({ index, account, foreignAccount }: Props) => {
             <p className="font-bold">{formatCurrency(account.balance)}원</p>
           </div>
           <div className="w-full flex justify-between items-center">
-            <p className="text-zinc-500 text-[0.85rem]">트래블박스</p>
-            <div className="font-bold flex space-x-1">
+            <p className="text-zinc-500 text-[0.83rem]">트래블박스</p>
+            <div className="text-[1rem] font-bold flex space-x-1">
               <p>{formatCurrency(foreignAccount.balance)}</p>
               <p>{foreignAccount.currency.currencyCode}</p>
             </div>
