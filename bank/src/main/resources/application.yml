@@ -16,14 +16,6 @@ spring:
     async:
       request-timeout: 3000000
 
-  config:
-    import:
-      - classpath:/yml/application-dev.yml
-    profiles:
-      group:
-        logging: dev
-      active: logging
-
   data:
     redis:
       host: redis
@@ -54,7 +46,7 @@ spring:
   jpa:
     defer-datasource-initialization: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
