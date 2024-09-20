@@ -30,7 +30,6 @@ public class AccountController {
     // 일반 계좌 생성 ( 개인 or 모임 )
     @PostMapping("/postAccount")
     public ResponseEntity<AccountDto> createNewAccount(
-        @PathVariable Long userId,
         @RequestBody CreateGeneralAccountRequestDto requestDto
     ) {
 
