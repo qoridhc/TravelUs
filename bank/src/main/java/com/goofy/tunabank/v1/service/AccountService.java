@@ -6,6 +6,7 @@ import com.goofy.tunabank.v1.domain.Currency;
 import com.goofy.tunabank.v1.domain.Enum.AccountType;
 import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
 import com.goofy.tunabank.v1.domain.MoneyBox;
+import com.goofy.tunabank.v1.dto.ResponseDto;
 import com.goofy.tunabank.v1.dto.account.AccountDto;
 import com.goofy.tunabank.v1.dto.account.request.AddMoneyBoxRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
@@ -16,6 +17,7 @@ import com.goofy.tunabank.v1.exception.account.InvalidAccountIdException;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountPasswordException;
 import com.goofy.tunabank.v1.exception.account.InvalidBankIdException;
 import com.goofy.tunabank.v1.exception.account.InvalidGroupAccountIdException;
+import com.goofy.tunabank.v1.exception.account.RefundAccountRequiredException;
 import com.goofy.tunabank.v1.mapper.AccountMapper;
 import com.goofy.tunabank.v1.mapper.MoneyBoxMapper;
 import com.goofy.tunabank.v1.repository.AccountRepository;
@@ -40,7 +42,7 @@ public class AccountService {
     private final MoneyBoxMapper moneyBoxMapper;
 
     // ==== 계좌 생성 관련 메서드 ====
-    public AccountDto createGeneralAccount(CreateGeneralAccountRequestDto requestDto) {
+    public AccountDto postNewAccount(CreateGeneralAccountRequestDto requestDto) {
 
         // 일반 계좌 생성
         Currency currency = currencyRepository.findByCurrencyCode(CurrencyType.KRW);
@@ -165,5 +167,25 @@ public class AccountService {
         accountDto.setMoneyBoxDtos(moneyBoxMapper.toDtoList(moneyBoxDtoList));
 
         return accountDto;
+    }
+
+    // ==== 계좌 삭제 ====
+    public ResponseDto deleteAccount(InquireAccountRequestDto requestDto) {
+
+        Account account = accountRepository.findById(requestDto.getAccountId())
+            .orElseThrow(() -> new InvalidAccountIdException(requestDto.getAccountId()));
+
+        if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
+            throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
+        }
+
+        // 추후에 자동 환전 & 환불 계좌 로직 추가
+        boolean hasBalance = account.getMoneyBoxes().stream().anyMatch(moneyBox -> moneyBox.getBalance() > 0);
+
+        if (hasBalance) {
+            throw new RefundAccountRequiredException();
+        }
+
+        return new ResponseDto();
     }
 }

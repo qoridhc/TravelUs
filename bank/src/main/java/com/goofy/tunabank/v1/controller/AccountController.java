@@ -1,5 +1,6 @@
 package com.goofy.tunabank.v1.controller;
 
+import com.goofy.tunabank.v1.dto.ResponseDto;
 import com.goofy.tunabank.v1.dto.account.AccountDto;
 import com.goofy.tunabank.v1.dto.account.request.AddMoneyBoxRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
@@ -27,13 +28,13 @@ public class AccountController {
     private final AccountService accountService;
 
     // 일반 계좌 생성 ( 개인 or 모임 )
-    @PostMapping("/{userId}")
+    @PostMapping("/postAccount")
     public ResponseEntity<AccountDto> createNewAccount(
         @PathVariable Long userId,
         @RequestBody CreateGeneralAccountRequestDto requestDto
     ) {
 
-        AccountDto responseDto = accountService.createGeneralAccount(requestDto);
+        AccountDto responseDto = accountService.postNewAccount(requestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
@@ -55,6 +56,16 @@ public class AccountController {
         @RequestBody InquireAccountRequestDto requestDto
     ) {
         AccountDto responseDto = accountService.inquireAccount(requestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
+    // 계좌 삭제
+    @PostMapping("/deleteAccount")
+    public ResponseEntity<ResponseDto> deleteAccount(
+        @RequestBody InquireAccountRequestDto requestDto
+    ) {
+        ResponseDto responseDto = accountService.deleteAccount(requestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
