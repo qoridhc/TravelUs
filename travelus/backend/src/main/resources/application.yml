@@ -1,6 +1,6 @@
 team:
   private:
-    key: SHINHAN_HACKATHON_LSH_LJJ_HDW_GL
+    key: ${TEAM_PRIVATE_KEY}
 
 spring:
   application:
@@ -10,10 +10,9 @@ spring:
     import:
       - classpath:/yml/application-v1.yml
       - classpath:/yml/application-v2.yml
-      - classpath:/yml/application-dev.yml
       - classpath:/yml/application-feature.yml
   profiles:
-    active : v2, feature, dev
+    active : v2, feature
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -49,7 +48,7 @@ spring:
     # JPA 설정
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
