@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { IoIosArrowBack, IoIosCheckmarkCircle, IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { LuDot } from "react-icons/lu";
+import { useNavigate } from "react-router";
 
 const SelectSettlementAmount = () => {
+  const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState([false, false]);
   const checkInfo = [
     { text: "원화", coin: "KRW", amount: "20,500 원" },
@@ -18,6 +20,10 @@ const SelectSettlementAmount = () => {
     let temp = [...isChecked];
     temp[index] = !temp[index];
     setIsChecked(temp);
+  };
+
+  const handleSettlement = () => {
+    navigate("/settlementforeigncurrencyexchange", { state: { isChecked: isChecked } });
   };
 
   return (
@@ -73,9 +79,11 @@ const SelectSettlementAmount = () => {
         </div>
 
         <button
-          className={`w-full h-14 text-lg font-semibold rounded-xl tracking-wide ${
+          className={`w-full h-14 text-lg rounded-xl tracking-wide ${
             isChecked[0] || isChecked[1] ? "text-white bg-[#1429A0] " : "text-[#565656] bg-[#E3E4E4]"
-          }`}>
+          }`}
+          onClick={() => handleSettlement()}
+          disabled={!(isChecked[0] || isChecked[1])}>
           {isChecked[0] || isChecked[1] ? "정산하기" : "정산금을 선택해주세요"}
         </button>
       </div>
