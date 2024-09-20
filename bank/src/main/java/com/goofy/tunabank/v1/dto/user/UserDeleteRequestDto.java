@@ -14,9 +14,13 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 public class UserDeleteRequestDto {
 
-  @Email
-  @NotEmpty
-  @Length(min = 5, max = 40)
-  private String userId;
+  private Header header;
 
+  @Data
+  @Builder
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public static class Header {
+    private String userKey;
+  }
 }
