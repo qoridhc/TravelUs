@@ -28,4 +28,12 @@ public abstract class CustomException extends RuntimeException {
     this.code = DEFAULT_CODE;
     this.status = DEFAULT_STATUS;
   }
+
+  public CustomException(String message, String code, int status) {
+    super(message);
+    this.message = message;
+    this.code = code;
+    this.status = status;
+  }
+
 }
