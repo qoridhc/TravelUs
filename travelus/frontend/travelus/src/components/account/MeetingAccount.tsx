@@ -38,8 +38,8 @@ const MeetingAccount = ({ index, account, foreignAccount }: Props) => {
     // 해당 아이콘의 배경색을 가져오고, 없으면 기본값 사용
     const backgroundClass = iconBackgrounds[iconName] || iconBackgrounds.default;
 
-    const containerClasses = `w-11 h-11 ${backgroundClass} rounded-full flex justify-center items-center text-white`;
-    const iconClasses = "w-7 h-7"; // 아이콘 자체 크기를 줄이기 위한 클래스
+    const containerClasses = `w-10 h-10 ${backgroundClass} rounded-full flex justify-center items-center text-white`;
+    const iconClasses = "w-6 h-6"; // 아이콘 자체 크기를 줄이기 위한 클래스
 
     let IconComponent;
 
@@ -76,16 +76,16 @@ const MeetingAccount = ({ index, account, foreignAccount }: Props) => {
       className="w-full">
       <div className="flex items-center space-x-4">
         <p>{getIcon(account.iconName)}</p>
-        <div className="w-full flex flex-col">
-          <p className="font-bold text-[0.9rem]">{account.groupName}</p>
-          <div className="text-sm w-full flex justify-between">
-            <p className="">일반모임통장</p>
+        <div className="w-full flex flex-col justify-center">
+          <p className="text-zinc-600 font-bold text-[0.75rem]">{account.groupName}</p>
+          <div className="w-full flex justify-between items-center">
+            {/* <p className="text-zinc-400 text-[0.8rem]">일반모임통장</p> */}
             <p className="font-bold">{formatCurrency(account.balance)}원</p>
           </div>
-          <div className="text-sm w-full flex justify-between">
-            <p>외화모임통장</p>
-            <div className="font-bold flex space-x-1">
-              <p>{formatCurrency(foreignAccount.balance)}</p>
+          <div className="w-full flex justify-between items-center">
+            <p className="text-zinc-500 text-[0.83rem]">트래블박스</p>
+            <div className="text-[1rem] font-bold flex space-x-1">
+              <p className="">{formatCurrency(foreignAccount.balance)}</p>
               <p>{foreignAccount.currency.currencyCode}</p>
             </div>
           </div>
