@@ -9,8 +9,10 @@ import com.goofy.tunabank.v1.dto.card.CardIssueResponseDto;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountIdException;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
 import com.goofy.tunabank.v1.exception.card.CardProductNotFoundException;
+import com.goofy.tunabank.v1.mapper.CardMapper;
 import com.goofy.tunabank.v1.repository.AccountRepository;
 import com.goofy.tunabank.v1.repository.CardProductRepository;
+import com.goofy.tunabank.v1.repository.CardRepository;
 import java.security.SecureRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,10 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CardService {
 
-  private final UserService userService;
+  private final CardRepository cardRepository;
   private final AccountRepository accountRepository;
   private final CardProductRepository cardProductRepository;
 
+  private static final String DEFAULT_ISSUER_NAME = "Tuna Bank";
   private static final SecureRandom random = new SecureRandom();
 
   public CardIssueResponseDto createNewCard(CardIssueRequestDto request) {
@@ -41,19 +44,23 @@ public class CardService {
         () -> new CardProductNotFoundException(uniqueNo)
     );
 
-    // 카드 생성 로직 구현
-    //1. 카드 번호 생성
-    //2. cvc 생성
-    String cardNo = generateCardNumber();
-    String cvc = generateCvc();
-    Card card = Card.createCard(account, cardProduct, cardNo, cvc);
+    // 카드 생성(카드 번호, cvc 번호 생성) 및 저장
+    Card card = Card.createCard(account, cardProduct, generateCardNumber(), generateCvc());
+    cardRepository.save(card);
 
-    //save
-
-    //response
-    return null;
+    return CardMapper.INSTANCE.cardToCardIssueResponseDto(
+        card,
+        cardProduct,
+        accountNo,
+        DEFAULT_ISSUER_NAME
+    );
   }
 
+
+
+  /*
+  * 카드 번호 생성
+  */
   private String generateCardNumber() {
     String bin = "400000";  // 예: Visa의 경우 일반적으로 4로 시작
     String accountNumber = String.format("%09d", random.nextInt(1000000000));
@@ -62,6 +69,9 @@ public class CardService {
     return cardNumberWithoutCheckDigit + checkDigit;
   }
 
+  /*
+  * 카드번호 가장 뒷자리, 룬 체크 알고리즘
+  */
   private String calculateLuhnCheckDigit(String number) {
     int sum = 0;
     boolean alternate = false;
@@ -79,6 +89,9 @@ public class CardService {
     return Integer.toString((10 - (sum % 10)) % 10);
   }
 
+  /*
+  * CVC 생성
+  */
   private String generateCvc() {
     return String.format("%03d", random.nextInt(1000));
   }

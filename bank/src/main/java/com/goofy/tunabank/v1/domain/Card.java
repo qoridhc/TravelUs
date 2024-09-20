@@ -45,10 +45,6 @@ public class Card {
   private LocalDateTime expireAt;
 
 
-
-
-
-
   /*
   * 생성 메서드
   */
