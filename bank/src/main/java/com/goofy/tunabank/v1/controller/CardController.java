@@ -1,9 +1,13 @@
 package com.goofy.tunabank.v1.controller;
 
+import com.goofy.tunabank.v1.common.RecWrapper;
 import com.goofy.tunabank.v1.dto.card.CardIssueRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardIssueResponseDto;
+import com.goofy.tunabank.v1.dto.card.CardListRequestDto;
+import com.goofy.tunabank.v1.dto.card.CardListResponseDto;
 import com.goofy.tunabank.v1.service.CardService;
 import com.goofy.tunabank.v1.util.LogUtil;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +28,13 @@ public class CardController {
     LogUtil.info("카드 발급 요청", request);
     CardIssueResponseDto response = cardService.createNewCard(request);
     return new ResponseEntity(response, HttpStatus.CREATED);
+  }
+
+  @PostMapping("/list")
+  public ResponseEntity issueNewCard(@RequestBody CardListRequestDto request){
+    LogUtil.info("카드 조회 요청", request.getHeader());
+    List<CardListResponseDto> response = cardService.findAllCards(request);
+    return new ResponseEntity(new RecWrapper<>(response), HttpStatus.CREATED);
   }
 
 }

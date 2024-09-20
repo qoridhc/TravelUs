@@ -6,6 +6,8 @@ import com.goofy.tunabank.v1.domain.CardProduct;
 import com.goofy.tunabank.v1.domain.User;
 import com.goofy.tunabank.v1.dto.card.CardIssueRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardIssueResponseDto;
+import com.goofy.tunabank.v1.dto.card.CardListRequestDto;
+import com.goofy.tunabank.v1.dto.card.CardListResponseDto;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountIdException;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
 import com.goofy.tunabank.v1.exception.card.CardProductNotFoundException;
@@ -14,6 +16,7 @@ import com.goofy.tunabank.v1.repository.AccountRepository;
 import com.goofy.tunabank.v1.repository.CardProductRepository;
 import com.goofy.tunabank.v1.repository.CardRepository;
 import java.security.SecureRandom;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +32,11 @@ public class CardService {
 
   private static final String DEFAULT_ISSUER_NAME = "Tuna Bank";
   private static final SecureRandom random = new SecureRandom();
+  private final UserService userService;
 
+  /*
+  * 카드 신규 발급
+  */
   public CardIssueResponseDto createNewCard(CardIssueRequestDto request) {
 
     // 연결 계좌 검증
@@ -54,6 +61,27 @@ public class CardService {
         accountNo,
         DEFAULT_ISSUER_NAME
     );
+  }
+
+
+  /*
+  * 카드 목록 조회
+  */
+  public List<CardListResponseDto> findAllCards(CardListRequestDto request) {
+
+    // 유저 조회
+    String userKey = request.getHeader().getUserKey();
+    User user = userService.findUserByUserKey(userKey);
+
+    //TODO: 유저에 해당하는 통장 조회
+    Account account = accountRepository.findByAccountNo("123").orElse(null);
+    if(account == null) {
+      return List.of();
+    }
+
+    //통장에 해당하는 카드 조회
+
+    return null;
   }
 
 
