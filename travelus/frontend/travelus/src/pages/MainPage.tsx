@@ -24,7 +24,7 @@ const MainPage = () => {
   const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[]>([]);
 
   const navigateTransfermation = () => {
-    navigate("/transaction")
+    navigate("/transfer/selectbank")
   }
 
   const navigateAccountBook = () => {
