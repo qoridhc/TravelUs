@@ -7,12 +7,12 @@ import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.InquireAccountRequestDto;
 import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
 import com.goofy.tunabank.v1.service.AccountService;
+import com.goofy.tunabank.v1.util.LogUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,13 +30,15 @@ public class AccountController {
     // 일반 계좌 생성 ( 개인 or 모임 )
     @PostMapping("/postAccount")
     public ResponseEntity<AccountDto> createNewAccount(
-        @PathVariable Long userId,
         @RequestBody CreateGeneralAccountRequestDto requestDto
     ) {
+
+        LogUtil.info("requestDto: {}", requestDto);
 
         AccountDto responseDto = accountService.postNewAccount(requestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+
     }
 
     // 모임 통장 머니박스 추가

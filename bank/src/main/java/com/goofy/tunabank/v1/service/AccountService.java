@@ -3,9 +3,9 @@ package com.goofy.tunabank.v1.service;
 import com.goofy.tunabank.v1.domain.Account;
 import com.goofy.tunabank.v1.domain.Bank;
 import com.goofy.tunabank.v1.domain.Currency;
-import com.goofy.tunabank.v1.domain.Enum.AccountType;
 import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
 import com.goofy.tunabank.v1.domain.MoneyBox;
+import com.goofy.tunabank.v1.domain.User;
 import com.goofy.tunabank.v1.dto.ResponseDto;
 import com.goofy.tunabank.v1.dto.account.AccountDto;
 import com.goofy.tunabank.v1.dto.account.request.AddMoneyBoxRequestDto;
@@ -24,7 +24,6 @@ import com.goofy.tunabank.v1.repository.AccountRepository;
 import com.goofy.tunabank.v1.repository.BankRepository;
 import com.goofy.tunabank.v1.repository.CurrencyRepository;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,11 +37,16 @@ public class AccountService {
     private final BankRepository bankRepository;
     private final MoneyBoxRepository moneyBoxRepository;
 
+    private final UserService userService;
+
     private final AccountMapper accountMapper;
     private final MoneyBoxMapper moneyBoxMapper;
 
     // ==== 계좌 생성 관련 메서드 ====
     public AccountDto postNewAccount(CreateGeneralAccountRequestDto requestDto) {
+
+        // 유저 정보 생성
+        User user = userService.findUserByUserKey(requestDto.getHeader().getUserKey());
 
         // 일반 계좌 생성
         Currency currency = currencyRepository.findByCurrencyCode(CurrencyType.KRW);
@@ -50,72 +54,18 @@ public class AccountService {
         Bank bank = bankRepository.findById(requestDto.getBankId())
             .orElseThrow(() -> new InvalidBankIdException(requestDto.getBankId()));
 
-        Account generalAccount = Account.builder()
-            .bank(bank)
-            .accountType(requestDto.getAccountType())
-            .accountNo(createAccountNumber(requestDto.getAccountType()))  // 계좌 번호 생성
-            .accountPassword(requestDto.getAccountPassword())
-            .build();
+        // 계좌 및 MoneyBox 생성
+        Account account = Account.createAccount(requestDto, bank, user, currency);
 
-        accountRepository.save(generalAccount);
+        accountRepository.save(account);
 
-        MoneyBox moneyBox = MoneyBox.builder()
-            .account(generalAccount)
-            .currency(currency).balance(0.0)
-            .build();
+        // DTO 변환
+        AccountDto accountDto = accountMapper.toDto(account);
 
-        moneyBoxRepository.save(moneyBox);
+        List<MoneyBoxDto> moneyBoxDtoList = moneyBoxMapper.toDtoList(account.getMoneyBoxes());
+        accountDto.setMoneyBoxDtos(moneyBoxDtoList);
 
-        AccountDto generalAccountDto = accountMapper.toDto(generalAccount);
-
-        List<MoneyBoxDto> moneyBoxDtoList = new ArrayList<>();
-        moneyBoxDtoList.add(moneyBoxMapper.toDto(moneyBox));
-
-        generalAccountDto.setMoneyBoxDtos(moneyBoxDtoList);
-
-        return generalAccountDto;
-    }
-
-    private String createAccountNumber(AccountType accountType) {
-
-        // 계좌 종류 고유값
-        final String code = accountType.getCode();
-
-        // 랜덤 7자리 숫자 생성 (검증 번호는 마지막에 추가)
-        String randomPart = String.format("%07d", (int) (Math.random() * 10000000));
-
-        // 검증 번호를 계산하기 위한 계좌 번호 생성
-        String accountNumberWithoutCheckDigit = code + randomPart;
-
-        // 검증 번호 계산
-        int checkDigit = calculateLuhnCheckDigit(accountNumberWithoutCheckDigit);
-
-        // 지점 번호 -> 209로 고정
-        String branchNumber = "209";
-
-        return String.format("%s-%s%d-%s", code, randomPart, checkDigit, branchNumber);
-    }
-
-    // Luhn 알고리즘을 사용한 검증 번호 계산
-    private int calculateLuhnCheckDigit(String number) {
-        int sum = 0;
-        boolean alternate = false;
-
-        // 오른쪽에서 왼쪽으로 숫자를 처리
-        for (int i = number.length() - 1; i >= 0; i--) {
-            int n = Integer.parseInt(number.substring(i, i + 1));
-            if (alternate) {
-                n *= 2;
-                if (n > 9) {
-                    n = (n % 10) + 1;
-                }
-            }
-            sum += n;
-            alternate = !alternate;
-        }
-
-        // 10으로 나누어 떨어지게 하는 숫자 반환
-        return (10 - (sum % 10)) % 10;
+        return accountDto;
     }
 
     public List<MoneyBoxDto> addAccountMoneyBox(AddMoneyBoxRequestDto requestDto) {
