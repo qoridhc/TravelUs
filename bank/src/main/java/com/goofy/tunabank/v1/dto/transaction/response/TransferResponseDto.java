@@ -1,5 +1,6 @@
 package com.goofy.tunabank.v1.dto.transaction.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,5 +13,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TransferResponseDto {
 
-  private List<TransactionResponseDto> Rec;
+  @JsonProperty("REC")
+  private List<TransactionResponseDto> rec;
 }

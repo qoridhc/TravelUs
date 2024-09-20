@@ -19,7 +19,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @IdClass(TransactionHistoryId.class)
@@ -42,7 +41,7 @@ public class TransactionHistory {
   private MoneyBox moneyBox;
 
   //상대 계좌 번호
-  @JoinColumn(name="transaction_account_no")
+  @JoinColumn(name = "transaction_account_no")
   private String transactionAccountNo;
 
   //거래 일시
@@ -57,4 +56,24 @@ public class TransactionHistory {
 
   //메모
   private String summary;
+
+  /**
+   * 엔티티 생성 메서드
+   */
+  public static TransactionHistory createTransactionHistory(Long nextId,
+      TransactionType transactionType, MoneyBox moneyBox, String transactionAccountNo,
+      LocalDateTime transactionAt, double amount, double balance, String summary) {
+
+    TransactionHistory transactionHistory = new TransactionHistory();
+    transactionHistory.setId(nextId);
+    transactionHistory.setTransactionType(transactionType);
+    transactionHistory.setMoneyBox(moneyBox);
+    transactionHistory.setTransactionAccountNo(transactionAccountNo);
+    transactionHistory.setTransactionAt(transactionAt);
+    transactionHistory.setAmount(amount);
+    transactionHistory.setBalance(balance);
+    transactionHistory.setSummary(summary);
+    return transactionHistory;
+
+  }
 }
