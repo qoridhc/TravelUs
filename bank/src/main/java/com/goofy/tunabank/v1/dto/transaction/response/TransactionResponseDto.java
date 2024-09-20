@@ -1,5 +1,6 @@
 package com.goofy.tunabank.v1.dto.transaction.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.goofy.tunabank.v1.domain.Enum.TransactionType;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -8,8 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class TransactionResponseDto {
 
@@ -23,6 +22,7 @@ public class TransactionResponseDto {
   private String accountNo;
 
   //거래 일시
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime transactionAt;
 
   //금액

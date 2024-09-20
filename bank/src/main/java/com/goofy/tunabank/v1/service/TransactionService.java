@@ -7,7 +7,6 @@ import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDt
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.response.TransactionResponseDto;
-import com.goofy.tunabank.v1.dto.transaction.response.TransferResponseDto;
 import com.goofy.tunabank.v1.exception.transaction.InsufficientBalanceException;
 import com.goofy.tunabank.v1.exception.transaction.InvalidTransactionTypeException;
 import com.goofy.tunabank.v1.exception.transaction.InvalidWithdrawalAmountException;
@@ -75,7 +74,7 @@ public class TransactionService {
    * 이체 처리 :: 원화만 가능
    */
   @Transactional
-  public TransferResponseDto processTransfer(TransferRequestDto requestDto) {
+  public List<TransactionResponseDto> processTransfer(TransferRequestDto requestDto) {
 
     long withdrawalAccountId = requestDto.getWithdrawalAccountId();
     long depositAccountId = requestDto.getDepositAccountId();
@@ -125,7 +124,7 @@ public class TransactionService {
     TransactionHistory depositTh = transactionHistoryRepository.save(depositTransactionHistory);
 
     // response 변환
-    return transactionMapper.convertToTransferResponseDto(withdrawalTh, depositTh);
+    return transactionMapper.convertTransactionHistoriesToResponseDtos(List.of(withdrawalTh, depositTh));
   }
 
   /**
