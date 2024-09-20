@@ -80,6 +80,9 @@ public class AccountService {
 
     public List<MoneyBoxDto> addAccountMoneyBox(AddMoneyBoxRequestDto requestDto) {
 
+        // 유저 정보 생성
+        User user = userService.findUserByUserKey(requestDto.getHeader().getUserKey());
+
         Account account = accountRepository.findGroupAccountById(requestDto.getAccountId())
             .orElseThrow(() -> new InvalidGroupAccountIdException(requestDto.getAccountId()));
 

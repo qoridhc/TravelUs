@@ -7,7 +7,6 @@ import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.InquireAccountRequestDto;
 import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
 import com.goofy.tunabank.v1.service.AccountService;
-import com.goofy.tunabank.v1.util.LogUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,8 +31,6 @@ public class AccountController {
     public ResponseEntity<AccountDto> createNewAccount(
         @RequestBody CreateGeneralAccountRequestDto requestDto
     ) {
-
-        LogUtil.info("requestDto: {}", requestDto);
 
         AccountDto responseDto = accountService.postNewAccount(requestDto);
 
