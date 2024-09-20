@@ -1,6 +1,7 @@
 package com.goofy.tunabank.v1.repository;
 
 import com.goofy.tunabank.v1.domain.Key;
+import com.goofy.tunabank.v1.domain.User;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,31 @@ public class KeyRepository {
         .getResultList();
 
     return result.stream().findFirst();
+  }
+
+  public Optional<Key> findValidUserKeyByUser(User user) {
+    List<Key> result = em.createQuery(
+        "select k from Key k where k.user = :user "
+            + "and k.type = 'USER' "
+            + "and k.status = 'ACTIVE' "
+            + "and k.expireAt > current_timestamp"
+            , Key.class
+        )
+        .setParameter("user", user)
+        .getResultList();
+
+    return result.stream().findFirst();
+  }
+
+  public Key findUserKeyByUser(User user) {
+    List<Key> result = em.createQuery(
+            "select k from Key k where k.user = :user "
+                + "and k.type = 'USER'"
+            , Key.class
+        )
+        .setParameter("user", user)
+        .getResultList();
+    return result.stream().findFirst().get();
   }
 
   public void save(Key key) {
