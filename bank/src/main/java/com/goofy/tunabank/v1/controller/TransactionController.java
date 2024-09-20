@@ -1,7 +1,5 @@
 package com.goofy.tunabank.v1.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goofy.tunabank.v1.common.RecWrapper;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionRequestDto;
@@ -25,10 +23,21 @@ public class TransactionController {
   private final TransactionService transactionService;
 
   /**
-   * 입금 및 출금
+   * 입금
    */
-  @PostMapping
-  public ResponseEntity<RecWrapper<TransactionResponseDto>> processTransaction(
+  @PostMapping("/deposit")
+  public ResponseEntity<RecWrapper<TransactionResponseDto>> deposit(
+      @RequestBody TransactionRequestDto requestDto) {
+
+    TransactionResponseDto response = transactionService.processTransaction(requestDto);
+    return ResponseEntity.ok(new RecWrapper<>(response));
+  }
+
+  /**
+   * 출금
+   */
+  @PostMapping("/withdrawal")
+  public ResponseEntity<RecWrapper<TransactionResponseDto>> withdrawal(
       @RequestBody TransactionRequestDto requestDto) {
 
     TransactionResponseDto response = transactionService.processTransaction(requestDto);
@@ -39,7 +48,7 @@ public class TransactionController {
    * 이체
    */
   @PostMapping("/transfer")
-  public ResponseEntity<RecWrapper<List<TransactionResponseDto>>> processTransfer(
+  public ResponseEntity<RecWrapper<List<TransactionResponseDto>>> transfer(
       @RequestBody TransferRequestDto requestDto) {
 
     List<TransactionResponseDto> response = transactionService.processTransfer(requestDto);
@@ -54,7 +63,20 @@ public class TransactionController {
       @RequestBody TransactionHistoryRequestDto requestDto) {
 
     List<TransactionResponseDto> response = transactionService.getTransactionHistory(requestDto);
-    LogUtil.info("response: {}", response);
     return ResponseEntity.ok(new RecWrapper<>(response));
   }
+
+  /**
+   * 원화 <-> 외화 이체
+   */
+  @PostMapping("/moneyboxes/transfer")
+  public ResponseEntity<RecWrapper<?>> transferBetweenMoneyBoxes(@RequestBody TransferRequestDto requestDto) {
+
+
+    return null;
+  }
+
+  /**
+   * 환전 예상 금액 조회
+   */
 }
