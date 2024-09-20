@@ -30,7 +30,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class KeyAutheticationFilter extends OncePerRequestFilter {
 
-  private final static String REQUEST_HEADER = "header";
+  private final static String REQUEST_HEADER = "Header";
   private final static String REQUEST_APIKEY = "apiKey";
 
   private final ObjectMapper objectMapper = new ObjectMapper();

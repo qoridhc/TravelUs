@@ -1,5 +1,7 @@
 package com.goofy.tunabank.v1.domain;
 
+import com.goofy.tunabank.v1.domain.Enum.KeyStatus;
+import com.goofy.tunabank.v1.domain.Enum.KeyType;
 import com.goofy.tunabank.v1.domain.Enum.Role;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -13,6 +15,7 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.Getter;
 
 @Entity
@@ -45,4 +48,30 @@ public class User {
   @Column(name = "exit_at")
   private LocalDateTime exitAt;
 
+
+  /*
+  * 생성 메서드
+  */
+  public static User createUser(String email, Role role){
+    User user = new User();
+    user.email = email;
+    user.role = role;
+    user.isExit = false;
+    user.createdAt = LocalDateTime.now();
+    user.updateAt = LocalDateTime.now();
+    user.exitAt = null;
+    return user;
+  }
+
+
+  /*
+  * 유효한 유저키 조회(근데 아마도 하나)
+  */
+  public Optional<Key> getValidUserKey() {
+    return keys.stream()
+        .filter(key -> key.getType() == KeyType.USER)
+        .filter(key -> key.getStatus() == KeyStatus.ACTIVE)
+        .filter(key -> key.getExpireAt().isAfter(LocalDateTime.now()))
+        .findFirst();
+  }
 }

@@ -73,4 +73,15 @@ public class Key {
     key.expireAt = LocalDateTime.now().plusYears(1);
     return key;
   }
+
+  /*
+  * 키 갱신 메서드
+  */
+  public Key updateKey(String keyValue) {
+    this.value = keyValue;
+    this.status = KeyStatus.ACTIVE;
+    this.createAt = LocalDateTime.now();
+    this.expireAt = LocalDateTime.now().plusYears(1);
+    return this;
+  }
 }

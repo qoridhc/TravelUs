@@ -12,7 +12,7 @@ import org.hibernate.validator.constraints.Length;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserJoinRequestDto {
+public class UserSearchRequestDto {
 
   @Email
   @NotEmpty
