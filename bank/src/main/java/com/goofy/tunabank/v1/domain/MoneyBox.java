@@ -56,8 +56,9 @@ public class MoneyBox {
     private List<TransactionHistory> transactionHistories;
 
     // ==== 생성 메서드 ====
-    public static MoneyBox createMoneyBox(Currency currency) {
+    public static MoneyBox createMoneyBox(Account account, Currency currency) {
         MoneyBox moneyBox = MoneyBox.builder()
+            .account(account)
             .currency(currency)
             .balance(0.0)  // 초기 잔액 0
             .createdAt(LocalDateTime.now())

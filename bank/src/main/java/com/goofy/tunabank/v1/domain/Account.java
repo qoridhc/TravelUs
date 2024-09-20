@@ -60,7 +60,7 @@ public class Account {
 
     // ==== 엔티티 생성 메서드 ====
     public static Account createAccount(
-        CreateGeneralAccountRequestDto requestDto, Bank bank, User user, Currency currency) {
+        CreateGeneralAccountRequestDto requestDto, Bank bank, User user) {
 
         Account account = Account.builder()
             .bank(bank)
@@ -69,14 +69,6 @@ public class Account {
             .accountPassword(requestDto.getAccountPassword())
             .user(user)
             .build();
-
-        // KRW 머니박스 기본 생성
-        MoneyBox moneyBox = MoneyBox.createMoneyBox(currency);
-
-        List<MoneyBox> moneyBoxes = new ArrayList<>();
-        moneyBoxes.add(moneyBox);
-
-        account.setMoneyBoxes(moneyBoxes);
 
         return account;
     }
