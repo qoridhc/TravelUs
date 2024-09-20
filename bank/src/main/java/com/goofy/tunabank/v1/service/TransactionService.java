@@ -7,7 +7,6 @@ import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDt
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.response.TransactionResponseDto;
-import com.goofy.tunabank.v1.dto.transaction.response.TransferResponseDto;
 import com.goofy.tunabank.v1.exception.transaction.InsufficientBalanceException;
 import com.goofy.tunabank.v1.exception.transaction.InvalidTransactionTypeException;
 import com.goofy.tunabank.v1.exception.transaction.InvalidWithdrawalAmountException;
@@ -31,6 +30,8 @@ public class TransactionService {
   private final MoneyBoxRepository moneyBoxRepository;
   private final TransactionMapper transactionMapper;
   private static final int KRW_CURRENCY_ID = 1;
+
+  //TODO: userKey확인 및 비밀번호 체크
 
   /**
    * 입금 및 출금(원화, 외화)
@@ -61,15 +62,9 @@ public class TransactionService {
     }
     nextId++;
 
-    TransactionHistory transactionHistory = TransactionHistory.builder()
-        .id(nextId)
-        .transactionType(transactionType)
-        .moneyBox(moneyBox)
-        .transactionAt(requestDto.getHeader().getTransmissionDateTime())
-        .amount(amount)
-        .balance(afterBalance)
-        .summary(requestDto.getTransactionSummary())
-        .build();
+    TransactionHistory transactionHistory = TransactionHistory.createTransactionHistory(nextId,
+        transactionType, moneyBox, null, requestDto.getHeader().getTransmissionDateTime(), amount,
+        afterBalance, requestDto.getTransactionSummary());
 
     TransactionHistory th = transactionHistoryRepository.save(transactionHistory);
     return transactionMapper.convertTransactionHistoryToTransactionResponseDto(th);
@@ -79,7 +74,7 @@ public class TransactionService {
    * 이체 처리 :: 원화만 가능
    */
   @Transactional
-  public TransferResponseDto processTransfer(TransferRequestDto requestDto) {
+  public List<TransactionResponseDto> processTransfer(TransferRequestDto requestDto) {
 
     long withdrawalAccountId = requestDto.getWithdrawalAccountId();
     long depositAccountId = requestDto.getDepositAccountId();
@@ -114,34 +109,22 @@ public class TransactionService {
     LocalDateTime transmissionDateTime = requestDto.getHeader().getTransmissionDateTime();
 
     // 출금 기록 저장
-    TransactionHistory withdrawalTransactionHistory = TransactionHistory.builder()
-        .id(nextId)
-        .transactionType(TransactionType.TW)
-        .moneyBox(withdrawalBox)
-        .transactionAccountNo(depositBox.getAccount().getAccountNo())//상대 계좌
-        .transactionAt(transmissionDateTime)
-        .amount(amount)
-        .balance(withdrawalAfterBalance)
-        .summary(withdrawalSummary)
-        .build();
+    TransactionHistory withdrawalTransactionHistory = TransactionHistory.createTransactionHistory(
+        nextId, TransactionType.TW, withdrawalBox, depositBox.getAccount().getAccountNo(),
+        transmissionDateTime, amount, withdrawalAfterBalance,withdrawalSummary);
+
     TransactionHistory withdrawalTh = transactionHistoryRepository.save(
         withdrawalTransactionHistory);
 
     // 입금 기록 저장
-    TransactionHistory depositTransactionHistory = TransactionHistory.builder()
-        .id(nextId)
-        .transactionType(TransactionType.TD)
-        .moneyBox(depositBox)
-        .transactionAccountNo(withdrawalBox.getAccount().getAccountNo())
-        .transactionAt(transmissionDateTime)
-        .amount(amount)
-        .balance(depositAfterBalance)
-        .summary(depositSummary)
-        .build();
+    TransactionHistory depositTransactionHistory = TransactionHistory.createTransactionHistory(
+        nextId, TransactionType.TD, depositBox, withdrawalBox.getAccount().getAccountNo(),
+        transmissionDateTime, amount, depositAfterBalance,depositSummary);
+
     TransactionHistory depositTh = transactionHistoryRepository.save(depositTransactionHistory);
 
     // response 변환
-    return transactionMapper.convertToTransferResponseDto(withdrawalTh, depositTh);
+    return transactionMapper.convertTransactionHistoriesToResponseDtos(List.of(withdrawalTh, depositTh));
   }
 
   /**

@@ -1,12 +1,15 @@
-package com.goofy.tunabank.v1.dto.transaction.request;
+package com.goofy.tunabank.v1.common;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.Data;
 
 @Data
-public class TransactionHeader {
+public class Header {
 
+  private String userKey;
+  private String institutionCode;
+  private String fineAppNo;
   private String transmissionDate;
   private String transmissionTime;
 

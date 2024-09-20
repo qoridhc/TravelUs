@@ -16,4 +16,8 @@ public class UserKeyNotFoundException extends CustomException {
         String.format("%s: %s", DEFAULT_MESSAGE, email)
     );
   }
+
+  public UserKeyNotFoundException(String message, String code, int status, String userKey) {
+    super(message, code, status, String.format("%s: %s", message, userKey));
+  }
 }
