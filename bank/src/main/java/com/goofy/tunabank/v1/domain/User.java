@@ -64,26 +64,6 @@ public class User {
   }
 
   /*
-  * 유효한 유저키 조회
-  */
-  public Optional<Key> getValidUserKey() {
-    return keys.stream()
-        .filter(key -> key.getType() == KeyType.USER)
-        .filter(key -> key.getStatus() == KeyStatus.ACTIVE)
-        .filter(key -> key.getExpireAt().isAfter(LocalDateTime.now()))
-        .findFirst();
-  }
-
-  /*
-  * 유저키 조회
-  */
-  public Optional<Key> getUserKey() {
-    return keys.stream()
-        .filter(key -> key.getType() == KeyType.USER)
-        .findFirst();
-  }
-
-  /*
   * 유저 탈퇴 처리
   */
   public void deactiveUser(){
