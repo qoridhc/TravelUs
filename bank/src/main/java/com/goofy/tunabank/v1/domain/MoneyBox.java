@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,6 +43,14 @@ public class MoneyBox {
 
   //잔액
   private double balance;
+
+  //개설 일시
+  @Column(name = "created_at")
+  private LocalDateTime createdAt;
+
+  //수정 일시
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
 
   //거래 기록
   @OneToMany(mappedBy = "moneyBox", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -19,7 +19,7 @@ public class TransactionResponseDto {
   //거래 종류
   private TransactionType transactionType;
 
-  //계좌 번호
+  //상대 계좌 번호
   private String accountNo;
 
   //거래 일시

@@ -90,11 +90,6 @@ public class UserService {
 
   public UserDeleteResponseDto deleteUser(UserDeleteRequestDto request) {
 
-    // 유저 조회
-    User user = userRepository.findByEmail(request.getUserId()).orElseThrow(
-        () -> new UserNotFoundException(request.getUserId())
-    );
-
     // 키 검증
 //    if(user.getValidUserKey().isPresent()) {}
 

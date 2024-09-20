@@ -1,4 +1,4 @@
-package com.goofy.tunabank.v1.repository.queryDSL;
+package com.goofy.tunabank.v1.repository.transaction;
 
 import com.goofy.tunabank.v1.domain.TransactionHistory;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDto;
