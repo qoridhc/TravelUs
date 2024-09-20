@@ -1,8 +1,7 @@
-package com.goofy.tunabank.v1.repository;
+package com.goofy.tunabank.v1.repository.transaction;
 
 import com.goofy.tunabank.v1.domain.TransactionHistory;
 import com.goofy.tunabank.v1.domain.TransactionHistoryId;
-import com.goofy.tunabank.v1.repository.queryDSL.TransactionHistoryCustomRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

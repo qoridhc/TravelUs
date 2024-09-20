@@ -13,38 +13,38 @@ sonarqube-check:
   only:
     - feature/be/aut
 
-stages:
-  - trigger
+# stages:
+#   - trigger
 
-# 프론트엔드 변경 시 프론트엔드 파이프라인 트리거
-frontend_pipeline:
-  stage: trigger
-  script:
-    - curl -u "travelus:${JENKINS_API_TOKEN}" -H "${JENKINS_CRUMB}" -X POST "http://j11d209.p.ssafy.io:9090/job/travelus-frontend/build?token=${JENKINS_API_TOKEN}" 
-  only:
-    refs:
-      - /^release.*$/
-    changes:
-      - travelus/frontend/**
+# # 프론트엔드 변경 시 프론트엔드 파이프라인 트리거
+# frontend_pipeline:
+#   stage: trigger
+#   script:
+#     - curl -u "travelus:${JENKINS_API_TOKEN}" -H "${JENKINS_CRUMB}" -X POST "http://j11d209.p.ssafy.io:9090/job/travelus-frontend/build?token=${JENKINS_API_TOKEN}" 
+#   only:
+#     refs:
+#       - /^release.*$/
+#     changes:
+#       - travelus/frontend/**
 
-# 백엔드 변경 시 프론트엔드 파이프라인 트리거
-backend_pipeline:
-  stage: trigger
-  script:
-    - curl -u "travelus:${JENKINS_API_TOKEN}" -H "${JENKINS_CRUMB}" -X POST "http://j11d209.p.ssafy.io:9090/job/travelus-backend/build?token=${JENKINS_API_TOKEN}" 
-  only:
-    refs:
-      - /^release.*$/
-    changes:
-      - travelus/backend/**
+# # 백엔드 변경 시 프론트엔드 파이프라인 트리거
+# backend_pipeline:
+#   stage: trigger
+#   script:
+#     - curl -u "travelus:${JENKINS_API_TOKEN}" -H "${JENKINS_CRUMB}" -X POST "http://j11d209.p.ssafy.io:9090/job/travelus-backend/build?token=${JENKINS_API_TOKEN}" 
+#   only:
+#     refs:
+#       - /^release.*$/
+#     changes:
+#       - travelus/backend/**
 
-# 은행 API 변경 시 백엔드 파이프라인 트리거
-bank_pipeline:
-  stage: trigger
-  script:
-    - curl -u "travelus:${JENKINS_API_TOKEN}" -H "${JENKINS_CRUMB}" -X POST "http://j11d209.p.ssafy.io:9090/job/tunabank/build?token=${JENKINS_API_TOKEN}" 
-  only:
-    refs:
-      - /^release.*$/
-    changes:
-      - bank/**
+# # 은행 API 변경 시 백엔드 파이프라인 트리거
+# bank_pipeline:
+#   stage: trigger
+#   script:
+#     - curl -u "travelus:${JENKINS_API_TOKEN}" -H "${JENKINS_CRUMB}" -X POST "http://j11d209.p.ssafy.io:9090/job/tunabank/build?token=${JENKINS_API_TOKEN}" 
+#   only:
+#     refs:
+#       - /^release.*$/
+#     changes:
+#       - bank/**

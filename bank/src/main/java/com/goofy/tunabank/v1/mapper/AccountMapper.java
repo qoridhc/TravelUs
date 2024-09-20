@@ -9,7 +9,6 @@ import org.mapstruct.Mapping;
 public interface AccountMapper {
 
     @Mapping(source = "id", target = "accountId")  // 복합키의 accountId 필드 매핑
-    @Mapping(source = "currency.currencyCode", target = "currencyCode")
     AccountDto toDto(Account account);
 
 }

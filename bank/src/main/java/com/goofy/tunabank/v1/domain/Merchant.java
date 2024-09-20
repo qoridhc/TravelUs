@@ -39,8 +39,4 @@ public class Merchant {
   //경도
   @Column(length = 100)
   private String lng;
-
-  //거래기록
-  @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<TransactionHistory> transactionHistories;
 }
