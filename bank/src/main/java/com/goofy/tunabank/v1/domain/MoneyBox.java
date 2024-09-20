@@ -10,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -25,34 +24,46 @@ import lombok.NoArgsConstructor;
 @Entity
 public class MoneyBox {
 
-  //돈통 id
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "money_box_id")
-  private Long id;
+    //돈통 id
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "money_box_id")
+    private Long id;
 
-  //통장 id
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "account_id")
-  private Account account;
+    //통장 id
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
 
-  //통화 id
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "currency_id")
-  private Currency currency;
+    //통화 id
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "currency_id")
+    private Currency currency;
 
-  //잔액
-  private double balance;
+    //잔액
+    private double balance;
 
-  //개설 일시
-  @Column(name = "created_at")
-  private LocalDateTime createdAt;
+    //개설 일시
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-  //수정 일시
-  @Column(name = "updated_at")
-  private LocalDateTime updatedAt;
+    //수정 일시
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
-  //거래 기록
-  @OneToMany(mappedBy = "moneyBox", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<TransactionHistory> transactionHistories;
+    //거래 기록
+    @OneToMany(mappedBy = "moneyBox", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TransactionHistory> transactionHistories;
+
+    // ==== 생성 메서드 ====
+    public static MoneyBox createMoneyBox(Currency currency) {
+        MoneyBox moneyBox = MoneyBox.builder()
+            .currency(currency)
+            .balance(0.0)  // 초기 잔액 0
+            .createdAt(LocalDateTime.now())
+            .updatedAt(LocalDateTime.now())
+            .build();
+
+        return moneyBox;
+    }
 }
