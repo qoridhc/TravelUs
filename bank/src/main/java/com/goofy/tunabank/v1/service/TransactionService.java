@@ -4,6 +4,7 @@ import com.goofy.tunabank.v1.domain.Enum.TransactionType;
 import com.goofy.tunabank.v1.domain.Enum.TransferType;
 import com.goofy.tunabank.v1.domain.MoneyBox;
 import com.goofy.tunabank.v1.domain.TransactionHistory;
+import com.goofy.tunabank.v1.dto.exchange.ExchangeAmountRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.TransferDetailDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionRequestDto;
@@ -18,6 +19,9 @@ import com.goofy.tunabank.v1.exception.transaction.TransactionHistoryNotFoundExc
 import com.goofy.tunabank.v1.mapper.TransactionMapper;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
 import com.goofy.tunabank.v1.repository.transaction.TransactionHistoryRepository;
+import com.goofy.tunabank.v1.util.LogUtil;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -32,9 +36,10 @@ public class TransactionService {
   private final TransactionHistoryRepository transactionHistoryRepository;
   private final MoneyBoxRepository moneyBoxRepository;
   private final TransactionMapper transactionMapper;
+  private final ExchangeService exchangeService;
   private static final int KRW_CURRENCY_ID = 1;
 
-  //TODO: userKey확인 및 비밀번호 체크
+  //TODO: userKey확인 및 비밀번호 검사
 
   /**
    * 입금 처리
@@ -57,16 +62,24 @@ public class TransactionService {
   }
 
   /**
-   * 머니박스 잔액 업데이트
+   * 머니 박스 잔액 업데이트
    */
   @Transactional
   public double updateAccountBalance(MoneyBox moneyBox, double amount, boolean isDeposit) {
-    double currentBalance = moneyBox.getBalance();
-    double afterBalance = isDeposit ? currentBalance + amount : currentBalance - amount;
-    moneyBox.setBalance(afterBalance);
+
+    BigDecimal currentBalance = BigDecimal.valueOf(moneyBox.getBalance());
+    BigDecimal transactionAmount = BigDecimal.valueOf(amount);
+
+    BigDecimal afterBalance = isDeposit ? currentBalance.add(transactionAmount)
+        : currentBalance.subtract(transactionAmount);
+
+    afterBalance = afterBalance.setScale(2, RoundingMode.HALF_UP);
+
+    moneyBox.setBalance(afterBalance.doubleValue());
     moneyBox.setUpdatedAt(LocalDateTime.now());
     moneyBoxRepository.save(moneyBox);
-    return afterBalance;
+
+    return afterBalance.doubleValue();
   }
 
 
@@ -116,8 +129,7 @@ public class TransactionService {
         KRW_CURRENCY_ID);
 
     TransferDetailDto transferDetailDto = TransferDetailDto.builder()
-        .transferType(requestDto.getTransferType())
-        .withdrawalBox(withdrawalBox)
+        .transferType(requestDto.getTransferType()).withdrawalBox(withdrawalBox)
         .withdrawalAmount(requestDto.getTransactionBalance())
         .withdrawalSummary(requestDto.getWithdrawalTransactionSummary()).depositBox(depositBox)
         .depositAmount(requestDto.getTransactionBalance())
@@ -131,14 +143,27 @@ public class TransactionService {
    * 머니박스 이체
    */
   @Transactional
-  public List<TransactionResponseDto> processMoneyBoxTransfer(
-      TransferMBRequestDto requestDto) {
+  public List<TransactionResponseDto> processMoneyBoxTransfer(TransferMBRequestDto requestDto) {
 
-    /**
-     * 1. 환전 금액 계산
-     * 2. 환전 신청 금액 받아둠
-     * 3. 박스간 이체
-     */
+    double beforeAmount = requestDto.getTransactionBalance();//해당 머니박스의 통화단위임
+    ExchangeAmountRequestDto exchangeAmountRequestDto = switch (requestDto.getSourceCurrencyId()) {
+      case 2 ->
+          exchangeService.calculateAmountFromForeignCurrencyToKRW(requestDto.getSourceCurrencyId(),
+              beforeAmount);// 외화 -> 원화
+      default -> {
+        // 원화 -> 외화일 때만 10원 단위로 조정
+        if (beforeAmount % 10 != 0) {
+          beforeAmount -= (beforeAmount % 10);
+        }
+        yield exchangeService.calculateAmountFromKRWToForeignCurrency(
+            requestDto.getTargetCurrencyId(), beforeAmount);// 원화 -> 외화
+      }
+    };
+
+    double calculatedAmount = exchangeAmountRequestDto.getAmount();
+    double exchangeRate = exchangeAmountRequestDto.getExchangeRate();
+    String summary = "적용 환율: " + exchangeRate;
+
     // 출금 머니박스
     MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrency(requestDto.getAccountId(),
         requestDto.getSourceCurrencyId());
@@ -148,13 +173,10 @@ public class TransactionService {
         requestDto.getTargetCurrencyId());
 
     TransferDetailDto transferDetailDto = TransferDetailDto.builder()
-        .transferType(requestDto.getTransferType())
-        .withdrawalBox(withdrawalBox)
-        .withdrawalAmount(1200)
-        .withdrawalSummary("환전 출금")
-        .depositBox(depositBox)
-        .depositAmount(1)
-        .depositSummary("환전 입금")
+        .transferType(requestDto.getTransferType()).withdrawalBox(withdrawalBox)
+        .withdrawalAmount(beforeAmount)//신청 금액
+        .withdrawalSummary(summary).depositBox(depositBox).depositAmount(calculatedAmount)//환전된 금액
+        .depositSummary(summary)
         .transmissionDateTime(requestDto.getHeader().getTransmissionDateTime()).build();
 
     return processTransferLogic(transferDetailDto);
@@ -186,6 +208,7 @@ public class TransactionService {
         withdrawalTransactionHistory);
 
     // 입금 기록 저장
+    LogUtil.info("입금금액: ", dto.getDepositAmount());
     type = dto.getTransferType() == TransferType.G ? TransactionType.TD : TransactionType.ED;
     TransactionHistory depositTransactionHistory = TransactionHistory.createTransactionHistory(
         nextId, type, dto.getDepositBox(), dto.getWithdrawalBox().getAccount().getAccountNo(),
@@ -214,9 +237,22 @@ public class TransactionService {
   }
 
   /**
-   * 환전 금액 계산
+   * 다음 거래 기록 id 조회
    */
+  @Transactional(readOnly = true)
+  public Long getNextTransactionId() {
+    Long nextId = transactionHistoryRepository.findMaxAccountId();
+    return (nextId == null) ? 1L : nextId + 1;
+  }
 
+  /**
+   * 머니박스 조회
+   */
+  @Transactional(readOnly = true)
+  public MoneyBox findMoneyBoxByAccountAndCurrency(long accountId, int currencyId) {
+    return moneyBoxRepository.findMoneyBoxByAccountAndCurrency(accountId, currencyId)
+        .orElseThrow(() -> new MoneyBoxNotFoundException(accountId, currencyId));
+  }
 
   /**
    * 출금시 유효성 검증
@@ -229,21 +265,5 @@ public class TransactionService {
     if (amount > currentBalance) {
       throw new InsufficientBalanceException(currentBalance, amount);
     }
-  }
-
-  /**
-   * 다음 거래 기록 id 조회
-   */
-  private Long getNextTransactionId() {
-    Long nextId = transactionHistoryRepository.findMaxAccountId();
-    return (nextId == null) ? 1L : nextId + 1;
-  }
-
-  /**
-   * 머니박스 조회
-   */
-  private MoneyBox findMoneyBoxByAccountAndCurrency(long accountId, int currencyId) {
-    return moneyBoxRepository.findMoneyBoxByAccountAndCurrency(accountId, currencyId)
-        .orElseThrow(() -> new MoneyBoxNotFoundException(accountId, currencyId));
   }
 }
