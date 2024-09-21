@@ -28,6 +28,6 @@ public class ExchangeController {
   @GetMapping("/{currencyCode}")
   public ResponseEntity<ExchangeRateCacheDTO> getExchangeRatebyCurrencyCode(@PathVariable String currencyCode) {
 
-    return ResponseEntity.ok().body(exchangeService.getExchangeRateByCurrencyCode(currencyCode));
+    return ResponseEntity.ok().body(exchangeService.getExchangeRateCache(currencyCode));
   }
 }
