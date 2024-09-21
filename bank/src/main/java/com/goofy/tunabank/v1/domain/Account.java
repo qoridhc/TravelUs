@@ -28,27 +28,28 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Account {
 
-  @Id
-  @Column(name = "account_id")
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @Column(name = "account_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  private String accountNo;
+    private String accountNo;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "account_type")
-  private AccountType accountType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "account_type")
+    private AccountType accountType;
 
-  private String accountPassword;
+    private String accountPassword;
 
-  private LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
-  private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "bank_id")
-  private Bank bank;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bank_id")
+    private Bank bank;
 
-  @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<MoneyBox> moneyBoxes = new ArrayList<>();
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MoneyBox> moneyBoxes = new ArrayList<>();
+
 }
