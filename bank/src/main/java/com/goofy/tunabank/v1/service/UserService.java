@@ -10,15 +10,18 @@ import com.goofy.tunabank.v1.dto.user.UserJoinRequestDto;
 import com.goofy.tunabank.v1.dto.user.UserJoinResponseDto;
 import com.goofy.tunabank.v1.dto.user.UserSearchRequestDto;
 import com.goofy.tunabank.v1.dto.user.UserSearchResponseDto;
-import com.goofy.tunabank.v1.exception.auth.UserNotFoundException;
-import com.goofy.tunabank.v1.exception.user.UserExitException;
 import com.goofy.tunabank.v1.exception.user.EmailDuplicatedException;
+import com.goofy.tunabank.v1.exception.user.UserExitException;
 import com.goofy.tunabank.v1.exception.user.UserKeyNotFoundException;
+import com.goofy.tunabank.v1.exception.user.UserNotFoundException;
 import com.goofy.tunabank.v1.mapper.UserMapper;
 import com.goofy.tunabank.v1.provider.KeyProvider;
 import com.goofy.tunabank.v1.repository.KeyRepository;
 import com.goofy.tunabank.v1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -105,15 +108,14 @@ public class UserService {
     User user = findUserByUserKey(keyValue);
 
     // 유저 탈퇴 처리
-    user.deactiveUser();
+    user.deactivateUser();
     return new UserDeleteResponseDto();
   }
 
   /*
-  * 비즈니스 로직용 유저 조회 메서드
+  * 비즈니스 로직용 유저 조회 메서드(유저키로 조회)
   */
   public User findUserByUserKey(String keyValue) {
-
     // key 조회
     Key userKey = keyRepository.findByKeyValueWithUser(keyValue).orElseThrow(
         () -> new UserKeyNotFoundException(keyValue)
@@ -132,5 +134,19 @@ public class UserService {
 
     return user;
   }
+
+  /*
+  * 비즈니스 로직용 유저 조회 메서드2(아무것도 필요 없음)
+  */
+  public User findUserByHeader() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null || authentication.getPrincipal() == null || "0".equals(authentication.getPrincipal())) {
+      throw new UserKeyNotFoundException("0");
+    }
+
+    UserDetails detail = (UserDetails) authentication.getPrincipal();
+    return findUserByUserKey(detail.getUsername());
+  }
+
 
 }
