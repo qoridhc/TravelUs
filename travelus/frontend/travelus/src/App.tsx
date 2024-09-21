@@ -15,6 +15,8 @@ import MeetingAccountDetail from "./pages/account/MeetingAccountDetail";
 import JoinedMeetingAccountDetail from "./pages/account/JoinedMeetingAccountDetail";
 import AccountHistory from "./pages/accountHistory/AccountHistory";
 import ViewAccount from "./pages/viewaccount/Account";
+import TransferSelectBank from "./pages/transfer/TransferSelectBank";
+import TransferSetMoney from "./pages/transfer/TransferSetMoney";
 import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
 import AccountCreate from "./pages/account/AccountCreate";
@@ -96,6 +98,10 @@ function App() {
           <Route path="/account" element={<ViewAccount />} />
           <Route path="/accounthistory/:accountNo" element={<AccountHistory />} />
 
+          {/* 이체 */}
+          <Route path="/transfer/selectbank" element={<TransferSelectBank />} />
+          <Route path="/transfer/setmoney" element={<TransferSetMoney />} />
+          
           {/* 환전 */}
           <Route path="/exchange" element={<Exchange />}></Route>
           <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>

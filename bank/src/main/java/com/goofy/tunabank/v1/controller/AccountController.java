@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +35,7 @@ public class AccountController {
         AccountDto responseDto = accountService.postNewAccount(requestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+
     }
 
     // 모임 통장 머니박스 추가
