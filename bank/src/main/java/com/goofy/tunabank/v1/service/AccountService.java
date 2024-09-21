@@ -47,7 +47,7 @@ public class AccountService {
     public AccountDto postNewAccount(CreateGeneralAccountRequestDto requestDto) {
 
         // 유저 정보 생성
-        User user = userService.findUserByUserKey(requestDto.getHeader().getUserKey());
+        User user = userService.findUserByHeader();
 
         // 일반 계좌 생성
         Currency currency = currencyRepository.findByCurrencyCode(CurrencyType.KRW);
@@ -81,7 +81,7 @@ public class AccountService {
     public List<MoneyBoxDto> addAccountMoneyBox(AddMoneyBoxRequestDto requestDto) {
 
         // 유저 정보 생성
-        User user = userService.findUserByUserKey(requestDto.getHeader().getUserKey());
+        User user = userService.findUserByHeader();
 
         Account account = accountRepository.findGroupAccountById(requestDto.getAccountId())
             .orElseThrow(() -> new InvalidGroupAccountIdException(requestDto.getAccountId()));
@@ -112,7 +112,7 @@ public class AccountService {
     // ==== 계좌 조회 ====
     public AccountDto inquireAccount(InquireAccountRequestDto requestDto) {
 
-        userService.findUserByUserKey(requestDto.getHeader().getUserKey());
+        userService.findUserByHeader();
 
         Account account = accountRepository.findById(requestDto.getAccountId())
             .orElseThrow(() -> new InvalidAccountIdException(requestDto.getAccountId()));
