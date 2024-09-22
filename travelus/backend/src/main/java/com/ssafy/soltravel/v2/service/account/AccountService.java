@@ -42,7 +42,6 @@ public class AccountService {
 
   private final Map<String, String> apiKeys;
   private final WebClient webClient;
-  private final ModelMapper modelMapper;
   private final AccountMapper accountMapper;
   private final ObjectMapper objectMapper;
 
@@ -171,61 +170,6 @@ public class AccountService {
 //    return ResponseEntity.status(HttpStatus.OK).body(accountDtos);
 //  }
 
-  // 계좌 디테일 조회
-//    public ResponseEntity<AccountDto> getDetailByAccount(String accountNo, boolean isForeign) {
-//
-//        Long userId = SecurityUtil.getCurrentUserId();
-//
-//        User user = userRepository.findByUserId(userId)
-//            .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
-//
-//        String API_NAME = "inquireDemandDepositAccount";
-//        String API_URL = BASE_URL + "/" + API_NAME;
-//
-//        if (isForeign) {
-//            API_NAME = "inquireForeignCurrencyDemandDepositAccount";
-//            API_URL = BASE_URL + "/foreignCurrency/" + API_NAME;
-//        }
-//
-//        // 추후에 userId 받아서 userKey 수정
-//        // 현재는 유저 구현 안되서 임시로 처리함
-//        Header header = Header.builder()
-//            .apiName(API_NAME)
-//            .apiServiceCode(API_NAME)
-//            .apiKey(apiKeys.get("API_KEY"))
-//            .userKey(user.getUserKey())
-//            .build();
-//
-//        Map<String, Object> body = new HashMap<>();
-//        body.put("Header", header);
-//        body.put("accountNo", accountNo);
-//
-//        try {
-//            // 일반 계좌 DB 저장 로직 유저 완성 시 추가
-//            ResponseEntity<Map<String, Object>> response = webClient.post()
-//                .uri(API_URL)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .bodyValue(body)
-//                .retrieve()
-//                .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
-//                })
-//                .block();
-//
-//            // REC 부분을 Object 타입으로 받기
-//            Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
-//
-//            Long accountId = generalAccountRepository.findAccountIdsByAccountNo(accountNo);
-//
-//            AccountDto accountDto = modelMapper.map(recObject, AccountDto.class);
-//            accountDto.setId(accountId);
-//
-//            return ResponseEntity.status(HttpStatus.OK).body(accountDto);
-//        } catch (WebClientResponseException e) {
-//            throw e;
-//        }
-//    }
-//
-//
 //  public ResponseEntity<DeleteAccountResponseDto> deleteAccount(
 //      String accountNo,
 //      boolean isForeign,

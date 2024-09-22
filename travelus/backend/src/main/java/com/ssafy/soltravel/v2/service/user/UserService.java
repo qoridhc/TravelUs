@@ -127,13 +127,13 @@ public class UserService implements UserDetailsService {
     /* 회원가입과 동시에 계좌 생성 구현 완료 */
     // 외부 API 요청용 Body 생성(계좌 생성)
     CreateAccountRequestDto accountDto = CreateAccountRequestDto.builder()
-        .userKey(user.getUserKey())
+        .userId(user.getUserId())
         .accountType(String.valueOf(AccountType.I))
         .accountPassword(createDto.getAccountPassword())
         .bankId(1)
         .build();
 
-    accountService.createGeneralAccount(user.getUserId(), accountDto);
+    accountService.createGeneralAccount(accountDto);
 
     return user.getUserId();
   }
