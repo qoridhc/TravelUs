@@ -1,4 +1,4 @@
-package com.goofy.tunabank.v1.exception.auth;
+package com.goofy.tunabank.v1.exception.user;
 
 import com.goofy.tunabank.v1.dto.auth.ApiKeyIssueRequestDto;
 import com.goofy.tunabank.v1.exception.CustomException;

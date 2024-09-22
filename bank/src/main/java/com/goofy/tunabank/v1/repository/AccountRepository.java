@@ -9,4 +9,7 @@ public interface AccountRepository extends JpaRepository<Account, Long>, Account
 
     // 간단한 JPA 쿼리 메소드
     Optional<Account> findById(Long accountId);
+
+    // 계좌번호로 조회
+    Optional<Account> findByAccountNo(String accountNo);
 }
