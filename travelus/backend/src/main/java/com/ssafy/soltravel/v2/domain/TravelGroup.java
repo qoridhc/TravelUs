@@ -29,7 +29,7 @@ public class TravelGroup {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long groupId;
 
-	private int groupAccountId;
+	private String groupAccountNo;
 
 	private String travelStartDate;
 
@@ -47,6 +47,7 @@ public class TravelGroup {
 
 	public static TravelGroup createGroupEntity(String accountNo, CreateGroupRequestDto requestDto){
 			TravelGroup travelGroup = TravelGroup.builder()
+				.groupAccountNo(accountNo)
 				.travelStartDate(requestDto.getTravelStartDate())
 				.travelEndDate(requestDto.getTravelEndDate())
 				.groupName(requestDto.getGroupName())

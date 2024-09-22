@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.v2.service.group;
 
+import com.ssafy.soltravel.v1.domain.Enum.AccountType;
 import com.ssafy.soltravel.v2.domain.TravelGroup;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
@@ -7,6 +8,7 @@ import com.ssafy.soltravel.v2.dto.account.request.InquireAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.group.GroupDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateGroupRequestDto;
 import com.ssafy.soltravel.v2.exception.UserNotFoundException;
+import com.ssafy.soltravel.v2.exception.account.InvalidGroupAccountException;
 import com.ssafy.soltravel.v2.mapper.GroupMapper;
 import com.ssafy.soltravel.v2.repository.GroupRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
@@ -46,6 +48,10 @@ public class GroupService {
         );
 
         AccountDto accountDto = accountService.getByAccountNo(inquireAccountRequestDto);
+
+        if(!accountDto.getAccountType().equals(AccountType.G)){
+            throw new InvalidGroupAccountException();
+        }
 
         TravelGroup travelGroup = TravelGroup.createGroupEntity(accountDto.getAccountNo(), requestDto);
 
