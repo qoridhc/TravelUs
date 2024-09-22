@@ -2,9 +2,7 @@ package com.ssafy.soltravel.v2.controller;
 
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
-import com.ssafy.soltravel.v2.dto.account.request.DeleteAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.account.response.CreateAccountResponseDto;
-import com.ssafy.soltravel.v2.dto.account.response.DeleteAccountResponseDto;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,15 +11,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,12 +42,12 @@ public class GeneralAccountController {
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
     @PostMapping("/{userId}")
-    public ResponseEntity<Map<String, Object>> createAccount(
+    public ResponseEntity<AccountDto> createAccount(
         @Parameter(description = "사용자의 userId", example = "1")
         @PathVariable Long userId,
         @RequestBody CreateAccountRequestDto dto
     ) {
-        Map<String, Object> generalAccount = accountService.createGeneralAccount(userId, dto);
+        AccountDto generalAccount = accountService.createGeneralAccount(userId, dto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(generalAccount);
     }

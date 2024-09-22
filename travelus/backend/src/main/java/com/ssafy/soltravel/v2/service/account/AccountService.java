@@ -1,49 +1,31 @@
 package com.ssafy.soltravel.v2.service.account;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.soltravel.v2.common.BankHeader;
-import com.ssafy.soltravel.v2.common.Header;
 import com.ssafy.soltravel.v2.domain.Enum.AccountType;
-import com.ssafy.soltravel.v2.domain.ForeignAccount;
 import com.ssafy.soltravel.v2.domain.GeneralAccount;
-import com.ssafy.soltravel.v2.domain.Participant;
 import com.ssafy.soltravel.v2.domain.User;
-import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
-import com.ssafy.soltravel.v2.dto.account.request.DeleteAccountRequestDto;
-import com.ssafy.soltravel.v2.dto.account.response.CreateAccountResponseDto;
-import com.ssafy.soltravel.v2.dto.account.response.DeleteAccountResponseDto;
-import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateRegisterRequestDto;
-import com.ssafy.soltravel.v2.dto.participants.ParticipantDto;
-import com.ssafy.soltravel.v2.dto.participants.request.AddParticipantRequestDto;
-import com.ssafy.soltravel.v2.dto.participants.request.ParticipantListResponseDto;
 import com.ssafy.soltravel.v2.dto.user.EmailValidationDto;
-import com.ssafy.soltravel.v2.exception.RefundAccountNotFoundException;
+import com.ssafy.soltravel.v2.exception.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.AccountMapper;
-import com.ssafy.soltravel.v2.mapper.ParticipantMapper;
 import com.ssafy.soltravel.v2.repository.ForeignAccountRepository;
 import com.ssafy.soltravel.v2.repository.GeneralAccountRepository;
 import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.util.LogUtil;
-import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Service
 @Transactional
@@ -54,6 +36,7 @@ public class AccountService {
   private final WebClient webClient;
   private final ModelMapper modelMapper;
   private final AccountMapper accountMapper;
+  private final ObjectMapper objectMapper;
 
   private final UserRepository userRepository;
   private final ParticipantRepository participantRepository;
@@ -61,29 +44,24 @@ public class AccountService {
   private final ForeignAccountRepository foreignAccountRepository;
   private final AccountExchangeService accountExchangeService;
 
-  private final String BASE_URL = "http://localhost:8085/api/v1/bank/accounts/";
+  private final String BASE_URL = "http://localhost:8080/api/v1/bank/accounts/";
 
-  public Map<String, Object> createGeneralAccount(
+  public AccountDto createGeneralAccount(
       Long userId,
       CreateAccountRequestDto requestDto
   ) {
-//
-//    User user = userRepository.findByUserId(userId)
-//        .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
-//
-//    String API_NAME = "createDemandDepositAccount";
+
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new UserNotFoundException(userId));
 
     Map<String, Object> body = new HashMap<>();
-
     String API_URL = BASE_URL + "postAccount";
 
-    BankHeader header = BankHeader.createHeader(requestDto.getUserKey());
-
-    LogUtil.info("header", header);
+    BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), requestDto.getUserKey());
 
     body.put("Header", header);
     body.put("accountType", requestDto.getAccountType());
-    body.put("accountPassword", requestDto.getAcocuntPassword());
+    body.put("accountPassword", requestDto.getAccountPassword());
     body.put("bankId", requestDto.getBankId());
 
     // 일반 계좌 DB 저장 로직 유저 완성 시 추가
@@ -96,19 +74,13 @@ public class AccountService {
         })
         .block();
 
-//    // REC 부분을 Object 타입으로 받기
-    Map<String, Object> recObject = response.getBody();
+    // REC 부분을 Object 타입으로 받기
+    Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
 
+    // recObject -> AccountDto 매핑
+    AccountDto accountDto = objectMapper.convertValue(recObject, AccountDto.class);
 
-    LogUtil.info("recObject", recObject);
-//    Map<String, String> recObject = response.getBody();
-
-//    GeneralAccount generalAccount = GeneralAccount.fromRecObject(recObject);
-//
-//    generalAccountRepository.save(generalAccount);
-
-
-    return recObject;
+    return accountDto;
   }
 
 //  public ForeignAccount createForeignAccount(User user, CreateAccountRequestDto requestDto,
@@ -461,27 +433,27 @@ public class AccountService {
 //    return foreignAccountRepository.findById(accountId).get();
 //  }
 //
-//
-//  /*
-//   * 유저 개인 계좌 전체 조회(기본정보)
-//   */
-//  public EmailValidationDto getPersonalAccountByEmail(String email) {
-//
-//    User user = userRepository.findByEmail(email).orElseThrow(
-//        () -> new RuntimeException(String.format("loadUserByUsername Failed: %s", email))
-//    );
-//
-//    long userId = user.getUserId();
-//    GeneralAccount generalAccount = generalAccountRepository.findFirstByUser_UserIdAndAccountType(
-//        userId, AccountType.INDIVIDUAL);
-//
-//    EmailValidationDto responseDto = EmailValidationDto.builder()
-//        .userId(userId)
-//        .userName(user.getName())
-//        .accountId(generalAccount.getId())
-//        .accountNo(generalAccount.getAccountNo())
-//        .build();
-//
-//    return responseDto;
-//  }
+
+  /*
+   * 유저 개인 계좌 전체 조회(기본정보)
+   */
+  public EmailValidationDto getPersonalAccountByEmail(String email) {
+
+    User user = userRepository.findByEmail(email).orElseThrow(
+        () -> new RuntimeException(String.format("loadUserByUsername Failed: %s", email))
+    );
+
+    long userId = user.getUserId();
+    GeneralAccount generalAccount = generalAccountRepository.findFirstByUser_UserIdAndAccountType(
+        userId, AccountType.INDIVIDUAL);
+
+    EmailValidationDto responseDto = EmailValidationDto.builder()
+        .userId(userId)
+        .userName(user.getName())
+        .accountId(generalAccount.getId())
+        .accountNo(generalAccount.getAccountNo())
+        .build();
+
+    return responseDto;
+  }
 }
