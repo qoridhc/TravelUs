@@ -1,11 +1,14 @@
 package com.ssafy.soltravel.v2.service.transaction;
 
 import com.ssafy.soltravel.v2.common.Header;
+import com.ssafy.soltravel.v2.domain.Enum.TransactionType;
+import com.ssafy.soltravel.v2.dto.transaction.request.TransactionHistoryRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransactionResponseDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
 import com.ssafy.soltravel.v2.repository.UserRepository;
+import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.WebClientUtil;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +33,8 @@ public class TransactionService {
   private final UserRepository userRepository;
 
   // 입금
-  public ResponseEntity<TransactionResponseDto> postAccountDeposit(TransactionRequestDto requestDto) {
+  public ResponseEntity<TransactionResponseDto> postAccountDeposit(
+      TransactionRequestDto requestDto) {
 
     return processTransaction("deposit", requestDto);
   }
@@ -43,7 +47,8 @@ public class TransactionService {
   }
 
   // 일반 이체
-  public ResponseEntity<List<TransferHistoryResponseDto>> postGeneralTransfer(TransferRequestDto requestDto){
+  public ResponseEntity<List<TransferHistoryResponseDto>> postGeneralTransfer(
+      TransferRequestDto requestDto) {
 
     return processTransfer("general", requestDto);
   }
@@ -76,7 +81,8 @@ public class TransactionService {
 
     Object recObject = response.getBody().get("REC");
 
-    TransactionResponseDto transactionResponseDto = modelMapper.map(recObject, TransactionResponseDto.class);
+    TransactionResponseDto transactionResponseDto = modelMapper.map(recObject,
+        TransactionResponseDto.class);
     return ResponseEntity.status(HttpStatus.OK).body(transactionResponseDto);
   }
 
@@ -118,41 +124,45 @@ public class TransactionService {
 
     return ResponseEntity.status(HttpStatus.OK).body(responseDto);
   }
-//
-//  public ResponseEntity<List<TransactionHistoryDto>> getHistoryByAccountNo(String accountNo,
-//      TransactionHistoryRequestDto requestDto) {
-//
-//    Long userId = SecurityUtil.getCurrentUserId();
+
+  /**
+   * 거래 내역 조회
+   */
+  public ResponseEntity<List<TransferHistoryResponseDto>> getHistory(
+      TransactionHistoryRequestDto requestDto) {
+
+    //    Long userId = SecurityUtil.getCurrentUserId();
 //    User user = userRepository.findByUserId(userId)
-//        .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
-//
-//    String API_NAME = "inquireTransactionHistoryList";
-//    String API_URL = BASE_URL + "/" + API_NAME;
-//
-//    Header header = Header.builder().apiName(API_NAME).apiServiceCode(API_NAME)
-//        .apiKey(apiKeys.get("API_KEY")).userKey(user.getUserKey()).build();
-//
-//    Map<String, Object> body = new HashMap<>();
-//
-//    body.put("Header", header);
-//    body.put("accountNo", accountNo);
-//    body.put("startDate", requestDto.getStartDate());
-//    body.put("endDate", requestDto.getEndDate());
-//    body.put("transactionType", requestDto.getTransactionType());
-//    body.put("orderByType", requestDto.getOrderByType());
-//
-//    ResponseEntity<Map<String, Object>> response = webClient.post().uri(API_URL)
-//        .contentType(MediaType.APPLICATION_JSON).bodyValue(body).retrieve()
-//        .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
-//        }).block();
-//
-//    Map<String, Object> recObject = (Map<String, Object>) response.getBody().get("REC");
-//    List<Object> recList = (List<Object>) recObject.get("list");
-//
-//    List<TransactionHistoryDto> responseDto = recList.stream()
-//        .map(value -> modelMapper.map(value, TransactionHistoryDto.class))
-//        .collect(Collectors.toList());
-//
-//    return ResponseEntity.status(HttpStatus.OK).body(responseDto);
-//  }
+//        .orElseThrow(() -> new UserNotFoundException(userId));
+
+    String API_URL = BASE_URL + "/history";
+
+    Header header = Header.builder()
+//        .apiKey(apiKeys.get("API_KEY"))
+//        .userKey(user.getUserKey()).build();
+        .apiKey("V4BYi-78qMmIyXoJOcnCXRE0TXIyWgjBlZcAYe4JIljMu6of_GJ8kbUBWlfqW0WN")
+        .userKey("779e4e7e-ccd7-420c-92b5-8770cfd9199e").build();
+
+    LogUtil.info("requestDto: ", requestDto);
+    Map<String, Object> body = new HashMap<>();
+    body.put("Header", header);
+    TransactionType transactionType = requestDto.getTransactionType();
+    if (transactionType != null) {
+      body.put("transactionType", transactionType);
+    }
+    body.put("moneyBoxId", requestDto.getMoneyBoxId());
+    body.put("startDate", requestDto.getStartDate());
+    body.put("endDate", requestDto.getEndDate());
+    body.put("orderByType", requestDto.getOrderByType());
+
+    ResponseEntity<Map<String, Object>> response = webClientUtil.request(API_URL, body, Map.class);
+
+    List<Object> recObject = (List<Object>) response.getBody().get("REC");
+
+    List<TransferHistoryResponseDto> responseDto = recObject.stream()
+        .map(value -> modelMapper.map(value, TransferHistoryResponseDto.class))
+        .collect(Collectors.toList());
+
+    return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+  }
 }

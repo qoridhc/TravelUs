@@ -89,16 +89,12 @@ public class TransactionController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @GetMapping("/{accountNo}/history")
-    public ResponseEntity<List<TransactionHistoryDto>> getHistoryByAccountNo(
-        @PathVariable String accountNo,
+    @GetMapping("/history")
+    public ResponseEntity<List<TransferHistoryResponseDto>> getHistoryByAccountNo(
         @ModelAttribute TransactionHistoryRequestDto requestDto
     ) {
 
-//        ResponseEntity<List<TransactionHistoryDto>> response = transactionService.getHistoryByAccountNo(accountNo,
-//            requestDto);
-//
-//        return response;
-        return null;
+        ResponseEntity<List<TransferHistoryResponseDto>> response = transactionService.getHistory(requestDto);
+        return response;
     }
 }
