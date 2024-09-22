@@ -11,7 +11,7 @@ public class AddMoneyBoxRequestDto {
     @JsonProperty("Header")
     private Header Header;
 
-    private Long accountId;
+    private String accountNo;
 
     private String accountPassword;
 

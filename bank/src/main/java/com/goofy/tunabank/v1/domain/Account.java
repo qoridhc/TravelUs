@@ -29,7 +29,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Account {
 
-
     @Id
     @Column(name = "account_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,11 +62,13 @@ public class Account {
         CreateGeneralAccountRequestDto requestDto, Bank bank, User user) {
 
         Account account = Account.builder()
+            .user(user)
             .bank(bank)
             .accountType(requestDto.getAccountType())
             .accountNo(createAccountNumber(requestDto.getAccountType()))  // 계좌 번호 생성
             .accountPassword(requestDto.getAccountPassword())
-            .user(user)
+            .createdAt(requestDto.getHeader().getTransmissionDateTime())
+            .updatedAt(requestDto.getHeader().getTransmissionDateTime())
             .build();
 
         return account;

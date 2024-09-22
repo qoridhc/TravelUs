@@ -1,41 +1,46 @@
 package com.ssafy.soltravel.v2.domain;
 
+import com.ssafy.soltravel.v2.dto.group.request.CreateGroupRequestDto;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Data
 @Entity
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class Participant {
+public class TravelGroup {
 
 	@Id
-	@Column(name = "participant_id")
+	@Column(name = "group_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Long groupId;
 
-	private boolean isMaster;
+	private String groupAccountNo;
 
-	private String personalAccountNo;
+	private String travelStartDate;
+
+	private String travelEndDate;
+
+	private String groupName;
+
+	private String icon;
 
 	@CreatedDate
 	private LocalDateTime createdAt;
@@ -43,23 +48,18 @@ public class Participant {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
-	private User user;
+	@OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Participant> participants;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "group_id")
-	private TravelGroup group;
+	public static TravelGroup createGroupEntity(String accountNo, CreateGroupRequestDto requestDto){
+			TravelGroup travelGroup = TravelGroup.builder()
+				.groupAccountNo(accountNo)
+				.travelStartDate(requestDto.getTravelStartDate())
+				.travelEndDate(requestDto.getTravelEndDate())
+				.groupName(requestDto.getGroupName())
+				.icon(requestDto.getIcon())
+				.build();
 
-	// 생성 메서드
-	public static Participant createParticipant(User user, TravelGroup group, boolean isMaster, String personalAccountNo) {
-		Participant participant = Participant.builder()
-			.user(user)
-			.group(group)
-			.isMaster(isMaster)
-			.personalAccountNo(personalAccountNo)
-			.build();
-		return participant;
+			return travelGroup;
 	}
-
 }
