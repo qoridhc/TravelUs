@@ -1,16 +1,22 @@
 package com.ssafy.soltravel.v2.service.group;
 
+import com.amazonaws.services.kms.model.InvalidGrantIdException;
 import com.ssafy.soltravel.v1.domain.Enum.AccountType;
+import com.ssafy.soltravel.v2.domain.Participant;
 import com.ssafy.soltravel.v2.domain.TravelGroup;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.InquireAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.group.GroupDto;
+import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateGroupRequestDto;
+import com.ssafy.soltravel.v2.dto.group.request.CreateParticipantRequestDto;
 import com.ssafy.soltravel.v2.exception.UserNotFoundException;
 import com.ssafy.soltravel.v2.exception.account.InvalidGroupAccountException;
+import com.ssafy.soltravel.v2.exception.group.InvalidGroupIdException;
 import com.ssafy.soltravel.v2.mapper.GroupMapper;
 import com.ssafy.soltravel.v2.repository.GroupRepository;
+import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.util.LogUtil;
@@ -34,6 +40,7 @@ public class GroupService {
     private final GroupMapper groupMapper;
 
     private final String BASE_URL = "http://localhost:8080/api/v1/bank/accounts/";
+    private final ParticipantRepository participantRepository;
 
     // 신규 모임 개설
     public GroupDto createNewGroup(CreateGroupRequestDto requestDto) {
@@ -49,17 +56,46 @@ public class GroupService {
 
         AccountDto accountDto = accountService.getByAccountNo(inquireAccountRequestDto);
 
-        if(!accountDto.getAccountType().equals(AccountType.G)){
+        // 모임은 모임계좌타입만 생성 가능
+        if(!accountDto.getAccountType() .equals(AccountType.G)){
             throw new InvalidGroupAccountException();
         }
 
-        TravelGroup travelGroup = TravelGroup.createGroupEntity(accountDto.getAccountNo(), requestDto);
+        TravelGroup group = TravelGroup.createGroupEntity(accountDto.getAccountNo(), requestDto);
 
-        groupRepository.save(travelGroup);
+        groupRepository.save(group);
 
-        LogUtil.info("accountDto", travelGroup);
+        return groupMapper.toDto(group);
+    }
 
-        return groupMapper.toDto(travelGroup);
+    public ParticipantDto createNewParticipant(CreateParticipantRequestDto requestDto) {
+
+        User user = userRepository.findByUserId(requestDto.getUserId())
+            .orElseThrow(() -> new UserNotFoundException(requestDto.getUserId()));
+
+        TravelGroup group = groupRepository.findById(requestDto.getGroupId())
+            .orElseThrow(() -> new InvalidGroupIdException());
+
+        InquireAccountRequestDto inquireAccountRequestDto = new InquireAccountRequestDto(
+            user.getUserId(),
+            requestDto.getPersonalAccountNo(),
+            requestDto.getAccountPassword()
+        );
+
+        AccountDto accountDto = accountService.getByAccountNo(inquireAccountRequestDto);
+
+        Participant participant = Participant.createParticipant(
+            user,
+            group,
+            requestDto.isMaster(),
+            requestDto.getPersonalAccountNo()
+        );
+
+        participantRepository.save(participant);
+
+        ParticipantDto participantDto = groupMapper.toParticipantDto(participant);
+
+        return participantDto;
     }
 
 }

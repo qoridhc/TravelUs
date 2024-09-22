@@ -18,11 +18,11 @@ public interface GeneralAccountRepository extends JpaRepository<GeneralAccount, 
     void deleteByAccountNo(String accountNo);
 
     List<GeneralAccount> findAllByUser_userId(Long userId);
-
-    @Query("SELECT g.id FROM GeneralAccount g " +
-        "JOIN g.foreignAccount f " +
-        "WHERE g.accountNo = :accountNo OR f.accountNo = :accountNo")
-    Long findAccountIdsByAccountNo(@Param("accountNo") String accountNo);
+//
+//    @Query("SELECT g.id FROM GeneralAccount g " +
+//        "JOIN g.foreignAccount f " +
+//        "WHERE g.accountNo = :accountNo OR f.accountNo = :accountNo")
+//    Long findAccountIdsByAccountNo(@Param("accountNo") String accountNo);
 
     Optional<GeneralAccount> findByAccountNo(String accountNo);
 
@@ -34,8 +34,8 @@ public interface GeneralAccountRepository extends JpaRepository<GeneralAccount, 
     @Query("SELECT ga.user FROM GeneralAccount ga WHERE ga.id = :generalAccountId")
     User findUserByGeneralAccountId(@Param("generalAccountId") Long generalAccountId);
 
-    @Query("SELECT ga FROM GeneralAccount ga JOIN ga.participants p WHERE p.user.userId = :userId " +
-        "AND ga.accountType = 'GROUP' " +
-        "AND p.isMaster = false")
-    List<GeneralAccount> findAllByParticipantUserId(@Param("userId") Long userId);
+//    @Query("SELECT ga FROM GeneralAccount ga JOIN ga.participants p WHERE p.user.userId = :userId " +
+//        "AND ga.accountType = 'GROUP' " +
+//        "AND p.isMaster = false")
+//    List<GeneralAccount> findAllByParticipantUserId(@Param("userId") Long userId);
 }
