@@ -3,15 +3,21 @@ package com.goofy.tunabank.v1.service;
 import com.goofy.tunabank.v1.config.RabbitMQConfig;
 import com.goofy.tunabank.v1.domain.Currency;
 import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
+import com.goofy.tunabank.v1.dto.exchange.ExchangeAmountRequestDto;
 import com.goofy.tunabank.v1.dto.exchange.ExchangeRateCacheDTO;
+import com.goofy.tunabank.v1.exception.exchange.MinimumAmountNotSatisfiedException;
+import com.goofy.tunabank.v1.exception.exchange.UnsupportedCurrencyException;
 import com.goofy.tunabank.v1.repository.CurrencyRepository;
 import com.goofy.tunabank.v1.util.LogUtil;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -24,11 +30,10 @@ public class ExchangeService {
   private final WebClient ExchangewebClient;
   private final CurrencyRepository currencyRepository;
   private final RabbitTemplate rabbitTemplate;
-
-
   private List<String> desiredCurrencies = List.of("USD", "JPY", "EUR", "CNY");
 
-  //  @Scheduled(cron = "30 0 * * * ?")
+
+//  @Scheduled(cron = "30 0 * * * ?")
   public List<ExchangeRateCacheDTO> updateExchangeRates() {
     String url = "/latest/KRW";
 
@@ -70,11 +75,32 @@ public class ExchangeService {
   }
 
   /**
-   * CurrencyRepository에서 환율 단건 조회 (TravelUs 캐싱용 DTO반환)
+   * 통화 단건조회(by Code)
    */
-  public ExchangeRateCacheDTO getExchangeRateByCurrencyCode(String currencyCode) {
+  @Transactional(readOnly = true)
+  public Currency getExchangeRateByCurrencyCode(String currencyCode) {
 
-    Currency response = currencyRepository.findByCurrencyCode(getCurrencyType(currencyCode));
+    Currency currency = currencyRepository.findByCurrencyCode(getCurrencyType(currencyCode));
+    return currency;
+  }
+
+  /**
+   * 환율 단건조회(by Id)
+   */
+  @Transactional(readOnly = true)
+  public double getExchangeRateByCurrencyId(int currencyId) {
+
+    Currency currency = currencyRepository.findById(currencyId)
+        .orElseThrow(() -> new UnsupportedCurrencyException(currencyId));
+    return currency.getExchangeRate();
+  }
+
+  /**
+   * TravelUs 캐싱용 DTO반환
+   */
+  public ExchangeRateCacheDTO getExchangeRateCache(String currencyCode) {
+
+    Currency response = getExchangeRateByCurrencyCode(currencyCode);
 
     return ExchangeRateCacheDTO.builder()
         .CurrencyCode(currencyCode)
@@ -92,6 +118,54 @@ public class ExchangeService {
     existingCurrency.setExchangeRate(exchangeRate);
     currencyRepository.save(existingCurrency);
   }
+
+  /**
+   * 최소 환전 금액을 반환하는 메서드
+   */
+  public double getMinimumAmount(int currency) {
+    switch (currency) {
+      case 2:
+        return 100;
+      case 3:
+        return 100;
+      default:
+        throw new UnsupportedCurrencyException(currency);
+    }
+  }
+
+  /**
+   * 환전 금액 계산 로직 1. 원화 -> 외화
+   *
+   * @param currencyId: 바꿀 통화
+   * @param amount:     원화의 얼마를 외화로 바꿀 것인지
+   */
+  public ExchangeAmountRequestDto calculateAmountFromKRWToForeignCurrency(int currencyId,
+      double amount) {
+
+    BigDecimal krw = BigDecimal.valueOf(amount);
+    BigDecimal rate = BigDecimal.valueOf(getExchangeRateByCurrencyId(currencyId));
+    BigDecimal calculatedAmount = krw.divide(rate, 2, RoundingMode.DOWN);
+
+    //최소 환전 금액 유효성 검사
+    double DcalculatedAmount = calculatedAmount.doubleValue();
+    if (DcalculatedAmount < getMinimumAmount(currencyId)) {
+      throw new MinimumAmountNotSatisfiedException(currencyId, DcalculatedAmount);
+    }
+    return new ExchangeAmountRequestDto(DcalculatedAmount, rate.doubleValue());
+  }
+
+  /**
+   * 환전 금액 계산 로직 2. 외화 -> 원화
+   */
+  public ExchangeAmountRequestDto calculateAmountFromForeignCurrencyToKRW(int currencyId,
+      double amount) {
+
+    double exchangeRate = getExchangeRateByCurrencyId(currencyId);
+    double krwAmount = amount * exchangeRate;
+
+    return new ExchangeAmountRequestDto(Math.floor(krwAmount), exchangeRate);
+  }
+
 
   /**
    * String의 currencyCode를 CurreucyType으로 변환

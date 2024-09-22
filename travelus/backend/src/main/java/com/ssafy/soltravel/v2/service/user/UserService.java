@@ -10,6 +10,7 @@ import com.ssafy.soltravel.v2.dto.user.UserDetailDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchResponseDto;
 import com.ssafy.soltravel.v2.dto.user.api.UserCreateRequestBody;
+import com.ssafy.soltravel.v2.dto.user.api.UserCreateRequestBody.Header;
 import com.ssafy.soltravel.v2.exception.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.UserMapper;
 import com.ssafy.soltravel.v2.repository.UserRepository;
@@ -18,6 +19,7 @@ import com.ssafy.soltravel.v2.service.NotificationService;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.PasswordEncoder;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -43,14 +45,14 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
-  private final String API_URI = "/member";
+  private final String API_URL = "http://localhost:8080/api/v1/bank";
+  private final String API_URI = "http://localhost:8080/api/v1/bank/user";
   private final UserRepository userRepository;
   private final AwsFileService fileService;
   private final Map<String, String> apiKeys;
   private final WebClient webClient;
   private final AccountService accountService;
   private final NotificationService notificationService;
-
 
   // 외부 API 요청용 메서드
   private <T> ResponseEntity<Map<String, Object>> request(
@@ -67,7 +69,7 @@ public class UserService implements UserDetailsService {
             clientResponse.bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
                 })
                 .flatMap(body -> {
-                  String responseMessage = body.get("responseMessage").toString();  // 원하는 메시지 추출
+                  String responseMessage = body.get("errorMessage").toString();  // 원하는 메시지 추출
                   return Mono.error(new WebClientResponseException(
                       clientResponse.statusCode().value(),
                       responseMessage,  // 예외 메시지로 설정
@@ -90,14 +92,18 @@ public class UserService implements UserDetailsService {
 
     // 외부 API 요청용 Body 생성(로그인)
     UserCreateRequestBody body = UserCreateRequestBody.builder()
-        .apiKey(apiKeys.get("API_KEY"))
+        .header(
+            Header.builder()
+                .apiKey(apiKeys.get("API_KEY"))
+                .build()
+        )
         .userId(createDto.getEmail())
         .build();
 
     // 외부 API 요청(로그인)
     LogUtil.info("request(create) to API", body);
     ResponseEntity<Map<String, Object>> response = request(
-        API_URI, body, UserCreateRequestBody.class
+        String.format("%s/join", API_URI), body, UserCreateRequestBody.class
     );
 
     // 외부 API 결과 저장(api key) 및 비밀번호 암호화

@@ -1,14 +1,12 @@
 package com.goofy.tunabank.v1.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goofy.tunabank.v1.common.RecWrapper;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionRequestDto;
+import com.goofy.tunabank.v1.dto.transaction.request.TransferMBRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.response.TransactionResponseDto;
 import com.goofy.tunabank.v1.service.TransactionService;
-import com.goofy.tunabank.v1.util.LogUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +23,21 @@ public class TransactionController {
   private final TransactionService transactionService;
 
   /**
-   * 입금 및 출금
+   * 입금
    */
-  @PostMapping
-  public ResponseEntity<RecWrapper<TransactionResponseDto>> processTransaction(
+  @PostMapping("/deposit")
+  public ResponseEntity<RecWrapper<TransactionResponseDto>> deposit(
+      @RequestBody TransactionRequestDto requestDto) {
+
+    TransactionResponseDto response = transactionService.processTransaction(requestDto);
+    return ResponseEntity.ok(new RecWrapper<>(response));
+  }
+
+  /**
+   * 출금
+   */
+  @PostMapping("/withdrawal")
+  public ResponseEntity<RecWrapper<TransactionResponseDto>> withdrawal(
       @RequestBody TransactionRequestDto requestDto) {
 
     TransactionResponseDto response = transactionService.processTransaction(requestDto);
@@ -38,11 +47,11 @@ public class TransactionController {
   /**
    * 이체
    */
-  @PostMapping("/transfer")
-  public ResponseEntity<RecWrapper<List<TransactionResponseDto>>> processTransfer(
+  @PostMapping("/transfer/general")
+  public ResponseEntity<RecWrapper<List<TransactionResponseDto>>> transfer(
       @RequestBody TransferRequestDto requestDto) {
 
-    List<TransactionResponseDto> response = transactionService.processTransfer(requestDto);
+    List<TransactionResponseDto> response = transactionService.processGeneralTransfer(requestDto);
     return ResponseEntity.ok(new RecWrapper<>(response));
   }
 
@@ -54,7 +63,26 @@ public class TransactionController {
       @RequestBody TransactionHistoryRequestDto requestDto) {
 
     List<TransactionResponseDto> response = transactionService.getTransactionHistory(requestDto);
-    LogUtil.info("response: {}", response);
     return ResponseEntity.ok(new RecWrapper<>(response));
+  }
+
+  /**
+   * 머니박스 이체
+   */
+  @PostMapping("/transfer/moneybox")
+  public ResponseEntity<RecWrapper<?>> transferBetweenMoneyBoxes(
+      @RequestBody TransferMBRequestDto requestDto) {
+
+    List<TransactionResponseDto> response = transactionService.processMoneyBoxTransfer(requestDto);
+    return ResponseEntity.ok(new RecWrapper<>(response));
+  }
+
+  /**
+   * 환전 예상 금액 조회
+   */
+  @PostMapping("/exchange/estimate")
+  public ResponseEntity<RecWrapper<?>> getExchangeEstimate() {
+
+    return null;
   }
 }

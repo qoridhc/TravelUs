@@ -6,7 +6,7 @@ import com.goofy.tunabank.v1.domain.Enum.TransferType;
 import lombok.Data;
 
 @Data
-public class TransferRequestDto {
+public class TransferMBRequestDto {
 
   //헤더
   @JsonProperty("Header")
@@ -15,18 +15,15 @@ public class TransferRequestDto {
   //이체 종류
   private TransferType transferType;
 
-  //출금 계좌 Id
-  private Long withdrawalAccountId;
+  //통장 id
+  private Long accountId;
 
-  //입금 계좌 Id
-  private Long depositAccountId;
+  //변경 전 통화
+  private int sourceCurrencyId;
 
-  //금액
+  //변경 후 통화
+  private int targetCurrencyId;
+
+  //신청 금액
   private double transactionBalance;
-
-  //출금 메모
-  private String withdrawalTransactionSummary;
-
-  //입금 메모
-  private String depositTransactionSummary;
 }

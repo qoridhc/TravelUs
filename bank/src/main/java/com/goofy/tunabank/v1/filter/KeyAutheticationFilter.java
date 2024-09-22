@@ -6,6 +6,8 @@ import com.goofy.tunabank.v1.exception.auth.ApiKeyNotFoundException;
 import com.goofy.tunabank.v1.exception.auth.AuthException;
 import com.goofy.tunabank.v1.provider.KeyProvider;
 import com.goofy.tunabank.v1.repository.KeyRepository;
+import com.goofy.tunabank.v1.repository.UserRepository;
+import com.goofy.tunabank.v1.service.UserService;
 import com.goofy.tunabank.v1.util.CachedBodyHttpServletRequest;
 import com.goofy.tunabank.v1.util.LogUtil;
 import jakarta.servlet.FilterChain;
@@ -21,7 +23,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -32,8 +33,12 @@ public class KeyAutheticationFilter extends OncePerRequestFilter {
 
   private final static String REQUEST_HEADER = "Header";
   private final static String REQUEST_APIKEY = "apiKey";
+  private final static String REQUEST_USERKEY = "userKey";
 
   private final ObjectMapper objectMapper = new ObjectMapper();
+
+  private final UserService userService;
+  private final UserRepository userRepository;
   private final KeyRepository keyRepository;
   private final KeyProvider keyProvider;
 
@@ -50,14 +55,21 @@ public class KeyAutheticationFilter extends OncePerRequestFilter {
           () -> new ApiKeyNotFoundException("Api Key is missing", "NULL")
       );
 
-      // 키 존재 유무 검사
-      Key key = keyRepository.findByKeyValueWithUser(apiKey).orElseThrow(
+      // api key 조회 및 존재 유무 검사
+      Key key = keyRepository.findByKeyValue(apiKey).orElseThrow(
           () -> new ApiKeyNotFoundException(apiKey)
       );
 
       // api key 유효성 검사 & 인증 정보 설정
       if (keyProvider.validateKey(key)) {
-        Authentication auth = getAuthentication(key.getUser());
+
+        // 유저키 파싱
+        String userKey = resolveUser(cachedRequest).orElse(null);
+        
+        // 저장할 인증 정보 생성
+        Authentication auth = getAuthentication(userKey);
+        
+        // 저장
         SecurityContextHolder.getContext().setAuthentication(auth);
       }
 
@@ -88,11 +100,31 @@ public class KeyAutheticationFilter extends OncePerRequestFilter {
         );
   }
 
+  // 요청(userKey) 파싱하기
+  private Optional<String> resolveUser(HttpServletRequest request) throws IOException {
+    Map<String, Object> bodyMap = objectMapper.readValue(request.getInputStream(), Map.class);
+
+    // 헤더를 Optional로 처리하여 값이 없을 경우 빈 Optional 반환
+    return Optional.ofNullable(
+            (Map<String, String>) bodyMap.get(REQUEST_HEADER))
+        .map(headerMap -> headerMap.get(REQUEST_USERKEY))
+        .filter(apiKey -> apiKey != null && !apiKey.isEmpty()
+        );
+  }
+
   // 인증 정보 생성하기
-  private Authentication getAuthentication(com.goofy.tunabank.v1.domain.User user) {
-    String role = String.valueOf(user.getRole());
-    String userId = String.valueOf(user.getUserId());
-    UserDetails managerDetail = new User(userId, "", Collections.singletonList(new SimpleGrantedAuthority(role)));
-    return new UsernamePasswordAuthenticationToken(managerDetail, "", managerDetail.getAuthorities());
+  private Authentication getAuthentication(String userKey) {
+    String effectiveUserKey = (userKey != null) ? userKey : "0";
+    UserDetails userDetails = makeUserDetails(effectiveUserKey, "", "USER");
+    return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+  }
+
+  // 유저 정보 생성하기
+  private UserDetails makeUserDetails(String username, String password, String role) {
+    return new org.springframework.security.core.userdetails.User(
+        username,
+        "",
+        Collections.singletonList(new SimpleGrantedAuthority(role))
+    );
   }
 }
