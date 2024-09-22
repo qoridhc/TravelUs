@@ -2,6 +2,7 @@ package com.ssafy.soltravel.v2.common;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import lombok.Builder;
 import lombok.Data;
 
@@ -23,14 +24,14 @@ public class BankHeader {
             return LocalDateTime.parse(dateTimeString, formatter);
         }
 
-        public static BankHeader createHeader(String userKey) {
+        public static BankHeader createHeader(String apiKey, String userKey) {
             LocalDateTime now = LocalDateTime.now();
             String transmissionDate = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
             String transmissionTime = now.format(DateTimeFormatter.ofPattern("HHmmss"));
 
             return BankHeader.builder()
+                .apiKey(apiKey)
                 .userKey(userKey)
-                .apiKey("t9SUPvckGZQc2ozs4A6IS7FVVAPE4IA6ChO0S4ZNcfEO0tkPdE9q88fkgEa84jYG")
                 .institutionCode("00209")
                 .fineAppNo("209")
                 .transmissionDate(transmissionDate)
