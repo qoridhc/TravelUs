@@ -4,6 +4,7 @@ import com.goofy.tunabank.v1.domain.Card;
 import com.goofy.tunabank.v1.domain.User;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -30,4 +31,15 @@ public class CardRepository {
     return result;
   }
 
+  public Optional<Card> findByCardNo(String cardNo) {
+    List<Card> result = em.createQuery(
+            "select c from Card  c " +
+                "join fetch c.account a " +
+                "join fetch a.user u " +
+                "where c.cardNo = :cardNo", Card.class
+        )
+        .setParameter("cardNo", cardNo)
+        .getResultList();
+    return result.stream().findFirst();
+  }
 }

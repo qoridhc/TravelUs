@@ -11,6 +11,7 @@ import com.goofy.tunabank.v1.dto.card.CardListResponseDto;
 import com.goofy.tunabank.v1.dto.card.CardPaymentRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardPaymentResponseDto;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
+import com.goofy.tunabank.v1.exception.card.CardNotFoundException;
 import com.goofy.tunabank.v1.exception.card.CardOwnershipException;
 import com.goofy.tunabank.v1.exception.card.CardProductNotFoundException;
 import com.goofy.tunabank.v1.mapper.CardMapper;
@@ -31,13 +32,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class CardService {
 
   private final UserService userService;
+  private final UserRepository userRepository;
+
   private final CardRepository cardRepository;
   private final AccountRepository accountRepository;
   private final CardProductRepository cardProductRepository;
 
   private static final String DEFAULT_ISSUER_NAME = "Tuna Bank";
   private static final SecureRandom random = new SecureRandom();
-  private final UserRepository userRepository;
 
   /*
   * 카드 신규 발급
@@ -92,10 +94,14 @@ public class CardService {
   */
   public CardPaymentResponseDto makeCardPayment(CardPaymentRequestDto request) {
 
-    // 카드 정보 일치 검증
-    User user = userService.findUserByHeader();
-    User cardUser = userRepository.findByCardNo(request.getCardNo()).orElse(null);
+    // 카드 조회
+    Card card = cardRepository.findByCardNo(request.getCardNo()).orElseThrow(
+        () -> new CardNotFoundException(request.getCardNo())
+    );
 
+    // 카드 정보 일치 검증(유저 소유 여부)
+    User user = userService.findUserByHeader();
+    User cardUser = card.getAccount().getUser();
     if(user != cardUser) {
       throw new CardOwnershipException(request.getCardNo());
     }
