@@ -8,6 +8,8 @@ import com.goofy.tunabank.v1.dto.card.CardIssueRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardIssueResponseDto;
 import com.goofy.tunabank.v1.dto.card.CardListRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardListResponseDto;
+import com.goofy.tunabank.v1.dto.card.CardPaymentRequestDto;
+import com.goofy.tunabank.v1.dto.card.CardPaymentResponseDto;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
 import com.goofy.tunabank.v1.exception.card.CardProductNotFoundException;
 import com.goofy.tunabank.v1.mapper.CardMapper;
@@ -81,6 +83,25 @@ public class CardService {
         .collect(Collectors.toList());
   }
 
+
+  /*
+  * 결제
+  */
+  public CardPaymentResponseDto makeCardPayment(CardPaymentRequestDto request) {
+
+    // 카드 정보 일치 검증
+//    User user = userService.findUserByHeader();
+//    User cardUser =
+
+    // 카드 유효성 검증
+
+    // 결제 금액 유효성 검증
+
+    //  결제
+
+
+    return null;
+  }
 
 
   /*

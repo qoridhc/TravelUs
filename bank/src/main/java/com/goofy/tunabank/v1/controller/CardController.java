@@ -5,6 +5,8 @@ import com.goofy.tunabank.v1.dto.card.CardIssueRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardIssueResponseDto;
 import com.goofy.tunabank.v1.dto.card.CardListRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardListResponseDto;
+import com.goofy.tunabank.v1.dto.card.CardPaymentRequestDto;
+import com.goofy.tunabank.v1.dto.card.CardPaymentResponseDto;
 import com.goofy.tunabank.v1.service.CardService;
 import com.goofy.tunabank.v1.util.LogUtil;
 import java.util.List;
@@ -37,4 +39,10 @@ public class CardController {
     return new ResponseEntity(new RecWrapper<>(response), HttpStatus.CREATED);
   }
 
+  @PostMapping("/payment")
+  public ResponseEntity makeCardPayment(@RequestBody CardPaymentRequestDto request){
+    LogUtil.info("카드 조회 요청", request);
+    CardPaymentResponseDto response = cardService.makeCardPayment(request);
+    return new ResponseEntity(new RecWrapper<>(response), HttpStatus.CREATED);
+  }
 }
