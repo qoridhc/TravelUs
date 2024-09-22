@@ -38,9 +38,10 @@ public class SettlementService {
         .orElseThrow();
 
     GeneralAccount generalAccount = foreignAccount.getGeneralAccount();
-    long amount = exchangeService.convertUsdToKrwWithoutFee(foreignAccount.getBalance(),
-        exchangeService.getExchangeRate(foreignAccount.getCurrency().getCurrencyCode())
-            .getExchangeRate());
+//    long amount = exchangeService.convertUsdToKrwWithoutFee(foreignAccount.getBalance(),
+//        exchangeService.getExchangeRate(foreignAccount.getCurrency().getCurrencyCode())
+//            .getExchangeRate());
+    long amount=1;
 //
 //    LogUtil.info("<<정산 실행>> 외화 계좌 정보: ", foreignAccount.toString());
 //    LogUtil.info("<<정산 실행>> 모임 계좌 정보: ", generalAccount.toString());
