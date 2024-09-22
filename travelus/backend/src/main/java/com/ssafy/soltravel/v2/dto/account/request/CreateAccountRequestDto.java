@@ -20,7 +20,7 @@ public class CreateAccountRequestDto {
 
     private String accountType;
 
-    private String acocuntPassword;
+    private String accountPassword;
 
     private int bankId;
 }
