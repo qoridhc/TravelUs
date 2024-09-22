@@ -31,6 +31,18 @@ public class UserRepository {
     return result.stream().findFirst();
   }
 
+  public Optional<User> findByCardNo(String cardNo){
+    List<User> result = em.createQuery(
+        "select u from User u " +
+            "join fetch u.accounts a " +
+            "join fetch a.cards c " +
+            "where c.cardNo = :cardNo", User.class
+        ).setParameter("cardNo", cardNo)
+        .getResultList();
+
+    return result.stream().findFirst();
+  }
+
   public void save(User user) {
     em.persist(user);
   }

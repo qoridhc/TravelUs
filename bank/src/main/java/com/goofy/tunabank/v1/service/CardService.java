@@ -11,11 +11,13 @@ import com.goofy.tunabank.v1.dto.card.CardListResponseDto;
 import com.goofy.tunabank.v1.dto.card.CardPaymentRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardPaymentResponseDto;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
+import com.goofy.tunabank.v1.exception.card.CardOwnershipException;
 import com.goofy.tunabank.v1.exception.card.CardProductNotFoundException;
 import com.goofy.tunabank.v1.mapper.CardMapper;
 import com.goofy.tunabank.v1.repository.AccountRepository;
 import com.goofy.tunabank.v1.repository.CardProductRepository;
 import com.goofy.tunabank.v1.repository.CardRepository;
+import com.goofy.tunabank.v1.repository.UserRepository;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +37,7 @@ public class CardService {
 
   private static final String DEFAULT_ISSUER_NAME = "Tuna Bank";
   private static final SecureRandom random = new SecureRandom();
+  private final UserRepository userRepository;
 
   /*
   * 카드 신규 발급
@@ -90,8 +93,12 @@ public class CardService {
   public CardPaymentResponseDto makeCardPayment(CardPaymentRequestDto request) {
 
     // 카드 정보 일치 검증
-//    User user = userService.findUserByHeader();
-//    User cardUser =
+    User user = userService.findUserByHeader();
+    User cardUser = userRepository.findByCardNo(request.getCardNo()).orElse(null);
+
+    if(user != cardUser) {
+      throw new CardOwnershipException(request.getCardNo());
+    }
 
     // 카드 유효성 검증
 
