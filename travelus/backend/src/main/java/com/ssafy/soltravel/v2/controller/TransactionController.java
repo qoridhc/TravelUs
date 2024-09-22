@@ -1,6 +1,7 @@
 package com.ssafy.soltravel.v2.controller;
 
 import com.ssafy.soltravel.v2.dto.transaction.TransactionHistoryDto;
+import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionHistoryRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
@@ -78,6 +79,24 @@ public class TransactionController {
     ) {
 
         ResponseEntity<List<TransferHistoryResponseDto>> response = transactionService.postGeneralTransfer(requestDto);
+        return response;
+    }
+
+    @Operation(summary = "머니 박스 이체", description = "환전 및 재환전을 합니다.")
+    @ApiResponses(value = {
+
+        @ApiResponse(responseCode = "200", description = "이체 성공",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = TransferHistoryResponseDto.class)))
+        ),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @PostMapping("/transfer/moneybox")
+    public ResponseEntity<List<TransferHistoryResponseDto>> postMoneyBoxTransfer(
+        @RequestBody MoneyBoxTransferRequestDto requestDto
+    ) {
+
+        ResponseEntity<List<TransferHistoryResponseDto>> response = transactionService.postMoneyBoxTransfer(requestDto);
         return response;
     }
 

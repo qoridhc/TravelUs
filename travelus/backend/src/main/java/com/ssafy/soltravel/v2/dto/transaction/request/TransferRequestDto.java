@@ -1,6 +1,5 @@
 package com.ssafy.soltravel.v2.dto.transaction.request;
 
-import com.ssafy.soltravel.v2.domain.Enum.TransactionType;
 import com.ssafy.soltravel.v2.domain.Enum.TransferType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
