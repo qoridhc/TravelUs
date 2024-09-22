@@ -3,10 +3,8 @@ package com.goofy.tunabank.v1.dto.transaction.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.goofy.tunabank.v1.domain.Enum.TransactionType;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Builder
@@ -26,10 +24,10 @@ public class TransactionResponseDto {
   private LocalDateTime transactionAt;
 
   //금액
-  private double amount;
+  private String amount;
 
   //잔액
-  private double balance;
+  private String balance;
 
   //메모
   private String summary;
