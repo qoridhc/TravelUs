@@ -52,5 +52,5 @@ public class UserCreateRequestDto {
     @NotNull
     @NotBlank
     @Schema(description = "새로 생성할 계좌 비밀번호", example = "1234")
-    private String accountPwd;
+    private String accountPassword;
 }

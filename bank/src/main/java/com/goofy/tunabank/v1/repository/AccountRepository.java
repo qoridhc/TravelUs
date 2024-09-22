@@ -1,7 +1,7 @@
 package com.goofy.tunabank.v1.repository;
 
 import com.goofy.tunabank.v1.domain.Account;
-import com.goofy.tunabank.v1.repository.queryDSL.AccountRepositoryCustom;
+import com.goofy.tunabank.v1.repository.transaction.AccountRepositoryCustom;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

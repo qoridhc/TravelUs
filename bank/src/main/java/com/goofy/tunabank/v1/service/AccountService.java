@@ -13,10 +13,9 @@ import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.InquireAccountRequestDto;
 import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
 import com.goofy.tunabank.v1.exception.account.DuplicateCurrencyException;
-import com.goofy.tunabank.v1.exception.account.InvalidAccountIdException;
+import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountPasswordException;
 import com.goofy.tunabank.v1.exception.account.InvalidBankIdException;
-import com.goofy.tunabank.v1.exception.account.InvalidGroupAccountIdException;
 import com.goofy.tunabank.v1.exception.account.RefundAccountRequiredException;
 import com.goofy.tunabank.v1.mapper.AccountMapper;
 import com.goofy.tunabank.v1.mapper.MoneyBoxMapper;
@@ -83,8 +82,8 @@ public class AccountService {
         // 유저 정보 생성
         User user = userService.findUserByHeader();
 
-        Account account = accountRepository.findGroupAccountById(requestDto.getAccountId())
-            .orElseThrow(() -> new InvalidGroupAccountIdException(requestDto.getAccountId()));
+        Account account = accountRepository.findAccountByAccountNo(requestDto.getAccountNo())
+            .orElseThrow(() -> new InvalidAccountNoException(requestDto.getAccountNo()));
 
         if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
             throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
@@ -114,8 +113,8 @@ public class AccountService {
 
         userService.findUserByHeader();
 
-        Account account = accountRepository.findById(requestDto.getAccountId())
-            .orElseThrow(() -> new InvalidAccountIdException(requestDto.getAccountId()));
+        Account account = accountRepository.findByAccountNo(requestDto.getAccountNo())
+            .orElseThrow(() -> new InvalidAccountNoException(requestDto.getAccountNo()));
 
         if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
             throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
@@ -133,8 +132,8 @@ public class AccountService {
     // ==== 계좌 삭제 ====
     public ResponseDto deleteAccount(InquireAccountRequestDto requestDto) {
 
-        Account account = accountRepository.findById(requestDto.getAccountId())
-            .orElseThrow(() -> new InvalidAccountIdException(requestDto.getAccountId()));
+        Account account = accountRepository.findByAccountNo(requestDto.getAccountNo())
+            .orElseThrow(() -> new InvalidAccountNoException(requestDto.getAccountNo()));
 
         if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
             throw new InvalidAccountPasswordException(requestDto.getAccountPassword());

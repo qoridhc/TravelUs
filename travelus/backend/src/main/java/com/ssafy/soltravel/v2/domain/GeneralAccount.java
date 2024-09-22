@@ -19,6 +19,7 @@ import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,28 +41,16 @@ public class GeneralAccount {
     @Column(name = "general_account_id")
     private Long id;
 
-    private int bankCode;
-
     private String accountNo;
-
-    private String accountName;
 
     private String accountPassword;
 
-    private Double balance;
-
-    private String iconName;
-
-    private String groupName;
-
-    private LocalDate travelStartDate;
-
-    private LocalDate travelEndDate;
-
-    private int countryId;
+    private int bankCode;
 
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
+
+    private String accountName;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -73,12 +62,15 @@ public class GeneralAccount {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "generalAccount", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Participant> participants;
-
-    @OneToOne(mappedBy = "generalAccount", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private ForeignAccount foreignAccount;
-
     private Float preferenceRate;
+
+    public static GeneralAccount fromRecObject(Map<String, Object> recObject) {
+        return GeneralAccount.builder()
+            .accountNo((String) recObject.get("accountNo"))
+            .accountPassword((String) recObject.get("accountPassword"))
+            .accountType(AccountType.valueOf((String) recObject.get("accountType"))) // accountType은 Enum으로 변환
+            .bankCode((Integer) recObject.get("bankCode"))
+            .build();
+    }
+
 }

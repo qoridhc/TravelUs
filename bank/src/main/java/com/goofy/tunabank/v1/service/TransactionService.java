@@ -4,6 +4,7 @@ import com.goofy.tunabank.v1.domain.Enum.TransactionType;
 import com.goofy.tunabank.v1.domain.Enum.TransferType;
 import com.goofy.tunabank.v1.domain.MoneyBox;
 import com.goofy.tunabank.v1.domain.TransactionHistory;
+import com.goofy.tunabank.v1.domain.User;
 import com.goofy.tunabank.v1.dto.exchange.ExchangeAmountRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.TransferDetailDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDto;
@@ -16,10 +17,10 @@ import com.goofy.tunabank.v1.exception.transaction.InvalidTransactionTypeExcepti
 import com.goofy.tunabank.v1.exception.transaction.InvalidWithdrawalAmountException;
 import com.goofy.tunabank.v1.exception.transaction.MoneyBoxNotFoundException;
 import com.goofy.tunabank.v1.exception.transaction.TransactionHistoryNotFoundException;
+import com.goofy.tunabank.v1.exception.transaction.UnauthorizedTransactionException;
 import com.goofy.tunabank.v1.mapper.TransactionMapper;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
 import com.goofy.tunabank.v1.repository.transaction.TransactionHistoryRepository;
-import com.goofy.tunabank.v1.util.LogUtil;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -37,9 +38,10 @@ public class TransactionService {
   private final MoneyBoxRepository moneyBoxRepository;
   private final TransactionMapper transactionMapper;
   private final ExchangeService exchangeService;
+  private final UserService userService;
   private static final int KRW_CURRENCY_ID = 1;
 
-  //TODO: userKey확인 및 비밀번호 검사
+  //TODO: 비밀번호 검증
 
   /**
    * 입금 처리
@@ -93,6 +95,10 @@ public class TransactionService {
     int currencyId = requestDto.getCurrencyId();
     MoneyBox moneyBox = findMoneyBoxByAccountAndCurrency(accountId, currencyId);
 
+    //거래 권한 확인
+    User user = userService.findUserByUserKey(requestDto.getHeader().getUserKey());
+    validateUserAccess(user, moneyBox);
+
     TransactionType transactionType = requestDto.getTransactionType();
     double amount = requestDto.getTransactionBalance();
     double afterBalance = 0L;
@@ -123,6 +129,10 @@ public class TransactionService {
     // 출금 머니박스
     MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrency(requestDto.getWithdrawalAccountId(),
         KRW_CURRENCY_ID);
+
+    //거래 권한 확인
+    User user = userService.findUserByUserKey(requestDto.getHeader().getUserKey());
+    validateUserAccess(user, withdrawalBox);
 
     // 입금 머니박스
     MoneyBox depositBox = findMoneyBoxByAccountAndCurrency(requestDto.getDepositAccountId(),
@@ -168,6 +178,10 @@ public class TransactionService {
     MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrency(requestDto.getAccountId(),
         requestDto.getSourceCurrencyId());
 
+    //거래 권한 확인
+    User user = userService.findUserByUserKey(requestDto.getHeader().getUserKey());
+    validateUserAccess(user, withdrawalBox);
+
     // 입금 머니박스
     MoneyBox depositBox = findMoneyBoxByAccountAndCurrency(requestDto.getAccountId(),
         requestDto.getTargetCurrencyId());
@@ -208,7 +222,6 @@ public class TransactionService {
         withdrawalTransactionHistory);
 
     // 입금 기록 저장
-    LogUtil.info("입금금액: ", dto.getDepositAmount());
     type = dto.getTransferType() == TransferType.G ? TransactionType.TD : TransactionType.ED;
     TransactionHistory depositTransactionHistory = TransactionHistory.createTransactionHistory(
         nextId, type, dto.getDepositBox(), dto.getWithdrawalBox().getAccount().getAccountNo(),
@@ -253,6 +266,22 @@ public class TransactionService {
     return moneyBoxRepository.findMoneyBoxByAccountAndCurrency(accountId, currencyId)
         .orElseThrow(() -> new MoneyBoxNotFoundException(accountId, currencyId));
   }
+
+  /**
+   * 거래 권한 검증
+   *
+   * @param user     : 거래 요청 user
+   * @param moneyBox : 거래 요청 머니박스
+   */
+  private void validateUserAccess(User user, MoneyBox moneyBox) {
+    long userId = user.getUserId();
+    long accountId = moneyBox.getAccount().getId(); // 필요한 경우 accountId도 가져옴
+
+    if (userId != moneyBox.getAccount().getUser().getUserId()) {
+      throw new UnauthorizedTransactionException(userId, accountId);
+    }
+  }
+
 
   /**
    * 출금시 유효성 검증

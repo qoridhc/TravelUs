@@ -1,6 +1,6 @@
 package com.ssafy.soltravel.v2.dto.account_book;
 
-import com.ssafy.soltravel.v2.domain.Enum.TransacntionType;
+import com.ssafy.soltravel.v2.domain.Enum.TransactionType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,5 +17,5 @@ public class DetailAccountHistoryReadRequestDto {
   private String date;
 
   @Schema(description = "거래 유형 (M:입금, D:출금, A:전체)", example = "A")
-  private TransacntionType transactionType;
+  private TransactionType transactionType;
 }

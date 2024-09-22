@@ -90,6 +90,8 @@ public class UserService implements UserDetailsService {
   */ 
   public long createUser(UserCreateRequestDto createDto) throws IOException {
 
+    LogUtil.info("createDto", createDto);
+
     // 외부 API 요청용 Body 생성(로그인)
     UserCreateRequestBody body = UserCreateRequestBody.builder()
         .header(
@@ -122,15 +124,17 @@ public class UserService implements UserDetailsService {
     userRepository.save(user);
 //    notificationService.subscribe(userId);
 
-    /* 회원가입과 동시에 계좌 생성 필요 */
+    /* 회원가입과 동시에 계좌 생성 구현 완료 */
     // 외부 API 요청용 Body 생성(계좌 생성)
     CreateAccountRequestDto accountDto = CreateAccountRequestDto.builder()
-        .accountType(AccountType.INDIVIDUAL)
-        .accountPassword(createDto.getAccountPwd())
+        .userId(user.getUserId())
+        .accountType(String.valueOf(AccountType.I))
+        .accountPassword(createDto.getAccountPassword())
+        .bankId(1)
         .build();
 
-    LogUtil.info("request(account) to API", accountDto);
-    accountService.createGeneralAccount(user.getUserId(), accountDto);
+    accountService.createGeneralAccount(accountDto);
+
     return user.getUserId();
   }
 
