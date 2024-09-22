@@ -21,7 +21,7 @@ public class AccountDto {
 
 	private String accountPassword;
 
-	private String accountType;
+	private AccountType accountType;
 
 	private int bankCode;
 

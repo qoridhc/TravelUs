@@ -62,13 +62,6 @@ public class GeneralAccount {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "generalAccount", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Participant> participants;
-
-    @OneToOne(mappedBy = "generalAccount", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private ForeignAccount foreignAccount;
-
     private Float preferenceRate;
 
     public static GeneralAccount fromRecObject(Map<String, Object> recObject) {
