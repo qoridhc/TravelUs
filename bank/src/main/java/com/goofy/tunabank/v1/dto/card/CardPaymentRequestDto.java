@@ -28,4 +28,10 @@ public class CardPaymentRequestDto {
 
   @NotNull @Positive
   private Long paymentBalance;
+
+  @NotEmpty
+  private String transactionId;
+
+  @NotEmpty
+  private Integer currencyId;
 }

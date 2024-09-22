@@ -2,7 +2,9 @@ package com.goofy.tunabank.v1.service;
 
 import com.goofy.tunabank.v1.domain.Account;
 import com.goofy.tunabank.v1.domain.Card;
+import com.goofy.tunabank.v1.domain.CardHistory;
 import com.goofy.tunabank.v1.domain.CardProduct;
+import com.goofy.tunabank.v1.domain.MoneyBox;
 import com.goofy.tunabank.v1.domain.User;
 import com.goofy.tunabank.v1.dto.card.CardIssueRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardIssueResponseDto;
@@ -15,14 +17,19 @@ import com.goofy.tunabank.v1.exception.card.CardExpiredException;
 import com.goofy.tunabank.v1.exception.card.CardNotFoundException;
 import com.goofy.tunabank.v1.exception.card.CardOwnershipException;
 import com.goofy.tunabank.v1.exception.card.CardProductNotFoundException;
+import com.goofy.tunabank.v1.exception.card.DuplicateTransactionIdException;
 import com.goofy.tunabank.v1.exception.card.InvalidCvcException;
+import com.goofy.tunabank.v1.exception.moneybox.MoneyBoxNotFoundException;
 import com.goofy.tunabank.v1.mapper.CardMapper;
 import com.goofy.tunabank.v1.repository.AccountRepository;
+import com.goofy.tunabank.v1.repository.CardHistoryRepository;
 import com.goofy.tunabank.v1.repository.CardProductRepository;
 import com.goofy.tunabank.v1.repository.CardRepository;
+import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
 import com.goofy.tunabank.v1.repository.UserRepository;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +50,8 @@ public class CardService {
 
   private static final String DEFAULT_ISSUER_NAME = "Tuna Bank";
   private static final SecureRandom random = new SecureRandom();
+  private final CardHistoryRepository cardHistoryRepository;
+  private final MoneyBoxRepository moneyBoxRepository;
 
   /*
   * 카드 신규 발급
@@ -118,7 +127,24 @@ public class CardService {
       throw new CardExpiredException(request.getCardNo());
     }
 
-    // 결제 금액 유효성 검증
+    // 결제 유효성 검증
+    List<CardHistory> history = cardHistoryRepository.findByTransactionId(request.getTransactionId()).orElse(
+        Collections.emptyList()
+    );
+    if(!history.isEmpty()) {
+      throw new DuplicateTransactionIdException(request.getTransactionId());
+    }
+
+    // 카드 잔액 확인
+    MoneyBox money = moneyBoxRepository.findMoneyBoxByAccountAndCurrency(
+        card.getAccount().getId(),
+        request.getCurrencyId()
+    ).orElseThrow(
+        () -> new MoneyBoxNotFoundException(request.getCurrencyId())
+    );
+    
+    // 현재 환율 확인
+
 
     //  결제
 
