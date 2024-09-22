@@ -72,14 +72,13 @@ public class TransactionController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @PostMapping("/{accountNo}/transfer")
+    @PostMapping("/transfer/general")
     public ResponseEntity<List<TransferHistoryResponseDto>> postAccountTransfer(
         @RequestBody TransferRequestDto requestDto
     ) {
-//        ResponseEntity<List<TransferHistoryResponseDto>> response = transactionService.postAccountTransfer(requestDto);
-//
-//        return response;
-        return null;
+
+        ResponseEntity<List<TransferHistoryResponseDto>> response = transactionService.postGeneralTransfer(requestDto);
+        return response;
     }
 
 
