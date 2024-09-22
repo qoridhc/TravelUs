@@ -15,9 +15,9 @@ public class WebClientService {
 
     private final WebClient webClient;
 
-    public ResponseEntity<Map<String, Object>> sendRequest(String url, HttpMethod method, Map<String, Object> body) {
+    public ResponseEntity<Map<String, Object>> sendRequest(String url, Map<String, Object> body) {
 
-           return webClient.method(method)
+           return webClient.method(HttpMethod.POST)
                 .uri(url)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(body)
