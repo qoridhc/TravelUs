@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateAccountRequestDto {
 
-    private String userKey;
+    private Long userId;
 
     private String accountType;
 

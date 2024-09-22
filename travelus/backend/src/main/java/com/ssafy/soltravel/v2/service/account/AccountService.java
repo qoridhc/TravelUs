@@ -1,7 +1,13 @@
 package com.ssafy.soltravel.v2.service.account;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.soltravel.v2.domain.ForeignAccount;
+import com.ssafy.soltravel.v2.dto.account.request.AddMoneyBoxRequestDto;
+import com.ssafy.soltravel.v2.dto.account.request.InquireAccountRequestDto;
+import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
+import com.ssafy.soltravel.v2.service.WebClientService;
 import com.ssafy.soltravel.v2.common.BankHeader;
 import com.ssafy.soltravel.v2.domain.Enum.AccountType;
 import com.ssafy.soltravel.v2.domain.GeneralAccount;
@@ -16,12 +22,14 @@ import com.ssafy.soltravel.v2.repository.GeneralAccountRepository;
 import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.util.LogUtil;
+import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,20 +52,21 @@ public class AccountService {
   private final ForeignAccountRepository foreignAccountRepository;
   private final AccountExchangeService accountExchangeService;
 
+  private final WebClientService webClientService;
+
   private final String BASE_URL = "http://localhost:8080/api/v1/bank/accounts/";
 
   public AccountDto createGeneralAccount(
-      Long userId,
       CreateAccountRequestDto requestDto
   ) {
 
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new UserNotFoundException(userId));
+    User user = userRepository.findByUserId(requestDto.getUserId())
+        .orElseThrow(() -> new UserNotFoundException(requestDto.getUserId()));
 
     Map<String, Object> body = new HashMap<>();
     String API_URL = BASE_URL + "postAccount";
 
-    BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), requestDto.getUserKey());
+    BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
 
     body.put("Header", header);
     body.put("accountType", requestDto.getAccountType());
@@ -65,14 +74,7 @@ public class AccountService {
     body.put("bankId", requestDto.getBankId());
 
     // 일반 계좌 DB 저장 로직 유저 완성 시 추가
-    ResponseEntity<Map<String, Object>> response = webClient.post()
-        .uri(API_URL)
-        .contentType(MediaType.APPLICATION_JSON)
-        .bodyValue(body)
-        .retrieve()
-        .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
-        })
-        .block();
+    ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
 
     // REC 부분을 Object 타입으로 받기
     Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
@@ -83,105 +85,66 @@ public class AccountService {
     return accountDto;
   }
 
-//  public ForeignAccount createForeignAccount(User user, CreateAccountRequestDto requestDto,
-//      Long accountId) {
-//
-//    String API_NAME = "createForeignCurrencyDemandDepositAccount";
-//
-//    String API_URL = BASE_URL + "/foreignCurrency/" + API_NAME;
-//
-//    // 추후에 userId 받아서 userKey 수정
-//    // 현재는 유저 구현 안되서 임시로 처리함
-//    Header header = Header.builder()
-//        .apiName(API_NAME)
-//        .apiServiceCode(API_NAME)
-//        .apiKey(apiKeys.get("API_KEY"))
-//        .userKey(user.getUserKey())
-//        .build();
-//
-//    Map<String, Object> body = new HashMap<>();
-//    body.put("Header", header);
-//    body.put("accountTypeUniqueNo", apiKeys.get("FOREIGN_UNIQUE_ACCOUNT_NO"));
-//    body.put("currency", requestDto.getCurrencyCode());
-//
-//    try {
-//      // 일반 계좌 DB 저장 로직 유저 완성 시 추가
-//      ResponseEntity<Map<String, Object>> response = webClient.post()
-//          .uri(API_URL)
-//          .contentType(MediaType.APPLICATION_JSON)
-//          .bodyValue(body)
-//          .retrieve()
-//          .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
-//          })
-//          .block();
-//
-//      // REC 부분을 Object 타입으로 받기
-//      Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
-//
-//      GeneralAccount generalAccount = generalAccountRepository.findById(accountId)
-//          .orElseThrow(() -> new RuntimeException());
-//
-//      ForeignAccount foreignAccount = accountMapper.toForeignAccountEntitiy(
-//          recObject,
-//          generalAccount,
-//          requestDto
-//      );
-//
-//      ForeignAccount savedAccount = foreignAccountRepository.save(foreignAccount);
-//
-//      return savedAccount;
-//    } catch (WebClientResponseException e) {
-//      throw e;
-//    }
-//  }
-//
-//  // 계좌 단건 조회 (AccountNo로) - 상세 정보 X
-//  public ResponseEntity<AccountDto> getByAccountNo(String accountNo, boolean isForeign) {
-//
-//    Long userId = SecurityUtil.getCurrentUserId();
-//
-//    User user = userRepository.findByUserId(userId)
-//        .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
-//
-//    AccountDto accountDto = null;
-//
-//    if (isForeign) {
-//      ForeignAccount foreignAccount = foreignAccountRepository.findByAccountNo(accountNo)
-//          .orElseThrow(
-//              () -> new IllegalArgumentException("The accountNo does not exist: " + accountNo));
-//
-//      accountDto = accountMapper.toCreateAccountDto(foreignAccount);
-//    } else {
-//      GeneralAccount generalAccount = generalAccountRepository.findByAccountNo(accountNo)
-//          .orElseThrow(
-//              () -> new IllegalArgumentException("The accountNo does not exist: " + accountNo));
-//
-//      accountDto = accountMapper.toCreateAccountDto(generalAccount);
-//
-//    }
-//    return ResponseEntity.status(HttpStatus.OK).body(accountDto);
-//  }
-//
-//
-//  // 외화 계좌 단건 조회 (AccountID로)- 상세 정보 X
-//  public ResponseEntity<AccountDto> getForeignByAccountId(Long accountId) {
-//
-//    Long userId = SecurityUtil.getCurrentUserId();
-//
-//    User user = userRepository.findByUserId(userId)
-//        .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
-//
-//    AccountDto accountDto = null;
-//
-//      ForeignAccount foreignAccount = foreignAccountRepository.findById(accountId)
-//          .orElseThrow(
-//              () -> new IllegalArgumentException("The accountId does not exist: " + accountId));
-//
-//      accountDto = accountMapper.toCreateAccountDto(foreignAccount);
-//
-//    return ResponseEntity.status(HttpStatus.OK).body(accountDto);
-//  }
-//
+  // 계좌 단건 조회 (AccountNo로) - 상세 정보 X
+  public AccountDto getByAccountNo(InquireAccountRequestDto requestDto) {
+
+    User user = userRepository.findByUserId(requestDto.getUserId())
+        .orElseThrow(() -> new UserNotFoundException(requestDto.getUserId()));
+
+    String API_URL = BASE_URL + "inquireAccount";
+
+    BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
+
+    Map<String, Object> body = new HashMap<>();
+
+    body.put("Header", header);
+    body.put("accountNo", requestDto.getAccountNo());
+    body.put("accountPassword", requestDto.getAccountPassword());
+
+    // 특정 계좌 조회
+    ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+
+    // REC 부분을 Object 타입으로 받기
+    Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
+
+    // recObject -> AccountDto 매핑
+    AccountDto accountDto = objectMapper.convertValue(recObject, AccountDto.class);
+
+    return accountDto;
+  }
+
+  // 계좌 신규 머니박스 추가
+  public List<MoneyBoxDto> addMoneyBox(AddMoneyBoxRequestDto requestDto) {
+
+    User user = userRepository.findByUserId(requestDto.getUserId())
+        .orElseThrow(() -> new UserNotFoundException(requestDto.getUserId()));
+
+    String API_URL = BASE_URL + "addMoneyBox";
+
+    BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
+
+    Map<String, Object> body = new HashMap<>();
+
+    body.put("Header", header);
+    body.put("accountNo", requestDto.getAccountNo());
+    body.put("accountPassword", requestDto.getAccountPassword());
+    body.put("currencyCode", requestDto.getCurrencyCode());
+
+    // 머니박스 추가
+    ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+
+    LogUtil.info("response", response);
+
+    // WebClient 응답에서 REC 부분을 가져오기
+    List<Map<String, Object>> recObjectList = (List<Map<String, Object>>) response.getBody().get("REC");
+
+// REC 데이터를 MoneyBoxDto 리스트로 변환
+    List<MoneyBoxDto> moneyBoxDtos = objectMapper.convertValue(recObjectList, new TypeReference<List<MoneyBoxDto>>() {});
+
+// 변환된 리스트를 반환하거나, 다른 로직에 사용
+    return moneyBoxDtos;
+  }
+
 //  /*
 //   * 유저 계좌 전체 조회(기본정보)
 //   */
