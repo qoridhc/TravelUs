@@ -11,15 +11,18 @@ import com.goofy.tunabank.v1.dto.card.CardListResponseDto;
 import com.goofy.tunabank.v1.dto.card.CardPaymentRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardPaymentResponseDto;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
+import com.goofy.tunabank.v1.exception.card.CardExpiredException;
 import com.goofy.tunabank.v1.exception.card.CardNotFoundException;
 import com.goofy.tunabank.v1.exception.card.CardOwnershipException;
 import com.goofy.tunabank.v1.exception.card.CardProductNotFoundException;
+import com.goofy.tunabank.v1.exception.card.InvalidCvcException;
 import com.goofy.tunabank.v1.mapper.CardMapper;
 import com.goofy.tunabank.v1.repository.AccountRepository;
 import com.goofy.tunabank.v1.repository.CardProductRepository;
 import com.goofy.tunabank.v1.repository.CardRepository;
 import com.goofy.tunabank.v1.repository.UserRepository;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -107,6 +110,13 @@ public class CardService {
     }
 
     // 카드 유효성 검증
+    if(card.getCvc() != request.getCvc()) {
+      throw new InvalidCvcException(request.getCvc());
+    }
+
+    if(card.getExpireAt().isBefore(LocalDateTime.now())) {
+      throw new CardExpiredException(request.getCardNo());
+    }
 
     // 결제 금액 유효성 검증
 
