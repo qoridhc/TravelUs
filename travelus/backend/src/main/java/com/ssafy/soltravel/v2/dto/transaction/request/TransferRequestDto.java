@@ -1,20 +1,27 @@
 package com.ssafy.soltravel.v2.dto.transaction.request;
 
+import com.ssafy.soltravel.v2.domain.Enum.TransferType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
 public class TransferRequestDto {
 
-    @Schema(description = "입금할 계좌 번호", example = "0887850232491646")
-    private String depositAccountNo;
+    @Schema(description = "이체 타입", example = "G")
+    TransferType transferType;
 
-    @Schema(description = "입금 거래 요약", example = "입금 완료")
+    @Schema(description = "출금 계좌 Id", example = "1")
+    Long withdrawalAccountId;
+
+    @Schema(description = "입금 계좌 Id", example = "2")
+    Long depositAccountId;
+
+    @Schema(description = "거래 금액", example = "5000")
+    Long transactionBalance;
+
+    @Schema(description = "출금 거래 요약", example = "이체 출금 테스트")
+    String withdrawalTransactionSummary;
+
+    @Schema(description = "입금 거래 요약", example = "이체 입금 테스트")
     private String depositTransactionSummary;
-
-    @Schema(description = "거래 금액", example = "1000000")
-    private Long transactionBalance;
-
-    @Schema(description = "출금 거래 요약", example = "출금 완료")
-    private String withdrawalTransactionSummary;
 }
