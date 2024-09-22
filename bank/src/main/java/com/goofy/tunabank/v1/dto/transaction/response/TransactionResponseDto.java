@@ -11,7 +11,7 @@ import lombok.Data;
 public class TransactionResponseDto {
 
   //거래 기록 id
-  private Long transactionHistoryId;
+  private Long transactionUniqueNo;
 
   //거래 종류
   private TransactionType transactionType;
@@ -21,14 +21,14 @@ public class TransactionResponseDto {
 
   //거래 일시
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-  private LocalDateTime transactionAt;
+  private LocalDateTime transactionDate;
 
   //금액
-  private String amount;
+  private String transactionAmount;
 
   //잔액
-  private String balance;
+  private String transactionBalance;
 
   //메모
-  private String summary;
+  private String transactionSummary;
 }

@@ -54,8 +54,8 @@ public class SettlementService {
       foreignTransactionRequestDto.setTransactionSummary("정산 출금");
       foreignTransactionRequestDto.setUserId(
           foreignAccount.getGeneralAccount().getUser().getUserId());//모임주의 id
-      transactionService.postForeignWithdrawal(true, requestDto.getAccountNo(),
-          foreignTransactionRequestDto);
+//      transactionService.postForeignWithdrawal(true, requestDto.getAccountNo(),
+//          foreignTransactionRequestDto);
 
       LogUtil.info("<<정산 실행>> 외화 계좌 번호:", requestDto.getAccountNo());
       LogUtil.info("<<정산 실행>> 외화 계좌에서 출금되는 금액:",
@@ -68,8 +68,8 @@ public class SettlementService {
       TransactionRequestDto transactionRequestDto = new TransactionRequestDto();
       transactionRequestDto.setTransactionBalance(amount);
       transactionRequestDto.setTransactionSummary("정산 입금");
-      transactionRequestDto.setUserId(generalAccount.getUser().getUserId());//계좌 주인의 Id
-      transactionService.postAccountDeposit(generalAccount.getAccountNo(), transactionRequestDto);
+//      transactionRequestDto.setUserId(generalAccount.getUser().getUserId());//계좌 주인의 Id
+//      transactionService.postAccountDeposit(generalAccount.getAccountNo(), transactionRequestDto);
 
       LogUtil.info("<<정산 실행>> 모임 계좌 번호:", generalAccount.getAccountNo());
       LogUtil.info("<<정산 실행>> 모임 계좌로 입금되는 금액:",
@@ -112,8 +112,8 @@ public class SettlementService {
     TransactionRequestDto withdrawal = new TransactionRequestDto();
     withdrawal.setTransactionBalance(withdrawalAmount);//원화
     withdrawal.setTransactionSummary("모임원 정산 출금");
-    withdrawal.setUserId(generalAccount.getUser().getUserId());
-    transactionService.postAccountWithdrawal(generalAccount.getAccountNo(), withdrawal);
+//    withdrawal.setUserId(generalAccount.getUser().getUserId());
+//    transactionService.postAccountWithdrawal(generalAccount.getAccountNo(), withdrawal);
 
     LogUtil.info("<<정산 실행>> 모임 계좌 전액 출금 계좌 :", generalAccount.getAccountNo());
     LogUtil.info("<<정산 실행>> 모임 계좌 잔액 :", withdrawalAmount);
@@ -142,9 +142,9 @@ public class SettlementService {
       TransactionRequestDto transactionRequestDto = new TransactionRequestDto();
       transactionRequestDto.setTransactionBalance(amountPerPerson);
       transactionRequestDto.setTransactionSummary("정산 입금");
-      transactionRequestDto.setUserId(participant.getUser().getUserId());
-      transactionService.postAccountDeposit(participant.getPersonalAccount().getAccountNo(),
-          transactionRequestDto);
+//      transactionRequestDto.setUserId(participant.getUser().getUserId());
+//      transactionService.postAccountDeposit(participant.getPersonalAccount().getAccountNo(),
+//          transactionRequestDto);
 
       //알림 전송
       SettlementResponseDto responseDto = new SettlementResponseDto();

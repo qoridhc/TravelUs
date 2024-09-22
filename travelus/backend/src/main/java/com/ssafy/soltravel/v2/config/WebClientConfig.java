@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 public class WebClientConfig {
 
-  private final String BASE_URL = "https://finopenapi.ssafy.io/ssafy/api/v1";
+  private final String BASE_URL = "http://localhost:8080/api/v1/bank";
   private final Map<String, String> apiKeys;
 
   @Bean
@@ -24,14 +24,6 @@ public class WebClientConfig {
     return builder
         .baseUrl("https://api.openai.com/v1")
         .defaultHeader("Authorization", "Bearer " + apiKeys.get("GPT_KEY"))
-        .defaultHeader("Content-Type", "application/json")
-        .build();
-  }
-
-  @Bean
-  public WebClient BankWebClient(WebClient.Builder builder) {
-    return builder
-        .baseUrl("http://localhost:8080/api/v1/bank")
         .defaultHeader("Content-Type", "application/json")
         .build();
   }

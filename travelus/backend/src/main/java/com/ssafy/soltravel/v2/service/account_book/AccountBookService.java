@@ -127,14 +127,14 @@ public class AccountBookService {
     transactionDto.setOrderByType(OrderByType.ASC);
 
     // 변환한 데이터로 이체 기록 요청
-    List<TransactionHistoryDto> transactionHistoryList =
-        transactionService.getForeignHistoryByAccountNo(accountNo, transactionDto);
-
-    // 이체 기록을 가계부에 저장
-    updateAccountHistoryFromTransactions(
-        response.getMonthHistoryList(),
-        transactionHistoryList
-    );
+//    List<TransactionHistoryDto> transactionHistoryList =
+//        transactionService.getForeignHistoryByAccountNo(accountNo, transactionDto);
+//
+//    // 이체 기록을 가계부에 저장
+//    updateAccountHistoryFromTransactions(
+//        response.getMonthHistoryList(),
+//        transactionHistoryList
+//    );
 
 
     //현금 가계 기록 조회
@@ -151,8 +151,9 @@ public class AccountBookService {
     );
 
     // 총 거래 횟수 셋팅 및 반환
-    response.setTransactionCount(transactionHistoryList.size());
-    return response;
+//    response.setTransactionCount(transactionHistoryList.size());
+//    return response;
+    return null;
   }
 
 
@@ -171,14 +172,14 @@ public class AccountBookService {
     transactionDto.setOrderByType(OrderByType.ASC);
 
     // 변환한 데이터로 이체 기록 요청
-    List<TransactionHistoryDto> transactionHistoryList =
-        transactionService.getForeignHistoryByAccountNo(accountNo, transactionDto);
+//    List<TransactionHistoryDto> transactionHistoryList =
+//        transactionService.getForeignHistoryByAccountNo(accountNo, transactionDto);
 
-    // 이체 기록을 가계부에 저장
-    updateDetailHistoryFromTransactions(
-        response,
-        transactionHistoryList
-    );
+//    // 이체 기록을 가계부에 저장
+//    updateDetailHistoryFromTransactions(
+//        response,
+//        transactionHistoryList
+//    );
 
 
     //현금 가계 기록 조회

@@ -1,7 +1,7 @@
 package com.ssafy.soltravel.v2.dto.transaction.request;
 
 import com.ssafy.soltravel.v2.domain.Enum.OrderByType;
-import com.ssafy.soltravel.v2.domain.Enum.TransacntionType;
+import com.ssafy.soltravel.v2.domain.Enum.TransactionType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +21,7 @@ public class TransactionHistoryRequestDto {
     private String endDate;
 
     @Schema(description = "거래 유형 (M:입금, D:출금, A:전체)", example = "A")
-    private TransacntionType transactionType;
+    private TransactionType transactionType;
 
     @Schema(description = "정렬 기준 (ASC: 오름차순(이전거래), DESC: 내림차순(최근거래))", example = "ASC")
     private OrderByType orderByType;

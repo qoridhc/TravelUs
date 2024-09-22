@@ -40,8 +40,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Transactional
 public class ExchangeService {
 
+  private WebClient webClient;
   private final CacheManager cacheManager;
-  private final WebClient BankWebClient;
   private final ExchangeRateRepository exchangeRateRepository;
   private final PreferenceRateRepository preferenceRateRepository;
   private final LatestRateRepository latestRateRepository;
@@ -227,7 +227,7 @@ public class ExchangeService {
     }
 
     // 외부 API에서 환율 정보 가져오기
-    ResponseEntity<ExchangeRateCacheDto> response = BankWebClient.get()
+    ResponseEntity<ExchangeRateCacheDto> response = webClient.get()
         .uri("/exchange/" + currencyCode).retrieve().toEntity(ExchangeRateCacheDto.class).block();
 
     if (response != null && response.getBody() != null) {

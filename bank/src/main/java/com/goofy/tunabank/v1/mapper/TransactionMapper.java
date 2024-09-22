@@ -9,10 +9,12 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface TransactionMapper {
 
-  @Mapping(target = "transactionHistoryId", source = "id")
+  @Mapping(target = "transactionUniqueNo", source = "id")
   @Mapping(target = "accountNo", source = "transactionAccountNo")
-  @Mapping(target = "amount", expression = "java(String.format(\"%.0f\", th.getAmount()))")
-  @Mapping(target = "balance", expression = "java(String.format(\"%.0f\", th.getBalance()))")
+  @Mapping(target = "transactionDate", source = "transactionAt")
+  @Mapping(target = "transactionAmount", expression = "java(String.format(\"%.0f\", th.getAmount()))")
+  @Mapping(target = "transactionBalance", expression = "java(String.format(\"%.0f\", th.getBalance()))")
+  @Mapping(target = "transactionSummary", source = "summary")
   TransactionResponseDto convertTransactionHistoryToTransactionResponseDto(TransactionHistory th);
 
   List<TransactionResponseDto> convertTransactionHistoriesToResponseDtos(List<TransactionHistory> histories);
