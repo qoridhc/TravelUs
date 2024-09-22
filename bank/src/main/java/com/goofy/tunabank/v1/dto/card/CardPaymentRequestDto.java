@@ -27,7 +27,7 @@ public class CardPaymentRequestDto {
   private Long merchantId;
 
   @NotNull @Positive
-  private Long paymentBalance;
+  private Double paymentBalance;
 
   @NotEmpty
   private String transactionId;
