@@ -96,7 +96,7 @@ public class TransactionService {
     MoneyBox moneyBox = findMoneyBoxByAccountAndCurrency(accountId, currencyId);
 
     //거래 권한 확인
-    User user = userService.findUserByUserKey(requestDto.getHeader().getUserKey());
+    User user = userService.findUserByHeader();
     validateUserAccess(user, moneyBox);
 
     TransactionType transactionType = requestDto.getTransactionType();
@@ -131,7 +131,7 @@ public class TransactionService {
         KRW_CURRENCY_ID);
 
     //거래 권한 확인
-    User user = userService.findUserByUserKey(requestDto.getHeader().getUserKey());
+    User user = userService.findUserByHeader();
     validateUserAccess(user, withdrawalBox);
 
     // 입금 머니박스
@@ -179,7 +179,7 @@ public class TransactionService {
         requestDto.getSourceCurrencyId());
 
     //거래 권한 확인
-    User user = userService.findUserByUserKey(requestDto.getHeader().getUserKey());
+    User user = userService.findUserByHeader();
     validateUserAccess(user, withdrawalBox);
 
     // 입금 머니박스
@@ -275,7 +275,7 @@ public class TransactionService {
    */
   private void validateUserAccess(User user, MoneyBox moneyBox) {
     long userId = user.getUserId();
-    long accountId = moneyBox.getAccount().getId(); // 필요한 경우 accountId도 가져옴
+    long accountId = moneyBox.getAccount().getId();
 
     if (userId != moneyBox.getAccount().getUser().getUserId()) {
       throw new UnauthorizedTransactionException(userId, accountId);
