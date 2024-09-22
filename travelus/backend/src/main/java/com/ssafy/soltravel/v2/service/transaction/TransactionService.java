@@ -90,7 +90,7 @@ public class TransactionService {
     Map<String, Object> body = new HashMap<>();
     body.put("Header", header);
     body.put("accountId", requestDto.getAccountId());
-    body.put("currencyId", requestDto.getCurrencyId());
+    body.put("currencyCode", requestDto.getCurrencyCode());
     body.put("transactionType", requestDto.getTransactionType());
     body.put("transactionBalance", requestDto.getTransactionBalance());
     body.put("transactionSummary", requestDto.getTransactionSummary());
@@ -163,8 +163,8 @@ public class TransactionService {
     body.put("Header", header);
     body.put("transferType", requestDto.getTransferType());
     body.put("accountId", requestDto.getAccountId());
-    body.put("sourceCurrencyId", requestDto.getSourceCurrencyId());
-    body.put("targetCurrencyId", requestDto.getTargetCurrencyId());
+    body.put("sourceCurrencyCode", requestDto.getSourceCurrencyCode());
+    body.put("targetCurrencyCode", requestDto.getTargetCurrencyCode());
     body.put("transactionBalance", requestDto.getTransactionBalance());
 
     ResponseEntity<Map<String, Object>> response = webClientUtil.request(API_URL, body, Map.class);
