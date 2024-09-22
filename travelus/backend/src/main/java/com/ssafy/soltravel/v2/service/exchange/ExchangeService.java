@@ -40,7 +40,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Transactional
 public class ExchangeService {
 
-  private WebClient webClient;
+  private final WebClient webClient;
   private final CacheManager cacheManager;
   private final ExchangeRateRepository exchangeRateRepository;
   private final PreferenceRateRepository preferenceRateRepository;
