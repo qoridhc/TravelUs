@@ -4,6 +4,7 @@ import com.goofy.tunabank.v1.domain.Account;
 import com.goofy.tunabank.v1.domain.Card;
 import com.goofy.tunabank.v1.domain.CardHistory;
 import com.goofy.tunabank.v1.domain.CardProduct;
+import com.goofy.tunabank.v1.domain.Merchant;
 import com.goofy.tunabank.v1.domain.MoneyBox;
 import com.goofy.tunabank.v1.domain.User;
 import com.goofy.tunabank.v1.dto.card.CardIssueRequestDto;
@@ -14,19 +15,23 @@ import com.goofy.tunabank.v1.dto.card.CardPaymentRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardPaymentResponseDto;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
 import com.goofy.tunabank.v1.exception.card.CardExpiredException;
+import com.goofy.tunabank.v1.exception.card.CardInsufficientBalanceException;
 import com.goofy.tunabank.v1.exception.card.CardNotFoundException;
 import com.goofy.tunabank.v1.exception.card.CardOwnershipException;
 import com.goofy.tunabank.v1.exception.card.CardProductNotFoundException;
 import com.goofy.tunabank.v1.exception.card.DuplicateTransactionIdException;
 import com.goofy.tunabank.v1.exception.card.InvalidCvcException;
+import com.goofy.tunabank.v1.exception.merchant.MerchantNotFoundException;
 import com.goofy.tunabank.v1.exception.moneybox.MoneyBoxNotFoundException;
 import com.goofy.tunabank.v1.mapper.CardMapper;
 import com.goofy.tunabank.v1.repository.AccountRepository;
 import com.goofy.tunabank.v1.repository.CardHistoryRepository;
 import com.goofy.tunabank.v1.repository.CardProductRepository;
 import com.goofy.tunabank.v1.repository.CardRepository;
+import com.goofy.tunabank.v1.repository.MerchantRepository;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
 import com.goofy.tunabank.v1.repository.UserRepository;
+import com.goofy.tunabank.v1.util.CurrencyConverter;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -52,6 +57,7 @@ public class CardService {
   private static final SecureRandom random = new SecureRandom();
   private final CardHistoryRepository cardHistoryRepository;
   private final MoneyBoxRepository moneyBoxRepository;
+  private final MerchantRepository merchantRepository;
 
   /*
   * 카드 신규 발급
@@ -106,47 +112,18 @@ public class CardService {
   */
   public CardPaymentResponseDto makeCardPayment(CardPaymentRequestDto request) {
 
-    // 카드 조회
-    Card card = cardRepository.findByCardNo(request.getCardNo()).orElseThrow(
-        () -> new CardNotFoundException(request.getCardNo())
-    );
+    // 카드 소유 검증
+    Card card = validateCard(request.getCardNo());
 
-    // 카드 정보 일치 검증(유저 소유 여부)
-    User user = userService.findUserByHeader();
-    User cardUser = card.getAccount().getUser();
-    if(user != cardUser) {
-      throw new CardOwnershipException(request.getCardNo());
-    }
-
-    // 카드 유효성 검증
-    if(card.getCvc() != request.getCvc()) {
-      throw new InvalidCvcException(request.getCvc());
-    }
-
-    if(card.getExpireAt().isBefore(LocalDateTime.now())) {
-      throw new CardExpiredException(request.getCardNo());
-    }
+    // 카드 유효 검증
+    validateCardDetails(card, request.getCvc());
 
     // 결제 유효성 검증
-    List<CardHistory> history = cardHistoryRepository.findByTransactionId(request.getTransactionId()).orElse(
-        Collections.emptyList()
-    );
-    if(!history.isEmpty()) {
-      throw new DuplicateTransactionIdException(request.getTransactionId());
-    }
+    validateTransaction(request.getTransactionId());
 
-    // 카드 잔액 확인
-    MoneyBox money = moneyBoxRepository.findMoneyBoxByAccountAndCurrency(
-        card.getAccount().getId(),
-        request.getCurrencyId()
-    ).orElseThrow(
-        () -> new MoneyBoxNotFoundException(request.getCurrencyId())
-    );
-    
-    // 현재 환율 확인
+    // 카드 잔액 확인 및 결제
+    MoneyBox moneyBox = processPayment(card, request);
 
-
-    //  결제
 
 
     return null;
@@ -190,4 +167,85 @@ public class CardService {
   private String generateCvc() {
     return String.format("%03d", random.nextInt(1000));
   }
+
+  /*
+  * 카드 소유권 검증
+  */
+  private Card validateCard(String cardNo) {
+    Card card = cardRepository.findByCardNo(cardNo).orElseThrow(
+        () -> new CardNotFoundException(cardNo)
+    );
+
+    User user = userService.findUserByHeader();
+    User cardUser = card.getAccount().getUser();
+    if(user != cardUser) {
+      throw new CardOwnershipException(cardNo);
+    }
+
+    return card;
+  }
+
+  /*
+  * 카드 유효 정보 검증
+  */
+  private void validateCardDetails(Card card, String cvc) {
+    if (!card.getCvc().equals(cvc)) {
+      throw new InvalidCvcException(cvc);
+    }
+    if (card.getExpireAt().isBefore(LocalDateTime.now())) {
+      throw new CardExpiredException(card.getCardNo());
+    }
+  }
+
+  /*
+  * 결제 유효성 검증
+  */
+  private void validateTransaction(String transactionId) {
+    List<CardHistory> history =
+        cardHistoryRepository.findByTransactionId(transactionId).orElse(Collections.emptyList());
+    if (!history.isEmpty()) {
+      throw new DuplicateTransactionIdException(transactionId);
+    }
+  }
+
+  /*
+  * 결제 진행
+  */
+  private MoneyBox processPayment(Card card, CardPaymentRequestDto request) {
+    MoneyBox moneyBox = moneyBoxRepository.findMoneyBoxByAccountNoAndCurrency(
+        card.getAccount().getAccountNo(),
+        request.getCurrencyId()
+    ).orElseThrow(() -> new MoneyBoxNotFoundException(request.getCurrencyId()));
+
+    // 금액 확인
+    Double balance = moneyBox.getBalance();
+    if(balance < request.getPaymentBalance()){
+      throw new CardInsufficientBalanceException(card.getCardNo(), request.getPaymentBalance(), balance);
+    }
+
+    // 가맹점 확인
+    Merchant merchant = merchantRepository.findById(request.getMerchantId()).orElseThrow(
+        () -> new MerchantNotFoundException(String.valueOf(request.getMerchantId()))
+    );
+
+    // 결제 수행 및 결과 저장
+    moneyBox.payment(balance);
+    saveCardHistory(card, moneyBox, merchant, request);
+
+    return moneyBox;
+  }
+
+  /*
+  * 결제 기록 저장
+  */
+  private void saveCardHistory(Card card, MoneyBox moneyBox, Merchant merchant, CardPaymentRequestDto request) {
+
+    Double wonAmount = CurrencyConverter.convertToKRW(request.getPaymentBalance(), moneyBox.getCurrency().getExchangeRate())
+        .doubleValue();
+
+    CardHistory cardHistory = CardHistory.createCardHistory(
+        card, moneyBox, merchant, request, wonAmount
+    );
+  }
+
 }
