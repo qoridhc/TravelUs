@@ -23,4 +23,8 @@ public class CardHistoryRepository {
 
     return result.isEmpty() ? Optional.empty() : Optional.of(result);
   }
+
+  public void save(CardHistory cardHistory) {
+    em.persist(cardHistory);
+  }
 }
