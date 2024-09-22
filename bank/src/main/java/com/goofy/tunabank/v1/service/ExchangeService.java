@@ -13,6 +13,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +46,16 @@ public class ExchangeService {
 
     // JSON 파싱
     JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
+
+    //update 시간 파싱
+    String timeLastUpdateUtcRaw = jsonObject.get("time_last_update_utc").getAsString();
+    DateTimeFormatter inputFormatter = DateTimeFormatter.RFC_1123_DATE_TIME;
+    ZonedDateTime utcZonedDateTime = ZonedDateTime.parse(timeLastUpdateUtcRaw, inputFormatter);
+    LocalDateTime localDateTime = utcZonedDateTime.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
+    DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    String timeLastUpdateUtc = localDateTime.format(outputFormatter);
+
+
     JsonObject conversionRates = jsonObject.getAsJsonObject("conversion_rates");
 
     // 결과를 저장할 리스트
@@ -59,14 +73,14 @@ public class ExchangeService {
         }
 
         // DTO 객체 생성 후 리스트에 추가
-        ExchangeRateCacheDTO dto = new ExchangeRateCacheDTO(currencyCode, rate);
+        ExchangeRateCacheDTO dto = new ExchangeRateCacheDTO(currencyCode, rate,timeLastUpdateUtc);
         cacheDTOList.add(dto);
 
         // 환율 업데이트
         saveOrUpdateCurrency(getCurrencyType(currencyCode), rate);
 
         // RabbitMQ로 메시지 전송
-        String message = "Currency: " + currencyCode + ", Rate: " + rate;
+        String message = String.format("Currency: %s, Rate: %f, Time: %s", currencyCode, rate, timeLastUpdateUtc);
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_RATE_QUEUE, message);
         LogUtil.info("Sent message to TravelUs: {}", message);
       }
