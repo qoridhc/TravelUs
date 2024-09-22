@@ -32,6 +32,7 @@ public class TransactionService {
   private final WebClientUtil webClientUtil;
   private final ModelMapper modelMapper;
   private final UserRepository userRepository;
+  private final String USER_KEY="05720b14-3173-4ed9-a2d5-ccf5127f5da7";
 
   /**
    * 입금
@@ -82,10 +83,9 @@ public class TransactionService {
     String API_URL = BASE_URL + "/" + apiName;
 
     Header header = Header.builder()
-//        .apiKey(apiKeys.get("API_KEY"))
+        .apiKey(apiKeys.get("API_KEY"))
 //        .userKey(user.getUserKey()).build();
-        .apiKey("V4BYi-78qMmIyXoJOcnCXRE0TXIyWgjBlZcAYe4JIljMu6of_GJ8kbUBWlfqW0WN")
-        .userKey("779e4e7e-ccd7-420c-92b5-8770cfd9199e").build();
+        .userKey(USER_KEY).build();
 
     Map<String, Object> body = new HashMap<>();
     body.put("Header", header);
@@ -118,10 +118,9 @@ public class TransactionService {
     String API_URL = BASE_URL + "/transfer/" + apiName;
 
     Header header = Header.builder()
-//        .apiKey(apiKeys.get("API_KEY"))
+        .apiKey(apiKeys.get("API_KEY"))
 //        .userKey(user.getUserKey()).build();
-        .apiKey("V4BYi-78qMmIyXoJOcnCXRE0TXIyWgjBlZcAYe4JIljMu6of_GJ8kbUBWlfqW0WN")
-        .userKey("779e4e7e-ccd7-420c-92b5-8770cfd9199e").build();
+        .userKey(USER_KEY).build();
 
     Map<String, Object> body = new HashMap<>();
     body.put("Header", header);
@@ -156,10 +155,9 @@ public class TransactionService {
     String API_URL = BASE_URL + "/transfer/" + apiName;
 
     Header header = Header.builder()
-//        .apiKey(apiKeys.get("API_KEY"))
+        .apiKey(apiKeys.get("API_KEY"))
 //        .userKey(user.getUserKey()).build();
-        .apiKey("V4BYi-78qMmIyXoJOcnCXRE0TXIyWgjBlZcAYe4JIljMu6of_GJ8kbUBWlfqW0WN")
-        .userKey("779e4e7e-ccd7-420c-92b5-8770cfd9199e").build();
+        .userKey(USER_KEY).build();
 
     Map<String, Object> body = new HashMap<>();
     body.put("Header", header);
@@ -193,10 +191,9 @@ public class TransactionService {
     String API_URL = BASE_URL + "/history";
 
     Header header = Header.builder()
-//        .apiKey(apiKeys.get("API_KEY"))
+        .apiKey(apiKeys.get("API_KEY"))
 //        .userKey(user.getUserKey()).build();
-        .apiKey("V4BYi-78qMmIyXoJOcnCXRE0TXIyWgjBlZcAYe4JIljMu6of_GJ8kbUBWlfqW0WN")
-        .userKey("779e4e7e-ccd7-420c-92b5-8770cfd9199e").build();
+        .userKey(USER_KEY).build();
 
     LogUtil.info("requestDto: ", requestDto);
     Map<String, Object> body = new HashMap<>();
