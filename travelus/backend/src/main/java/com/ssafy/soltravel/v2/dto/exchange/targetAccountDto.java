@@ -7,7 +7,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class targetAccountDto {
 
-  long accountId;
+  String accountNo;//모임 계좌번호
+  Long userId;//모임주 id
   double amount;
   double targetRate;
 }

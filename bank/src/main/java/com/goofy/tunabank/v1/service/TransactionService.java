@@ -92,9 +92,9 @@ public class TransactionService {
   @Transactional
   public TransactionResponseDto processTransaction(TransactionRequestDto requestDto) {
 
-    Long accountId = requestDto.getAccountId();
+    String accountNo = requestDto.getAccountNo();
     CurrencyType currencyCode = requestDto.getCurrencyCode();
-    MoneyBox moneyBox = findMoneyBoxByAccountAndCurrencyCode(accountId, currencyCode);
+    MoneyBox moneyBox = findMoneyBoxByAccountAndCurrencyCode(accountNo, currencyCode);
 
     //거래 권한 확인
     User user = userService.findUserByHeader();
@@ -128,7 +128,7 @@ public class TransactionService {
   public List<TransactionResponseDto> processGeneralTransfer(TransferRequestDto requestDto) {
 
     // 출금 머니박스
-    MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getWithdrawalAccountId(),
+    MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getWithdrawalAccountNo(),
         CurrencyType.KRW);
 
     //거래 권한 확인
@@ -136,7 +136,7 @@ public class TransactionService {
     validateUserAccess(user, withdrawalBox);
 
     // 입금 머니박스
-    MoneyBox depositBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getDepositAccountId(),
+    MoneyBox depositBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getDepositAccountNo(),
         CurrencyType.KRW);
 
     TransferDetailDto transferDetailDto = TransferDetailDto.builder()
@@ -176,7 +176,7 @@ public class TransactionService {
     String summary = "적용 환율: " + exchangeRate;
 
     // 출금 머니박스
-    MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountId(),
+    MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountNo(),
         requestDto.getSourceCurrencyCode());
 
     //거래 권한 확인
@@ -184,7 +184,7 @@ public class TransactionService {
     validateUserAccess(user, withdrawalBox);
 
     // 입금 머니박스
-    MoneyBox depositBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountId(),
+    MoneyBox depositBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountNo(),
         requestDto.getTargetCurrencyCode());
 
     TransferDetailDto transferDetailDto = TransferDetailDto.builder()
@@ -263,9 +263,9 @@ public class TransactionService {
    * 머니박스 조회
    */
   @Transactional(readOnly = true)
-  public MoneyBox findMoneyBoxByAccountAndCurrencyCode(long accountId, CurrencyType currencyCode) {
-    return moneyBoxRepository.findMoneyBoxByAccountAndCurrencyCode(accountId, currencyCode)
-        .orElseThrow(() -> new MoneyBoxNotFoundException(accountId, currencyCode));
+  public MoneyBox findMoneyBoxByAccountAndCurrencyCode(String accountNo, CurrencyType currencyCode) {
+    return moneyBoxRepository.findMoneyBoxByAccountAndCurrencyCode(accountNo, currencyCode)
+        .orElseThrow(() -> new MoneyBoxNotFoundException(accountNo, currencyCode));
   }
 
   /**
