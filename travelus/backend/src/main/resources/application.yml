@@ -13,7 +13,7 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql:3306/soltravel?serverTimezone=Asia/Seoul&useUniCode=yes&characterEncoding=UTF-8
+    url: ${BACKEND_DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     hikari:
