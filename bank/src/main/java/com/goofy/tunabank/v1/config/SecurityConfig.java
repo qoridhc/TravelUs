@@ -34,7 +34,8 @@ public class SecurityConfig {
                     new AntPathRequestMatcher("/api/v1/bank/auth/**"),
                     new AntPathRequestMatcher("/api/v1/bank/swagger-ui/**"),
                     new AntPathRequestMatcher("/api/v1/bank/v3/api-docs/**"),
-                    new AntPathRequestMatcher("/api/v1/bank/exchange/**")
+                    new AntPathRequestMatcher("/api/v1/bank/exchange/**"),
+                    new AntPathRequestMatcher("/api/v1/bank/transaction/transfer/moneybox/auto/**")
                 ).permitAll()
                 .anyRequest().authenticated()
         ).addFilterBefore(

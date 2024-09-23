@@ -1,5 +1,6 @@
 package com.goofy.tunabank.v1.repository.transaction;
 
+import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
 import com.goofy.tunabank.v1.domain.Enum.OrderByType;
 import com.goofy.tunabank.v1.domain.Enum.TransactionType;
 import com.goofy.tunabank.v1.domain.QTransactionHistory;
@@ -23,17 +24,15 @@ public class TransactionHistoryCustomRepositoryImpl implements TransactionHistor
   private final JPAQueryFactory queryFactory;
 
   @Override
-  public Optional<List<TransactionHistory>> findByCustomOrder(
-      TransactionHistoryRequestDto requestDto) {
+  public Optional<List<TransactionHistory>> findByCustomOrder(TransactionHistoryRequestDto requestDto) {
     QTransactionHistory qTransactionHistory = QTransactionHistory.transactionHistory;
 
     List<TransactionHistory> transactionHistories = queryFactory
         .selectFrom(qTransactionHistory)
         .where(
-            moneyBoxIdEq(qTransactionHistory, requestDto.getMoneyBoxId()),
+            accountNoAndCurrencyCodeEq(qTransactionHistory, requestDto.getAccountNo(), requestDto.getCurrencyCode()),
             transactionTypeEq(qTransactionHistory, requestDto.getTransactionType()),
-            transactionDateRangeEq(qTransactionHistory, requestDto.getStartDate(),
-                requestDto.getEndDate())
+            transactionDateRangeEq(qTransactionHistory, requestDto.getStartDate(), requestDto.getEndDate())
         )
         .orderBy(getOrderByExpression(qTransactionHistory, requestDto.getOrderByType()))
         .fetch();
@@ -41,31 +40,29 @@ public class TransactionHistoryCustomRepositoryImpl implements TransactionHistor
     return transactionHistories.isEmpty() ? Optional.empty() : Optional.of(transactionHistories);
   }
 
-  private BooleanBuilder moneyBoxIdEq(QTransactionHistory qTransactionHistory, Long moneyBoxId) {
-    return moneyBoxId != null ? new BooleanBuilder(qTransactionHistory.moneyBox.id.eq(moneyBoxId))
-        : new BooleanBuilder();
+  private BooleanBuilder accountNoAndCurrencyCodeEq(QTransactionHistory qTransactionHistory, String accountNo, CurrencyType currencyCode) {
+    BooleanBuilder builder = new BooleanBuilder();
+    if (accountNo != null && currencyCode != null) {
+      builder.and(qTransactionHistory.moneyBox.account.accountNo.eq(accountNo))
+          .and(qTransactionHistory.moneyBox.currency.currencyCode.eq(currencyCode));
+    }
+    return builder;
   }
 
-  private BooleanBuilder transactionTypeEq(QTransactionHistory qTransactionHistory,
-      TransactionType transactionType) {
-    return transactionType != null ? new BooleanBuilder(
-        qTransactionHistory.transactionType.eq(transactionType)) : new BooleanBuilder();
+  private BooleanBuilder transactionTypeEq(QTransactionHistory qTransactionHistory, TransactionType transactionType) {
+    return transactionType != null ? new BooleanBuilder(qTransactionHistory.transactionType.eq(transactionType)) : new BooleanBuilder();
   }
 
-  private BooleanBuilder transactionDateRangeEq(QTransactionHistory qTransactionHistory,
-      LocalDate startDate, LocalDate endDate) {
+  private BooleanBuilder transactionDateRangeEq(QTransactionHistory qTransactionHistory, LocalDate startDate, LocalDate endDate) {
     if (startDate != null && endDate != null) {
       LocalDateTime startDateTime = startDate.atStartOfDay();
       LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
-      return new BooleanBuilder(
-          qTransactionHistory.transactionAt.between(startDateTime, endDateTime));
+      return new BooleanBuilder(qTransactionHistory.transactionAt.between(startDateTime, endDateTime));
     }
     return new BooleanBuilder();
   }
 
-  private OrderSpecifier<LocalDateTime> getOrderByExpression(
-      QTransactionHistory qTransactionHistory, OrderByType orderByType) {
-    return orderByType == OrderByType.ASC ? qTransactionHistory.transactionAt.asc()
-        : qTransactionHistory.transactionAt.desc();
+  private OrderSpecifier<LocalDateTime> getOrderByExpression(QTransactionHistory qTransactionHistory, OrderByType orderByType) {
+    return orderByType == OrderByType.ASC ? qTransactionHistory.transactionAt.asc() : qTransactionHistory.transactionAt.desc();
   }
 }

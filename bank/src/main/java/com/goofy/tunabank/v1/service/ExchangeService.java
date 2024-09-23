@@ -11,6 +11,7 @@ import com.goofy.tunabank.v1.repository.CurrencyRepository;
 import com.goofy.tunabank.v1.util.LogUtil;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import jakarta.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -37,7 +38,8 @@ public class ExchangeService {
   private List<String> desiredCurrencies = List.of("USD", "JPY", "EUR", "CNY");
 
 
-//  @Scheduled(cron = "30 0 * * * ?")
+  //  @Scheduled(cron = "30 0 * * * ?")
+//  @PostConstruct
   public List<ExchangeRateCacheDTO> updateExchangeRates() {
     String url = "/latest/KRW";
 
@@ -51,10 +53,10 @@ public class ExchangeService {
     String timeLastUpdateUtcRaw = jsonObject.get("time_last_update_utc").getAsString();
     DateTimeFormatter inputFormatter = DateTimeFormatter.RFC_1123_DATE_TIME;
     ZonedDateTime utcZonedDateTime = ZonedDateTime.parse(timeLastUpdateUtcRaw, inputFormatter);
-    LocalDateTime localDateTime = utcZonedDateTime.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
+    LocalDateTime localDateTime = utcZonedDateTime.withZoneSameInstant(ZoneOffset.UTC)
+        .toLocalDateTime();
     DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     String timeLastUpdateUtc = localDateTime.format(outputFormatter);
-
 
     JsonObject conversionRates = jsonObject.getAsJsonObject("conversion_rates");
 
@@ -72,15 +74,18 @@ public class ExchangeService {
           rate = Math.round((1 / rate) * 100.0) / 100.0;    // 다른 통화는 소수점 둘째 자리까지 반올림
         }
 
+        int exchangeMin=getMinimumAmount(getCurrencyType(currencyCode));
         // DTO 객체 생성 후 리스트에 추가
-        ExchangeRateCacheDTO dto = new ExchangeRateCacheDTO(currencyCode, rate,timeLastUpdateUtc);
+        ExchangeRateCacheDTO dto = new ExchangeRateCacheDTO(currencyCode, rate, timeLastUpdateUtc,
+            exchangeMin);
         cacheDTOList.add(dto);
 
         // 환율 업데이트
-        saveOrUpdateCurrency(getCurrencyType(currencyCode), rate);
+        saveOrUpdateCurrency(getCurrencyType(currencyCode), rate, timeLastUpdateUtc);
 
         // RabbitMQ로 메시지 전송
-        String message = String.format("Currency: %s, Rate: %f, Time: %s", currencyCode, rate, timeLastUpdateUtc);
+        String message = String.format("Currency: %s, Rate: %f, Time: %s, ExchangeMin: %d",
+            currencyCode, rate, timeLastUpdateUtc, exchangeMin);
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_RATE_QUEUE, message);
         LogUtil.info("Sent message to TravelUs: {}", message);
       }
@@ -118,29 +123,37 @@ public class ExchangeService {
     return ExchangeRateCacheDTO.builder()
         .CurrencyCode(currencyCode)
         .ExchangeRate(response.getExchangeRate())
+        .created(response.getUpdatedAt())
+        .exchangeMin(response.getExchangeMin())
         .build();
   }
 
   /**
    * 환율 업데이트
    */
-  private void saveOrUpdateCurrency(CurrencyType type, Double exchangeRate) {
+  private void saveOrUpdateCurrency(CurrencyType type, Double exchangeRate,
+      String timeLastUpdateUtc) {
 
     Currency existingCurrency = currencyRepository.findByCurrencyCode(type);
 
     existingCurrency.setExchangeRate(exchangeRate);
+    existingCurrency.setUpdatedAt(timeLastUpdateUtc);
     currencyRepository.save(existingCurrency);
   }
 
   /**
    * 최소 환전 금액을 반환하는 메서드
    */
-  public double getMinimumAmount(CurrencyType CurrencyCode) {
+  public int getMinimumAmount(CurrencyType CurrencyCode) {
     switch (CurrencyCode) {
       case USD:
         return 100;
       case JPY:
         return 100;
+      case EUR:
+        return 100;
+      case CNY:
+        return 800;
       default:
         throw new UnsupportedCurrencyException(CurrencyCode);
     }
@@ -150,7 +163,7 @@ public class ExchangeService {
    * 환전 금액 계산 로직 1. 원화 -> 외화
    *
    * @param CurrencyCode: 바꿀 통화
-   * @param amount:     원화의 얼마를 외화로 바꿀 것인지
+   * @param amount:       원화의 얼마를 외화로 바꿀 것인지
    */
   public ExchangeAmountRequestDto calculateAmountFromKRWToForeignCurrency(CurrencyType CurrencyCode,
       double amount) {
