@@ -1,5 +1,6 @@
 package com.goofy.tunabank.v1.dto.card;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,8 +15,7 @@ public class CardPaymentResponseDto {
   private Long merchantId;
   private String merchantName;
   private String category;
-  private String paymentDate;
-  private String paymentTime;
+  private LocalDateTime paymentAt;
 
   private String currencyCode;
   private Long paymentBalance;

@@ -23,6 +23,7 @@ import com.goofy.tunabank.v1.exception.card.DuplicateTransactionIdException;
 import com.goofy.tunabank.v1.exception.card.InvalidCvcException;
 import com.goofy.tunabank.v1.exception.merchant.MerchantNotFoundException;
 import com.goofy.tunabank.v1.exception.moneybox.MoneyBoxNotFoundException;
+import com.goofy.tunabank.v1.mapper.CardHistoryMapper;
 import com.goofy.tunabank.v1.mapper.CardMapper;
 import com.goofy.tunabank.v1.repository.AccountRepository;
 import com.goofy.tunabank.v1.repository.CardHistoryRepository;
@@ -122,11 +123,10 @@ public class CardService {
     validateTransaction(request.getTransactionId());
 
     // 카드 잔액 확인 및 결제
-    MoneyBox moneyBox = processPayment(card, request);
+    CardHistory cardHistory = processPayment(card, request);
 
-
-
-    return null;
+    // 응답
+    return CardHistoryMapper.INSTANCE.toCardPaymentResponseDto(cardHistory);
   }
 
 
@@ -211,7 +211,7 @@ public class CardService {
   /*
   * 결제 진행
   */
-  private MoneyBox processPayment(Card card, CardPaymentRequestDto request) {
+  private CardHistory processPayment(Card card, CardPaymentRequestDto request) {
     MoneyBox moneyBox = moneyBoxRepository.findMoneyBoxByAccountNoAndCurrency(
         card.getAccount().getAccountNo(),
         request.getCurrencyId()
@@ -230,15 +230,13 @@ public class CardService {
 
     // 결제 수행 및 결과 저장
     moneyBox.payment(balance);
-    saveCardHistory(card, moneyBox, merchant, request);
-
-    return moneyBox;
+    return saveCardHistory(card, moneyBox, merchant, request);
   }
 
   /*
   * 결제 기록 저장
   */
-  private void saveCardHistory(Card card, MoneyBox moneyBox, Merchant merchant, CardPaymentRequestDto request) {
+  private CardHistory saveCardHistory(Card card, MoneyBox moneyBox, Merchant merchant, CardPaymentRequestDto request) {
 
     Double wonAmount = CurrencyConverter.convertToKRW(request.getPaymentBalance(), moneyBox.getCurrency().getExchangeRate())
         .doubleValue();
@@ -246,6 +244,9 @@ public class CardService {
     CardHistory cardHistory = CardHistory.createCardHistory(
         card, moneyBox, merchant, request, wonAmount
     );
+
+    cardHistoryRepository.save(cardHistory);
+    return cardHistory;
   }
 
 }
