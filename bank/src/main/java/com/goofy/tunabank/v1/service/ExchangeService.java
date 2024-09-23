@@ -11,6 +11,7 @@ import com.goofy.tunabank.v1.repository.CurrencyRepository;
 import com.goofy.tunabank.v1.util.LogUtil;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import jakarta.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -38,6 +39,7 @@ public class ExchangeService {
 
 
 //  @Scheduled(cron = "30 0 * * * ?")
+  @PostConstruct
   public List<ExchangeRateCacheDTO> updateExchangeRates() {
     String url = "/latest/KRW";
 
