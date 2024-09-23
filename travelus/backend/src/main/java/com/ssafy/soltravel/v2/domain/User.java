@@ -62,10 +62,7 @@ public class User {
     private String profile;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GeneralAccount> generalAccounts = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Participant> participants = new ArrayList<>();
+    private List<Participant> participants;
 
     /*
      * 생성 메서드

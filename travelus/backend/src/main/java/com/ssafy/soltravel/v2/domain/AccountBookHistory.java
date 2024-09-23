@@ -1,6 +1,7 @@
 package com.ssafy.soltravel.v2.domain;
 
 
+import com.ssafy.soltravel.v1.domain.ForeignAccount;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,9 +24,6 @@ public class AccountBookHistory {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long account_book_id;
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(name = "foreign_account_id")
-  private ForeignAccount foreignAccount;
 
   @Column
   private Double amount;
@@ -43,15 +41,10 @@ public class AccountBookHistory {
   private String store;
 
 
-  public void setForeignAccount(ForeignAccount foreignAccount) {
-    this.foreignAccount = foreignAccount;
-  }
-
   public static AccountBookHistory createAccountBookHistory(
       ForeignAccount foreignAccount,String transactionType, String store, Double amount, Double balance
   ) {
     AccountBookHistory accountBookHistory = new AccountBookHistory();
-    foreignAccount.addAccountBookHistory(accountBookHistory);
     accountBookHistory.store = store;
     accountBookHistory.amount = amount;
     accountBookHistory.transactionType = transactionType;

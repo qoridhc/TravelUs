@@ -9,18 +9,21 @@ public class TransferHistoryResponseDto {
     @Schema(description = "거래 고유 번호", example = "20230819123012345678")
     String transactionUniqueNo;
 
-    @Schema(description = "계좌 번호", example = "0889876543210")
-    String accountNo;
-
-    @Schema(description = "거래 날짜", example = "2023-08-19T12:30:00")
-    String transactionDate;
-
-    @Schema(description = "거래 유형 코드", example = "DEPOSIT")
+    @Schema(description = "거래 유형 코드", example = "TD")
     String transactionType;
 
-    @Schema(description = "거래 유형 이름", example = "입금")
-    String transactionTypeName;
+    @Schema(description = "거래 상대방 계좌 번호", example = "002-92374323-209")
+    String accountNo;
 
-    @Schema(description = "거래 상대방 계좌 번호", example = "0881234567890")
-    String transactionAccountNo;
+    @Schema(description = "거래 날짜", example = "2024-04-01T10:25:00")
+    String transactionDate;
+
+    @Schema(description = "거래 금액", example = "10000")
+    String transactionAmount;
+
+    @Schema(description = "거래 후 잔액", example = "99990000")
+    String transactionBalance;
+
+    @Schema(description = "거래 요약", example = "이체입금 테스트")
+    String transactionSummary;
 }

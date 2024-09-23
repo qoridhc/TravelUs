@@ -10,8 +10,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import java.util.List;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Merchant {
 
   //가맹점 id

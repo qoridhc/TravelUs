@@ -1,9 +1,9 @@
 package com.ssafy.soltravel.v2.service.account_book;
 
 
+import com.ssafy.soltravel.v1.domain.ForeignAccount;
 import com.ssafy.soltravel.v2.domain.CashHistory;
 import com.ssafy.soltravel.v2.domain.Enum.OrderByType;
-import com.ssafy.soltravel.v2.domain.ForeignAccount;
 import com.ssafy.soltravel.v2.dto.account_book.AccountHistoryReadRequestDto;
 import com.ssafy.soltravel.v2.dto.account_book.AccountHistoryReadResponseDto;
 import com.ssafy.soltravel.v2.dto.account_book.AccountHistorySaveRequestDto;
@@ -18,7 +18,6 @@ import com.ssafy.soltravel.v2.exception.ForeignAccountNotFoundException;
 import com.ssafy.soltravel.v2.exception.LackOfBalanceException;
 import com.ssafy.soltravel.v2.mapper.AccountBookMapper;
 import com.ssafy.soltravel.v2.mapper.TransactionMapper;
-import com.ssafy.soltravel.v2.repository.ForeignAccountRepository;
 import com.ssafy.soltravel.v2.service.AwsFileService;
 import com.ssafy.soltravel.v2.service.GPTService;
 import com.ssafy.soltravel.v2.service.transaction.TransactionService;
@@ -48,9 +47,6 @@ public class AccountBookService {
   // 내부 API
   private final CashHistoryService cashHistoryService;
   private final TransactionService transactionService;
-
-  // Repository
-  private final ForeignAccountRepository foreignAccountRepository;
 
   /*
    * 영수증 업로드 & 정보 파싱해서 반환
@@ -90,20 +86,22 @@ public class AccountBookService {
     //     .build();
     // transactionService.postForeignWithdrawal(false, requestDto.getAccountNo(), withRequest);
 
-    // 현금 사용 가계 등록
-    ForeignAccount foreignAccount = foreignAccountRepository.findByAccountNo(
-        requestDto.getAccountNo()
-    ).orElseThrow(
-        () -> new ForeignAccountNotFoundException(requestDto.getAccountNo())
-    );
+//    // 현금 사용 가계 등록
+//    ForeignAccount foreignAccount = foreignAccountRepository.findByAccountNo(
+//        requestDto.getAccountNo()
+//    ).orElseThrow(
+//        () -> new ForeignAccountNotFoundException(requestDto.getAccountNo())
+//    );
+//
+//     Double newBalance = cashHistoryService.payCash(
+//         foreignAccount, requestDto.getPaid(), requestDto.getStore(), requestDto.getTransactionAt()
+//     );
+//
+//    return AccountHistorySaveResponseDto.builder()
+//        .message("가계부가 등록되었습니다.")
+//        .build();
 
-     Double newBalance = cashHistoryService.payCash(
-         foreignAccount, requestDto.getPaid(), requestDto.getStore(), requestDto.getTransactionAt()
-     );
-
-    return AccountHistorySaveResponseDto.builder()
-        .message("가계부가 등록되었습니다.")
-        .build();
+    return null;
   }
 
 
@@ -127,14 +125,14 @@ public class AccountBookService {
     transactionDto.setOrderByType(OrderByType.ASC);
 
     // 변환한 데이터로 이체 기록 요청
-    List<TransactionHistoryDto> transactionHistoryList =
-        transactionService.getForeignHistoryByAccountNo(accountNo, transactionDto);
-
-    // 이체 기록을 가계부에 저장
-    updateAccountHistoryFromTransactions(
-        response.getMonthHistoryList(),
-        transactionHistoryList
-    );
+//    List<TransactionHistoryDto> transactionHistoryList =
+//        transactionService.getForeignHistoryByAccountNo(accountNo, transactionDto);
+//
+//    // 이체 기록을 가계부에 저장
+//    updateAccountHistoryFromTransactions(
+//        response.getMonthHistoryList(),
+//        transactionHistoryList
+//    );
 
 
     //현금 가계 기록 조회
@@ -151,8 +149,9 @@ public class AccountBookService {
     );
 
     // 총 거래 횟수 셋팅 및 반환
-    response.setTransactionCount(transactionHistoryList.size());
-    return response;
+//    response.setTransactionCount(transactionHistoryList.size());
+//    return response;
+    return null;
   }
 
 
@@ -171,14 +170,14 @@ public class AccountBookService {
     transactionDto.setOrderByType(OrderByType.ASC);
 
     // 변환한 데이터로 이체 기록 요청
-    List<TransactionHistoryDto> transactionHistoryList =
-        transactionService.getForeignHistoryByAccountNo(accountNo, transactionDto);
+//    List<TransactionHistoryDto> transactionHistoryList =
+//        transactionService.getForeignHistoryByAccountNo(accountNo, transactionDto);
 
-    // 이체 기록을 가계부에 저장
-    updateDetailHistoryFromTransactions(
-        response,
-        transactionHistoryList
-    );
+//    // 이체 기록을 가계부에 저장
+//    updateDetailHistoryFromTransactions(
+//        response,
+//        transactionHistoryList
+//    );
 
 
     //현금 가계 기록 조회

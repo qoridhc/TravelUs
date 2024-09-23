@@ -84,4 +84,8 @@ public class Key {
     this.expireAt = LocalDateTime.now().plusYears(1);
     return this;
   }
+
+  public void deactivateKey() {
+    this.status = KeyStatus.INACTIVE;
+  }
 }

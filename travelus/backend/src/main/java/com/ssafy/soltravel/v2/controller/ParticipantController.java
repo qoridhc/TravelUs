@@ -1,9 +1,9 @@
 package com.ssafy.soltravel.v2.controller;
 
+import com.ssafy.soltravel.v1.dto.account.AccountDto;
+import com.ssafy.soltravel.v1.dto.participants.request.AddParticipantRequestDto;
+import com.ssafy.soltravel.v1.dto.participants.request.ParticipantListResponseDto;
 import com.ssafy.soltravel.v2.dto.ResponseDto;
-import com.ssafy.soltravel.v2.dto.account.AccountDto;
-import com.ssafy.soltravel.v2.dto.participants.request.AddParticipantRequestDto;
-import com.ssafy.soltravel.v2.dto.participants.request.ParticipantListResponseDto;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -48,9 +48,9 @@ public class ParticipantController {
         @RequestBody AddParticipantRequestDto requestDto
     ) {
 
-        ResponseEntity<ResponseDto> response = accountService.addParticipant(accountId, requestDto);
+//        ResponseEntity<ResponseDto> response = accountService.addParticipant(accountId, requestDto);
 
-        return response;
+        return null;
     }
 
     @Operation(summary = "특정 모임의 모든 참가자 조회", description = "특정 계좌의 모든 참여자를 조회하는 API.")
@@ -65,9 +65,9 @@ public class ParticipantController {
         @PathVariable Long accountId
     ) {
 
-        ResponseEntity<ParticipantListResponseDto> response = accountService.getParticipants(accountId);
+//        ResponseEntity<ParticipantListResponseDto> response = accountService.getParticipants(accountId);
 
-        return response;
+        return null;
     }
 
     @Operation(summary = "특정 유저가 가입한 (생성 X)모든 모임 통장 정보 조회", description = "특정 유저가 가입한 모든 모임 통장 정보 조회하는 API")
@@ -82,9 +82,9 @@ public class ParticipantController {
         @PathVariable Long userId
     ) {
 
-        ResponseEntity<List<AccountDto>> response = accountService.getAllGroupInfoByUserId(userId);
+//        ResponseEntity<List<AccountDto>> response = accountService.getAllGroupInfoByUserId(userId);
 
-        return response;
+        return null;
     }
 
     @Operation(summary = "참가자 모임통장 탈퇴", description = "모임통장에서 참여자를 탈퇴시키는 API.")
@@ -99,8 +99,8 @@ public class ParticipantController {
         @PathVariable Long participantId
     ) {
 
-        ResponseEntity<ResponseDto> response = accountService.deleteParticipants(participantId);
+//        ResponseEntity<ResponseDto> response = accountService.deleteParticipants(participantId);
 
-        return response;
+        return null;
     }
 }

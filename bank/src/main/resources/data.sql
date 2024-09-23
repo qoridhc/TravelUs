@@ -23,6 +23,11 @@ INSERT IGNORE INTO user (user_id, email, role, is_exit, create_at, update_at, ex
 INSERT IGNORE INTO user (user_id, email, role, is_exit, create_at, update_at, exit_at) VALUES (2, '2pearl522@gmail.com', 'ADMIN', null, null, null, null);
 INSERT IGNORE INTO user (user_id, email, role, is_exit, create_at, update_at, exit_at) VALUES (3, 'lsh@gmail.com', 'ADMIN', null, null, null, null);
 
+-- api_key 데이터 삽입
+INSERT IGNORE INTO tunabank.api_key (id, create_at, expire_at, status, type, value, user_id) VALUES (1, '2024-09-18 22:06:16.282217', '2025-09-18 22:06:16.282217', 'ACTIVE', 'API', 'HUo52t-HWD_BYTDPMtnloxnppmSoRrBfduY6XYjnyC2-a84p9xxJwB_RKinE6WvQ', 1);
 
 -- bank 데이터 삽입
 INSERT IGNORE INTO bank (bank_id, bank_name) VALUES (1, '튜나은행');
+
+-- card_product 데이터 삽입
+INSERT IGNORE INTO card_product(card_product_id,card_name, card_description, card_unique_no) VALUES (1, '튜나 카드', '튜나뱅크의 카드입니다.', 'DC5O2YKQ');

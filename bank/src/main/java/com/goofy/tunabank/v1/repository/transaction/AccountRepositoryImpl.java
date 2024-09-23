@@ -1,4 +1,4 @@
-package com.goofy.tunabank.v1.repository.queryDSL;
+package com.goofy.tunabank.v1.repository.transaction;
 
 import com.goofy.tunabank.v1.domain.Account;
 import com.goofy.tunabank.v1.domain.Enum.AccountType;
@@ -14,19 +14,20 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<Account> findGroupAccountById(Long accountId) {
+    public Optional<Account> findAccountByAccountNo(String accountNo) {
         QAccount account = QAccount.account;
         QMoneyBox moneyBox = QMoneyBox.moneyBox;
 
         Account result = queryFactory
             .selectFrom(account)
             .leftJoin(account.moneyBoxes, moneyBox).fetchJoin()
-            .where(account.id.eq(accountId)
+            .where(account.accountNo.eq(accountNo)
                 .and(account.accountType.eq(AccountType.G)))
             .fetchOne();
 
         return Optional.ofNullable(result);
     }
+
 
     @Override
     public Optional<Account> fetchAccountWithMoneyBoxes(Long accountId) {

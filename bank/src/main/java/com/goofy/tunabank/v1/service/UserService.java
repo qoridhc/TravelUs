@@ -10,17 +10,18 @@ import com.goofy.tunabank.v1.dto.user.UserJoinRequestDto;
 import com.goofy.tunabank.v1.dto.user.UserJoinResponseDto;
 import com.goofy.tunabank.v1.dto.user.UserSearchRequestDto;
 import com.goofy.tunabank.v1.dto.user.UserSearchResponseDto;
-import com.goofy.tunabank.v1.exception.auth.UserNotFoundException;
-import com.goofy.tunabank.v1.exception.user.UserKeyExpiredException;
 import com.goofy.tunabank.v1.exception.user.EmailDuplicatedException;
+import com.goofy.tunabank.v1.exception.user.UserExitException;
+import com.goofy.tunabank.v1.exception.user.UserKeyNotFoundException;
+import com.goofy.tunabank.v1.exception.user.UserNotFoundException;
 import com.goofy.tunabank.v1.mapper.UserMapper;
 import com.goofy.tunabank.v1.provider.KeyProvider;
 import com.goofy.tunabank.v1.repository.KeyRepository;
 import com.goofy.tunabank.v1.repository.UserRepository;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,8 @@ public class UserService {
   private final KeyProvider keyProvider;
 
   private final UserMapper userMapper;
+
+  private final static String EXIT_USER_MESSAGE="탈퇴 유저입니다.";
 
   /*
   * 회원 가입
@@ -73,13 +76,20 @@ public class UserService {
         () -> new UserNotFoundException(request.getUserId())
     );
 
+    // 탈퇴 유저 처리
+    if(user.getIsExit()) {
+      return UserSearchResponseDto.builder()
+          .userId(EXIT_USER_MESSAGE)
+          .userKey("")
+          .build();
+    }
+
     // 유저 키 조회
-    Key key = user.getValidUserKey().orElseThrow(
-        () -> new UserKeyNotFoundException(request.getUserId())
-    );
+    Key key = keyRepository.findValidUserKeyByUser(user).orElse(null);
 
     // 유저 키 만료시, 자동 재발급
-    if(key.getExpireAt().isBefore(LocalDateTime.now())) {
+    if(key == null) {
+      key = keyRepository.findUserKeyByUser(user);
       String userKey = keyProvider.generateUserKey();
       key.updateKey(userKey);
     }
@@ -88,11 +98,55 @@ public class UserService {
     return userMapper.toUserSearchResponseDto(user, key);
   }
 
+  /*
+  * 유저 삭제
+  */
   public UserDeleteResponseDto deleteUser(UserDeleteRequestDto request) {
 
-    // 키 검증
-//    if(user.getValidUserKey().isPresent()) {}
+    // userKey로 유저조회
+    String keyValue = request.getHeader().getUserKey();
+    User user = findUserByUserKey(keyValue);
 
-    return null;
+    // 유저 탈퇴 처리
+    user.deactivateUser();
+    return new UserDeleteResponseDto();
   }
+
+  /*
+  * 비즈니스 로직용 유저 조회 메서드(유저키로 조회)
+  */
+  public User findUserByUserKey(String keyValue) {
+    // key 조회
+    Key userKey = keyRepository.findByKeyValueWithUser(keyValue).orElseThrow(
+        () -> new UserKeyNotFoundException(keyValue)
+    );
+
+    // key 유효성 검사
+    keyProvider.validateKey(userKey);
+
+    // 유저 조회
+    User user = userKey.getUser();
+
+    // 유저 탈퇴 여부 확인
+    if(user.getIsExit()){
+      throw new UserExitException(user.getEmail());
+    }
+
+    return user;
+  }
+
+  /*
+  * 비즈니스 로직용 유저 조회 메서드2(아무것도 필요 없음)
+  */
+  public User findUserByHeader() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null || authentication.getPrincipal() == null || "0".equals(authentication.getPrincipal())) {
+      throw new UserKeyNotFoundException("0");
+    }
+
+    UserDetails detail = (UserDetails) authentication.getPrincipal();
+    return findUserByUserKey(detail.getUsername());
+  }
+
+
 }

@@ -40,6 +40,7 @@ public class UserController {
 
   @PostMapping("/delete")
   public ResponseEntity deleteUser(@RequestBody UserDeleteRequestDto request){
+    LogUtil.info("유저 삭제 요청", request.getHeader());
     UserDeleteResponseDto response = userService.deleteUser(request);
     return new ResponseEntity(response, HttpStatus.OK);
   }
