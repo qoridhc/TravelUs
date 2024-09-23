@@ -6,7 +6,7 @@ import { useNavigate } from "react-router";
 const ForeignCurrencyExchange = () => {
   const navigate = useNavigate();
   const handleExchange = () => {
-    navigate("/");
+    navigate("/settlement");
   };
 
   return (

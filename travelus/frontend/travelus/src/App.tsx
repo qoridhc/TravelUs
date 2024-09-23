@@ -35,6 +35,7 @@ import PrivateRoute from "./pages/user/PrivateRoute";
 import { Sign } from "crypto";
 import SelectSettlementAmount from "./pages/settlement/SelectSettlementAmount";
 import ForeignCurrencyExchange from "./pages/settlement/ForeignCurrencyExchange";
+import SettlementInfo from "./pages/settlement/SettlementInfo";
 
 function App() {
   return (
@@ -105,7 +106,8 @@ function App() {
           {/* 정산 */}
           <Route path="/selectsettlementamount" element={<SelectSettlementAmount />}></Route>
           <Route path="/settlementforeigncurrencyexchange" element={<ForeignCurrencyExchange />}></Route>
-          <Route path="/settlement" element={<Settlement />}></Route>
+          <Route path="/settlement" element={<SettlementInfo />}></Route>
+          {/* <Route path="/settlement" element={<Settlement />}></Route> */}
         </Routes>
       </BrowserRouter>
     </div>
