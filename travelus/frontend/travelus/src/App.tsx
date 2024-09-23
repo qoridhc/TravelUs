@@ -36,6 +36,7 @@ import { Sign } from "crypto";
 import SelectSettlementAmount from "./pages/settlement/SelectSettlementAmount";
 import ForeignCurrencyExchange from "./pages/settlement/ForeignCurrencyExchange";
 import SettlementInfo from "./pages/settlement/SettlementInfo";
+import EditMembers from "./pages/settlement/EditMembers";
 
 function App() {
   return (
@@ -107,6 +108,7 @@ function App() {
           <Route path="/selectsettlementamount" element={<SelectSettlementAmount />}></Route>
           <Route path="/settlementforeigncurrencyexchange" element={<ForeignCurrencyExchange />}></Route>
           <Route path="/settlement" element={<SettlementInfo />}></Route>
+          <Route path="/editmembers" element={<EditMembers />}></Route>
           {/* <Route path="/settlement" element={<Settlement />}></Route> */}
         </Routes>
       </BrowserRouter>

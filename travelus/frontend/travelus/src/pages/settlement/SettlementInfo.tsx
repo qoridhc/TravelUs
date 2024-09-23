@@ -1,23 +1,47 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+
+interface Member {
+  name: string;
+  amount: number;
+}
 
 const SettlementInfo = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const members = [
-    { name: "박민규", amount: "24,434원" },
-    { name: "이예림", amount: "24,433원" },
-    { name: "박예진", amount: "24,433원" },
-  ];
+  const totalAmount = 73300;
+  const [members, setMembers] = useState<Member[]>([
+    { name: "박민규", amount: 24434 },
+    { name: "박예진", amount: 24433 },
+    { name: "이예림", amount: 24433 },
+  ]);
 
   const handleSettlement = () => {
     navigate("/");
   };
 
   const handleMembers = () => {
-    navigate("/");
+    navigate("/editmembers", { state: { selectedMemberList: members } });
   };
+
+  useEffect(() => {
+    if (location.state?.members) {
+      const memberList = location.state.members;
+      const memberCount = memberList.length;
+
+      const amountPerMember = Math.floor(totalAmount / memberCount);
+      const remainder = totalAmount % memberCount;
+
+      const updatedMembers = memberList.map((member: Member, index: number) => ({
+        name: member.name,
+        amount: index === 0 ? amountPerMember + remainder : amountPerMember,
+      }));
+
+      setMembers(updatedMembers);
+    }
+  }, [location.state]);
 
   return (
     <div className="h-full py-5 pb-8 flex flex-col justify-between">
@@ -65,7 +89,7 @@ const SettlementInfo = () => {
                 <p>{item.name}</p>
               </div>
 
-              <p>{item.amount}</p>
+              <p>{item.amount}원</p>
             </div>
           ))}
         </div>
