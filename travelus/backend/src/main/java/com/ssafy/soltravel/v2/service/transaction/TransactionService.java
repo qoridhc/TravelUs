@@ -2,14 +2,17 @@ package com.ssafy.soltravel.v2.service.transaction;
 
 import com.ssafy.soltravel.v2.common.Header;
 import com.ssafy.soltravel.v2.domain.Enum.TransactionType;
+import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionHistoryRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransactionResponseDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
+import com.ssafy.soltravel.v2.exception.UserNotFoundException;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.util.LogUtil;
+import com.ssafy.soltravel.v2.util.SecurityUtil;
 import com.ssafy.soltravel.v2.util.WebClientUtil;
 import java.util.HashMap;
 import java.util.List;
@@ -75,22 +78,20 @@ public class TransactionService {
   private ResponseEntity<TransactionResponseDto> processTransaction(String apiName,
       TransactionRequestDto requestDto) {
 
-//    Long userId = SecurityUtil.getCurrentUserId();
-//    User user = userRepository.findByUserId(userId)
-//        .orElseThrow(() -> new UserNotFoundException(userId));
+    Long userId = SecurityUtil.getCurrentUserId();
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new UserNotFoundException(userId));
 
     String API_URL = BASE_URL + "/" + apiName;
 
     Header header = Header.builder()
-//        .apiKey(apiKeys.get("API_KEY"))
-//        .userKey(user.getUserKey()).build();
-        .apiKey("V4BYi-78qMmIyXoJOcnCXRE0TXIyWgjBlZcAYe4JIljMu6of_GJ8kbUBWlfqW0WN")
-        .userKey("779e4e7e-ccd7-420c-92b5-8770cfd9199e").build();
+        .apiKey(apiKeys.get("API_KEY"))
+        .userKey(user.getUserKey()).build();
 
     Map<String, Object> body = new HashMap<>();
     body.put("Header", header);
     body.put("accountId", requestDto.getAccountId());
-    body.put("currencyId", requestDto.getCurrencyId());
+    body.put("currencyCode", requestDto.getCurrencyCode());
     body.put("transactionType", requestDto.getTransactionType());
     body.put("transactionBalance", requestDto.getTransactionBalance());
     body.put("transactionSummary", requestDto.getTransactionSummary());
@@ -111,17 +112,15 @@ public class TransactionService {
   public ResponseEntity<List<TransferHistoryResponseDto>> processTransfer(String apiName,
       TransferRequestDto requestDto) {
 
-//    Long userId = SecurityUtil.getCurrentUserId();
-//    User user = userRepository.findByUserId(userId)
-//        .orElseThrow(() -> new UserNotFoundException(userId));
+    Long userId = SecurityUtil.getCurrentUserId();
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new UserNotFoundException(userId));
 
     String API_URL = BASE_URL + "/transfer/" + apiName;
 
     Header header = Header.builder()
-//        .apiKey(apiKeys.get("API_KEY"))
-//        .userKey(user.getUserKey()).build();
-        .apiKey("V4BYi-78qMmIyXoJOcnCXRE0TXIyWgjBlZcAYe4JIljMu6of_GJ8kbUBWlfqW0WN")
-        .userKey("779e4e7e-ccd7-420c-92b5-8770cfd9199e").build();
+        .apiKey(apiKeys.get("API_KEY"))
+        .userKey(user.getUserKey()).build();
 
     Map<String, Object> body = new HashMap<>();
     body.put("Header", header);
@@ -149,24 +148,22 @@ public class TransactionService {
   public ResponseEntity<List<TransferHistoryResponseDto>> processMoneyBoxTransfer(String apiName,
       MoneyBoxTransferRequestDto requestDto) {
 
-//    Long userId = SecurityUtil.getCurrentUserId();
-//    User user = userRepository.findByUserId(userId)
-//        .orElseThrow(() -> new UserNotFoundException(userId));
+    Long userId = SecurityUtil.getCurrentUserId();
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new UserNotFoundException(userId));
 
     String API_URL = BASE_URL + "/transfer/" + apiName;
 
     Header header = Header.builder()
-//        .apiKey(apiKeys.get("API_KEY"))
-//        .userKey(user.getUserKey()).build();
-        .apiKey("V4BYi-78qMmIyXoJOcnCXRE0TXIyWgjBlZcAYe4JIljMu6of_GJ8kbUBWlfqW0WN")
-        .userKey("779e4e7e-ccd7-420c-92b5-8770cfd9199e").build();
+        .apiKey(apiKeys.get("API_KEY"))
+        .userKey(user.getUserKey()).build();
 
     Map<String, Object> body = new HashMap<>();
     body.put("Header", header);
     body.put("transferType", requestDto.getTransferType());
     body.put("accountId", requestDto.getAccountId());
-    body.put("sourceCurrencyId", requestDto.getSourceCurrencyId());
-    body.put("targetCurrencyId", requestDto.getTargetCurrencyId());
+    body.put("sourceCurrencyCode", requestDto.getSourceCurrencyCode());
+    body.put("targetCurrencyCode", requestDto.getTargetCurrencyCode());
     body.put("transactionBalance", requestDto.getTransactionBalance());
 
     ResponseEntity<Map<String, Object>> response = webClientUtil.request(API_URL, body, Map.class);
@@ -186,17 +183,15 @@ public class TransactionService {
   public ResponseEntity<List<TransferHistoryResponseDto>> getHistory(
       TransactionHistoryRequestDto requestDto) {
 
-    //    Long userId = SecurityUtil.getCurrentUserId();
-//    User user = userRepository.findByUserId(userId)
-//        .orElseThrow(() -> new UserNotFoundException(userId));
+    Long userId = SecurityUtil.getCurrentUserId();
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new UserNotFoundException(userId));
 
     String API_URL = BASE_URL + "/history";
 
     Header header = Header.builder()
-//        .apiKey(apiKeys.get("API_KEY"))
-//        .userKey(user.getUserKey()).build();
-        .apiKey("V4BYi-78qMmIyXoJOcnCXRE0TXIyWgjBlZcAYe4JIljMu6of_GJ8kbUBWlfqW0WN")
-        .userKey("779e4e7e-ccd7-420c-92b5-8770cfd9199e").build();
+        .apiKey(apiKeys.get("API_KEY"))
+        .userKey(user.getUserKey()).build();
 
     LogUtil.info("requestDto: ", requestDto);
     Map<String, Object> body = new HashMap<>();

@@ -99,13 +99,12 @@ public class ExchangeService {
   }
 
   /**
-   * 환율 단건조회(by Id)
+   * 환율 단건조회(by code)
    */
   @Transactional(readOnly = true)
-  public double getExchangeRateByCurrencyId(int currencyId) {
+  public double getExchangeRateByCurrencyCode(CurrencyType currencyCode) {
 
-    Currency currency = currencyRepository.findById(currencyId)
-        .orElseThrow(() -> new UnsupportedCurrencyException(currencyId));
+    Currency currency = currencyRepository.findByCurrencyCode(currencyCode);
     return currency.getExchangeRate();
   }
 
@@ -136,34 +135,34 @@ public class ExchangeService {
   /**
    * 최소 환전 금액을 반환하는 메서드
    */
-  public double getMinimumAmount(int currency) {
-    switch (currency) {
-      case 2:
+  public double getMinimumAmount(CurrencyType CurrencyCode) {
+    switch (CurrencyCode) {
+      case USD:
         return 100;
-      case 3:
+      case JPY:
         return 100;
       default:
-        throw new UnsupportedCurrencyException(currency);
+        throw new UnsupportedCurrencyException(CurrencyCode);
     }
   }
 
   /**
    * 환전 금액 계산 로직 1. 원화 -> 외화
    *
-   * @param currencyId: 바꿀 통화
+   * @param CurrencyCode: 바꿀 통화
    * @param amount:     원화의 얼마를 외화로 바꿀 것인지
    */
-  public ExchangeAmountRequestDto calculateAmountFromKRWToForeignCurrency(int currencyId,
+  public ExchangeAmountRequestDto calculateAmountFromKRWToForeignCurrency(CurrencyType CurrencyCode,
       double amount) {
 
     BigDecimal krw = BigDecimal.valueOf(amount);
-    BigDecimal rate = BigDecimal.valueOf(getExchangeRateByCurrencyId(currencyId));
+    BigDecimal rate = BigDecimal.valueOf(getExchangeRateByCurrencyCode(CurrencyCode));
     BigDecimal calculatedAmount = krw.divide(rate, 2, RoundingMode.DOWN);
 
     //최소 환전 금액 유효성 검사
     double DcalculatedAmount = calculatedAmount.doubleValue();
-    if (DcalculatedAmount < getMinimumAmount(currencyId)) {
-      throw new MinimumAmountNotSatisfiedException(currencyId, DcalculatedAmount);
+    if (DcalculatedAmount < getMinimumAmount(CurrencyCode)) {
+      throw new MinimumAmountNotSatisfiedException(CurrencyCode, DcalculatedAmount);
     }
     return new ExchangeAmountRequestDto(DcalculatedAmount, rate.doubleValue());
   }
@@ -171,10 +170,10 @@ public class ExchangeService {
   /**
    * 환전 금액 계산 로직 2. 외화 -> 원화
    */
-  public ExchangeAmountRequestDto calculateAmountFromForeignCurrencyToKRW(int currencyId,
+  public ExchangeAmountRequestDto calculateAmountFromForeignCurrencyToKRW(CurrencyType CurrencyCode,
       double amount) {
 
-    double exchangeRate = getExchangeRateByCurrencyId(currencyId);
+    double exchangeRate = getExchangeRateByCurrencyCode(CurrencyCode);
     double krwAmount = amount * exchangeRate;
 
     return new ExchangeAmountRequestDto(Math.floor(krwAmount), exchangeRate);

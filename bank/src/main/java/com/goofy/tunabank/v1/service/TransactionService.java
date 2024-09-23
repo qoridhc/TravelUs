@@ -1,5 +1,6 @@
 package com.goofy.tunabank.v1.service;
 
+import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
 import com.goofy.tunabank.v1.domain.Enum.TransactionType;
 import com.goofy.tunabank.v1.domain.Enum.TransferType;
 import com.goofy.tunabank.v1.domain.MoneyBox;
@@ -92,11 +93,11 @@ public class TransactionService {
   public TransactionResponseDto processTransaction(TransactionRequestDto requestDto) {
 
     Long accountId = requestDto.getAccountId();
-    int currencyId = requestDto.getCurrencyId();
-    MoneyBox moneyBox = findMoneyBoxByAccountAndCurrency(accountId, currencyId);
+    CurrencyType currencyCode = requestDto.getCurrencyCode();
+    MoneyBox moneyBox = findMoneyBoxByAccountAndCurrencyCode(accountId, currencyCode);
 
     //거래 권한 확인
-    User user = userService.findUserByUserKey(requestDto.getHeader().getUserKey());
+    User user = userService.findUserByHeader();
     validateUserAccess(user, moneyBox);
 
     TransactionType transactionType = requestDto.getTransactionType();
@@ -127,16 +128,16 @@ public class TransactionService {
   public List<TransactionResponseDto> processGeneralTransfer(TransferRequestDto requestDto) {
 
     // 출금 머니박스
-    MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrency(requestDto.getWithdrawalAccountId(),
-        KRW_CURRENCY_ID);
+    MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getWithdrawalAccountId(),
+        CurrencyType.KRW);
 
     //거래 권한 확인
-    User user = userService.findUserByUserKey(requestDto.getHeader().getUserKey());
+    User user = userService.findUserByHeader();
     validateUserAccess(user, withdrawalBox);
 
     // 입금 머니박스
-    MoneyBox depositBox = findMoneyBoxByAccountAndCurrency(requestDto.getDepositAccountId(),
-        KRW_CURRENCY_ID);
+    MoneyBox depositBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getDepositAccountId(),
+        CurrencyType.KRW);
 
     TransferDetailDto transferDetailDto = TransferDetailDto.builder()
         .transferType(requestDto.getTransferType()).withdrawalBox(withdrawalBox)
@@ -156,9 +157,9 @@ public class TransactionService {
   public List<TransactionResponseDto> processMoneyBoxTransfer(TransferMBRequestDto requestDto) {
 
     double beforeAmount = requestDto.getTransactionBalance();//해당 머니박스의 통화단위임
-    ExchangeAmountRequestDto exchangeAmountRequestDto = switch (requestDto.getSourceCurrencyId()) {
-      case 2 ->
-          exchangeService.calculateAmountFromForeignCurrencyToKRW(requestDto.getSourceCurrencyId(),
+    ExchangeAmountRequestDto exchangeAmountRequestDto = switch (requestDto.getSourceCurrencyCode()) {
+      case USD ->
+          exchangeService.calculateAmountFromForeignCurrencyToKRW(requestDto.getSourceCurrencyCode(),
               beforeAmount);// 외화 -> 원화
       default -> {
         // 원화 -> 외화일 때만 10원 단위로 조정
@@ -166,7 +167,7 @@ public class TransactionService {
           beforeAmount -= (beforeAmount % 10);
         }
         yield exchangeService.calculateAmountFromKRWToForeignCurrency(
-            requestDto.getTargetCurrencyId(), beforeAmount);// 원화 -> 외화
+            requestDto.getTargetCurrencyCode(), beforeAmount);// 원화 -> 외화
       }
     };
 
@@ -175,16 +176,16 @@ public class TransactionService {
     String summary = "적용 환율: " + exchangeRate;
 
     // 출금 머니박스
-    MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrency(requestDto.getAccountId(),
-        requestDto.getSourceCurrencyId());
+    MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountId(),
+        requestDto.getSourceCurrencyCode());
 
     //거래 권한 확인
-    User user = userService.findUserByUserKey(requestDto.getHeader().getUserKey());
+    User user = userService.findUserByHeader();
     validateUserAccess(user, withdrawalBox);
 
     // 입금 머니박스
-    MoneyBox depositBox = findMoneyBoxByAccountAndCurrency(requestDto.getAccountId(),
-        requestDto.getTargetCurrencyId());
+    MoneyBox depositBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountId(),
+        requestDto.getTargetCurrencyCode());
 
     TransferDetailDto transferDetailDto = TransferDetailDto.builder()
         .transferType(requestDto.getTransferType()).withdrawalBox(withdrawalBox)
@@ -262,9 +263,9 @@ public class TransactionService {
    * 머니박스 조회
    */
   @Transactional(readOnly = true)
-  public MoneyBox findMoneyBoxByAccountAndCurrency(long accountId, int currencyId) {
-    return moneyBoxRepository.findMoneyBoxByAccountAndCurrency(accountId, currencyId)
-        .orElseThrow(() -> new MoneyBoxNotFoundException(accountId, currencyId));
+  public MoneyBox findMoneyBoxByAccountAndCurrencyCode(long accountId, CurrencyType currencyCode) {
+    return moneyBoxRepository.findMoneyBoxByAccountAndCurrencyCode(accountId, currencyCode)
+        .orElseThrow(() -> new MoneyBoxNotFoundException(accountId, currencyCode));
   }
 
   /**
@@ -275,7 +276,7 @@ public class TransactionService {
    */
   private void validateUserAccess(User user, MoneyBox moneyBox) {
     long userId = user.getUserId();
-    long accountId = moneyBox.getAccount().getId(); // 필요한 경우 accountId도 가져옴
+    long accountId = moneyBox.getAccount().getId();
 
     if (userId != moneyBox.getAccount().getUser().getUserId()) {
       throw new UnauthorizedTransactionException(userId, accountId);
