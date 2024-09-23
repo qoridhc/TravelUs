@@ -80,10 +80,8 @@ public class ExchangeService {
 
     ExchangeRateCacheDto dto = getExchangeRateFromCache(currency);
     responseDto.setExchangeRate(dto.getExchangeRate());
-    responseDto.setCreated(dto.getLastUpdatedTime());
-
-    //TODO:최소금액
-//    responseDto.setExchangeMin(rateEntity.getExchangeMin());
+    responseDto.setCreated(dto.getCreated());
+    responseDto.setExchangeMin(dto.getExchangeMin());
     return responseDto;
   }
 
@@ -205,6 +203,7 @@ public class ExchangeService {
     String currencyCode = parts[0].split(": ")[1];
     Double exchangeRate = Double.parseDouble(parts[1].split(": ")[1]);
     String timeLastUpdateUtc = parts[2].split(": ")[1];
+    int exchangeMin = Integer.parseInt(parts[3].split(": ")[1]);
 
     // 이전 환율 가져오기
     ExchangeRateCacheDto cachedDto = getExchangeRateFromCache(currencyCode);
@@ -213,7 +212,7 @@ public class ExchangeService {
     if (cachedDto == null || !exchangeRate.equals(cachedDto.getExchangeRate())) {
       // 캐시에 새로운 환율 저장
       updateExchangeRateCache(
-          new ExchangeRateCacheDto(currencyCode, exchangeRate, timeLastUpdateUtc));
+          new ExchangeRateCacheDto(currencyCode, exchangeRate, timeLastUpdateUtc,String.valueOf(exchangeMin)));
 
       //TODO: 주석 풀 것
       //자동환전
