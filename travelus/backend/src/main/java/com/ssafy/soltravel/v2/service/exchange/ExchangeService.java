@@ -1,6 +1,7 @@
 package com.ssafy.soltravel.v2.service.exchange;
 
 
+import com.ssafy.soltravel.v2.common.Header;
 import com.ssafy.soltravel.v2.config.RabbitMQConfig;
 import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
 import com.ssafy.soltravel.v2.domain.Enum.TransferType;
@@ -12,14 +13,18 @@ import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto
 import com.ssafy.soltravel.v2.repository.GroupRepository;
 import com.ssafy.soltravel.v2.service.transaction.TransactionService;
 import com.ssafy.soltravel.v2.util.LogUtil;
+import com.ssafy.soltravel.v2.util.WebClientUtil;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -29,7 +34,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @RequiredArgsConstructor
@@ -37,8 +41,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class ExchangeService {
 
   private final String BASE_URL = "http://localhost:8080/api/v1/bank/exchange";
+  private final Map<String, String> apiKeys;
+  private final WebClientUtil webClientUtil;
+  private final ModelMapper modelMapper;
 
-  private final WebClient webClient;
   private final CacheManager cacheManager;
   private final RedisTemplate<String, String> redisTemplate;
   private final TransactionService transactionService;
@@ -232,15 +238,32 @@ public class ExchangeService {
     }
 
     // 외부 API에서 환율 정보 가져오기
-    ResponseEntity<ExchangeRateCacheDto> response = webClient.get()
-        .uri("/exchange/" + currencyCode).retrieve().toEntity(ExchangeRateCacheDto.class).block();
+    Header header = Header.builder()
+        .apiKey(apiKeys.get("API_KEY")).build();
 
-    if (response != null && response.getBody() != null) {
-      ExchangeRateCacheDto rateDto = response.getBody();
-      if (rateDto.getCurrencyCode().equals(currencyCode)) {
-        return rateDto; // 환율 반환
-      }
+    Map<String, Object> body = new HashMap<>();
+    body.put("Header", header);
+
+    ResponseEntity<Map<String, Object>> response = webClientUtil.request(
+        BASE_URL + "/" + currencyCode, body, Map.class);
+    Object recObject = response.getBody().get("REC");
+
+    ExchangeRateCacheDto rateDto = modelMapper.map(recObject,
+        ExchangeRateCacheDto.class);
+    if (rateDto.getCurrencyCode().equals(currencyCode)) {
+      return rateDto; // 환율 반환
     }
-    return null; // 실패 시 null 반환
+    return null;
+
+//    ResponseEntity<ExchangeRateCacheDto> response = webClient.get()
+//        .uri("/exchange/" + currencyCode).retrieve().toEntity(ExchangeRateCacheDto.class).block();
+//
+//    if (response != null && response.getBody() != null) {
+//      ExchangeRateCacheDto rateDto = response.getBody();
+//      if (rateDto.getCurrencyCode().equals(currencyCode)) {
+//        return rateDto; // 환율 반환
+//      }
+//    }
+//    return null; // 실패 시 null 반환
   }
 }
