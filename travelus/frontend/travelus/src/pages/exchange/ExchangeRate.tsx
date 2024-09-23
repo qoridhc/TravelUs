@@ -17,13 +17,21 @@ const getFlagImagePath = (currencyCode: string) => {
 };
 
 const ExchangeRateItem: React.FC<ExchangeRateInfo> = ({ currencyCode, exchangeRate }) => {
+  const navigate = useNavigate();
   const currencyName = currencyNames[currencyCode] || '알 수 없는 통화';
   const country = countryNameMapping[currencyCode] || '알 수 없는 국가';
 
   const flagImagePath = getFlagImagePath(currencyCode);
 
+  const handleClick = () => {
+    navigate(`/exchangerate/${currencyCode}`);
+  }
+
   return (
-    <div className="m-3 flex items-center justify-between p-4 border-b">
+    <div 
+      className="m-3 flex items-center justify-between p-4 border-b cursor-pointer hover:bg-gray-100"
+      onClick={handleClick}
+    >
       <div className="flex items-center">
         <img
          src={flagImagePath}
@@ -43,20 +51,54 @@ const ExchangeRateItem: React.FC<ExchangeRateInfo> = ({ currencyCode, exchangeRa
 };
 
 const ExchangeRateList: React.FC = () => {
-  // 임시 데이터 (백엔드 데이터 필요)
-  const exchangeRates: ExchangeRateInfo[] =[
-    { currencyCode: "USD", exchangeRate: 1331.86, exchangeMin: 0, created: new Date().toISOString() },
-    { currencyCode: "JPY", exchangeRate: 926.78, exchangeMin: 0, created: new Date().toISOString() },
-    { currencyCode: "EUR", exchangeRate: 1488.45, exchangeMin: 0, created: new Date().toISOString() },
-    { currencyCode: "CNY", exchangeRate: 189.11, exchangeMin: 0, created: new Date().toISOString() }
-  ];
+  const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const data = await exchangeApi.getExchangeRates();
+        const filteredRates = data.filter(rate => 
+        ['USD', 'JPY', 'EUR', 'CNY'].includes(rate.currencyCode)
+        );
+        setExchangeRates(filteredRates);
+        setIsLoading(false);
+      } catch (err) {
+        console.log("Failed to fetch exchange rates:", err);
+        setError("Failed to load exchange rates. Please try again later.");
+        setIsLoading(false);
+      }
+    };
+
+    fetchExchangeRates();
+  }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (error) {
+    return <div>{error}</div>
+  }
 
   return (
-    <div className="m-3 bg-white rounded-lg shadow">
-      <h2 className="p-4 text-lg font-bold">실시간 환율</h2>
-      {exchangeRates.map((rate, index) => (
-        <ExchangeRateItem key={index} {...rate} />
-      ))}
+    <div className="m-3">
+      <div className="bg-white rounded-lg shadow mb-4">
+        <h2 className="p-4 text-lg font-bold">실시간 환율</h2>
+        {exchangeRates.map((rate, index) => (
+          <ExchangeRateItem key={index} {...rate} />
+        ))}
+      </div>
+      <div className="bg-gray-100 rounded-lg p-4 text-sm text-gray-600">
+        <h3 className="font-bold mb-2">튜나뱅크 환율 안내</h3>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>위 환율은 매매기준율로 1시간마다 업데이트돼요.</li>
+          <li>위 환율은 튜나뱅크 외화 모임 통장으로 환전될 때 적용돼요.</li>
+          <li>위 환율의 변동 정보는 어제 오전 10시 기준으로 계산돼요.</li>
+          <li>위 환율과 환전할 때 적용되는 환율은 거래 시점에 따라 다를 수 있어요.</li>
+        </ul>
+      </div>
     </div>
   );
 };

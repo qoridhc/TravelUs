@@ -23,6 +23,7 @@ import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
 import AccountCreate from "./pages/account/AccountCreate";
 import ExchangeRate from "./pages/exchange/ExchangeRate";
+import ExchangeDetail from './components/exchange/ExchangeDetail';
 import Exchange from "./pages/exchange/Exchange";
 import SelectAccount from "./pages/exchange/SelectAccount";
 import Settlement from "./pages/settle/Settlement";
@@ -112,6 +113,7 @@ function App() {
 
           {/* 환율 */}
           <Route path="/exchangerate" element={<ExchangeRate />} />
+          <Route path="/exchangerate/:currencyCode" element={<ExchangeDetail />} />
 
           {/* 정산 */}
           <Route path="/selectsettlementamount" element={<SelectSettlementAmount />}></Route>
