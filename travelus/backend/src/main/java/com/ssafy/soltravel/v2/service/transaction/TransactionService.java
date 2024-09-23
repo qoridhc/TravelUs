@@ -2,14 +2,17 @@ package com.ssafy.soltravel.v2.service.transaction;
 
 import com.ssafy.soltravel.v2.common.Header;
 import com.ssafy.soltravel.v2.domain.Enum.TransactionType;
+import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionHistoryRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransactionResponseDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
+import com.ssafy.soltravel.v2.exception.UserNotFoundException;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.util.LogUtil;
+import com.ssafy.soltravel.v2.util.SecurityUtil;
 import com.ssafy.soltravel.v2.util.WebClientUtil;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +35,6 @@ public class TransactionService {
   private final WebClientUtil webClientUtil;
   private final ModelMapper modelMapper;
   private final UserRepository userRepository;
-  private final String USER_KEY="05720b14-3173-4ed9-a2d5-ccf5127f5da7";
 
   /**
    * 입금
@@ -76,16 +78,15 @@ public class TransactionService {
   private ResponseEntity<TransactionResponseDto> processTransaction(String apiName,
       TransactionRequestDto requestDto) {
 
-//    Long userId = SecurityUtil.getCurrentUserId();
-//    User user = userRepository.findByUserId(userId)
-//        .orElseThrow(() -> new UserNotFoundException(userId));
+    Long userId = SecurityUtil.getCurrentUserId();
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new UserNotFoundException(userId));
 
     String API_URL = BASE_URL + "/" + apiName;
 
     Header header = Header.builder()
         .apiKey(apiKeys.get("API_KEY"))
-//        .userKey(user.getUserKey()).build();
-        .userKey(USER_KEY).build();
+        .userKey(user.getUserKey()).build();
 
     Map<String, Object> body = new HashMap<>();
     body.put("Header", header);
@@ -111,16 +112,15 @@ public class TransactionService {
   public ResponseEntity<List<TransferHistoryResponseDto>> processTransfer(String apiName,
       TransferRequestDto requestDto) {
 
-//    Long userId = SecurityUtil.getCurrentUserId();
-//    User user = userRepository.findByUserId(userId)
-//        .orElseThrow(() -> new UserNotFoundException(userId));
+    Long userId = SecurityUtil.getCurrentUserId();
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new UserNotFoundException(userId));
 
     String API_URL = BASE_URL + "/transfer/" + apiName;
 
     Header header = Header.builder()
         .apiKey(apiKeys.get("API_KEY"))
-//        .userKey(user.getUserKey()).build();
-        .userKey(USER_KEY).build();
+        .userKey(user.getUserKey()).build();
 
     Map<String, Object> body = new HashMap<>();
     body.put("Header", header);
@@ -148,16 +148,15 @@ public class TransactionService {
   public ResponseEntity<List<TransferHistoryResponseDto>> processMoneyBoxTransfer(String apiName,
       MoneyBoxTransferRequestDto requestDto) {
 
-//    Long userId = SecurityUtil.getCurrentUserId();
-//    User user = userRepository.findByUserId(userId)
-//        .orElseThrow(() -> new UserNotFoundException(userId));
+    Long userId = SecurityUtil.getCurrentUserId();
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new UserNotFoundException(userId));
 
     String API_URL = BASE_URL + "/transfer/" + apiName;
 
     Header header = Header.builder()
         .apiKey(apiKeys.get("API_KEY"))
-//        .userKey(user.getUserKey()).build();
-        .userKey(USER_KEY).build();
+        .userKey(user.getUserKey()).build();
 
     Map<String, Object> body = new HashMap<>();
     body.put("Header", header);
@@ -184,16 +183,15 @@ public class TransactionService {
   public ResponseEntity<List<TransferHistoryResponseDto>> getHistory(
       TransactionHistoryRequestDto requestDto) {
 
-    //    Long userId = SecurityUtil.getCurrentUserId();
-//    User user = userRepository.findByUserId(userId)
-//        .orElseThrow(() -> new UserNotFoundException(userId));
+    Long userId = SecurityUtil.getCurrentUserId();
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new UserNotFoundException(userId));
 
     String API_URL = BASE_URL + "/history";
 
     Header header = Header.builder()
         .apiKey(apiKeys.get("API_KEY"))
-//        .userKey(user.getUserKey()).build();
-        .userKey(USER_KEY).build();
+        .userKey(user.getUserKey()).build();
 
     LogUtil.info("requestDto: ", requestDto);
     Map<String, Object> body = new HashMap<>();
