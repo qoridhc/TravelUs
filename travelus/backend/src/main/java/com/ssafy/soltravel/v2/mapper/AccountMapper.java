@@ -1,17 +1,7 @@
 package com.ssafy.soltravel.v2.mapper;
 
-import com.ssafy.soltravel.v2.domain.Currency;
-import com.ssafy.soltravel.v2.domain.Enum.AccountType;
-import com.ssafy.soltravel.v2.domain.ForeignAccount;
-import com.ssafy.soltravel.v2.domain.GeneralAccount;
-import com.ssafy.soltravel.v2.domain.User;
-import com.ssafy.soltravel.v2.dto.account.AccountDto;
-import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
-import com.ssafy.soltravel.v2.dto.currency.CurrencyDto;
 import com.ssafy.soltravel.v2.repository.CurrencyRepository;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
