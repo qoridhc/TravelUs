@@ -207,7 +207,8 @@ public class TransactionService {
     if (transactionType != null) {
       body.put("transactionType", transactionType);
     }
-    body.put("moneyBoxId", requestDto.getMoneyBoxId());
+    body.put("accountNo", requestDto.getAccountNo());
+    body.put("currencyCode", requestDto.getCurrencyCode());
     body.put("startDate", requestDto.getStartDate());
     body.put("endDate", requestDto.getEndDate());
     body.put("orderByType", requestDto.getOrderByType());
