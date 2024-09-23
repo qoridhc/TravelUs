@@ -1,5 +1,6 @@
 package com.goofy.tunabank.v1.domain;
 
+import com.goofy.tunabank.v1.util.LogUtil;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -66,5 +68,20 @@ public class MoneyBox {
             .build();
 
         return moneyBox;
+    }
+
+    // ==== 결제 ====
+    public Double payment(Double amount) {
+        //BigDecimal 변환
+        BigDecimal currentBalance = BigDecimal.valueOf(balance);
+        BigDecimal paymentAmount = BigDecimal.valueOf(amount);
+
+        // 계산 및 업데이트
+        BigDecimal newBalance = currentBalance.subtract(paymentAmount);
+        LogUtil.info("잔액", newBalance);
+        this.balance = newBalance.doubleValue();
+        
+        //반환
+        return this.balance;
     }
 }

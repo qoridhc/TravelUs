@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -90,7 +91,8 @@ public class KeyAutheticationFilter extends OncePerRequestFilter {
 
   // 요청(헤더) 파싱하기
   private Optional<String> resolveHeader(HttpServletRequest request) throws IOException {
-    Map<String, Object> bodyMap = objectMapper.readValue(request.getInputStream(), Map.class);
+    String requestBody = request.getReader().lines().collect(Collectors.joining());
+    Map<String, Object> bodyMap = objectMapper.readValue(requestBody, Map.class);
 
     // 헤더를 Optional로 처리하여 값이 없을 경우 빈 Optional 반환
     return Optional.ofNullable(
@@ -102,7 +104,8 @@ public class KeyAutheticationFilter extends OncePerRequestFilter {
 
   // 요청(userKey) 파싱하기
   private Optional<String> resolveUser(HttpServletRequest request) throws IOException {
-    Map<String, Object> bodyMap = objectMapper.readValue(request.getInputStream(), Map.class);
+    String requestBody = request.getReader().lines().collect(Collectors.joining());
+    Map<String, Object> bodyMap = objectMapper.readValue(requestBody, Map.class);
 
     // 헤더를 Optional로 처리하여 값이 없을 경우 빈 Optional 반환
     return Optional.ofNullable(

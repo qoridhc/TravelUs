@@ -55,7 +55,10 @@ public class Account {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    User user;
+    private User user;
+
+    @OneToMany(mappedBy = "account")
+    private List<Card> cards = new ArrayList<>();
 
     // ==== 엔티티 생성 메서드 ====
     public static Account createAccount(
