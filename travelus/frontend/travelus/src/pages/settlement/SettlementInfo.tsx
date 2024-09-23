@@ -11,11 +11,11 @@ const SettlementInfo = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const totalAmount = 73300;
+  const totalAmount = 160834;
   const [members, setMembers] = useState<Member[]>([
-    { name: "박민규", amount: 24434 },
-    { name: "박예진", amount: 24433 },
-    { name: "이예림", amount: 24433 },
+    { name: "박민규", amount: 53612 },
+    { name: "박예진", amount: 53611 },
+    { name: "이예림", amount: 53611 },
   ]);
 
   const handleSettlement = () => {
@@ -67,12 +67,12 @@ const SettlementInfo = () => {
           <div className="px-5 text-2xl font-semibold tracking-wide">
             <div className="flex">
               <p>총&nbsp;</p>
-              <p className="text-[#1429A0]">73,300원</p>
+              <p className="text-[#1429A0]">160,834원</p>
               <p>을</p>
             </div>
 
             <div className="flex">
-              <p className="text-[#1429A0]">3명</p>
+              <p className="text-[#1429A0]">{members.length}명</p>
               <p>이 나눕니다</p>
             </div>
           </div>

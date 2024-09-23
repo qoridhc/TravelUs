@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { TiArrowUnsorted } from "react-icons/ti";
 import { useNavigate } from "react-router";
 
 const ForeignCurrencyExchange = () => {
   const navigate = useNavigate();
+
+  const [usdAmount, setUsdAmount] = useState(0);
+
   const handleExchange = () => {
     navigate("/settlement");
   };
@@ -49,6 +52,7 @@ const ForeignCurrencyExchange = () => {
                     type="number"
                     className="w-2/3 text-right bg-[#F3F4F6] outline-none placeholder:text-black"
                     placeholder="0"
+                    onChange={(e) => setUsdAmount(parseFloat(e.target.value))}
                   />
                   <p>USD</p>
                 </div>
@@ -67,7 +71,11 @@ const ForeignCurrencyExchange = () => {
                 </div>
 
                 <div className="text-[#949494] flex justify-end items-center space-x-2">
-                  <input type="number" className="w-2/3 text-right bg-[#F3F4F6] outline-none" value={0} />
+                  <input
+                    type="number"
+                    className="w-2/3 text-right bg-[#F3F4F6] outline-none"
+                    value={Math.floor(1343.98 * usdAmount)}
+                  />
                   <p>KRW</p>
                 </div>
               </div>
