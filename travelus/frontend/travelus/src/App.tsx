@@ -46,6 +46,7 @@ import MeetingInfoOfCreateMeetingAccount from "./pages/MeetingAccount/MeetingInf
 import PasswordOfCreateMeetingAccount from "./pages/MeetingAccount/PasswordOfCreateMeetingAccount";
 import CheckPasswordOfCreateMeetingAccount from "./pages/MeetingAccount/CheckPasswordOfCreateMeetingAccount";
 import IDVerificationOfCreateMeetingAccount from "./pages/MeetingAccount/IDVerificationOfCreateMeetingAccount";
+import CompletedOfCreateMeetingAccount from "./pages/MeetingAccount/CompletedOfCreateMeetingAccount";
 
 function App() {
   return (
@@ -102,6 +103,7 @@ function App() {
           <Route path="/passwordofcreatemeetingaccount" element={<PasswordOfCreateMeetingAccount />} />
           <Route path="/checkpasswordofcreatemeetingaccount" element={<CheckPasswordOfCreateMeetingAccount />} />
           <Route path="/idverificationofcreatemeetingaccount" element={<IDVerificationOfCreateMeetingAccount />} />
+          <Route path="/completedofcreatemeetingaccount" element={<CompletedOfCreateMeetingAccount />} />
 
           <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />

@@ -1,12 +1,18 @@
 import React from "react";
+import { useNavigate } from "react-router";
 
 const IDVerificationOfCreateMeetingAccount = () => {
+  const navigate = useNavigate();
   const guideText = [
     "신분증 앞면이 선명하게 보이도록 가로로 촬영해주세요.",
     "검정색 등 어두운 바탕 위에서 촬영해주세요.",
     "빛이 반사되지 않는 곳에서 촬영해주세요.",
     "훼손되지 않은 신분증을 촬영해주세요.",
   ];
+
+  const handleNext = () => {
+    navigate("/completedofcreatemeetingaccount");
+  };
 
   return (
     <div className="h-full p-5 flex flex-col justify-between">
@@ -34,7 +40,11 @@ const IDVerificationOfCreateMeetingAccount = () => {
         </div>
       </div>
 
-      <button className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]">신분증 촬영하기</button>
+      <button
+        className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
+        onClick={() => handleNext()}>
+        신분증 촬영하기
+      </button>
     </div>
   );
 };
