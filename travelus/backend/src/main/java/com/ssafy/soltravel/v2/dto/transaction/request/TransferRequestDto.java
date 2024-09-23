@@ -10,11 +10,11 @@ public class TransferRequestDto {
     @Schema(description = "이체 타입", example = "G")
     TransferType transferType;
 
-    @Schema(description = "출금 계좌 Id", example = "1")
-    Long withdrawalAccountId;
+    @Schema(description = "출금 계좌번호", example = "1")
+    String withdrawalAccountNo;
 
-    @Schema(description = "입금 계좌 Id", example = "2")
-    Long depositAccountId;
+    @Schema(description = "입금 계좌번호", example = "2")
+    String depositAccountNo;
 
     @Schema(description = "거래 금액", example = "5000")
     Long transactionBalance;

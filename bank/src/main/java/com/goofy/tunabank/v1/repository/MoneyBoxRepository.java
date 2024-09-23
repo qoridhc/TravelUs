@@ -12,9 +12,9 @@ public interface MoneyBoxRepository extends JpaRepository<MoneyBox,Long> {
   @Query("SELECT mb FROM MoneyBox mb " +
       "JOIN FETCH mb.currency c " +
       "JOIN FETCH mb.account a " +
-      "WHERE a.id = :accountId " +
-      "AND c.id = :currencyId")
-  Optional<MoneyBox> findMoneyBoxByAccountAndCurrency(@Param("accountId") Long accountId, @Param("currencyId") int currencyId);
+      "WHERE a.accountNo  = :accountNo  " +
+      "AND c.currencyCode = :currencyCode")
+  Optional<MoneyBox> findMoneyBoxByAccountAndCurrencyCode(@Param("accountNo") String accountNo, @Param("currencyCode") CurrencyType currencyCode);
 
   @Query("SELECT mb FROM MoneyBox mb " +
       "JOIN FETCH mb.currency c " +
@@ -29,6 +29,5 @@ public interface MoneyBoxRepository extends JpaRepository<MoneyBox,Long> {
       "WHERE a.accountNo = :accountNo " +
       "AND c.currencyCode = :currencyCode")
   Optional<MoneyBox> findMoneyBoxByAccountNoAndCurrency(@Param("accountNo") String accountNo, @Param("currencyCode") CurrencyType currencyCode);
-
 
 }
