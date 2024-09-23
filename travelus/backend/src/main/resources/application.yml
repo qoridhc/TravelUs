@@ -12,9 +12,9 @@ spring:
       - classpath:/yml/application-v1.yml
       - classpath:/yml/application-v2.yml
       - classpath:/yml/application-feature.yml
-      - classpath:/yml/application-dev.yml
+#      - classpath:/yml/application-dev.yml
   profiles:
-    active : v2, feature, dev
+    active : v2, feature
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -71,11 +71,6 @@ logging:
 server:
   front:
     url: http://localhost:3000
-#  port: 8085
-#
-#  servlet:
-#    session:
-#      timeout: 30m
 
 ---
 # 프로파일 dev-blue 설정
