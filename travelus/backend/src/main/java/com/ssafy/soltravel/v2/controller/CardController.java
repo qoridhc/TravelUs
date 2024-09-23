@@ -1,7 +1,7 @@
 package com.ssafy.soltravel.v2.controller;
 
 import com.ssafy.soltravel.v2.dto.card.CardIssueRequestDto;
-import com.ssafy.soltravel.v2.dto.card.CardIssueResponseDto;
+import com.ssafy.soltravel.v2.dto.card.CardResponseDto;
 import com.ssafy.soltravel.v2.service.card.CardService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class CardController {
   @PostMapping("/issue")
   public ResponseEntity issueNewCard(@RequestBody CardIssueRequestDto request){
     LogUtil.info("카드 발급 요청", request);
-    CardIssueResponseDto response = cardService.createNewCard(request);
+    CardResponseDto response = cardService.createNewCard(request);
     return new ResponseEntity(response, HttpStatus.CREATED);
   }
 

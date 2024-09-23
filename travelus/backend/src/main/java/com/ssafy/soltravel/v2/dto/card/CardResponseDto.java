@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CardIssueResponseDto {
+public class CardResponseDto {
 
   private String cardNo;
   private String cvc;
@@ -18,7 +18,7 @@ public class CardIssueResponseDto {
   private String cardIssuerName;
   private String cardName;
   private String cardDescription;
-  private LocalDateTime cardExpiryDate;
+  private String cardExpiryDate;
   private String withdrawalAccountNo;
 
 }
