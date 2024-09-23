@@ -7,8 +7,8 @@ const BalanceSettlementCompleted = () => {
   return (
     <div className="h-full p-5 pb-8">
       <div className="h-full flex flex-col justify-between">
-        <div className="h-full flex flex-col justify-center items-center space-y-5">
-          <img src="/assets/confirmIcon.png" alt="확인아이콘" />
+        <div className="h-full mt-32 flex flex-col items-center space-y-5">
+          <img className="w-20 aspect-1" src="/assets/confirmIcon.png" alt="확인아이콘" />
 
           <div className="text-2xl">
             <div className="flex justify-center">
@@ -30,7 +30,7 @@ const BalanceSettlementCompleted = () => {
             onClick={() => {
               navigate("/");
             }}
-            className="w-full h-14 text-lg font-semibold rounded-xl tracking-wide text-white bg-[#1429A0]">
+            className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]">
             확인
           </button>
         </div>
