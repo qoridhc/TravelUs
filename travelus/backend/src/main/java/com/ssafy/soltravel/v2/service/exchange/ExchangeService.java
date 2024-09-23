@@ -31,9 +31,12 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Service
 @RequiredArgsConstructor
@@ -108,7 +111,7 @@ public class ExchangeService {
 
     // 필요한 경우 TTL 설정 (아래는 1일임)
     redisTemplate.expire(key, Duration.ofDays(1));
-    LogUtil.info("자동환전 계좌 목록 조회::", getAccountsForRateHigherThan("USD", 1331));
+//    LogUtil.info("자동환전 계좌 목록 조회::", getAccountsForRateHigherThan("USD", 1331));
   }
 
   /**
@@ -126,8 +129,23 @@ public class ExchangeService {
           dto.getAccountNo(), CurrencyType.KRW, getCurrencyType(currencyCode),
           String.valueOf(dto.getAmount()));
 
-      //환전 로직 호출
-      transactionService.postMoneyBoxTransfer(requestDto, true, dto.getUserId());
+      try {
+        // 환전 로직 호출
+        transactionService.postMoneyBoxTransfer(requestDto, true, dto.getUserId());
+      } catch (WebClientResponseException e) {
+        //잔액부족시
+        if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
+          LogUtil.error("자동환전 실패. 계좌 번호: {}, 사용자 ID: {}, 에러: INSUFFICIENT_BALANCE", dto.getAccountNo(), dto.getUserId());
+
+        } else {
+          LogUtil.error("자동환전 실패. 계좌 번호: {}, 사용자 ID: {}, 에러: {}", dto.getAccountNo(), dto.getUserId(), e.getMessage());
+        }
+
+        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+      } catch (Exception e) {
+        LogUtil.error("자동환전 실패. 계좌 번호: {}, 사용자 ID: {}, 에러: {}", dto.getAccountNo(), dto.getUserId(), e.getMessage());
+        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+      }
     }
   }
 
@@ -207,7 +225,7 @@ public class ExchangeService {
     /**
      * 코컬 테스트용
      */
-    LogUtil.info("자동환전시작");
+//    LogUtil.info("자동환전시작");
     processCurrencyConversions(currencyCode, exchangeRate);
   }
 
