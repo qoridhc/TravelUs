@@ -36,7 +36,6 @@ import MeetingAccountCreateComplete from "./pages/account/MeetingAccountCreateCo
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
 import Transaction from "./pages/transaction/Transaction";
 import PrivateRoute from "./pages/user/PrivateRoute";
-import { Sign } from "crypto";
 import SelectSettlementAmount from "./pages/settlement/SelectSettlementAmount";
 import ForeignCurrencyExchange from "./pages/settlement/ForeignCurrencyExchange";
 import SettlementInfo from "./pages/settlement/SettlementInfo";
@@ -46,6 +45,7 @@ import UserInfoOfCreateGeneralMeeting from "./pages/MeetingAccount/UserInfoOfCre
 import MeetingInfoOfCreateMeetingAccount from "./pages/MeetingAccount/MeetingInfoOfCreateMeetingAccount";
 import PasswordOfCreateMeetingAccount from "./pages/MeetingAccount/PasswordOfCreateMeetingAccount";
 import CheckPasswordOfCreateMeetingAccount from "./pages/MeetingAccount/CheckPasswordOfCreateMeetingAccount";
+import IDVerificationOfCreateMeetingAccount from "./pages/MeetingAccount/IDVerificationOfCreateMeetingAccount";
 
 function App() {
   return (
@@ -101,6 +101,7 @@ function App() {
           <Route path="/meetinginfoofcreatemeetingaccount" element={<MeetingInfoOfCreateMeetingAccount />} />
           <Route path="/passwordofcreatemeetingaccount" element={<PasswordOfCreateMeetingAccount />} />
           <Route path="/checkpasswordofcreatemeetingaccount" element={<CheckPasswordOfCreateMeetingAccount />} />
+          <Route path="/idverificationofcreatemeetingaccount" element={<IDVerificationOfCreateMeetingAccount />} />
 
           <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
