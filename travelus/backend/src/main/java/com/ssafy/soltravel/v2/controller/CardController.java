@@ -1,6 +1,8 @@
 package com.ssafy.soltravel.v2.controller;
 
 import com.ssafy.soltravel.v2.dto.card.CardIssueRequestDto;
+import com.ssafy.soltravel.v2.dto.card.CardPaymentRequestDto;
+import com.ssafy.soltravel.v2.dto.card.CardPaymentResponseDto;
 import com.ssafy.soltravel.v2.dto.card.CardResponseDto;
 import com.ssafy.soltravel.v2.service.card.CardService;
 import com.ssafy.soltravel.v2.util.LogUtil;
@@ -29,8 +31,6 @@ public class CardController {
     return new ResponseEntity(response, HttpStatus.CREATED);
   }
 
-//  @PostMapping("/payment")
-
   @GetMapping("/list")
   public ResponseEntity getCardList(){
     LogUtil.info("카드 조회 요청");
@@ -38,6 +38,12 @@ public class CardController {
     return new ResponseEntity(response, HttpStatus.OK);
   }
 
+  @PostMapping("/payment")
+  public ResponseEntity makeCardPayment(@RequestBody CardPaymentRequestDto request){
+    LogUtil.info("카드 결제", request);
+    CardPaymentResponseDto response = cardService.makeCardPayment(request);
+    return new ResponseEntity(response, HttpStatus.CREATED);
+  }
 
 
 
