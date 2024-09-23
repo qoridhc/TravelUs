@@ -19,6 +19,7 @@ import com.ssafy.soltravel.v2.service.NotificationService;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.PasswordEncoder;
+import com.ssafy.soltravel.v2.util.WebClientUtil;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -49,10 +50,13 @@ public class UserService implements UserDetailsService {
   private final String API_URI = "http://localhost:8080/api/v1/bank/user";
   private final UserRepository userRepository;
   private final AwsFileService fileService;
-  private final Map<String, String> apiKeys;
-  private final WebClient webClient;
   private final AccountService accountService;
-  private final NotificationService notificationService;
+
+  private final Map<String, String> apiKeys;
+
+  private final WebClient webClient;
+  private final WebClientUtil webClientUtil;
+
 
   // 외부 API 요청용 메서드
   private <T> ResponseEntity<Map<String, Object>> request(
@@ -104,7 +108,7 @@ public class UserService implements UserDetailsService {
 
     // 외부 API 요청(로그인)
     LogUtil.info("request(create) to API", body);
-    ResponseEntity<Map<String, Object>> response = request(
+    ResponseEntity<Map<String, Object>> response = webClientUtil.request(
         String.format("%s/join", API_URI), body, UserCreateRequestBody.class
     );
 
