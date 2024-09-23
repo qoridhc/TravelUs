@@ -49,6 +49,9 @@ public class User implements UserDetails {
   @Column(name = "exit_at")
   private LocalDateTime exitAt;
 
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Account> accounts = new ArrayList<>();
+
   /*
    * 생성 메서드
    */

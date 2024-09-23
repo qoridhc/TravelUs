@@ -10,9 +10,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 
 @Entity
@@ -24,7 +26,7 @@ public class Card {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long cardId;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "account_id")
   private Account account;
 
@@ -43,6 +45,9 @@ public class Card {
 
   @Column
   private LocalDateTime expireAt;
+
+  @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<CardHistory> history = new ArrayList<>();
 
 
   /*
