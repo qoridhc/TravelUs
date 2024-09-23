@@ -1,5 +1,6 @@
 package com.goofy.tunabank.v1.domain;
 
+import com.goofy.tunabank.v1.util.LogUtil;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -77,6 +78,7 @@ public class MoneyBox {
 
         // 계산 및 업데이트
         BigDecimal newBalance = currentBalance.subtract(paymentAmount);
+        LogUtil.info("잔액", newBalance);
         this.balance = newBalance.doubleValue();
         
         //반환

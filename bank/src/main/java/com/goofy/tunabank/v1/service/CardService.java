@@ -229,7 +229,7 @@ public class CardService {
     );
 
     // 결제 수행 및 결과 저장
-    moneyBox.payment(balance);
+    moneyBox.payment(request.getPaymentBalance());
     return saveCardHistory(card, moneyBox, merchant, request);
   }
 
