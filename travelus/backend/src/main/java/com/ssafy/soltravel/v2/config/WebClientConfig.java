@@ -1,17 +1,20 @@
 package com.ssafy.soltravel.v2.config;
 
+import jakarta.annotation.PostConstruct;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 @RequiredArgsConstructor
-
 public class WebClientConfig {
 
-  private final String BASE_URL = "http://localhost:8080/api/v1/bank";
+  @Value("${team.private.baseUrl}")
+  private String BASE_URL;
+
   private final Map<String, String> apiKeys;
 
   @Bean

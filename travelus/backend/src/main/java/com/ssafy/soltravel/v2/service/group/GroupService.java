@@ -20,6 +20,7 @@ import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.util.LogUtil;
+import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,17 +40,18 @@ public class GroupService {
 
     private final GroupMapper groupMapper;
 
-    private final String BASE_URL = "http://localhost:8080/api/v1/bank/accounts/";
+    private final String BASE_URL = "/accounts/";
     private final ParticipantRepository participantRepository;
 
     // 신규 모임 개설
     public GroupDto createNewGroup(CreateGroupRequestDto requestDto) {
 
-        User user = userRepository.findByUserId(requestDto.getUserId())
-            .orElseThrow(() -> new UserNotFoundException(requestDto.getUserId()));
+        Long userId = SecurityUtil.getCurrentUserId();
+
+        User user = userRepository.findByUserId(userId)
+            .orElseThrow(() -> new UserNotFoundException(userId));
 
         InquireAccountRequestDto inquireAccountRequestDto = new InquireAccountRequestDto(
-            requestDto.getUserId(),
             requestDto.getGroupAccountNo(),
             requestDto.getAccountPassword()
         );
@@ -70,14 +72,15 @@ public class GroupService {
 
     public ParticipantDto createNewParticipant(CreateParticipantRequestDto requestDto) {
 
-        User user = userRepository.findByUserId(requestDto.getUserId())
-            .orElseThrow(() -> new UserNotFoundException(requestDto.getUserId()));
+        Long userId = SecurityUtil.getCurrentUserId();
+
+        User user = userRepository.findByUserId(userId)
+            .orElseThrow(() -> new UserNotFoundException(userId));
 
         TravelGroup group = groupRepository.findById(requestDto.getGroupId())
             .orElseThrow(() -> new InvalidGroupIdException());
 
         InquireAccountRequestDto inquireAccountRequestDto = new InquireAccountRequestDto(
-            user.getUserId(),
             requestDto.getPersonalAccountNo(),
             requestDto.getAccountPassword()
         );

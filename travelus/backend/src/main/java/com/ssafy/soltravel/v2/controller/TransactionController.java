@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.v2.controller;
 
+import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
 import com.ssafy.soltravel.v2.dto.transaction.TransactionHistoryDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionHistoryRequestDto;
@@ -104,7 +105,11 @@ public class TransactionController {
     // 거래 내역 조회
     @Operation(summary = "거래 내역 조회", description = "지정된 계좌의 거래 내역을 조회합니다. 거래 유형 (M:입금, D:출금, A:전체)")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = TransactionHistoryDto.class))),
+        @ApiResponse(
+            responseCode = "200",
+            description = "거래 내역 조회 성공",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = TransferHistoryResponseDto.class)))
+        ),
         @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
