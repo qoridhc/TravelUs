@@ -4,9 +4,11 @@ import com.ssafy.soltravel.v2.dto.card.CardIssueRequestDto;
 import com.ssafy.soltravel.v2.dto.card.CardResponseDto;
 import com.ssafy.soltravel.v2.service.card.CardService;
 import com.ssafy.soltravel.v2.util.LogUtil;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,15 @@ public class CardController {
     LogUtil.info("카드 발급 요청", request);
     CardResponseDto response = cardService.createNewCard(request);
     return new ResponseEntity(response, HttpStatus.CREATED);
+  }
+
+//  @PostMapping("/payment")
+
+  @GetMapping("/list")
+  public ResponseEntity getCardList(){
+    LogUtil.info("카드 조회 요청");
+    List<CardResponseDto> response = cardService.findAllCards();
+    return new ResponseEntity(response, HttpStatus.OK);
   }
 
 

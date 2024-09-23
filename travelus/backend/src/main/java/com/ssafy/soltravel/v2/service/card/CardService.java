@@ -4,14 +4,18 @@ package com.ssafy.soltravel.v2.service.card;
 import com.ssafy.soltravel.v2.common.BankHeader;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.card.CardIssueRequestDto;
+import com.ssafy.soltravel.v2.dto.card.CardListRequestDto;
 import com.ssafy.soltravel.v2.dto.card.CardResponseDto;
+import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
 import com.ssafy.soltravel.v2.exception.UserNotFoundException;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import com.ssafy.soltravel.v2.util.WebClientUtil;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,6 +32,9 @@ public class CardService {
   private final Map<String, String> apiKeys;
   private final UserRepository userRepository;
 
+  /*
+  * 카드 발급
+  */
   public CardResponseDto createNewCard(CardIssueRequestDto request) {
 
     // 유저 조회
@@ -56,6 +63,41 @@ public class CardService {
     return toDto(response.getBody());
   }
 
+  /*
+  * 카드 조회
+  */
+  public List<CardResponseDto> findAllCards() {
+
+    // 유저 조회
+    Long userId = SecurityUtil.getCurrentUserId();
+    User user = userRepository.findByUserId(userId).orElseThrow(
+        () -> new UserNotFoundException(userId)
+    );
+
+    // api 요청 바디 셋팅
+    CardListRequestDto request = CardListRequestDto.builder()
+        .header(
+            BankHeader.createHeader(
+                apiKeys.get("API_KEY"),
+                user.getUserKey()
+            )
+        )
+        .build();
+
+    LogUtil.info("은행 요청", request);
+    ResponseEntity<Map<String, Object>> response = webClientUtil.request(
+        DEFAULT_REQUEST_URI+"/list", request, CardListRequestDto.class
+    );
+
+    List<Map<String, Object>> recObject = (List<Map<String, Object>>) response.getBody().get("REC");
+
+    return recObject.stream()
+        .map(value -> toDto(value))
+        .collect(Collectors.toList());
+  }
+
+
+
   private CardResponseDto toDto(Map<String, Object> response) {
     CardResponseDto dto = CardResponseDto.builder()
         .cardNo(response.get("cardNo").toString())
@@ -70,4 +112,5 @@ public class CardService {
 
     return dto;
   }
+
 }
