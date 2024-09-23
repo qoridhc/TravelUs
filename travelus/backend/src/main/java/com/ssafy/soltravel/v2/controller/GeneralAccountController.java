@@ -1,28 +1,26 @@
 package com.ssafy.soltravel.v2.controller;
 
+import com.ssafy.soltravel.v1.dto.account.response.CreateAccountResponseDto;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.AddMoneyBoxRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.InquireAccountRequestDto;
-import com.ssafy.soltravel.v2.dto.account.response.CreateAccountResponseDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,7 +41,7 @@ public class GeneralAccountController {
         summary = "계좌 생성", description = "일반 계좌(INDIVIDUAL / GROUP) 선택하여 생성. (accountType / accountPassword는 필수), 나머지 값은 모임계좌일경우만 필수."
     )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "계좌 생성 성공", content = @Content(schema = @Schema(implementation = CreateAccountResponseDto.class))),
+        @ApiResponse(responseCode = "201", description = "계좌 생성 성공", content = @Content(schema = @Schema(implementation = AccountDto.class))),
         @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
@@ -55,7 +53,6 @@ public class GeneralAccountController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(generalAccount);
     }
-
 
     @Operation(summary = "특정 계좌 조회", description = "계좌 번호를 사용하여 계좌 기본정보를 조회하는 API.")
     @ApiResponses(value = {
@@ -75,7 +72,11 @@ public class GeneralAccountController {
 
     @Operation(summary = "신규 머니박스 추가", description = "특정 계좌에 머니박스를 추가하는 API.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "머니박스 추가 성공", content = @Content(schema = @Schema(implementation = AccountDto.class))),
+        @ApiResponse(
+            responseCode = "200",
+            description = "머니박스 추가 성공",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = MoneyBoxDto.class)))
+        ),
         @ApiResponse(responseCode = "404", description = "계좌를 찾을 수 없음", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
@@ -84,8 +85,6 @@ public class GeneralAccountController {
     public ResponseEntity<List<MoneyBoxDto>> addMoneyBox(
         @RequestBody AddMoneyBoxRequestDto requestDto
     ) {
-
-        LogUtil.info("requestDto", requestDto);
 
         List<MoneyBoxDto> accountDto = accountService.addMoneyBox(requestDto);
 
