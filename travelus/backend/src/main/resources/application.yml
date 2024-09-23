@@ -1,6 +1,7 @@
 team:
   private:
-    key: ${TEAM_PRIVATE_KEY}
+    key: ${TEAM_PRIVATE_KEY=SHINHAN_HACKATHON_LSH_LJJ_HDW_GL}
+    baseUrl: ${SERVER_BASE_URL}
 
 spring:
   application:

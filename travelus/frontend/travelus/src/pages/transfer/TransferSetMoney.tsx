@@ -153,7 +153,7 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
         <div>
           <button
             onClick={() => {
-              navigate("/transfer/setmoney");
+              navigate("/transfer/confirm");
             }}
             className={`w-full h-14 text-lg font-semibold rounded-xl tracking-wide ${
               isValidation ? "text-white bg-[#1429A0]" : "text-[#565656] bg-[#E3E4E4]"

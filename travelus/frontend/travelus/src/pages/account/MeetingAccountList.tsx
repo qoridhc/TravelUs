@@ -88,9 +88,11 @@ const MeetingAccountListNew = () => {
               </div>
             </div>
           ) : (
-            <div>
-              <p className="my-3 font-bold">참여중인 모임통장</p>
-              <p className="text-sm">참여 중인 모임 통장이 없어요</p>
+            <div className="p-6 bg-white rounded-xl">
+              <p className="mb-7 text-lg font-bold">참여중인 모임통장</p>
+              <div className="flex flex-col space-y-3">
+                <p className="">참여중인 모임 통장이 없어요</p>
+              </div>
             </div>
           )}
         </div>

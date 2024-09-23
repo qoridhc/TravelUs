@@ -17,6 +17,8 @@ import AccountHistory from "./pages/accountHistory/AccountHistory";
 import ViewAccount from "./pages/viewaccount/Account";
 import TransferSelectBank from "./pages/transfer/TransferSelectBank";
 import TransferSetMoney from "./pages/transfer/TransferSetMoney";
+import TransferConfirm from "./pages/transfer/TransferConfirm";
+import TransferSuccess from "./pages/transfer/TransferSuccess";
 import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
 import AccountCreate from "./pages/account/AccountCreate";
@@ -37,6 +39,9 @@ import PrivateRoute from "./pages/user/PrivateRoute";
 import { Sign } from "crypto";
 import SelectSettlementAmount from "./pages/settlement/SelectSettlementAmount";
 import ForeignCurrencyExchange from "./pages/settlement/ForeignCurrencyExchange";
+import SettlementInfo from "./pages/settlement/SettlementInfo";
+import EditMembers from "./pages/settlement/EditMembers";
+import BalanceSettlementCompleted from "./pages/settlement/BalanceSettlementCompleted";
 
 function App() {
   return (
@@ -101,6 +106,8 @@ function App() {
           {/* 이체 */}
           <Route path="/transfer/selectbank" element={<TransferSelectBank />} />
           <Route path="/transfer/setmoney" element={<TransferSetMoney />} />
+          <Route path="/transfer/confirm" element={<TransferConfirm />} />
+          <Route path="/transfer/success" element={<TransferSuccess />} />
           
           {/* 환전 */}
           <Route path="/exchange" element={<Exchange />}></Route>
@@ -111,7 +118,10 @@ function App() {
           {/* 정산 */}
           <Route path="/selectsettlementamount" element={<SelectSettlementAmount />}></Route>
           <Route path="/settlementforeigncurrencyexchange" element={<ForeignCurrencyExchange />}></Route>
-          <Route path="/settlement" element={<Settlement />}></Route>
+          <Route path="/settlement" element={<SettlementInfo />}></Route>
+          <Route path="/editmembers" element={<EditMembers />}></Route>
+          <Route path="/balancesettlementcompleted" element={<BalanceSettlementCompleted />}></Route>
+          {/* <Route path="/settlement" element={<Settlement />}></Route> */}
         </Routes>
       </BrowserRouter>
     </div>

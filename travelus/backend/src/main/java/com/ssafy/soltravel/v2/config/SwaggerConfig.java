@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
     info = @Info(
         title = "SolTravel API 명세서",
         description = "description",
-        version = "api/v1"
+        version = "api/v2"
     )
 )
 @Configuration
