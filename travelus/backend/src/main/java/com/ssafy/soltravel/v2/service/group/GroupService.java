@@ -40,7 +40,7 @@ public class GroupService {
 
     private final GroupMapper groupMapper;
 
-    private final String BASE_URL = "http://localhost:8080/api/v1/bank/accounts/";
+    private final String BASE_URL = "/accounts/";
     private final ParticipantRepository participantRepository;
 
     // 신규 모임 개설
