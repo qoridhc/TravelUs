@@ -8,12 +8,12 @@ public class MoneyBoxNotFoundException extends CustomException {
   private static final String DEFAULT_CODE = "MONEYBOX_NOT_FOUND";
   private static final int DEFAULT_STATUS = 404; // HTTP 404 Not Found
 
-  public MoneyBoxNotFoundException(String currencyId) {
+  public MoneyBoxNotFoundException(String currencyCode) {
     super(
         DEFAULT_MESSAGE,
         DEFAULT_CODE,
         DEFAULT_STATUS,
-        String.format("%s: %s", DEFAULT_MESSAGE, currencyId)
+        String.format("%s: %s", DEFAULT_MESSAGE, currencyCode)
     );
   }
 

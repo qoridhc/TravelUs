@@ -33,5 +33,5 @@ public class CardPaymentRequestDto {
   private String transactionId;
 
   @NotEmpty
-  private Integer currencyId;
+  private String currencyCode;
 }

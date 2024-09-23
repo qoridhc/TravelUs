@@ -4,6 +4,7 @@ import com.goofy.tunabank.v1.domain.Account;
 import com.goofy.tunabank.v1.domain.Card;
 import com.goofy.tunabank.v1.domain.CardHistory;
 import com.goofy.tunabank.v1.domain.CardProduct;
+import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
 import com.goofy.tunabank.v1.domain.Merchant;
 import com.goofy.tunabank.v1.domain.MoneyBox;
 import com.goofy.tunabank.v1.domain.User;
@@ -214,8 +215,8 @@ public class CardService {
   private CardHistory processPayment(Card card, CardPaymentRequestDto request) {
     MoneyBox moneyBox = moneyBoxRepository.findMoneyBoxByAccountNoAndCurrency(
         card.getAccount().getAccountNo(),
-        request.getCurrencyId()
-    ).orElseThrow(() -> new MoneyBoxNotFoundException(request.getCurrencyId()));
+        CurrencyType.valueOf(request.getCurrencyCode())
+    ).orElseThrow(() -> new MoneyBoxNotFoundException(request.getCurrencyCode()));
 
     // 금액 확인
     Double balance = moneyBox.getBalance();
