@@ -184,10 +184,14 @@ const MeetingAccountDetail = () => {
         <div className="h-full p-5 pb-8">
           <div className="h-full flex flex-col justify-between">
             <div className="flex justify-between items-center">
-              <GoHome className="text-2xl text-zinc-600 cursor-pointer" />
-              <div className="w-14 h-8 bg-zinc-500 opacity-40 rounded-3xl flex justify-center items-center">
-                <button className="text-zinc-50 font-semibold">관리</button>
-              </div>
+              <GoHome
+                onClick={() => {navigate("/");}}
+                className="text-2xl text-zinc-600 cursor-pointer" />
+              <button
+                onClick={() => {navigate("/meetingaccount/management/1");}}
+                className="w-14 h-8 bg-zinc-500 opacity-40 rounded-3xl text-zinc-50 font-semibold flex justify-center items-center">
+                관리
+              </button>
             </div>
 
             <div className="flex flex-col items-center space-y-5">
@@ -232,7 +236,7 @@ const MeetingAccountDetail = () => {
             </div>
           </div>
           <div className="p-5 pb-8">
-            <button className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]">정산하기</button>
+            <button className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]">정산하기</button>
           </div>
         </div>
       </div>
