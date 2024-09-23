@@ -42,6 +42,7 @@ import ForeignCurrencyExchange from "./pages/settlement/ForeignCurrencyExchange"
 import SettlementInfo from "./pages/settlement/SettlementInfo";
 import EditMembers from "./pages/settlement/EditMembers";
 import BalanceSettlementCompleted from "./pages/settlement/BalanceSettlementCompleted";
+import UserInfoOfCreateGeneralMeeting from "./pages/MeetingAccount/UserInfoOfCreateMeetingAccount";
 
 function App() {
   return (
@@ -88,12 +89,15 @@ function App() {
           <Route path="/userupdate/address" element={<UserAddressUpdate />} />
           <Route path="/userupdate/password" element={<UserPasswordUpdate />} />
 
-          {/* 모임통장 생성 */}
+          {/* 입출금통장 생성 */}
           <Route path="/accountcreate" element={<AccountCreate />} />
+          <Route path="/accountcreatecomplete" element={<AccountCreateComplete />} />
+
+          {/* 모임통장 생성 */}
           <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
+          <Route path="/userinfoofcreateeneralmeeting" element={<UserInfoOfCreateGeneralMeeting />} />
           <Route path="/foreignmeetingaccountcreate" element={<ForeignMeetingAccountCreate />} />
-          <Route path="/accountcreatecomplete" element={<AccountCreateComplete />} />
           <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
 
           {/* 모임통장 상세 */}
@@ -108,7 +112,7 @@ function App() {
           <Route path="/transfer/setmoney" element={<TransferSetMoney />} />
           <Route path="/transfer/confirm" element={<TransferConfirm />} />
           <Route path="/transfer/success" element={<TransferSuccess />} />
-          
+
           {/* 환전 */}
           <Route path="/exchange" element={<Exchange />}></Route>
           <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
