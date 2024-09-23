@@ -18,15 +18,15 @@ const Exchange: React.FC = () => {
   const [isAmountExceedingBalance, setIsAmountExceedingBalance] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    const storedUserId = localStorage.getItem('userId');
-    if (!storedUserId) {
-      alert('로그인 후에 이용해 주세요.');
-      navigate('/login');
-      return;
-    }
-    setUserId(parseInt(storedUserId, 10));
-  }, [navigate])
+  // useEffect(() => {
+  //   const storedUserId = localStorage.getItem('userId');
+  //   if (!storedUserId) {
+  //     alert('로그인 후에 이용해 주세요.');
+  //     navigate('/login');
+  //     return;
+  //   }
+  //   setUserId(parseInt(storedUserId, 10));
+  // }, [navigate])
 
   useEffect(() => {
     const fetchData = async () => {

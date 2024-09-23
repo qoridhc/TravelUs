@@ -11,7 +11,7 @@ import MainMeetingAccount from "../components/mainpage/MainMeetingAccount";
 import "../css/swiper.css";
 import "swiper/css/pagination";
 import "swiper/css";
-import ExchangeRate from '../components/exchange/ExchangeRate';
+import ExchangeRate from "./exchange/ExchangeRate";
 import { ExchangeRateInfo } from '../types/exchange';
 
 const MainPage = () => {
@@ -214,12 +214,12 @@ const MainPage = () => {
         </div>
 
         {/* ExchangeRate 컴포넌트 (숨겨진 상태로 사용) */}
-        <div style={{ display: 'none' }}>
+        {/* <div style={{ display: 'none' }}>
           <ExchangeRate
             onCurrencyChange={() => {}}
             onExchangeRatesUpdate={handleExchangeRatesUpdate}
           />
-        </div>
+        </div> */}
 
         {/* 가계부 */}
         <div
