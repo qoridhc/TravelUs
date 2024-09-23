@@ -15,6 +15,8 @@ import MeetingAccountDetail from "./pages/account/MeetingAccountDetail";
 import JoinedMeetingAccountDetail from "./pages/account/JoinedMeetingAccountDetail";
 import AccountHistory from "./pages/accountHistory/AccountHistory";
 import ViewAccount from "./pages/viewaccount/Account";
+import TransferSelectBank from "./pages/transfer/TransferSelectBank";
+import TransferSetMoney from "./pages/transfer/TransferSetMoney";
 import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
 import AccountCreate from "./pages/account/AccountCreate";
@@ -30,27 +32,36 @@ import MeetingAccountCreatePrepare from "./pages/account/MeetingAccountCreatePre
 import ForeignMeetingAccountCreate from "./pages/account/ForeignMeetingAccountCreate";
 import MeetingAccountCreateComplete from "./pages/account/MeetingAccountCreateComplete";
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
-import Transaction from "./pages/transaction/Transaction"
+import Transaction from "./pages/transaction/Transaction";
 import PrivateRoute from "./pages/user/PrivateRoute";
 import { Sign } from "crypto";
+import SelectSettlementAmount from "./pages/settlement/SelectSettlementAmount";
+import ForeignCurrencyExchange from "./pages/settlement/ForeignCurrencyExchange";
 
 function App() {
   return (
     <div className="h-full">
       <BrowserRouter>
         <Routes>
-          {/* 페이지에 Header와 Footer가 모두 포함된 경로 */}
           <Route
             path="/*"
             element={
               <>
+                {/* 페이지에 Header와 Footer가 모두 포함된 경로 */}
                 <Header />
                 <div style={{ paddingBottom: "64px", backgroundColor: "#F3F4F6", minHeight: "100vh" }}>
                   <Routes>
                     <Route element={<PrivateRoute />}>
+                      {/* 메인페이지 */}
                       <Route path="/" element={<MainPage />} />
+
+                      {/* 모임통장 목록 */}
                       <Route path="/meetingaccountlist" element={<MeetingAccountList />} />
+
+                      {/* 가계부 */}
                       <Route path="/accountbookdetail" element={<AccountBookDetail />} />
+
+                      {/* 환율 */}
                       <Route path="/exchangerate" element={<ExchangeRate />} />
                       {/* Add other protected routes here */}
                     </Route>
@@ -61,6 +72,7 @@ function App() {
             }
           />
 
+          {/* 회원 */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signup/basicinformation" element={<SignUpBasicInformation />} />
@@ -71,6 +83,7 @@ function App() {
           <Route path="/userupdate/address" element={<UserAddressUpdate />} />
           <Route path="/userupdate/password" element={<UserPasswordUpdate />} />
 
+          {/* 모임통장 생성 */}
           <Route path="/accountcreate" element={<AccountCreate />} />
           <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
@@ -78,17 +91,27 @@ function App() {
           <Route path="/accountcreatecomplete" element={<AccountCreateComplete />} />
           <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
 
+          {/* 모임통장 상세 */}
           <Route path="/account/:userId" element={<GroupAccountPage />} />
           <Route path="/meetingaccount/:id" element={<MeetingAccountDetail />} />
           <Route path="/joinedmeetingaccount/:id" element={<JoinedMeetingAccountDetail />} />
           <Route path="/account" element={<ViewAccount />} />
           <Route path="/accounthistory/:accountNo" element={<AccountHistory />} />
 
+          {/* 이체 */}
+          <Route path="/transfer/selectbank" element={<TransferSelectBank />} />
+          <Route path="/transfer/setmoney" element={<TransferSetMoney />} />
+          
+          {/* 환전 */}
           <Route path="/exchange" element={<Exchange />}></Route>
           <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
-          <Route path="/settlement" element={<Settlement />}></Route>
           <Route path="/detail" element={<Detail />}></Route>
           <Route path="/transaction" element={<Transaction />}></Route>
+
+          {/* 정산 */}
+          <Route path="/selectsettlementamount" element={<SelectSettlementAmount />}></Route>
+          <Route path="/settlementforeigncurrencyexchange" element={<ForeignCurrencyExchange />}></Route>
+          <Route path="/settlement" element={<Settlement />}></Route>
         </Routes>
       </BrowserRouter>
     </div>

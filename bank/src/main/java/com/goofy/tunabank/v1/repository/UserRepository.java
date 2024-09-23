@@ -21,6 +21,29 @@ public class UserRepository {
     List<User> result = em.createQuery("select u from User u where u.email = :email")
         .setParameter("email", email)
         .getResultList();
-    return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
+    return result.stream().findFirst();
+  }
+
+  public Optional<User> findByUserKey(String userKey){
+    List<User> result = em.createQuery("SELECT u FROM User u JOIN FETCH u.keys k WHERE k.value = :keyValue")
+        .setParameter("keyValue", userKey)
+        .getResultList();
+    return result.stream().findFirst();
+  }
+
+  public Optional<User> findByCardNo(String cardNo){
+    List<User> result = em.createQuery(
+        "select u from User u " +
+            "join fetch u.accounts a " +
+            "join fetch a.cards c " +
+            "where c.cardNo = :cardNo", User.class
+        ).setParameter("cardNo", cardNo)
+        .getResultList();
+
+    return result.stream().findFirst();
+  }
+
+  public void save(User user) {
+    em.persist(user);
   }
 }

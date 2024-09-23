@@ -1,17 +1,30 @@
 package com.goofy.tunabank.v1.service;
 
 import com.goofy.tunabank.v1.domain.Account;
-import com.goofy.tunabank.v1.domain.Country;
+import com.goofy.tunabank.v1.domain.Bank;
 import com.goofy.tunabank.v1.domain.Currency;
-import com.goofy.tunabank.v1.domain.Enum.AccountType;
 import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
+import com.goofy.tunabank.v1.domain.MoneyBox;
+import com.goofy.tunabank.v1.domain.User;
+import com.goofy.tunabank.v1.dto.ResponseDto;
 import com.goofy.tunabank.v1.dto.account.AccountDto;
-import com.goofy.tunabank.v1.dto.account.request.CreateAccountRequestDto;
-import com.goofy.tunabank.v1.dto.account.response.CreateAccountResponseDto;
-import com.goofy.tunabank.v1.exception.account.InvalidAccountIdOrTypeException;
+import com.goofy.tunabank.v1.dto.account.request.AddMoneyBoxRequestDto;
+import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
+import com.goofy.tunabank.v1.dto.account.request.InquireAccountRequestDto;
+import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
+import com.goofy.tunabank.v1.exception.account.DuplicateCurrencyException;
+import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
+import com.goofy.tunabank.v1.exception.account.InvalidAccountPasswordException;
+import com.goofy.tunabank.v1.exception.account.InvalidBankIdException;
+import com.goofy.tunabank.v1.exception.account.RefundAccountRequiredException;
 import com.goofy.tunabank.v1.mapper.AccountMapper;
+import com.goofy.tunabank.v1.mapper.MoneyBoxMapper;
 import com.goofy.tunabank.v1.repository.AccountRepository;
+import com.goofy.tunabank.v1.repository.BankRepository;
 import com.goofy.tunabank.v1.repository.CurrencyRepository;
+import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,116 +34,118 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final CurrencyRepository currencyRepository;
+    private final BankRepository bankRepository;
+    private final MoneyBoxRepository moneyBoxRepository;
+
+    private final UserService userService;
 
     private final AccountMapper accountMapper;
+    private final MoneyBoxMapper moneyBoxMapper;
 
     // ==== 계좌 생성 관련 메서드 ====
-    public CreateAccountResponseDto crateNewAccount(CreateAccountRequestDto requestDto) {
+    public AccountDto postNewAccount(CreateGeneralAccountRequestDto requestDto) {
 
-        // 다음 id값 추출
-        Long nextAccountId = accountRepository.findMaxAccountId();
-
-        if (nextAccountId == null) {
-            nextAccountId = 0L;
-        }
-
-        nextAccountId++;
+        // 유저 정보 생성
+        User user = userService.findUserByHeader();
 
         // 일반 계좌 생성
         Currency currency = currencyRepository.findByCurrencyCode(CurrencyType.KRW);
-        Account generalAccount = createAccount(nextAccountId, currency, requestDto.getAccountType(),
-            requestDto.getAccountPassword());
 
-        // 계좌 save & dto 변환
-        // dto 변환 시 어노테이션으로 자동 입력되는 createAt 받기위해 저장된 엔티티 다시 불러옴
-        Account savedGeneralAccount = accountRepository.save(generalAccount);
+        Bank bank = bankRepository.findById(requestDto.getBankId())
+            .orElseThrow(() -> new InvalidBankIdException(requestDto.getBankId()));
 
-        CreateAccountResponseDto createAccountResponseDto = new CreateAccountResponseDto();
+        // 계좌 생성
+        Account account = Account.createAccount(requestDto, bank, user);
 
-        AccountDto generalAccountDto = accountMapper.toDto(savedGeneralAccount);
-        createAccountResponseDto.setGeneralAccount(generalAccountDto);
+        // KRW 머니박스 기본 생성
+        MoneyBox moneyBox = MoneyBox.createMoneyBox(account, currency);
 
-        // 만약 그룹 계좌인경우 외화 계좌도 자동 생성 (동일 accountId)
-        if (requestDto.getAccountType().equals(AccountType.G)) {
-            Currency foreignCurrency = currencyRepository.findByCurrencyCode(requestDto.getCurrencyType());
+        List<MoneyBox> moneyBoxes = new ArrayList<>();
+        moneyBoxes.add(moneyBox);
 
-            Account foreignAccount = createAccount(nextAccountId, foreignCurrency, AccountType.F,
-                requestDto.getAccountPassword());
+        account.setMoneyBoxes(moneyBoxes);
 
-            // 계좌 save & dto 변환
-            Account savedForeignAccount = accountRepository.save(foreignAccount);
+        accountRepository.save(account);
+        moneyBoxRepository.save(moneyBox);
 
-            AccountDto foreignAccountDto = accountMapper.toDto(savedForeignAccount);
-            createAccountResponseDto.setForeignAccount(foreignAccountDto);
+        // DTO 변환
+        AccountDto accountDto = accountMapper.toDto(account);
+
+        List<MoneyBoxDto> moneyBoxDtoList = moneyBoxMapper.toDtoList(account.getMoneyBoxes());
+        accountDto.setMoneyBoxDtos(moneyBoxDtoList);
+
+        return accountDto;
+    }
+
+    public List<MoneyBoxDto> addAccountMoneyBox(AddMoneyBoxRequestDto requestDto) {
+
+        // 유저 정보 생성
+        User user = userService.findUserByHeader();
+
+        Account account = accountRepository.findAccountByAccountNo(requestDto.getAccountNo())
+            .orElseThrow(() -> new InvalidAccountNoException(requestDto.getAccountNo()));
+
+        if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
+            throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
         }
 
-        return createAccountResponseDto;
-    }
+        boolean isExistCurrencyCode = account.getMoneyBoxes().stream()
+            .anyMatch(v -> v.getCurrency().getCurrencyCode().equals(requestDto.getCurrencyCode()));
 
-    // 계좌 생성 공통 메서드
-    private Account createAccount(Long nextId, Currency currency, AccountType accountType, String accountPassword) {
-
-        Country country = currency.getCountry();
-
-        // Account 객체 생성
-        Account account = Account.builder()
-            .id(nextId)
-            .accountType(accountType)
-            .accountNo(createAccountNumber(accountType))  // 계좌 번호 생성
-            .accountPassword(accountPassword)
-            .balance(0L)  // 기본 잔액 설정
-            .currency(currency)
-            .build();
-
-        return account;
-    }
-
-    private String createAccountNumber(AccountType accountType) {
-
-        // 계좌 종류 고유값
-        final String code = accountType.getCode();
-
-        // 랜덤 7자리 숫자 생성 (검증 번호는 마지막에 추가)
-        String randomPart = String.format("%07d", (int) (Math.random() * 10000000));
-
-        // 검증 번호를 계산하기 위한 계좌 번호 생성
-        String accountNumberWithoutCheckDigit = code + randomPart;
-
-        // 검증 번호 계산
-        int checkDigit = calculateLuhnCheckDigit(accountNumberWithoutCheckDigit);
-
-        // 지점 번호 -> 209로 고정
-        String branchNumber = "209";
-
-        return String.format("%s-%s%d-%s", code, randomPart, checkDigit, branchNumber);
-    }
-
-    // Luhn 알고리즘을 사용한 검증 번호 계산
-    private int calculateLuhnCheckDigit(String number) {
-        int sum = 0;
-        boolean alternate = false;
-
-        // 오른쪽에서 왼쪽으로 숫자를 처리
-        for (int i = number.length() - 1; i >= 0; i--) {
-            int n = Integer.parseInt(number.substring(i, i + 1));
-            if (alternate) {
-                n *= 2;
-                if (n > 9) {
-                    n = (n % 10) + 1;
-                }
-            }
-            sum += n;
-            alternate = !alternate;
+        if (isExistCurrencyCode) {
+            throw new DuplicateCurrencyException(requestDto.getCurrencyCode());
         }
 
-        // 10으로 나누어 떨어지게 하는 숫자 반환
-        return (10 - (sum % 10)) % 10;
+        Currency currency = currencyRepository.findByCurrencyCode(requestDto.getCurrencyCode());
+
+        MoneyBox moneyBox = MoneyBox.createMoneyBox(account, currency);
+
+        account.getMoneyBoxes().add(moneyBox);
+
+        accountRepository.save(account);
+
+        return moneyBoxMapper.toDtoList(account.getMoneyBoxes());
+
     }
 
     // ==== 계좌 조회 ====
-    public AccountDto getAccountByIdAndType(Long accountId, AccountType accountType) {
-        Account account = accountRepository.findByIdAndAccountType(accountId, accountType).orElseThrow(() -> new InvalidAccountIdOrTypeException(accountId, accountType));
+    public AccountDto inquireAccount(InquireAccountRequestDto requestDto) {
 
-        return accountMapper.toDto(account);
+        userService.findUserByHeader();
+
+        Account account = accountRepository.findByAccountNo(requestDto.getAccountNo())
+            .orElseThrow(() -> new InvalidAccountNoException(requestDto.getAccountNo()));
+
+        if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
+            throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
+        }
+
+        // DTO 변환
+        AccountDto accountDto = accountMapper.toDto(account);
+
+        List<MoneyBoxDto> moneyBoxDtoList = moneyBoxMapper.toDtoList(account.getMoneyBoxes());
+        accountDto.setMoneyBoxDtos(moneyBoxDtoList);
+
+        return accountDto;
+    }
+
+    // ==== 계좌 삭제 ====
+    public ResponseDto deleteAccount(InquireAccountRequestDto requestDto) {
+
+        Account account = accountRepository.findByAccountNo(requestDto.getAccountNo())
+            .orElseThrow(() -> new InvalidAccountNoException(requestDto.getAccountNo()));
+
+        if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
+            throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
+        }
+
+        // 추후에 자동 환전 & 환불 계좌 로직 추가
+        boolean hasBalance = account.getMoneyBoxes().stream().anyMatch(moneyBox -> moneyBox.getBalance() > 0);
+
+        if (hasBalance) {
+            throw new RefundAccountRequiredException();
+        }
+
+        return new ResponseDto();
     }
 }

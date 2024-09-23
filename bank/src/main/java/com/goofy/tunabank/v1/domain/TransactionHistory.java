@@ -7,12 +7,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -22,7 +19,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @IdClass(TransactionHistoryId.class)
@@ -39,18 +35,14 @@ public class TransactionHistory {
   @Column(name = "transaction_type")
   private TransactionType transactionType;
 
-  //통장
+  //돈통 id
   @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumns({
-      @JoinColumn(name = "account_id", referencedColumnName = "account_id"),
-      @JoinColumn(name = "account_type", referencedColumnName = "account_type")
-  })
-  private Account account;
+  @JoinColumn(name = "money_box_id")
+  private MoneyBox moneyBox;
 
-  //가맹점
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(name = "merchant_id")
-  private Merchant merchant;
+  //상대 계좌 번호
+  @JoinColumn(name = "transaction_account_no")
+  private String transactionAccountNo;
 
   //거래 일시
   @Column(name = "transaction_at")
@@ -64,4 +56,24 @@ public class TransactionHistory {
 
   //메모
   private String summary;
+
+  /**
+   * 엔티티 생성 메서드
+   */
+  public static TransactionHistory createTransactionHistory(Long nextId,
+      TransactionType transactionType, MoneyBox moneyBox, String transactionAccountNo,
+      LocalDateTime transactionAt, double amount, double balance, String summary) {
+
+    TransactionHistory transactionHistory = new TransactionHistory();
+    transactionHistory.setId(nextId);
+    transactionHistory.setTransactionType(transactionType);
+    transactionHistory.setMoneyBox(moneyBox);
+    transactionHistory.setTransactionAccountNo(transactionAccountNo);
+    transactionHistory.setTransactionAt(transactionAt);
+    transactionHistory.setAmount(amount);
+    transactionHistory.setBalance(balance);
+    transactionHistory.setSummary(summary);
+    return transactionHistory;
+
+  }
 }

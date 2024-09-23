@@ -5,8 +5,9 @@ import MeetingAccount from "../../components/account/MeetingAccount";
 import JoinedMeetingAccount from "../../components/account/JoinedMeetingAccount";
 import { useEffect } from "react";
 import { accountApi } from "../../api/account";
+import { IoMdAdd } from "react-icons/io";
 
-const MeetingAccountList = () => {
+const MeetingAccountListNew = () => {
   const accountList = useSelector((state: RootState) => state.account.accountList);
   const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
   const joinedAccountList = useSelector((state: RootState) => state.account.joinedAccountList);
@@ -41,19 +42,12 @@ const MeetingAccountList = () => {
           <p className="text-xl font-bold">내 모임통장 계좌</p>
         </div>
 
-        <div className="w-full flex flex-col space-y-3">
-          {/* 모임 통장 총 개수 표시 */}
-          <div className="w-full mb-2 py-3 px-5 flex flex-col rounded-xl bg-[#e6e6e6]">
-            <p className="font-bold">
-              총 <span className="text-blue-500">{accountCount + joinedAccountCount}</span>개
-            </p>
-          </div>
-
-          {/* 내가 개설한 모임 통장 있을 시 표시 */}
-          {accountList.length > 1 ? (
-            <div>
-              <p className="mb-3 font-bold">내가 개설한 모임통장</p>
-              <div className="flex flex-col space-y-3">
+        <div className="w-full flex flex-col space-y-5">
+          <div className="p-6 bg-white rounded-xl">
+            <p className="mb-7 text-lg font-bold">내가 개설한 모임통장</p>
+            {/* 내가 개설한 모임 통장 있을 시 표시 */}
+            {accountList.length > 1 ? (
+              <div className="flex flex-col space-y-7">
                 {accountList.slice(1).map((account, index) => (
                   <MeetingAccount
                     key={index}
@@ -62,19 +56,31 @@ const MeetingAccountList = () => {
                     foreignAccount={foreignAccountList[index]}
                   />
                 ))}
+                <div>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-11 h-11 bg-zinc-200 rounded-full flex justify-center items-center">
+                      <IoMdAdd className="text-3xl text-zinc-400 font-bold" />
+                    </div>
+                    <p className="font-bold text-[#949494]">모임통장 추가하기</p>
+                  </div>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div>
-              <p className="mb-3 font-bold">내가 개설한 모임통장</p>
-              <p className="text-sm">개설된 모임 통장이 없어요</p>
-            </div>
-          )}
+            ) : (
+              <div>
+                <div className="flex items-center space-x-4">
+                  <div className="w-11 h-11 bg-zinc-200 rounded-full flex justify-center items-center">
+                    <IoMdAdd className="text-3xl text-zinc-400 font-bold" />
+                  </div>
+                  <p className="font-bold text-[#949494]">모임통장 추가하기</p>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* 내가 가입한 모임 통장 있을 시 표시 */}
           {joinedAccountList.length > 0 ? (
-            <div>
-              <p className="my-3 font-bold">참여중인 모임통장</p>
+            <div className="p-6 bg-white rounded-xl">
+              <p className="mb-7 text-lg font-bold">참여중인 모임통장</p>
               <div className="flex flex-col space-y-3">
                 {joinedAccountList.map((account, index) => (
                   <JoinedMeetingAccount key={index} accountId={account.id} index={index} account={account} />
@@ -93,4 +99,4 @@ const MeetingAccountList = () => {
   );
 };
 
-export default MeetingAccountList;
+export default MeetingAccountListNew;

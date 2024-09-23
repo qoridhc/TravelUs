@@ -1,8 +1,9 @@
 package com.goofy.tunabank.v1.dto.account;
 
 import com.goofy.tunabank.v1.domain.Enum.AccountType;
-import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
+import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,13 +17,11 @@ public class AccountDto{
 
 	private String accountPassword;
 
-	private double balance;
-
 	private AccountType accountType;
 
 	private int bankCode;
 
-	private CurrencyType currencyCode;
+	private List<MoneyBoxDto> moneyBoxDtos;
 
 	private LocalDateTime createdAt;
 

@@ -1,17 +1,23 @@
 package com.goofy.tunabank.v1.dto.transaction.request;
 
-import com.goofy.tunabank.v1.domain.Enum.AccountType;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.goofy.tunabank.v1.common.Header;
+import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
 import com.goofy.tunabank.v1.domain.Enum.TransactionType;
 import lombok.Data;
 
 @Data
 public class TransactionRequestDto {
-
+  
+  //헤더
+  @JsonProperty("Header")
+  private Header header;
+  
   //계좌 Id
   private Long accountId;
 
-  //계좌 Type
-  private AccountType accountType;
+  //통화 Code
+  private CurrencyType currencyCode;
 
   //거래 타입
   private TransactionType transactionType;

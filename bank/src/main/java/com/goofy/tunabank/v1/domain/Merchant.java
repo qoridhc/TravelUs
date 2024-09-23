@@ -10,8 +10,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import java.util.List;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Merchant {
 
   //가맹점 id
@@ -39,8 +41,4 @@ public class Merchant {
   //경도
   @Column(length = 100)
   private String lng;
-
-  //거래기록
-  @OneToMany(mappedBy = "merchant", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<TransactionHistory> transactionHistories;
 }

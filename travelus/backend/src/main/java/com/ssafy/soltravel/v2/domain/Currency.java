@@ -17,6 +17,4 @@ public class Currency {
 
     private String currencyName;
 
-    @OneToMany(mappedBy = "currency")
-    private List<ForeignAccount> foreignAccounts;
 }

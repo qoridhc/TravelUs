@@ -9,21 +9,69 @@ html, body, #root {
 }
 
 @font-face {
-  font-family: "NanumSquareOTF_acB";
-  font-weight: normal;
-  src: url("./fonts/NanumSquareOTF_acB.otf") format("truetype");
+  font-family: 'MinSans';
+  src: url("./fonts/MinSans-Thin.otf") format("opentype");
+  font-style: normal;
+  font-weight: 100;
+}
+
+@font-face {
+  font-family: 'MinSans';
+  src: url("./fonts/MinSans-ExtraLight.otf") format("opentype");
+  font-style: normal;
+  font-weight: 200;
+}
+
+@font-face {
+  font-family: 'MinSans';
+  src: url("./fonts/MinSans-Light.otf") format("opentype");
+  font-style: normal;
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: 'MinSans';
+  src: url("./fonts/MinSans-Regular.otf") format("opentype");
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'MinSans';
+  src: url("./fonts/MinSans-Medium.otf") format("opentype");
+  font-style: normal;
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'MinSans';
+  src: url("./fonts/MinSans-SemiBold.otf") format("opentype");
+  font-style: normal;
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: 'MinSans';
+  src: url("./fonts/MinSans-Bold.otf") format("opentype");
+  font-style: normal;
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: 'MinSans';
+  src: url("./fonts/MinSans-ExtraBold.otf") format("opentype");
+  font-style: normal;
+  font-weight: 800;
+}
+
+@font-face {
+  font-family: 'MinSans';
+  src: url("./fonts/MinSans-Black.otf") format("opentype");
+  font-style: normal;
+  font-weight: 900;
 }
 
 body {
   margin: 0;
-  font-family: "NanumSquareOTF_acB", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: "MinSans";
 }

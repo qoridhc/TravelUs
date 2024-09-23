@@ -32,10 +32,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(requests -> requests      //특정 uri만 허용하고 나머지는 인증받아야함
                 .requestMatchers(
                     new AntPathRequestMatcher("/api/v1/bank/auth/**"),
-                    new AntPathRequestMatcher("/api/v1/bank/user/join"),
                     new AntPathRequestMatcher("/api/v1/bank/swagger-ui/**"),
                     new AntPathRequestMatcher("/api/v1/bank/v3/api-docs/**"),
-                    new AntPathRequestMatcher("/api/v1/bank/actuator/health")
+                    new AntPathRequestMatcher("/api/v1/bank/actuator/health"),
+                    new AntPathRequestMatcher("/api/v1/bank/exchange/**")
                 ).permitAll()
                 .anyRequest().authenticated()
             ).addFilterBefore(
