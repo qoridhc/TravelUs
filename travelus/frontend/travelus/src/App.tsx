@@ -43,6 +43,7 @@ import SettlementInfo from "./pages/settlement/SettlementInfo";
 import EditMembers from "./pages/settlement/EditMembers";
 import BalanceSettlementCompleted from "./pages/settlement/BalanceSettlementCompleted";
 import UserInfoOfCreateGeneralMeeting from "./pages/MeetingAccount/UserInfoOfCreateMeetingAccount";
+import MeetingInfoOfCreateMeetingAccount from "./pages/MeetingAccount/MeetingInfoOfCreateMeetingAccount";
 
 function App() {
   return (
@@ -94,9 +95,11 @@ function App() {
           <Route path="/accountcreatecomplete" element={<AccountCreateComplete />} />
 
           {/* 모임통장 생성 */}
+          <Route path="/userinfoofcreateeneralmeeting" element={<UserInfoOfCreateGeneralMeeting />} />
+          <Route path="/meetinginfoofcreatemeetingaccount" element={<MeetingInfoOfCreateMeetingAccount />} />
+
           <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
-          <Route path="/userinfoofcreateeneralmeeting" element={<UserInfoOfCreateGeneralMeeting />} />
           <Route path="/foreignmeetingaccountcreate" element={<ForeignMeetingAccountCreate />} />
           <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
 

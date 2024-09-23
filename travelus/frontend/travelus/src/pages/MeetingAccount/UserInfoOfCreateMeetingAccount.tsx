@@ -4,8 +4,14 @@ import { IoIosArrowBack } from "react-icons/io";
 import NameInputMui from "../../components/meetingAccount/NameInputMui";
 import BirthDateInputMui from "../../components/meetingAccount/BirthDateInputMui";
 import GenderInputMui from "../../components/meetingAccount/GenderInputMui";
+import { useNavigate } from "react-router";
 
 const UserInfoOfCreateMeetingAccount = () => {
+  const navigate = useNavigate();
+  const handleNext = () => {
+    navigate("/meetinginfoofcreatemeetingaccount");
+  };
+
   return (
     <div className="h-full p-5 pb-8 flex flex-col justify-between">
       <div className="grid gap-14">
@@ -32,7 +38,11 @@ const UserInfoOfCreateMeetingAccount = () => {
         </div>
       </div>
 
-      <button className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]">다음</button>
+      <button
+        className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
+        onClick={() => handleNext()}>
+        다음
+      </button>
     </div>
   );
 };
