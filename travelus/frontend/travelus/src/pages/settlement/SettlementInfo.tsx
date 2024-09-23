@@ -19,7 +19,7 @@ const SettlementInfo = () => {
   ]);
 
   const handleSettlement = () => {
-    navigate("/");
+    navigate("/balancesettlementcompleted");
   };
 
   const handleMembers = () => {

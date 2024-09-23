@@ -37,6 +37,7 @@ import SelectSettlementAmount from "./pages/settlement/SelectSettlementAmount";
 import ForeignCurrencyExchange from "./pages/settlement/ForeignCurrencyExchange";
 import SettlementInfo from "./pages/settlement/SettlementInfo";
 import EditMembers from "./pages/settlement/EditMembers";
+import BalanceSettlementCompleted from "./pages/settlement/BalanceSettlementCompleted";
 
 function App() {
   return (
@@ -109,6 +110,7 @@ function App() {
           <Route path="/settlementforeigncurrencyexchange" element={<ForeignCurrencyExchange />}></Route>
           <Route path="/settlement" element={<SettlementInfo />}></Route>
           <Route path="/editmembers" element={<EditMembers />}></Route>
+          <Route path="/balancesettlementcompleted" element={<BalanceSettlementCompleted />}></Route>
           {/* <Route path="/settlement" element={<Settlement />}></Route> */}
         </Routes>
       </BrowserRouter>
