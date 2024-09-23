@@ -3,7 +3,7 @@ import axios from "axios"
 // Axios 요청
 const api = axios.create({
   // baseURL: 'https://soltravel.shop/api/v1',
-  baseURL: 'http://3.107.138.21:8080/api/v1',
+  baseURL: 'http://j11d209.p.ssafy.io/api/v2',
   // headers: {
   //   Authorization: `Bearer ${process.env.REACT_APP_ACCESS_TOKEN}`,
   // },
