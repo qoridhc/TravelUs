@@ -63,32 +63,32 @@ public class NotificationService {
    * 환전 알림
    */
   public void notifyExchangeMessage(ExchangeResponseDto exchangeResponseDto) {
-
-    String accountNo=exchangeResponseDto.getAccountInfoDto().getAccountNo();
-
-    List<Long> participants=accountService.findUserIdsByGeneralAccountId(exchangeResponseDto.getAccountInfoDto().getAccountId());
-
-    for(long userId : participants) {
-
-      SseEmitter sseEmitterReceiver = getEmitter(userId);
-
-      if (sseEmitterReceiver != null) {
-        //알림 전송
-        try {
-          String message = String.format("고객님의 모임계좌[%s]에 환전이 실행되었습니다.", accountNo);
-
-          ExchangeNotificationDto dto = new ExchangeNotificationDto(
-              exchangeResponseDto.getAccountInfoDto().getAccountId(),
-              accountNo,
-              exchangeResponseDto.getExchangeCurrencyDto().getExchangeRate().toString(),
-              message
-          );
-          sseEmitterReceiver.send(SseEmitter.event().name("Exchange").data(dto));
-        } catch (Exception e) {
-          redisTemplate.delete(EMITTER_PREFIX + userId);
-        }
-      }
-    }
+//
+//    String accountNo=exchangeResponseDto.getAccountInfoDto().getAccountNo();
+//
+//    List<Long> participants=accountService.findUserIdsByGeneralAccountId(exchangeResponseDto.getAccountInfoDto().getAccountId());
+//
+//    for(long userId : participants) {
+//
+//      SseEmitter sseEmitterReceiver = getEmitter(userId);
+//
+//      if (sseEmitterReceiver != null) {
+//        //알림 전송
+//        try {
+//          String message = String.format("고객님의 모임계좌[%s]에 환전이 실행되었습니다.", accountNo);
+//
+//          ExchangeNotificationDto dto = new ExchangeNotificationDto(
+//              exchangeResponseDto.getAccountInfoDto().getAccountId(),
+//              accountNo,
+//              exchangeResponseDto.getExchangeCurrencyDto().getExchangeRate().toString(),
+//              message
+//          );
+//          sseEmitterReceiver.send(SseEmitter.event().name("Exchange").data(dto));
+//        } catch (Exception e) {
+//          redisTemplate.delete(EMITTER_PREFIX + userId);
+//        }
+//      }
+//    }
   }
 
   /**

@@ -3,7 +3,7 @@ package com.ssafy.soltravel.v2.service.account;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.soltravel.v2.domain.ForeignAccount;
+import com.ssafy.soltravel.v1.repository.ForeignAccountRepository;
 import com.ssafy.soltravel.v2.dto.account.request.AddMoneyBoxRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.InquireAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
@@ -17,19 +17,14 @@ import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.user.EmailValidationDto;
 import com.ssafy.soltravel.v2.exception.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.AccountMapper;
-import com.ssafy.soltravel.v2.repository.ForeignAccountRepository;
 import com.ssafy.soltravel.v2.repository.GeneralAccountRepository;
 import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.util.LogUtil;
-import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,8 +43,6 @@ public class AccountService {
   private final UserRepository userRepository;
   private final ParticipantRepository participantRepository;
   private final GeneralAccountRepository generalAccountRepository;
-  private final ForeignAccountRepository foreignAccountRepository;
-  private final AccountExchangeService accountExchangeService;
 
   private final WebClientService webClientService;
 

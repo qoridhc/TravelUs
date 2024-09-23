@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.v2.domain;
 
+import com.ssafy.soltravel.v1.domain.ForeignAccount;
 import com.ssafy.soltravel.v2.domain.Enum.CashTransactionType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -27,10 +28,6 @@ public class CashHistory {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long cash_history_id;
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(name = "foreign_account_id")
-  private ForeignAccount foreignAccount;
-
   @Column
   private Double amount;
 
@@ -53,7 +50,7 @@ public class CashHistory {
   */
 
   public void setForeignAccount(ForeignAccount foreignAccount) {
-    this.foreignAccount = foreignAccount;
+
   }
 
   public static CashHistory createCashHistory(
@@ -61,7 +58,6 @@ public class CashHistory {
       Double amount, Double balance, String store, LocalDateTime transactionAt
   ) {
     CashHistory cashHistory = new CashHistory();
-    foreignAccount.addCashHistory(cashHistory);
     cashHistory.amount = amount;
     cashHistory.balance = balance;
     cashHistory.transactionType = transactionType;
