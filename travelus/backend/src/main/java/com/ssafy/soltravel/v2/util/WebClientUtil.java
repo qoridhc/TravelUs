@@ -34,24 +34,22 @@ public class WebClientUtil {
                 })
                 .flatMap(body -> {
                   try {
-                    // ObjectMapper를 사용하여 Map을 JSON 문자열로 변환
                     ObjectMapper objectMapper = new ObjectMapper();
-                    String jsonErrorMessage = objectMapper.writeValueAsString(body);
+                    String jsonErrorMessage = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(body);
 
                     return Mono.error(new WebClientResponseException(
                         clientResponse.statusCode().value(),
                         jsonErrorMessage,
                         clientResponse.headers().asHttpHeaders(),
-                        null,
+                        jsonErrorMessage.getBytes(StandardCharsets.UTF_8),
                         StandardCharsets.UTF_8
                     ));
                   } catch (Exception e) {
-                    // JSON 변환 중 에러가 발생하면 기본 메시지 사용
                     return Mono.error(new WebClientResponseException(
                         clientResponse.statusCode().value(),
                         "Error processing response",
                         clientResponse.headers().asHttpHeaders(),
-                        null,
+                        e.getMessage().getBytes(StandardCharsets.UTF_8),
                         StandardCharsets.UTF_8
                     ));
                   }

@@ -1,11 +1,9 @@
 package com.ssafy.soltravel.v2.controller;
 
-import com.ssafy.soltravel.v2.domain.LatestRate;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateRegisterRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeResponseDto;
-import com.ssafy.soltravel.v2.dto.exchange.LatestRateRequestDto;
 import com.ssafy.soltravel.v2.service.exchange.ExchangeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -79,29 +77,27 @@ public class ExchangeController {
   /**
    * 원하는 환율 저장
    */
-  @PostMapping("/register/{accountNo}")
+  @PostMapping("/rate/target-rate")
   @Operation(summary = "환율 저장", description = "사용자가 원하는 환율을 저장합니다.", responses = {
       @ApiResponse(responseCode = "200", description = "성공적으로 환율을 저장했습니다.", content = @Content(schema = @Schema(implementation = String.class))),
       @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @Content),
       @ApiResponse(responseCode = "500", description = "서버 오류입니다.", content = @Content)})
-  public ResponseEntity<String> setExchangeRate(
-      @Parameter(description = "사용자의 계좌 번호", example = "0883473075115544") @PathVariable String accountNo,
-      @RequestBody ExchangeRateRegisterRequestDto requestDto) {
-    exchangeService.setPreferenceRate(accountNo, requestDto);
+  public ResponseEntity<String> setExchangeRate(@RequestBody ExchangeRateRegisterRequestDto requestDto) {
+    exchangeService.setPreferenceRate(requestDto);
     return ResponseEntity.ok().body("register success");
   }
 
-  /**
-   * 최근 환율 조회
-   */
-  @PostMapping("/latest")
-  @Operation(summary = "최근  환율 조회", description = "최근 환율을 조회합니다.", responses = {
-      @ApiResponse(responseCode = "200", description = "성공적으로 환율을 조회했습니다.", content = @Content(schema = @Schema(implementation = LatestRate.class))),
-      @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @Content),
-      @ApiResponse(responseCode = "500", description = "서버 오류입니다.", content = @Content)})
-  public ResponseEntity<List<LatestRate>> getLatestExchangeRate(
-      @RequestBody LatestRateRequestDto dto) {
-
-    return ResponseEntity.ok().body(exchangeService.getLatestExchangeRate(dto));
-  }
+//  /**
+//   * 최근 환율 조회
+//   */
+//  @PostMapping("/latest")
+//  @Operation(summary = "최근  환율 조회", description = "최근 환율을 조회합니다.", responses = {
+//      @ApiResponse(responseCode = "200", description = "성공적으로 환율을 조회했습니다.", content = @Content(schema = @Schema(implementation = LatestRate.class))),
+//      @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @Content),
+//      @ApiResponse(responseCode = "500", description = "서버 오류입니다.", content = @Content)})
+//  public ResponseEntity<List<LatestRate>> getLatestExchangeRate(
+//      @RequestBody LatestRateRequestDto dto) {
+//
+//    return ResponseEntity.ok().body(exchangeService.getLatestExchangeRate(dto));
+//  }
 }

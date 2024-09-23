@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.v2.dto.transaction.request;
 
+import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
 import com.ssafy.soltravel.v2.domain.Enum.TransactionType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -10,8 +11,8 @@ public class TransactionRequestDto {
     @Schema(description = "계좌 Id", example = "1")
     Long accountId;
 
-    @Schema(description = "머니박스 통화", example = "1")
-    int currencyId;
+    @Schema(description = "머니박스 통화", example = "KRW")
+    CurrencyType currencyCode;
 
     @Schema(description = "거래 타입", example = "D")
     TransactionType transactionType;
