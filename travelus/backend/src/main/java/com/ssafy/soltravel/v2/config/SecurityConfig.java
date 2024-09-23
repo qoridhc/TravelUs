@@ -44,8 +44,8 @@ public class SecurityConfig {
                     new AntPathRequestMatcher("/api/v2/v3/api-docs/**"),
                     new AntPathRequestMatcher("/api/v2/notification/subscribe/**"),
                     new AntPathRequestMatcher("/api/v2/exchange/**")
-                ).permitAll()
-                .anyRequest().authenticated()
+                ).permitAll() // 개발용 임시 permitAll처리
+                .anyRequest().permitAll()
             //.anyRequest().authenticated()
         ).formLogin(form -> form
             .defaultSuccessUrl("/api/v2/auth/test-ok", true)

@@ -85,7 +85,7 @@ public class Key {
     return this;
   }
 
-  public void dedactiveKey() {
+  public void deactivateKey() {
     this.status = KeyStatus.INACTIVE;
   }
 }

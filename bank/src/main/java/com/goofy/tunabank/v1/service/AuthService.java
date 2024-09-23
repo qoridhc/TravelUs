@@ -8,7 +8,7 @@ import com.goofy.tunabank.v1.dto.auth.ApiKeyIssueReponseDto;
 import com.goofy.tunabank.v1.dto.auth.ApiKeyIssueRequestDto;
 import com.goofy.tunabank.v1.exception.auth.ApiKeyLimitExceededException;
 import com.goofy.tunabank.v1.exception.auth.NotAdminException;
-import com.goofy.tunabank.v1.exception.auth.UserNotFoundException;
+import com.goofy.tunabank.v1.exception.user.UserNotFoundException;
 import com.goofy.tunabank.v1.provider.KeyProvider;
 import com.goofy.tunabank.v1.repository.KeyRepository;
 import com.goofy.tunabank.v1.repository.UserRepository;
@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.usertype.UserType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

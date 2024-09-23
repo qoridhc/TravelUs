@@ -9,12 +9,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -22,33 +23,43 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Data
 @Entity
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Participant {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "participant_id")
-    private Long id;
+	@Id
+	@Column(name = "participant_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private boolean isMaster;
+	private boolean isMaster;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
+	private String personalAccountNo;
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+	@CreatedDate
+	private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+	@LastModifiedDate
+	private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "general_account_id")
-    private GeneralAccount generalAccount;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private User user;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "personal_account_id")
-    private GeneralAccount personalAccount;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "group_id")
+	private TravelGroup group;
+
+	// 생성 메서드
+	public static Participant createParticipant(User user, TravelGroup group, boolean isMaster, String personalAccountNo) {
+		Participant participant = Participant.builder()
+			.user(user)
+			.group(group)
+			.isMaster(isMaster)
+			.personalAccountNo(personalAccountNo)
+			.build();
+		return participant;
+	}
+
 }
