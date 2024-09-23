@@ -18,6 +18,6 @@ public class CardPaymentResponseDto {
   private LocalDateTime paymentAt;
 
   private String currencyCode;
-  private Long paymentBalance;
+  private Double paymentBalance;
 
 }
