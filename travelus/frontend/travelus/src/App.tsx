@@ -11,6 +11,7 @@ import UserPhoneUpdate from "./pages/user/UserPhoneUpdate";
 import UserAddressUpdate from "./pages/user/UserAddressUpdate";
 import UserPasswordUpdate from "./pages/user/UserPasswordUpdate";
 import MeetingAccountList from "./pages/account/MeetingAccountList";
+// import MeetingAccountDetail from "./pages/account/MeetingAccountDetailOld";
 import MeetingAccountDetail from "./pages/account/MeetingAccountDetail";
 import JoinedMeetingAccountDetail from "./pages/account/JoinedMeetingAccountDetail";
 import AccountHistory from "./pages/accountHistory/AccountHistory";

@@ -4,7 +4,6 @@ import { accountApi } from "../../api/account";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { FreeMode, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/pagination";
@@ -13,8 +12,7 @@ import { IoHome } from "react-icons/io5";
 import { PiAirplaneTiltFill } from "react-icons/pi";
 import { FaUserFriends, FaBriefcase, FaHeart } from "react-icons/fa";
 
-import { RiHome5Line } from "react-icons/ri";
-import AccountDetail from "../../components/account/AccountDetail";
+import { GoHome } from "react-icons/go";
 import { AccountInfo } from "../../types/account";
 
 const MeetingAccountDetail = () => {
@@ -28,6 +26,11 @@ const MeetingAccountDetail = () => {
   const [selectedForeignAccount, setSelectedForeignAccount] = useState<AccountInfo | null>(null);
   const [memberList, setMemberList] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  // 숫자를 세 자리마다 쉼표로 구분하여 표시
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("ko-KR").format(amount);
+  };
 
   const getAccountTypeFromIconName = (iconName: string) => {
     switch (iconName) {
@@ -44,7 +47,7 @@ const MeetingAccountDetail = () => {
       default:
         return "여행";
     }
-  }
+  };
 
   const getIcon = (iconName: string) => {
     // 아이콘별 배경색을 정의하는 객체
@@ -56,15 +59,15 @@ const MeetingAccountDetail = () => {
       job: "bg-[#95DBC1]",
       default: "bg-[#638ee4]", // 기본 배경색
     };
-  
+
     // 해당 아이콘의 배경색을 가져오고, 없으면 기본값 사용
     const backgroundClass = iconBackgrounds[iconName] || iconBackgrounds.default;
-  
-    const containerClasses = `w-6 h-6 ${backgroundClass} rounded-full flex justify-center items-center text-white`;
-    const iconClasses = "w-4 h-4"; // 아이콘 자체 크기를 줄이기 위한 클래스
-  
+
+    const containerClasses = `w-9 h-9 ${backgroundClass} rounded-full flex justify-center items-center text-white`;
+    const iconClasses = "w-6 h-6"; // 아이콘 자체 크기를 줄이기 위한 클래스
+
     let IconComponent;
-  
+
     switch (iconName) {
       case "airPlane":
         IconComponent = <PiAirplaneTiltFill className={iconClasses} />;
@@ -85,44 +88,90 @@ const MeetingAccountDetail = () => {
         IconComponent = <PiAirplaneTiltFill className={iconClasses} />;
         break;
     }
-  
-    return (
-      <span className={containerClasses}>
-        {IconComponent}
-      </span>
-    );
+
+    return <span className={containerClasses}>{IconComponent}</span>;
   };
 
   useEffect(() => {
-    if (accountList.length > 0 && !isNaN(numberIndex)) {
-      if (numberIndex >= 0 && numberIndex < accountList.length) {
-        setSelectedAccount(accountList[numberIndex]);
-        setSelectedForeignAccount(foreignAccountList[numberIndex - 1]);
-      } else {
-        setSelectedAccount(null);
-        setSelectedForeignAccount(null);
-      }
-    }
+    // if (accountList.length > 0 && !isNaN(numberIndex)) {
+    //   if (numberIndex >= 0 && numberIndex < accountList.length) {
+    //     setSelectedAccount(accountList[numberIndex]);
+    //     setSelectedForeignAccount(foreignAccountList[numberIndex - 1]);
+    //   } else {
+    //     setSelectedAccount(null);
+    //     setSelectedForeignAccount(null);
+    //   }
+    // }
+
+    // 더미 데이터
+    const selectedAccountData: AccountInfo = {
+      id: 1,
+      bankCode: 1234,
+      dailyTransferLimit: "100000",
+      accountNo: "1234567890",
+      balance: 50000,
+      accountName: "John Doe",
+      accountType: "airPlane",
+      groupName: "사랑스러운 지나네",
+      iconName: "family",
+      travelStartDate: "2022-01-01",
+      travelEndDate: "2022-01-10",
+      currency: {
+        currencyCode: "USD",
+        currencyName: "US Dollar",
+      },
+      createdAt: "2022-01-01T00:00:00",
+      updatedAt: "2022-01-01T00:00:00",
+      preferenceExchange: "1340",
+    };
+
+    const selectedTravelBoxData: AccountInfo = {
+      id: 1,
+      bankCode: 1234,
+      dailyTransferLimit: "100000",
+      accountNo: "1234567890",
+      balance: 2246.69,
+      accountName: "John Doe",
+      accountType: "airPlane",
+      groupName: "사랑스러운 지나네",
+      iconName: "family",
+      travelStartDate: "2022-01-01",
+      travelEndDate: "2022-01-10",
+      currency: {
+        currencyCode: "USD",
+        currencyName: "US Dollar",
+      },
+      createdAt: "2022-01-01T00:00:00",
+      updatedAt: "2022-01-01T00:00:00",
+      preferenceExchange: "1340",
+    };
+
+    setSelectedAccount(selectedAccountData);
+    setSelectedForeignAccount(selectedTravelBoxData);
   }, [accountList, numberIndex]);
 
   useEffect(() => {
-    const getParticipants = async () => {
-      try {
-        if (selectedAccount === null) return;
+    // const getParticipants = async () => {
+    //   try {
+    //     if (selectedAccount === null) return;
 
-        setLoading(true); // 데이터 로딩 시작
-        const response = await accountApi.fetchParticipantInfo(selectedAccount.id);
-        const participantNames = response.participants.map((participant: any) => participant.userInfo.username);
-        setMemberList(participantNames);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        alert("참여자 정보 조회에 실패했습니다.");
-      } finally {
-        setLoading(false); // 데이터 로딩 완료
-      }
-    };
+    //     setLoading(true); // 데이터 로딩 시작
+    //     const response = await accountApi.fetchParticipantInfo(selectedAccount.id);
+    //     const participantNames = response.participants.map((participant: any) => participant.userInfo.username);
+    //     setMemberList(participantNames);
+    //   } catch (error) {
+    //     console.error("Error fetching data:", error);
+    //     alert("참여자 정보 조회에 실패했습니다.");
+    //   } finally {
+    //     setLoading(false); // 데이터 로딩 완료
+    //   }
+    // };
 
-    getParticipants();
+    // getParticipants();
+
+    // 참여자 정보 조회 더미데이터
+    const participants = ["John Doe", "Jane Doe", "Alice", "Bob", "Charlie"];
+    setLoading(false); // 데이터 로딩 완료
   }, [selectedAccount]);
 
   if (selectedAccount === null) {
@@ -130,55 +179,64 @@ const MeetingAccountDetail = () => {
   }
 
   return (
-    <>
-      {accountList.length > 0 && foreignAccountList.length > 0 && (
-        <div className="w-full h-full pb-16 bg-[#EFEFF5]">
-          <div className="p-5 flex flex-col bg-[#c3d8eb]">
-            <div className="mb-12 flex space-x-2 items-center justify-start">
-              <RiHome5Line
-                onClick={() => {
-                  navigate("/");
-                }}
-                className="text-2xl text-zinc-600 cursor-pointer"
-              />
-              <p className="text-sm font-bold flex items-center">{selectedAccount.groupName}</p>
+    selectedForeignAccount && (
+      <div className="h-full bg-[#EBF1FF] grid grid-rows-[35%_65%]">
+        <div className="h-full p-5 pb-8">
+          <div className="h-full flex flex-col justify-between">
+            <div className="flex justify-between items-center">
+              <GoHome className="text-2xl text-zinc-600 cursor-pointer" />
+              <div className="w-14 h-8 bg-zinc-500 opacity-40 rounded-3xl flex justify-center items-center">
+                <button className="text-zinc-50 font-semibold">관리</button>
+              </div>
             </div>
 
-            <div className="w-full flex flex-col items-center space-y-5">
-              <div className="w-full p-2 flex justify-center space-x-2">
-                {loading ? (
-                  <p>로딩 중...</p> // 로딩 중일 때 표시할 내용
-                ) : (
-                  <Swiper
-                    slidesPerView={3.7}
-                    spaceBetween={20}
-                    freeMode={true}
-                    modules={[FreeMode, Pagination]}
-                    className="userSwiper">
-                    {memberList.map((name, index) => (
-                      <SwiperSlide key={index}>
-                        <div className="flex flex-col justify-center items-center space-y-1">
-                          <img className="w-12" src="/assets/user/userIconSample.png" alt={name} />
-                          <p className="text-xs text-zinc-800">{name}</p>
-                        </div>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                )}
+            <div className="flex flex-col items-center space-y-5">
+              <p className="text-lg font-semibold text-zinc-500">사랑스러운 박씨네</p>
+              <div className="flex flex-col justify-center items-center space-y-1">
+                <p>{getIcon(selectedAccount.iconName)}</p>
+                <p className="text-sm">{getAccountTypeFromIconName(selectedAccount.iconName)}</p>
               </div>
             </div>
           </div>
-          <div className="w-full p-5 flex flex-col">
-            <div className="mb-3 flex items-center space-x-[9px]">
-            {getIcon(selectedAccount.iconName)}
-              <p className="text-sm text-zinc-800 font-bold">{getAccountTypeFromIconName(selectedAccount.iconName)}</p>
+        </div>
+
+        <div className="bg-white rounded-t-3xl flex flex-col justify-between">
+          <div>
+            <div className="mt-6 p-5 flex flex-col space-y-5">
+              <div className="flex flex-col space-y-1">
+                <p>일반모임통장</p>
+                <p className="text-2xl font-bold">{formatCurrency(selectedAccount.balance)}원</p>
+              </div>
+              <div className="flex justify-between">
+                <button className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
+                  채우기
+                </button>
+                <button className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">재환전</button>
+              </div>
             </div>
-            <hr className="mb-3 border-0 border-t-[0.5px] border-zinc-200" />
-            <AccountDetail isLeader={true} account={selectedAccount} foreignAccount={selectedForeignAccount} />
+
+            <div className="w-full h-4 bg-[#F6F6F8]"></div>
+
+            <div className="p-5 flex flex-col space-y-5">
+              <div className="flex flex-col space-y-1">
+                <p>트래블박스</p>
+                <p className="text-2xl font-bold">
+                  {formatCurrency(selectedForeignAccount?.balance)}
+                  <span>{selectedForeignAccount?.currency.currencyCode}</span>
+                </p>
+              </div>
+              <div className="flex justify-between">
+                <button className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">환전</button>
+                <button className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">내역</button>
+              </div>
+            </div>
+          </div>
+          <div className="p-5 pb-8">
+            <button className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]">정산하기</button>
           </div>
         </div>
-      )}
-    </>
+      </div>
+    )
   );
 };
 
