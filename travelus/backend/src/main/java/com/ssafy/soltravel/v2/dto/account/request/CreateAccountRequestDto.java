@@ -16,6 +16,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateAccountRequestDto {
 
+    @Schema(description = "유저 아이디", example = "1")
+    private Long userId;
+
     @Schema(description = "계좌 유형 (개인 : I / 모임 : G)", example = "I")
     private String accountType;
 

@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,19 +48,21 @@ public class AccountService {
 
   private final WebClientService webClientService;
 
-  private final String BASE_URL = "http://localhost:8080/api/v1/bank/accounts/";
+  private final String BASE_URL = "/accounts/";
 
   public AccountDto createGeneralAccount(
       CreateAccountRequestDto requestDto
   ) {
 
-    Long userId = SecurityUtil.getCurrentUserId();
+    Long userId = requestDto.getUserId();
 
     User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new UserNotFoundException(userId));
 
     Map<String, Object> body = new HashMap<>();
     String API_URL = BASE_URL + "postAccount";
+
+    LogUtil.info("API URL: " + API_URL);
 
     BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
 
