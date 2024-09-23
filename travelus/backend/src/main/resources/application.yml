@@ -12,8 +12,9 @@ spring:
       - classpath:/yml/application-v1.yml
       - classpath:/yml/application-v2.yml
       - classpath:/yml/application-feature.yml
+      - classpath:/yml/application-dev.yml
   profiles:
-    active : v2, feature
+    active : v2, feature, dev
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -69,7 +70,7 @@ logging:
 ## 프론트엔드 프로젝트 관련 환경 변수
 server:
   front:
-    url: j11d209.p.ssafy.io
+    url: http://localhost:3000
 #  port: 8085
 #
 #  servlet:
