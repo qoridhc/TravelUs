@@ -202,7 +202,9 @@ const ExchangeDetail: React.FC = () => {
             <button className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
               원화로 바꾸기
             </button>
-            <button className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
+            <button
+              onClick={() => navigate('/exchange')}
+              className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
               외화 채우기
             </button>
           </div>h

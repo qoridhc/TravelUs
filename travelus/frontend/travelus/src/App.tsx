@@ -25,6 +25,7 @@ import AccountCreate from "./pages/account/AccountCreate";
 import ExchangeRate from "./pages/exchange/ExchangeRate";
 import ExchangeDetail from './components/exchange/ExchangeDetail';
 import Exchange from "./pages/exchange/Exchange";
+import ExchangeKRWFlow from "./pages/exchange/ExchangeKRW";
 import SelectAccount from "./pages/exchange/SelectAccount";
 import Settlement from "./pages/settle/Settlement";
 import Detail from "./pages/viewaccount/Detail";
@@ -107,6 +108,7 @@ function App() {
           
           {/* 환전 */}
           <Route path="/exchange" element={<Exchange />}></Route>
+          <Route path="/exchangekrw" element={<ExchangeKRWFlow />} />
           <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
           <Route path="/detail" element={<Detail />}></Route>
           <Route path="/transaction" element={<Transaction />}></Route>
