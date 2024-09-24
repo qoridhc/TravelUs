@@ -28,7 +28,7 @@ const MeetingAccountListNew = () => {
         dispatch(editJoinedAccountList(response));
       } catch (error) {
         console.error("Error fetching data:", error);
-        alert("내가 가입한 모임 통장 조회에 실패했습니다.");
+        // alert("내가 가입한 모임 통장 조회에 실패했습니다.");
       }
     };
 

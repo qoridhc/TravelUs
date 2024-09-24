@@ -13,6 +13,7 @@ import UserPasswordUpdate from "./pages/user/UserPasswordUpdate";
 import MeetingAccountList from "./pages/account/MeetingAccountList";
 import MeetingAccountDetail from "./pages/account/MeetingAccountDetail";
 import MeetingAccountManagement from "./pages/account/MeetingAccountManagement";
+import MeetingAccountGroupMember from "./pages/account/MeetingAccountGroupMember";
 import JoinedMeetingAccountDetail from "./pages/account/JoinedMeetingAccountDetail";
 import AccountHistory from "./pages/accountHistory/AccountHistory";
 import ViewAccount from "./pages/viewaccount/Account";
@@ -101,6 +102,7 @@ function App() {
           <Route path="/account" element={<ViewAccount />} />
           <Route path="/accounthistory/:accountNo" element={<AccountHistory />} />
           <Route path="/meetingaccount/management/:id" element={<MeetingAccountManagement />} />
+          <Route path="/meetingaccount/management/:id/groupmember" element={<MeetingAccountGroupMember />} />
           
           {/* 이체 */}
           <Route path="/transfer/selectbank" element={<TransferSelectBank />} />

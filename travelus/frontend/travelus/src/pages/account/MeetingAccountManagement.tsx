@@ -35,7 +35,11 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
             <IoPeopleSharp className="text-3xl text-[#699BF7]" />
             <div className="w-full flex justify-between">
               <p className="text-zinc-500">모임원</p>
-              <div className="flex items-center">
+              <div
+                onClick={() => {
+                  navigate("/meetingaccount/management/1/groupmember");
+                }}
+                className="flex items-center">
                 <p>2명</p>
                 <MdKeyboardArrowRight className="text-2xl text-zinc-600" />
               </div>
