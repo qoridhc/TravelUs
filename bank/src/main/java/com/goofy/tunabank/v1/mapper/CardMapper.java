@@ -3,7 +3,7 @@ package com.goofy.tunabank.v1.mapper;
 import com.goofy.tunabank.v1.domain.Card;
 import com.goofy.tunabank.v1.domain.CardProduct;
 import com.goofy.tunabank.v1.dto.card.CardIssueResponseDto;
-import com.goofy.tunabank.v1.dto.card.CardListResponseDto;
+import com.goofy.tunabank.v1.dto.card.CardResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -32,5 +32,5 @@ public interface CardMapper {
   @Mapping(source = "card.cardProduct.cardDescription", target = "cardDescription")
   @Mapping(source = "card.account.accountNo", target = "withdrawalAccountNo")
   @Mapping(source = "issuerName", target = "cardIssuerName")
-  CardListResponseDto cardToCardListResponseDto(Card card, String issuerName);
+  CardResponseDto cardToCardResponseDto(Card card, String issuerName);
 }

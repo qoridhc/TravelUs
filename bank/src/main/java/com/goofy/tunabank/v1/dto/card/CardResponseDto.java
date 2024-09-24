@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CardListResponseDto {
+public class CardResponseDto {
 
   private String cardNo;
   private String cvc;
