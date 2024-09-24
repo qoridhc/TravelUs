@@ -1,6 +1,6 @@
 package com.ssafy.soltravel.v2.provider;
 
-import com.ssafy.soltravel.v2.exception.InvalidTokenException;
+import com.ssafy.soltravel.v2.exception.auth.InvalidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;

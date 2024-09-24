@@ -78,6 +78,7 @@ const SignUpBasicInformation = () => {
         birthday: "",
         phone: "",
         verificationCode: "",
+        address: "",
       })
     );
   }, []);
@@ -127,17 +128,32 @@ const SignUpBasicInformation = () => {
 
   // 인증번호 전송
   const handleSendVerificationCode = async () => {
-    // try {
-    //   const formattedValue = inputs.phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
-    //   const response = await userApi.fetchSendSmsValidation(formattedValue);
-    //   if (response.status === 200) {
-    //     alert("인증 코드가  발송되었습니다. 확인해주세요.");
-    //   }
-    // } catch (error) {
-    //   console.error("Error sending verification code:", error);
-    //   alert("인증 코드 발송 중 오류가 발생했습니다. 다시 시도해주세요.");
-    // }
+    try {
+      const formattedValue = inputs.phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+      const response = await userApi.fetchSendSmsValidation(formattedValue);
+      if (response.status === 200) {
+        alert("인증 코드가  발송되었습니다. 확인해주세요.");
+      }
+    } catch (error) {
+      console.error("Error sending verification code:", error);
+      alert("인증 코드 발송 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
     setStep(6);
+  };
+
+  const fetchVerifySmsCode = async () => {
+    try {
+      const formattedValue = inputs.phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+      const response = await userApi.fetchVerifySmsCode(formattedValue, inputs.verificationCode!);
+
+      console.log("인증번호응답", response);
+      if (response.status === 200) {
+        return true;
+      }
+    } catch (error) {
+      alert("인증번호를 다시 확인해주세요");
+      return false;
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -189,7 +205,13 @@ const SignUpBasicInformation = () => {
     }
   }, [inputs.name, errors.name, step]);
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    try {
+      const isVerified = await fetchVerifySmsCode();
+      if (!isVerified) {
+        return;
+      }
+
     dispatch(
       editSignUpUserInformation({
         id: inputs.id,
@@ -197,13 +219,17 @@ const SignUpBasicInformation = () => {
         confirmPassword: inputs.confirmPassword,
         name: inputs.name,
         birthday: inputs.birthday.replace(/-/g, ""),
-        phone: "",
-        verificationCode: "",
+        phone: inputs.phone,
+        verificationCode: inputs.verificationCode,
+        address: "",
       })
     );
 
-    // navigate("/signup/additional-information");
-  };
+    navigate("/signup/address");
+    } catch (error) {
+      console.error("Error verifying SMS code:", error);
+    }
+  }
 
   const handleIsIdDuplicated = () => {
     console.log("중복확인");
@@ -329,9 +355,7 @@ const SignUpBasicInformation = () => {
           <>
             <button
               className={`w-full py-3 text-white rounded-lg ${isFormValid ? "bg-[#1429A0]" : "bg-gray-300"}`}
-              onClick={() => {
-                navigate("/signup/address");
-              }}
+              onClick={handleNext}
               disabled={!isFormValid}>
               다음
             </button>

@@ -4,6 +4,7 @@ package com.ssafy.soltravel.v2.service.user;
 
 import com.ssafy.soltravel.v2.domain.Enum.AccountType;
 import com.ssafy.soltravel.v2.domain.User;
+import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserCreateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserDetailDto;
@@ -11,23 +12,20 @@ import com.ssafy.soltravel.v2.dto.user.UserSearchRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchResponseDto;
 import com.ssafy.soltravel.v2.dto.user.api.UserCreateRequestBody;
 import com.ssafy.soltravel.v2.dto.user.api.UserCreateRequestBody.Header;
-import com.ssafy.soltravel.v2.exception.UserNotFoundException;
+import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.UserMapper;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.service.AwsFileService;
-import com.ssafy.soltravel.v2.service.NotificationService;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.PasswordEncoder;
 import com.ssafy.soltravel.v2.util.WebClientUtil;
-import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -90,12 +88,26 @@ public class UserService implements UserDetailsService {
   }
 
 
+  public ResponseDto checkDupUser(String id) {
+    LogUtil.info("duplicate check", id);
+
+    User user = userRepository.findByEmail(id).orElse(null);
+    if (user == null) {
+      return new ResponseDto("SUCCESS", "존재하지 않는 ID입니다.");
+    }
+    else{
+      return new ResponseDto("FAIL", "존재하는 ID입니다.");
+    }
+  }
+
   /*
   * 회원가입
   */ 
   public long createUser(UserCreateRequestDto createDto) throws IOException {
 
     LogUtil.info("createDto", createDto);
+
+    checkDupUser(createDto.getId());
 
     // 외부 API 요청용 Body 생성(로그인)
     UserCreateRequestBody body = UserCreateRequestBody.builder()
@@ -104,7 +116,7 @@ public class UserService implements UserDetailsService {
                 .apiKey(apiKeys.get("API_KEY"))
                 .build()
         )
-        .userId(createDto.getEmail())
+        .userId(createDto.getId())
         .build();
 
     // 외부 API 요청(로그인)
@@ -115,7 +127,7 @@ public class UserService implements UserDetailsService {
 
     // 외부 API 결과 저장(api key) 및 비밀번호 암호화
     String userKey = response.getBody().get("userKey").toString();
-    createDto.setPassword(PasswordEncoder.encrypt(createDto.getEmail(), createDto.getPassword()));
+    createDto.setPassword(PasswordEncoder.encrypt(createDto.getId(), createDto.getPassword()));
 
     // 프로필 이미지 저장
     MultipartFile profile = createDto.getFile();
@@ -181,7 +193,7 @@ public class UserService implements UserDetailsService {
   public void createUserWithoutAPI(UserCreateRequestDto createDto) throws IOException {
     
     // 비밀번호 암호화
-    createDto.setPassword(PasswordEncoder.encrypt(createDto.getEmail(), createDto.getPassword()));
+    createDto.setPassword(PasswordEncoder.encrypt(createDto.getId(), createDto.getPassword()));
 
     // 프로필 이미지 저장
     MultipartFile profile = createDto.getFile();
@@ -209,4 +221,6 @@ public class UserService implements UserDetailsService {
         .isExit(user.getIsExit())
         .build();
   }
+
+
 }

@@ -1,4 +1,4 @@
-package com.ssafy.soltravel.v2.exception;
+package com.ssafy.soltravel.v2.exception.auth;
 
 public class InvalidTokenException extends RuntimeException {
 

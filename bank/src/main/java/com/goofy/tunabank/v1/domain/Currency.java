@@ -41,5 +41,5 @@ public class Currency {
     private String updatedAt;
 
     @Column(name="exchange_min")
-    private int exchangeMin;
+    private Integer exchangeMin;
 }
