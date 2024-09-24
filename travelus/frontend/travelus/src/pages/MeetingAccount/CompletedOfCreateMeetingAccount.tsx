@@ -1,8 +1,9 @@
 import React from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 const CompletedOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
+  const params = useParams();
 
   const shareKakao = () => {
     window.Kakao.Link.sendCustom({
@@ -23,7 +24,7 @@ const CompletedOfCreateMeetingAccount = () => {
           <div className="text-2xl flex flex-col justify-center">
             <div className="flex">
               <p>튜나뱅크&nbsp;</p>
-              <p className="text-[#1429A0] font-semibold">모임통장</p>
+              <p className="text-[#1429A0] font-semibold">{params.type === "meeting" ? "모임통장" : "입출금통장"}</p>
               <p>이</p>
             </div>
             <p className="text-center">개설되었어요</p>
@@ -31,22 +32,28 @@ const CompletedOfCreateMeetingAccount = () => {
         </div>
 
         <div className="flex flex-col space-y-3">
-          <button
-            className="w-full h-14 text-[#565656] bg-[#FAE100] rounded-lg flex justify-center items-center space-x-2"
-            onClick={() => shareKakao()}>
-            <img
-              className="w-6 aspect-1"
-              src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png"
-              alt="카카오링크 보내기 버튼"
-            />
-            <p>카카오톡으로 초대장 공유하기</p>
-          </button>
+          {params.type === "meeting" ? (
+            <button
+              className="w-full h-14 text-[#565656] bg-[#FAE100] rounded-lg flex justify-center items-center space-x-2"
+              onClick={() => shareKakao()}>
+              <img
+                className="w-6 aspect-1"
+                src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png"
+                alt="카카오링크 보내기 버튼"
+              />
+              <p>카카오톡으로 초대장 공유하기</p>
+            </button>
+          ) : (
+            <></>
+          )}
 
           <button
             onClick={() => {
               navigate("/");
             }}
-            className="w-full h-14 text-lg rounded-xl tracking-wide">
+            className={`w-full h-14 text-lg rounded-xl tracking-wide ${
+              params.type === "meeting" ? "" : "text-white bg-[#1429A0]"
+            }`}>
             확인
           </button>
         </div>

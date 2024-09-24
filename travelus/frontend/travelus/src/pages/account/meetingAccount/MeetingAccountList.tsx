@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
-import { editJoinedAccountList } from "../../redux/accountSlice";
-import MeetingAccount from "../../components/account/MeetingAccount";
-import JoinedMeetingAccount from "../../components/account/JoinedMeetingAccount";
+import { RootState } from "../../../redux/store";
+import { editJoinedAccountList } from "../../../redux/accountSlice";
+import MeetingAccount from "../../../components/account/MeetingAccount";
+import JoinedMeetingAccount from "../../../components/account/JoinedMeetingAccount";
 import { useEffect } from "react";
-import { accountApi } from "../../api/account";
+import { accountApi } from "../../../api/account";
 import { IoMdAdd } from "react-icons/io";
 
 const MeetingAccountListNew = () => {
@@ -28,7 +28,7 @@ const MeetingAccountListNew = () => {
         dispatch(editJoinedAccountList(response));
       } catch (error) {
         console.error("Error fetching data:", error);
-        alert("내가 가입한 모임 통장 조회에 실패했습니다.");
+        // alert("내가 가입한 모임 통장 조회에 실패했습니다.");
       }
     };
 

@@ -20,36 +20,37 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-  private final KeyAutheticationFilter keyAutheticationFilter;
-  private final FailedAuthenticatoinEntryPoint failedAuthenticatoinEntryPoint;
+    private final KeyAutheticationFilter keyAutheticationFilter;
+    private final FailedAuthenticatoinEntryPoint failedAuthenticatoinEntryPoint;
 
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .cors(Customizer.withDefaults())                 //등록된 빈에서 CORS 커스텀 설정 찾아서 등록
-        .csrf(AbstractHttpConfigurer::disable)           //csrf 비활성화
-        .httpBasic(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(requests -> requests      //특정 uri만 허용하고 나머지는 인증받아야함
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .cors(Customizer.withDefaults())                 //등록된 빈에서 CORS 커스텀 설정 찾아서 등록
+            .csrf(AbstractHttpConfigurer::disable)           //csrf 비활성화
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(requests -> requests      //특정 uri만 허용하고 나머지는 인증받아야함
                 .requestMatchers(
                     new AntPathRequestMatcher("/api/v1/bank/auth/**"),
                     new AntPathRequestMatcher("/api/v1/bank/swagger-ui/**"),
                     new AntPathRequestMatcher("/api/v1/bank/v3/api-docs/**"),
+                    new AntPathRequestMatcher("/api/v1/bank/actuator/health"),
                     new AntPathRequestMatcher("/api/v1/bank/exchange/**"),
                     new AntPathRequestMatcher("/api/v1/bank/transaction/transfer/moneybox/auto/**")
                 ).permitAll()
                 .anyRequest().authenticated()
-        ).addFilterBefore(
-            keyAutheticationFilter,
-            UsernamePasswordAuthenticationFilter.class
-        ).exceptionHandling(exceptionHandling ->
-            exceptionHandling.authenticationEntryPoint(failedAuthenticatoinEntryPoint)
-        );
-    return http.build();
-  }
+            ).addFilterBefore(
+                keyAutheticationFilter,
+                UsernamePasswordAuthenticationFilter.class
+            ).exceptionHandling(exceptionHandling ->
+                exceptionHandling.authenticationEntryPoint(failedAuthenticatoinEntryPoint)
+            );
+        return http.build();
+    }
 
-  @Bean
-  public WebSecurityCustomizer webSecurityCustomizer() {
-    return (web) -> web.ignoring()
-        .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-  }
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring()
+            .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+    }
 }

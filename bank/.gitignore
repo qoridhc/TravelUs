@@ -6,7 +6,7 @@ build/
 !**/src/test/**/build/
 
 encrypt.py
-
+ 
 .env
 
 api-key.txt

@@ -80,7 +80,7 @@ public class MoneyBox {
         BigDecimal newBalance = currentBalance.subtract(paymentAmount);
         LogUtil.info("잔액", newBalance);
         this.balance = newBalance.doubleValue();
-        
+
         //반환
         return this.balance;
     }

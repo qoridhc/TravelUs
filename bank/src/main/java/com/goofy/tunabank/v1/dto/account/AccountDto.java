@@ -9,22 +9,22 @@ import lombok.Data;
 
 @Data
 @Builder
-public class AccountDto{
+public class AccountDto {
 
-	private Long accountId;
+    private Long accountId;
 
-	private String accountNo;
+    private String accountNo;
 
-	private String accountPassword;
+    private String accountPassword;
 
-	private AccountType accountType;
+    private AccountType accountType;
 
-	private int bankCode;
+    private int bankId;
 
-	private List<MoneyBoxDto> moneyBoxDtos;
+    private List<MoneyBoxDto> moneyBoxDtos;
 
-	private LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
-	private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
 }

@@ -1,8 +1,9 @@
 import React from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 const IDVerificationOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
+  const params = useParams();
   const guideText = [
     "신분증 앞면이 선명하게 보이도록 가로로 촬영해주세요.",
     "검정색 등 어두운 바탕 위에서 촬영해주세요.",
@@ -11,7 +12,7 @@ const IDVerificationOfCreateMeetingAccount = () => {
   ];
 
   const handleNext = () => {
-    navigate("/completedofcreatemeetingaccount");
+    navigate(`/completedofcreatemeetingaccount/${params.type}`);
   };
 
   return (
