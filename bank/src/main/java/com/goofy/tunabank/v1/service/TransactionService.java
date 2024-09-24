@@ -45,19 +45,6 @@ public class TransactionService {
   private final UserService userService;
   private final AccountRepository accountRepository;
 
-  /**
-   * 비밀번호 검증
-   */
-  private boolean validatePassword(String password, String accountNo) {
-
-    String accountPassword = accountRepository.findPasswordByAccountNo(accountNo)
-        .orElseThrow(() -> new InvalidAccountNoException(accountNo));
-
-    if (!password.equals(accountPassword)) {
-      throw new InvalidAccountPasswordException(password);
-    }
-    return true;
-  }
 
   /**
    * 입금 처리
@@ -169,6 +156,16 @@ public class TransactionService {
         .transmissionDateTime(requestDto.getHeader().getTransmissionDateTime()).build();
 
     return processTransferLogic(transferDetailDto);
+  }
+
+  /**
+   * 자동환전
+   */
+  public List<TransactionResponseDto> processAutoExchange(TransferMBRequestDto requestDto) {
+
+
+    requestDto.setAccountPassword(getPassword(requestDto.getAccountNo()));
+    return processMoneyBoxTransfer(requestDto);
   }
 
   /**
@@ -318,5 +315,24 @@ public class TransactionService {
     if (amount > currentBalance) {
       throw new InsufficientBalanceException(currentBalance, amount);
     }
+  }
+
+  /**
+   * 비밀번호 검증
+   */
+  private boolean validatePassword(String password, String accountNo) {
+
+    String accountPassword = getPassword(accountNo);
+
+    if (!password.equals(accountPassword)) {
+      throw new InvalidAccountPasswordException(password);
+    }
+    return true;
+  }
+
+  private String getPassword(String accountNo) {
+
+    return accountRepository.findPasswordByAccountNo(accountNo)
+        .orElseThrow(() -> new InvalidAccountNoException(accountNo));
   }
 }

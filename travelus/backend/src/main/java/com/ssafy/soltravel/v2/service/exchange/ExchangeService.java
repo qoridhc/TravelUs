@@ -124,7 +124,7 @@ public class ExchangeService {
     for (targetAccountDto dto : list) {
 
       MoneyBoxTransferRequestDto requestDto = MoneyBoxTransferRequestDto.create(TransferType.M,
-          dto.getAccountNo(), CurrencyType.KRW, getCurrencyType(currencyCode),
+          dto.getAccountNo(),null, CurrencyType.KRW, getCurrencyType(currencyCode),
           String.valueOf(dto.getAmount()));
 
       try {
