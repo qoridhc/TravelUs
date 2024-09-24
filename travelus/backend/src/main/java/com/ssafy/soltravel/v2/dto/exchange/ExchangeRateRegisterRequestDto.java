@@ -7,8 +7,8 @@ import lombok.Data;
 @Data
 public class ExchangeRateRegisterRequestDto {
 
-  @Schema(description = "계좌 아이디", example = "1")
-  private long accountId;
+  @Schema(description = "계좌번호", example = "002-45579486-209")
+  private String accountNo;
 
   @Schema(description = "환전할 통화 코드", example = "USD")
   private CurrencyType currencyCode;

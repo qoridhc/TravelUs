@@ -12,6 +12,4 @@ public class InquireAccountRequestDto {
 
     private String accountNo;
 
-    private String accountPassword;
-
 }

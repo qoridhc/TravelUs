@@ -78,6 +78,17 @@ public class TransactionController {
   }
 
   /**
+   * 자동환전
+   */
+  @PostMapping("/transfer/moneybox/auto")
+  public ResponseEntity<RecWrapper<?>> transferBetweenMoneyBoxesAuto(
+      @RequestBody TransferMBRequestDto requestDto) {
+
+    List<TransactionResponseDto> response = transactionService.processMoneyBoxTransfer(requestDto);
+    return ResponseEntity.ok(new RecWrapper<>(response));
+  }
+
+  /**
    * 환전 예상 금액 조회
    */
   @PostMapping("/exchange/estimate")

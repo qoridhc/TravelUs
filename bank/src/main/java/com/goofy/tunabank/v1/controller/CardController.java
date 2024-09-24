@@ -4,7 +4,8 @@ import com.goofy.tunabank.v1.common.RecWrapper;
 import com.goofy.tunabank.v1.dto.card.CardIssueRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardIssueResponseDto;
 import com.goofy.tunabank.v1.dto.card.CardListRequestDto;
-import com.goofy.tunabank.v1.dto.card.CardListResponseDto;
+import com.goofy.tunabank.v1.dto.card.CardRequestDto;
+import com.goofy.tunabank.v1.dto.card.CardResponseDto;
 import com.goofy.tunabank.v1.dto.card.CardPaymentRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardPaymentResponseDto;
 import com.goofy.tunabank.v1.service.CardService;
@@ -33,16 +34,23 @@ public class CardController {
   }
 
   @PostMapping("/list")
-  public ResponseEntity issueNewCard(@RequestBody CardListRequestDto request){
+  public ResponseEntity getCardList(@RequestBody CardListRequestDto request){
     LogUtil.info("카드 조회 요청", request.getHeader());
-    List<CardListResponseDto> response = cardService.findAllCards(request);
-    return new ResponseEntity(new RecWrapper<>(response), HttpStatus.CREATED);
+    List<CardResponseDto> response = cardService.findAllCards(request);
+    return new ResponseEntity(new RecWrapper<>(response), HttpStatus.OK);
   }
 
   @PostMapping("/payment")
   public ResponseEntity makeCardPayment(@RequestBody CardPaymentRequestDto request){
-    LogUtil.info("카드 조회 요청", request);
+    LogUtil.info("카드 결제", request);
     CardPaymentResponseDto response = cardService.makeCardPayment(request);
     return new ResponseEntity(new RecWrapper<>(response), HttpStatus.CREATED);
+  }
+
+  @PostMapping("/search")
+  public ResponseEntity getCard(@RequestBody CardRequestDto request){
+    LogUtil.info("카드 조회 요청", request);
+    CardResponseDto response = cardService.findCard(request);
+    return new ResponseEntity(new RecWrapper<>(response), HttpStatus.OK);
   }
 }

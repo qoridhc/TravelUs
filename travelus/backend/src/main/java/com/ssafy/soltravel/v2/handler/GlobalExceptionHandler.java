@@ -1,15 +1,16 @@
 package com.ssafy.soltravel.v2.handler;
 
 import com.ssafy.soltravel.v2.dto.ResponseDto;
-import com.ssafy.soltravel.v2.exception.InvalidAuthCodeException;
-import com.ssafy.soltravel.v2.exception.InvalidCredentialsException;
+import com.ssafy.soltravel.v2.exception.auth.InvalidAuthCodeException;
+import com.ssafy.soltravel.v2.exception.auth.InvalidCredentialsException;
 import com.ssafy.soltravel.v2.exception.LackOfBalanceException;
 import com.ssafy.soltravel.v2.exception.RefundAccountNotFoundException;
-import com.ssafy.soltravel.v2.exception.UserNotFoundException;
+import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.exception.account.InvalidGroupAccountException;
 import com.ssafy.soltravel.v2.exception.group.InvalidGroupIdException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -98,6 +99,16 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ResponseDto> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        ResponseDto errorResponse = new ResponseDto(
+            "BAD_REQUESET",
+            ""
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
 }
 
 

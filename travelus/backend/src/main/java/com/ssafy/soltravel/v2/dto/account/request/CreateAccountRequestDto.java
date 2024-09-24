@@ -16,11 +16,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateAccountRequestDto {
 
+    @Schema(description = "유저 아이디", example = "1")
     private Long userId;
 
+    @Schema(description = "계좌 유형 (개인 : I / 모임 : G)", example = "I")
     private String accountType;
 
+    @Schema(description = "계좌의 비밀번호", example = "password123!")
     private String accountPassword;
 
+    @Schema(description = "은행 ID (은행 식별자)", example = "1")
     private int bankId;
 }

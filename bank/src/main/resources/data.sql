@@ -6,11 +6,11 @@ INSERT IGNORE INTO country (country_id, country_code, country_name) VALUES (4, '
 INSERT IGNORE INTO country (country_id, country_code, country_name) VALUES (5, 'CNY', 'China');
 
 -- currency 데이터 삽입
-INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate) VALUES ('1','KRW', 1, 1.0);
-INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate) VALUES ('2','USD', 2, 1200.0);
-INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate) VALUES ('3','JPY', 3, 100.0);
-INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate) VALUES ('4','EUR', 4, 1400.0);
-INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate) VALUES ('5','CNY', 5, 180.0);
+INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate, exchange_min) VALUES ('1','KRW', 1, 1.0, 1);
+INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate, exchange_min) VALUES ('2','USD', 2, 1200.0, 100);
+INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate, exchange_min) VALUES ('3','JPY', 3, 100.0, 100);
+INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate, exchange_min) VALUES ('4','EUR', 4, 1400.0, 100);
+INSERT IGNORE INTO currency (currency_id, currency_code, country_id, exchange_rate, exchange_min) VALUES ('5','CNY', 5, 180.0, 800);
 
 -- merchant 데이터 삽입
 INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (1,'입금','BANK','주소',0,0);
@@ -19,9 +19,9 @@ INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat,
 INSERT IGNORE INTO merchant (merchant_id, merchant_name, category, address, lat, lng) VALUES (4,'이체 출금','BANK','주소',0,0);
 
 -- user 데이터 삽입
-INSERT IGNORE INTO user (user_id, email, role, is_exit, create_at, update_at, exit_at) VALUES (1, 'heo_dongwon@naver.com', 'ADMIN', null, null, null, null);
-INSERT IGNORE INTO user (user_id, email, role, is_exit, create_at, update_at, exit_at) VALUES (2, '2pearl522@gmail.com', 'ADMIN', null, null, null, null);
-INSERT IGNORE INTO user (user_id, email, role, is_exit, create_at, update_at, exit_at) VALUES (3, 'lsh@gmail.com', 'ADMIN', null, null, null, null);
+INSERT IGNORE INTO user (user_id, credential_id, role, is_exit, create_at, update_at, exit_at) VALUES (1, 'heo_dongwon@naver.com', 'ADMIN', null, null, null, null);
+INSERT IGNORE INTO user (user_id, credential_id, role, is_exit, create_at, update_at, exit_at) VALUES (2, '2pearl522@gmail.com', 'ADMIN', null, null, null, null);
+INSERT IGNORE INTO user (user_id, credential_id, role, is_exit, create_at, update_at, exit_at) VALUES (3, 'lsh@gmail.com', 'ADMIN', null, null, null, null);
 
 -- api_key 데이터 삽입
 INSERT IGNORE INTO tunabank.api_key (id, create_at, expire_at, status, type, value, user_id) VALUES (1, '2024-09-18 22:06:16.282217', '2025-09-18 22:06:16.282217', 'ACTIVE', 'API', 'HUo52t-HWD_BYTDPMtnloxnppmSoRrBfduY6XYjnyC2-a84p9xxJwB_RKinE6WvQ', 1);

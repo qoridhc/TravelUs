@@ -11,10 +11,10 @@ import com.ssafy.soltravel.v2.dto.auth.AuthSMSVerificationRequestDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthSMSVerificationResponseDto;
 import com.ssafy.soltravel.v2.dto.user.UserLoginRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserLoginResponseDto;
-import com.ssafy.soltravel.v2.exception.InvalidAuthCodeException;
-import com.ssafy.soltravel.v2.exception.InvalidCredentialsException;
-import com.ssafy.soltravel.v2.exception.PhoneNotFoundException;
-import com.ssafy.soltravel.v2.exception.UserNotFoundException;
+import com.ssafy.soltravel.v2.exception.auth.InvalidAuthCodeException;
+import com.ssafy.soltravel.v2.exception.auth.InvalidCredentialsException;
+import com.ssafy.soltravel.v2.exception.user.PhoneNotFoundException;
+import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.AuthMapper;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.repository.redis.PhoneRepository;
@@ -58,13 +58,13 @@ public class AuthService {
    */
   public UserLoginResponseDto login(UserLoginRequestDto loginRequestDto) {
 
-    // 이메일 & 비밀번호 설정
-    String email = loginRequestDto.getEmail();
-    String encryptedPwd = PasswordEncoder.encrypt(email, loginRequestDto.getPassword());
+    // 아이디 & 비밀번호 설정
+    String id = loginRequestDto.getId();
+    String encryptedPwd = PasswordEncoder.encrypt(id, loginRequestDto.getPassword());
 
     // 일치 검사
-    User user = userRepository.findByEmailAndPwd(email, encryptedPwd).orElseThrow(
-        () -> new InvalidCredentialsException(loginRequestDto.getEmail())
+    User user = userRepository.findByEmailAndPwd(id, encryptedPwd).orElseThrow(
+        () -> new InvalidCredentialsException(loginRequestDto.getId())
     );
 
     //TODO: 정지(탈퇴) 회원 검증

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { RiHome5Line } from "react-icons/ri";
+import { GoHome } from "react-icons/go";
+import { GoHomeFill } from "react-icons/go";
 import { IoPeople } from "react-icons/io5";
 import { MdOutlineEventNote } from "react-icons/md";
-import { BsThreeDots } from "react-icons/bs";
 import { GoGraph } from "react-icons/go";
 
 const Footer = () => {
@@ -40,7 +41,9 @@ const Footer = () => {
       <button
         className={`flex flex-col items-center ${currentMenu === "홈" ? "" : "text-[#9E9E9E]"} duration-200`}
         onClick={() => handleMenuHome()}>
-        <RiHome5Line className="text-2xl" />
+        {
+          currentMenu === "홈" ? <GoHomeFill className="text-2xl" /> : <GoHome className="text-2xl" />
+        }
         <p className="text-sm font-medium">홈</p>
       </button>
       <button

@@ -9,6 +9,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,6 +36,10 @@ public class Currency {
     @JoinColumn(name = "country_id")
     Country country;
 
-    // ===== 생성자 매서드 =====
+    //수정 일시
+    @Column(name = "updated_at")
+    private String updatedAt;
 
+    @Column(name="exchange_min")
+    private Integer exchangeMin;
 }
