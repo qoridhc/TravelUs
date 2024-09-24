@@ -46,6 +46,7 @@ public class UserController {
         throws IOException {
 
         LogUtil.info("requested", joinDto.toString());
+        userService.createUser(joinDto);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto());
     }
 
