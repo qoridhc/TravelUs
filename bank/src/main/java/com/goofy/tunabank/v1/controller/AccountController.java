@@ -5,6 +5,7 @@ import com.goofy.tunabank.v1.dto.ResponseDto;
 import com.goofy.tunabank.v1.dto.account.AccountDto;
 import com.goofy.tunabank.v1.dto.account.request.AddMoneyBoxRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
+import com.goofy.tunabank.v1.dto.account.request.DeleteAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.InquireAccountRequestDto;
 import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
 import com.goofy.tunabank.v1.service.AccountService;
@@ -39,15 +40,13 @@ public class AccountController {
 
     }
 
-    // 모임 통장 머니박스 추가
-    @PostMapping("/addMoneyBox")
-    public ResponseEntity<RecWrapper<List<MoneyBoxDto>>> addAccountMoneyBox(
-        @RequestBody AddMoneyBoxRequestDto requestDto
-    ) {
+    // 유저 계좌 전체 조회
+    @PostMapping("/inquireAccountList")
+    public ResponseEntity<RecWrapper<List<AccountDto>>> createNewAccount() {
 
-        List<MoneyBoxDto> responseDto = accountService.addAccountMoneyBox(requestDto);
+        List<AccountDto> accountDtoList = accountService.inqureAccountList();
 
-        return ResponseEntity.status(HttpStatus.OK).body(new RecWrapper<>(responseDto));
+        return ResponseEntity.status(HttpStatus.OK).body(new RecWrapper<>(accountDtoList));
     }
 
     // 계좌 조회
@@ -63,12 +62,21 @@ public class AccountController {
     // 계좌 삭제
     @PostMapping("/deleteAccount")
     public ResponseEntity<ResponseDto> deleteAccount(
-        @RequestBody InquireAccountRequestDto requestDto
+        @RequestBody DeleteAccountRequestDto requestDto
     ) {
         ResponseDto responseDto = accountService.deleteAccount(requestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
+    // 모임 통장 머니박스 추가
+    @PostMapping("/addMoneyBox")
+    public ResponseEntity<RecWrapper<List<MoneyBoxDto>>> addAccountMoneyBox(
+        @RequestBody AddMoneyBoxRequestDto requestDto
+    ) {
 
+        List<MoneyBoxDto> responseDto = accountService.addAccountMoneyBox(requestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new RecWrapper<>(responseDto));
+    }
 }
