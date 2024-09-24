@@ -211,22 +211,28 @@ const MeetingAccountDetail = () => {
 
         <div className="bg-white rounded-t-3xl flex flex-col justify-between">
           <div>
-            <div className="mt-6 p-5 flex flex-col space-y-5">
+            <div
+              onClick={() => {
+                navigate("/meetingtransaction/1");
+              }}
+              className="mt-6 p-5 flex flex-col space-y-5">
               <div className="flex flex-col space-y-1">
                 <p>일반모임통장</p>
                 <p className="text-2xl font-bold">{formatCurrency(selectedAccount.balance)}원</p>
               </div>
               <div className="flex justify-between">
-                <button className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
-                  채우기
-                </button>
-                <button className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">재환전</button>
+                <button className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">채우기</button>
+                <button className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">환전</button>
               </div>
             </div>
 
             <div className="w-full h-4 bg-[#F6F6F8]"></div>
 
-            <div className="p-5 flex flex-col space-y-5">
+            <div
+              onClick={() => {
+                navigate("/transaction/detail/travelbox/1");
+              }}
+              className="p-5 flex flex-col space-y-5">
               <div className="flex flex-col space-y-1">
                 <p>트래블박스</p>
                 <p className="text-2xl font-bold">
@@ -235,15 +241,20 @@ const MeetingAccountDetail = () => {
                 </p>
               </div>
               <div className="flex justify-between">
-                <button className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">환전</button>
+                <button className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">재환전</button>
                 <button className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">내역</button>
               </div>
             </div>
           </div>
-          <div className="p-5 pb-8">
-            <button className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]">
+          <div className="p-5 pb-8 flex flex-col items-center justify-center space-y-2">
+            <button
+              onClick={() => {
+                navigate("/selectsettlementamount");
+              }}
+              className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]">
               정산하기
             </button>
+            <button className="text-sm text-[#1429A0] font-semibold">개별지출 정산하기</button>
           </div>
         </div>
       </div>
