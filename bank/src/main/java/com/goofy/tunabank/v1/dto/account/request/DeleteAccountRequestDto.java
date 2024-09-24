@@ -5,11 +5,13 @@ import com.goofy.tunabank.v1.common.Header;
 import lombok.Data;
 
 @Data
-public class InquireAccountRequestDto {
+public class DeleteAccountRequestDto {
 
     @JsonProperty("Header")
-    private Header Header;
+    private Header header;
 
     private String accountNo;
+
+    private String accountPassword;
 
 }

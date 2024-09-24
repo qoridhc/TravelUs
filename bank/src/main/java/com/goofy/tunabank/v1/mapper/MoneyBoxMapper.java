@@ -15,17 +15,4 @@ public interface MoneyBoxMapper {
 
     List<MoneyBoxDto> toDtoList(List<MoneyBox> moneyBoxes);
 
-//
-//    MoneyBoxDto toDto(MoneyBox moneyBox){
-//
-//        MoneyBoxDto moneyBoxDto = MoneyBoxDto.builder()
-//            .moneyBoxId(moneyBox.getId())
-//            .balance(moneyBox.getBalance())
-//            .currencyType(moneyBox.getCurrency().getCurrencyCode())
-//            .build();
-//
-//        return moneyBoxDto;
-//    }
-
-
 }
