@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import { RootState } from "../../../redux/store";
 import { editJoinedAccountList } from "../../../redux/accountSlice";
 import MeetingAccount from "../../../components/account/MeetingAccount";
@@ -8,6 +9,7 @@ import { accountApi } from "../../../api/account";
 import { IoMdAdd } from "react-icons/io";
 
 const MeetingAccountListNew = () => {
+  const navigate = useNavigate();
   // const accountList = useSelector((state: RootState) => state.account.accountList);
   // const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
   // const joinedAccountList = useSelector((state: RootState) => state.account.joinedAccountList);
@@ -141,7 +143,9 @@ const MeetingAccountListNew = () => {
                 ))}
 
                 <div>
-                  <div className="flex items-center space-x-4">
+                  <div
+                    onClick={() => {navigate("/userinfoofcreatemeetingaccount");}}
+                    className="flex items-center space-x-4">
                     <div className="w-11 h-11 bg-zinc-200 rounded-full flex justify-center items-center">
                       <IoMdAdd className="text-3xl text-zinc-400 font-bold" />
                     </div>

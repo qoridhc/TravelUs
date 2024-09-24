@@ -43,7 +43,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 @Transactional
 public class ExchangeService {
 
-  private final String BASE_URL = "http://localhost:8080/api/v1/bank/exchange";
+  private final String BASE_URL = "/exchange/";
   private final Map<String, String> apiKeys;
   private final WebClientUtil webClientUtil;
   private final ModelMapper modelMapper;
@@ -124,7 +124,7 @@ public class ExchangeService {
     for (targetAccountDto dto : list) {
 
       MoneyBoxTransferRequestDto requestDto = MoneyBoxTransferRequestDto.create(TransferType.M,
-          dto.getAccountNo(), CurrencyType.KRW, getCurrencyType(currencyCode),
+          dto.getAccountNo(), null, CurrencyType.KRW, getCurrencyType(currencyCode),
           String.valueOf(dto.getAmount()));
 
       try {
@@ -133,15 +133,18 @@ public class ExchangeService {
       } catch (WebClientResponseException e) {
         //잔액부족시
         if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
-          LogUtil.error("자동환전 실패. 계좌 번호: {}, 사용자 ID: {}, 에러: INSUFFICIENT_BALANCE", dto.getAccountNo(), dto.getUserId());
+          LogUtil.error("자동환전 실패. 계좌 번호: {}, 사용자 ID: {}, 에러: INSUFFICIENT_BALANCE",
+              dto.getAccountNo(), dto.getUserId());
 
         } else {
-          LogUtil.error("자동환전 실패. 계좌 번호: {}, 사용자 ID: {}, 에러: {}", dto.getAccountNo(), dto.getUserId(), e.getMessage());
+          LogUtil.error("자동환전 실패. 계좌 번호: {}, 사용자 ID: {}, 에러: {}", dto.getAccountNo(),
+              dto.getUserId(), e.getMessage());
         }
 
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       } catch (Exception e) {
-        LogUtil.error("자동환전 실패. 계좌 번호: {}, 사용자 ID: {}, 에러: {}", dto.getAccountNo(), dto.getUserId(), e.getMessage());
+        LogUtil.error("자동환전 실패. 계좌 번호: {}, 사용자 ID: {}, 에러: {}", dto.getAccountNo(), dto.getUserId(),
+            e.getMessage());
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
       }
     }
@@ -212,7 +215,8 @@ public class ExchangeService {
     if (cachedDto == null || !exchangeRate.equals(cachedDto.getExchangeRate())) {
       // 캐시에 새로운 환율 저장
       updateExchangeRateCache(
-          new ExchangeRateCacheDto(currencyCode, exchangeRate, timeLastUpdateUtc,String.valueOf(exchangeMin)));
+          new ExchangeRateCacheDto(currencyCode, exchangeRate, timeLastUpdateUtc,
+              String.valueOf(exchangeMin)));
 
       //TODO: 주석 풀 것
       //자동환전
@@ -262,7 +266,7 @@ public class ExchangeService {
     body.put("Header", header);
 
     ResponseEntity<Map<String, Object>> response = webClientUtil.request(
-        BASE_URL + "/" + currencyCode, body, Map.class);
+        BASE_URL + currencyCode, body, Map.class);
     Object recObject = response.getBody().get("REC");
 
     ExchangeRateCacheDto rateDto = modelMapper.map(recObject,
@@ -271,16 +275,5 @@ public class ExchangeService {
       return rateDto; // 환율 반환
     }
     return null;
-
-//    ResponseEntity<ExchangeRateCacheDto> response = webClient.get()
-//        .uri("/exchange/" + currencyCode).retrieve().toEntity(ExchangeRateCacheDto.class).block();
-//
-//    if (response != null && response.getBody() != null) {
-//      ExchangeRateCacheDto rateDto = response.getBody();
-//      if (rateDto.getCurrencyCode().equals(currencyCode)) {
-//        return rateDto; // 환율 반환
-//      }
-//    }
-//    return null; // 실패 시 null 반환
   }
 }

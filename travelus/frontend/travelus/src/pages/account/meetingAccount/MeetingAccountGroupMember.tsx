@@ -25,6 +25,16 @@ const MeetingAccountGroupMember: React.FC<Props> = (props) => {
     },
   ];
 
+  const shareKakao = () => {
+    window.Kakao.Link.sendCustom({
+      templateId: 112239,
+      templateArgs: {
+        hostName: "이예림",
+        groupName: "구미 2반 D209",
+      },
+    });
+  };
+
   return (
     <div className="h-full flex flex-col justify-between">
       <div>
@@ -68,7 +78,9 @@ const MeetingAccountGroupMember: React.FC<Props> = (props) => {
       </div>
 
       <div className="p-6 pb-8">
-        <button className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]">초대하기</button>
+        <button onClick={() => shareKakao()} className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]">
+          초대하기
+        </button>
       </div>
     </div>
   );

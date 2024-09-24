@@ -18,6 +18,9 @@ public class TransferRequestDto {
   //출금 계좌번호
   private String withdrawalAccountNo;
 
+  //계좌 비밀번호
+  private String accountPassword;
+
   //입금 계좌번호
   private String depositAccountNo;
 

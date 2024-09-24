@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TransactionService {
 
-  private final String BASE_URL = "http://localhost:8080/api/v1/bank/transaction";
+  private final String BASE_URL = "/transaction/";
   private final Map<String, String> apiKeys;
   private final WebClientUtil webClientUtil;
   private final ModelMapper modelMapper;
@@ -69,7 +69,7 @@ public class TransactionService {
   public ResponseEntity<List<TransferHistoryResponseDto>> postMoneyBoxTransfer(
       MoneyBoxTransferRequestDto requestDto, boolean isAuto, long userId) {
 
-    return processMoneyBoxTransfer("moneybox", requestDto, isAuto,userId);
+    return processMoneyBoxTransfer("moneybox", requestDto, isAuto, userId);
   }
 
   /**
@@ -82,7 +82,7 @@ public class TransactionService {
     User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new UserNotFoundException(userId));
 
-    String API_URL = BASE_URL + "/" + apiName;
+    String API_URL = BASE_URL + apiName;
 
     Header header = Header.builder()
         .apiKey(apiKeys.get("API_KEY"))
@@ -91,6 +91,7 @@ public class TransactionService {
     Map<String, Object> body = new HashMap<>();
     body.put("Header", header);
     body.put("accountNo", requestDto.getAccountNo());
+    body.put("accountPassword", requestDto.getAccountPassword());
     body.put("currencyCode", requestDto.getCurrencyCode());
     body.put("transactionType", requestDto.getTransactionType());
     body.put("transactionBalance", requestDto.getTransactionBalance());
@@ -116,7 +117,7 @@ public class TransactionService {
     User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new UserNotFoundException(userId));
 
-    String API_URL = BASE_URL + "/transfer/" + apiName;
+    String API_URL = BASE_URL + "transfer/" + apiName;
 
     Header header = Header.builder()
         .apiKey(apiKeys.get("API_KEY"))
@@ -126,6 +127,7 @@ public class TransactionService {
     body.put("Header", header);
     body.put("transferType", requestDto.getTransferType());
     body.put("withdrawalAccountNo", requestDto.getWithdrawalAccountNo());
+    body.put("accountPassword", requestDto.getAccountPassword());
     body.put("depositAccountNo", requestDto.getDepositAccountNo());
     body.put("transactionBalance", requestDto.getTransactionBalance());
     body.put("withdrawalTransactionSummary", requestDto.getWithdrawalTransactionSummary());
@@ -148,11 +150,11 @@ public class TransactionService {
   public ResponseEntity<List<TransferHistoryResponseDto>> processMoneyBoxTransfer(String apiName,
       MoneyBoxTransferRequestDto requestDto, boolean isAuto, long userId) {
 
-    String API_URL = BASE_URL + "/transfer/" + apiName;
+    String API_URL = BASE_URL + "transfer/" + apiName;
     if (isAuto) {//자동환전이라면
 
       API_URL += "/auto";
-    }else{
+    } else {
 
       userId = SecurityUtil.getCurrentUserId();
     }
@@ -169,6 +171,7 @@ public class TransactionService {
     body.put("Header", header);
     body.put("transferType", requestDto.getTransferType());
     body.put("accountNo", requestDto.getAccountNo());
+    body.put("accountPassword", requestDto.getAccountPassword());
     body.put("sourceCurrencyCode", requestDto.getSourceCurrencyCode());
     body.put("targetCurrencyCode", requestDto.getTargetCurrencyCode());
     body.put("transactionBalance", requestDto.getTransactionBalance());
@@ -194,7 +197,7 @@ public class TransactionService {
     User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new UserNotFoundException(userId));
 
-    String API_URL = BASE_URL + "/history";
+    String API_URL = BASE_URL + "history";
 
     Header header = Header.builder()
         .apiKey(apiKeys.get("API_KEY"))
