@@ -53,6 +53,7 @@ import CompletedOfCreateMeetingAccount from "./pages/MeetingAccount/CompletedOfC
 import UserInfoOfCreateAccount from "./pages/account/UserInfoOfCreateAccount";
 import CurrencyInfoOfCreateTravelBox from "./pages/travelBox/CurrencyInfoOfCreateTravelBox";
 import AutoCurrencyExchangeOfCreateTravelBox from "./pages/travelBox/AutoCurrencyExchangeOfCreateTravelBox";
+import MeetingTransaction from "./pages/MeetingAccount/MeetingTransaction";
 
 function App() {
   return (
@@ -124,6 +125,7 @@ function App() {
 
           {/* 통장 내역 */}
           <Route path="/accounttransaction/:id" element={<AccountTransaction />} />
+          <Route path="/meetingtransaction/:id" element={<MeetingTransaction />} />
 
           {/* 트래블박스 생성 */}
           <Route path="/currencyinfoofcreatetravelbox" element={<CurrencyInfoOfCreateTravelBox />} />
