@@ -37,11 +37,11 @@ import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
 import Transaction from "./pages/transaction/Transaction";
 import PrivateRoute from "./pages/user/PrivateRoute";
 import { Sign } from "crypto";
-import SelectSettlementAmount from "./pages/settlement/SelectSettlementAmount";
-import ForeignCurrencyExchange from "./pages/settlement/ForeignCurrencyExchange";
-import SettlementInfo from "./pages/settlement/SettlementInfo";
+import SelectSettlementAmount from "./pages/settlement/balanceSettlement/SelectSettlementAmount";
+import ForeignCurrencyExchange from "./pages/settlement/balanceSettlement/ForeignCurrencyExchange";
+import SettlementInfo from "./pages/settlement/balanceSettlement/SettlementInfo";
 import EditMembers from "./pages/settlement/EditMembers";
-import BalanceSettlementCompleted from "./pages/settlement/BalanceSettlementCompleted";
+import BalanceSettlementCompleted from "./pages/settlement/balanceSettlement/BalanceSettlementCompleted";
 
 function App() {
   return (
@@ -115,7 +115,7 @@ function App() {
           <Route path="/detail" element={<Detail />}></Route>
           <Route path="/transaction" element={<Transaction />}></Route>
 
-          {/* 정산 */}
+          {/* 잔액정산 */}
           <Route path="/selectsettlementamount" element={<SelectSettlementAmount />}></Route>
           <Route path="/settlementforeigncurrencyexchange" element={<ForeignCurrencyExchange />}></Route>
           <Route path="/settlement" element={<SettlementInfo />}></Route>
