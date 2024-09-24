@@ -47,6 +47,7 @@ public class AccountService {
 
   private final String BASE_URL = "/accounts/";
 
+  // 신규  계좌 생성
   public AccountDto createGeneralAccount(
       CreateAccountRequestDto requestDto
   ) {
@@ -107,6 +108,7 @@ public class AccountService {
     return accountDto;
   }
 
+  // 계좌 전체 조회 (userId로)
   public List<AccountDto> getAllByUserId() {
 
     Long userId = SecurityUtil.getCurrentUserId();
@@ -334,28 +336,5 @@ public class AccountService {
 //
 //    return foreignAccountRepository.findById(accountId).get();
 //  }
-//
 
-  /*
-   * 유저 개인 계좌 전체 조회(기본정보)
-   */
-  public EmailValidationDto getPersonalAccountByEmail(String email) {
-
-    User user = userRepository.findByEmail(email).orElseThrow(
-        () -> new RuntimeException(String.format("loadUserByUsername Failed: %s", email))
-    );
-
-    long userId = user.getUserId();
-    GeneralAccount generalAccount = generalAccountRepository.findFirstByUser_UserIdAndAccountType(
-        userId, AccountType.INDIVIDUAL);
-
-    EmailValidationDto responseDto = EmailValidationDto.builder()
-        .userId(userId)
-        .userName(user.getName())
-        .accountId(generalAccount.getId())
-        .accountNo(generalAccount.getAccountNo())
-        .build();
-
-    return responseDto;
-  }
 }
