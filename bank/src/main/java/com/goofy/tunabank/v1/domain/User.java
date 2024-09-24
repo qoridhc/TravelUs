@@ -27,8 +27,8 @@ public class User implements UserDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long userId;
 
-  @Column(nullable = false, name = "email")
-  private String email;
+  @Column(nullable = false, name = "credentialId")
+  private String credentialId;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   List<Key> keys = new ArrayList<>();
@@ -55,9 +55,9 @@ public class User implements UserDetails {
   /*
    * 생성 메서드
    */
-  public static User createUser(String email, Role role) {
+  public static User createUser(String credentialId, Role role) {
     User user = new User();
-    user.email = email;
+    user.credentialId = credentialId;
     user.role = role;
     user.isExit = false;
     user.createdAt = LocalDateTime.now();
@@ -88,7 +88,7 @@ public class User implements UserDetails {
 
   @Override
   public String getUsername() {
-    return this.email;
+    return this.credentialId;
   }
 
   // 비밀번호 필드가 없는 경우, 필요한 처리 추가

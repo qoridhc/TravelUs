@@ -46,10 +46,10 @@ public class UserController {
         throws IOException {
 
         LogUtil.info("requested", joinDto.toString());
-        return ResponseEntity.status(HttpStatus.OK).body(userService.createUser(joinDto));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto());
     }
 
-    @Operation(summary = "회원가입 테스트", description = "새로운 사용자를 등록합니다.(신한 api 사용하지 않는 버전)")
+    @Operation(summary = "회원가입 테스트", description = "새로운 사용자를 등록합니다.(은행 api 사용하지 않는 버전)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "회원 가입 성공", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
         @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),

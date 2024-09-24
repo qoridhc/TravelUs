@@ -1,4 +1,4 @@
-package com.ssafy.soltravel.v2.exception;
+package com.ssafy.soltravel.v2.exception.user;
 
 import com.ssafy.soltravel.v2.dto.user.UserSearchRequestDto;
 import lombok.Getter;

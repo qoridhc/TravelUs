@@ -27,7 +27,7 @@ public class UserMapper {
         return User.createUser(
             dto.getName(),
             dto.getPassword(),
-            dto.getEmail(),
+            dto.getId(),
             dto.getPhone(),
             dto.getAddress(),
             dto.getBirth(),
@@ -41,7 +41,7 @@ public class UserMapper {
         return User.createUser(
             dto.getName(),
             dto.getPassword(),
-            dto.getEmail(),
+            dto.getId(),
             dto.getPhone(),
             dto.getAddress(),
             dto.getBirth(),

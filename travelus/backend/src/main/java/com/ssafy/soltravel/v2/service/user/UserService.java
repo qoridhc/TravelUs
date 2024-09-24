@@ -11,23 +11,20 @@ import com.ssafy.soltravel.v2.dto.user.UserSearchRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchResponseDto;
 import com.ssafy.soltravel.v2.dto.user.api.UserCreateRequestBody;
 import com.ssafy.soltravel.v2.dto.user.api.UserCreateRequestBody.Header;
-import com.ssafy.soltravel.v2.exception.UserNotFoundException;
+import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.UserMapper;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.service.AwsFileService;
-import com.ssafy.soltravel.v2.service.NotificationService;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.PasswordEncoder;
 import com.ssafy.soltravel.v2.util.WebClientUtil;
-import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -104,7 +101,7 @@ public class UserService implements UserDetailsService {
                 .apiKey(apiKeys.get("API_KEY"))
                 .build()
         )
-        .userId(createDto.getEmail())
+        .userId(createDto.getId())
         .build();
 
     // 외부 API 요청(로그인)
@@ -115,7 +112,7 @@ public class UserService implements UserDetailsService {
 
     // 외부 API 결과 저장(api key) 및 비밀번호 암호화
     String userKey = response.getBody().get("userKey").toString();
-    createDto.setPassword(PasswordEncoder.encrypt(createDto.getEmail(), createDto.getPassword()));
+    createDto.setPassword(PasswordEncoder.encrypt(createDto.getId(), createDto.getPassword()));
 
     // 프로필 이미지 저장
     MultipartFile profile = createDto.getFile();
@@ -127,20 +124,6 @@ public class UserService implements UserDetailsService {
     // 저장할 수 있게 변환 후 저장
     User user = UserMapper.convertCreateDtoToUserWithUserKey(createDto, profileImageUrl, userKey);
     userRepository.save(user);
-//    notificationService.subscribe(userId);
-
-
-    /* 회원가입과 동시에 계좌 생성 구현 완료 */
-    // 외부 API 요청용 Body 생성(계좌 생성)
-    CreateAccountRequestDto accountDto = CreateAccountRequestDto.builder()
-        .userId(user.getUserId())
-        .accountType(String.valueOf(AccountType.I))
-        .accountPassword(createDto.getAccountPassword())
-        .bankId(1)
-        .build();
-
-    accountService.createGeneralAccount(accountDto);
-
     return user.getUserId();
   }
 
@@ -193,7 +176,7 @@ public class UserService implements UserDetailsService {
   public void createUserWithoutAPI(UserCreateRequestDto createDto) throws IOException {
     
     // 비밀번호 암호화
-    createDto.setPassword(PasswordEncoder.encrypt(createDto.getEmail(), createDto.getPassword()));
+    createDto.setPassword(PasswordEncoder.encrypt(createDto.getId(), createDto.getPassword()));
 
     // 프로필 이미지 저장
     MultipartFile profile = createDto.getFile();

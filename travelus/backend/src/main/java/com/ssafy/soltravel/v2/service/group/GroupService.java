@@ -1,6 +1,5 @@
 package com.ssafy.soltravel.v2.service.group;
 
-import com.amazonaws.services.kms.model.InvalidGrantIdException;
 import com.ssafy.soltravel.v1.domain.Enum.AccountType;
 import com.ssafy.soltravel.v2.domain.Participant;
 import com.ssafy.soltravel.v2.domain.TravelGroup;
@@ -11,7 +10,7 @@ import com.ssafy.soltravel.v2.dto.group.GroupDto;
 import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateGroupRequestDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateParticipantRequestDto;
-import com.ssafy.soltravel.v2.exception.UserNotFoundException;
+import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.exception.account.InvalidGroupAccountException;
 import com.ssafy.soltravel.v2.exception.group.InvalidGroupIdException;
 import com.ssafy.soltravel.v2.mapper.GroupMapper;
@@ -19,7 +18,6 @@ import com.ssafy.soltravel.v2.repository.GroupRepository;
 import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.service.account.AccountService;
-import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
