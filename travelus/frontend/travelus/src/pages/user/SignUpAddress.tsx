@@ -39,6 +39,15 @@ const SignUpAddress = () => {
     setIsFormValid(allFieldsFilled);
   }, [address, addressDetail]);
 
+  const formatBirthDate = (birthDate: string) => {
+    // 19970726을 1997-07-26로 변환
+    const year = birthDate.slice(0, 4);
+    const month = birthDate.slice(4, 6);
+    const day = birthDate.slice(6, 8);
+
+    return `${year}-${month}-${day}`;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = e.target.id;
     if (id === "address") {
@@ -51,13 +60,14 @@ const SignUpAddress = () => {
   };
 
   const handleSignUp = async () => {
+    console.log("회원가입 정보:", signUpInformation);
     const formData = new FormData();
 
     formData.append("id", signUpInformation.id);
     formData.append("password", signUpInformation.password);
     formData.append("name", signUpInformation.name);
     formData.append("phone", signUpInformation.phone);
-    formData.append("birthday", signUpInformation.birthday);
+    formData.append("birth", formatBirthDate(signUpInformation.birthday));
     formData.append("address", fullAddress);
 
     try {
