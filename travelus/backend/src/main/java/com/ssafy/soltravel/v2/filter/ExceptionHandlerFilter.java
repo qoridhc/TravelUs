@@ -1,7 +1,7 @@
 package com.ssafy.soltravel.v2.filter;
 
-import com.ssafy.soltravel.v2.exception.InvalidTokenException;
-import com.ssafy.soltravel.v2.exception.UserNotFoundException;
+import com.ssafy.soltravel.v2.exception.auth.InvalidTokenException;
+import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;

@@ -1,6 +1,6 @@
 package com.ssafy.soltravel.v2.util;
 
-import com.ssafy.soltravel.v2.exception.InvalidTokenException;
+import com.ssafy.soltravel.v2.exception.auth.InvalidTokenException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
