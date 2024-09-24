@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import { accountApi } from "../../api/account";
+import { accountApi } from "../../../api/account";
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { RootState } from "../../../redux/store";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -14,8 +14,8 @@ import { PiAirplaneTiltFill } from "react-icons/pi";
 import { FaUserFriends, FaBriefcase, FaHeart } from "react-icons/fa";
 
 import { RiHome5Line } from "react-icons/ri";
-import AccountDetail from "../../components/account/AccountDetail";
-import { AccountInfo } from "../../types/account";
+import AccountDetail from "../../../components/account/AccountDetail";
+import { AccountInfo } from "../../../types/account";
 
 const MeetingAccountDetail = () => {
   const navigate = useNavigate();
@@ -44,7 +44,7 @@ const MeetingAccountDetail = () => {
       default:
         return "여행";
     }
-  }
+  };
 
   const getIcon = (iconName: string) => {
     // 아이콘별 배경색을 정의하는 객체
@@ -56,15 +56,15 @@ const MeetingAccountDetail = () => {
       job: "bg-[#95DBC1]",
       default: "bg-[#638ee4]", // 기본 배경색
     };
-  
+
     // 해당 아이콘의 배경색을 가져오고, 없으면 기본값 사용
     const backgroundClass = iconBackgrounds[iconName] || iconBackgrounds.default;
-  
+
     const containerClasses = `w-6 h-6 ${backgroundClass} rounded-full flex justify-center items-center text-white`;
     const iconClasses = "w-4 h-4"; // 아이콘 자체 크기를 줄이기 위한 클래스
-  
+
     let IconComponent;
-  
+
     switch (iconName) {
       case "airPlane":
         IconComponent = <PiAirplaneTiltFill className={iconClasses} />;
@@ -85,12 +85,8 @@ const MeetingAccountDetail = () => {
         IconComponent = <PiAirplaneTiltFill className={iconClasses} />;
         break;
     }
-  
-    return (
-      <span className={containerClasses}>
-        {IconComponent}
-      </span>
-    );
+
+    return <span className={containerClasses}>{IconComponent}</span>;
   };
 
   useEffect(() => {
@@ -170,7 +166,7 @@ const MeetingAccountDetail = () => {
           </div>
           <div className="w-full p-5 flex flex-col">
             <div className="mb-3 flex items-center space-x-[9px]">
-            {getIcon(selectedAccount.iconName)}
+              {getIcon(selectedAccount.iconName)}
               <p className="text-sm text-zinc-800 font-bold">{getAccountTypeFromIconName(selectedAccount.iconName)}</p>
             </div>
             <hr className="mb-3 border-0 border-t-[0.5px] border-zinc-200" />

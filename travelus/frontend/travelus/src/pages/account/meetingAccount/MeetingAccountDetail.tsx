@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import { accountApi } from "../../api/account";
+import { accountApi } from "../../../api/account";
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { RootState } from "../../../redux/store";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/free-mode";
@@ -13,7 +13,7 @@ import { PiAirplaneTiltFill } from "react-icons/pi";
 import { FaUserFriends, FaBriefcase, FaHeart } from "react-icons/fa";
 
 import { GoHome } from "react-icons/go";
-import { AccountInfo } from "../../types/account";
+import { AccountInfo } from "../../../types/account";
 
 const MeetingAccountDetail = () => {
   const navigate = useNavigate();
@@ -185,10 +185,15 @@ const MeetingAccountDetail = () => {
           <div className="h-full flex flex-col justify-between">
             <div className="flex justify-between items-center">
               <GoHome
-                onClick={() => {navigate("/");}}
-                className="text-2xl text-zinc-600 cursor-pointer" />
+                onClick={() => {
+                  navigate("/");
+                }}
+                className="text-2xl text-zinc-600 cursor-pointer"
+              />
               <button
-                onClick={() => {navigate("/meetingaccount/management/1");}}
+                onClick={() => {
+                  navigate("/meetingaccount/management/1");
+                }}
                 className="w-14 h-8 bg-zinc-500 opacity-40 rounded-3xl text-zinc-50 font-semibold flex justify-center items-center">
                 관리
               </button>
@@ -236,7 +241,9 @@ const MeetingAccountDetail = () => {
             </div>
           </div>
           <div className="p-5 pb-8">
-            <button className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]">정산하기</button>
+            <button className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]">
+              정산하기
+            </button>
           </div>
         </div>
       </div>

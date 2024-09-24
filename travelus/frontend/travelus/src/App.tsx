@@ -10,11 +10,12 @@ import UserUpdate from "./pages/user/UserUpdate";
 import UserPhoneUpdate from "./pages/user/UserPhoneUpdate";
 import UserAddressUpdate from "./pages/user/UserAddressUpdate";
 import UserPasswordUpdate from "./pages/user/UserPasswordUpdate";
-import MeetingAccountList from "./pages/account/MeetingAccountList";
-import MeetingAccountDetail from "./pages/account/MeetingAccountDetail";
-import MeetingAccountManagement from "./pages/account/MeetingAccountManagement";
-import MeetingAccountGroupMember from "./pages/account/MeetingAccountGroupMember";
-import JoinedMeetingAccountDetail from "./pages/account/JoinedMeetingAccountDetail";
+import MeetingAccountList from "./pages/account/meetingAccount/MeetingAccountList";
+import MeetingAccountDetail from "./pages/account/meetingAccount/MeetingAccountDetail";
+import MeetingAccountManagement from "./pages/account/meetingAccount/MeetingAccountManagement";
+import MeetingAccountGroupMember from "./pages/account/meetingAccount/MeetingAccountGroupMember";
+import JoinedMeetingAccountDetail from "./pages/account/meetingAccount/JoinedMeetingAccountDetail";
+import AccountTransaction from "./pages/account/AccountTransaction";
 import AccountHistory from "./pages/accountHistory/AccountHistory";
 import ViewAccount from "./pages/viewaccount/Account";
 import TransferSelectBank from "./pages/transfer/TransferSelectBank";
@@ -32,9 +33,9 @@ import Detail from "./pages/viewaccount/Detail";
 import GroupAccountPage from "./pages/viewaccount/ViewAccount";
 import AccountCreateComplete from "./pages/account/AccountCreateComplete";
 import GeneralMeetingAccountCreate from "./pages/account/GeneralMeetingAccountCreate";
-import MeetingAccountCreatePrepare from "./pages/account/MeetingAccountCreatePrepare";
+import MeetingAccountCreatePrepare from "./pages/account/meetingAccount/MeetingAccountCreatePrepare";
 import ForeignMeetingAccountCreate from "./pages/account/ForeignMeetingAccountCreate";
-import MeetingAccountCreateComplete from "./pages/account/MeetingAccountCreateComplete";
+import MeetingAccountCreateComplete from "./pages/account/meetingAccount/MeetingAccountCreateComplete";
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
 import Transaction from "./pages/transaction/Transaction";
 import PrivateRoute from "./pages/user/PrivateRoute";
@@ -103,13 +104,16 @@ function App() {
           <Route path="/accounthistory/:accountNo" element={<AccountHistory />} />
           <Route path="/meetingaccount/management/:id" element={<MeetingAccountManagement />} />
           <Route path="/meetingaccount/management/:id/groupmember" element={<MeetingAccountGroupMember />} />
-          
+
+          {/* 통장 내역 */}
+          <Route path="/accounttransaction/:id" element={<AccountTransaction />} />
+
           {/* 이체 */}
           <Route path="/transfer/selectbank" element={<TransferSelectBank />} />
           <Route path="/transfer/setmoney" element={<TransferSetMoney />} />
           <Route path="/transfer/confirm" element={<TransferConfirm />} />
           <Route path="/transfer/success" element={<TransferSuccess />} />
-          
+
           {/* 환전 */}
           <Route path="/exchange" element={<Exchange />}></Route>
           <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
