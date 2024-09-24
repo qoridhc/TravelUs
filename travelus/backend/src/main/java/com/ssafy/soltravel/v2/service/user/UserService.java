@@ -6,6 +6,7 @@ import com.ssafy.soltravel.v2.domain.Enum.AccountType;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
+import com.ssafy.soltravel.v2.dto.user.ProfileUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserCreateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserDetailDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchRequestDto;
@@ -224,4 +225,9 @@ public class UserService implements UserDetailsService {
   }
 
 
+  public void updateUserProfile(ProfileUpdateRequestDto request) {
+
+
+
+  }
 }
