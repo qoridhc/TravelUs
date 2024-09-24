@@ -67,9 +67,9 @@ public class TransactionService {
    * 머니 박스 이체
    */
   public ResponseEntity<List<TransferHistoryResponseDto>> postMoneyBoxTransfer(
-      MoneyBoxTransferRequestDto requestDto) {
+      MoneyBoxTransferRequestDto requestDto, boolean isAuto, long userId) {
 
-    return processMoneyBoxTransfer("moneybox", requestDto);
+    return processMoneyBoxTransfer("moneybox", requestDto, isAuto,userId);
   }
 
   /**
@@ -90,7 +90,7 @@ public class TransactionService {
 
     Map<String, Object> body = new HashMap<>();
     body.put("Header", header);
-    body.put("accountId", requestDto.getAccountId());
+    body.put("accountNo", requestDto.getAccountNo());
     body.put("currencyCode", requestDto.getCurrencyCode());
     body.put("transactionType", requestDto.getTransactionType());
     body.put("transactionBalance", requestDto.getTransactionBalance());
@@ -125,8 +125,8 @@ public class TransactionService {
     Map<String, Object> body = new HashMap<>();
     body.put("Header", header);
     body.put("transferType", requestDto.getTransferType());
-    body.put("withdrawalAccountId", requestDto.getWithdrawalAccountId());
-    body.put("depositAccountId", requestDto.getDepositAccountId());
+    body.put("withdrawalAccountNo", requestDto.getWithdrawalAccountNo());
+    body.put("depositAccountNo", requestDto.getDepositAccountNo());
     body.put("transactionBalance", requestDto.getTransactionBalance());
     body.put("withdrawalTransactionSummary", requestDto.getWithdrawalTransactionSummary());
     body.put("depositTransactionSummary", requestDto.getDepositTransactionSummary());
@@ -146,13 +146,20 @@ public class TransactionService {
    * 머니박스 이체 요청 처리 메서드
    */
   public ResponseEntity<List<TransferHistoryResponseDto>> processMoneyBoxTransfer(String apiName,
-      MoneyBoxTransferRequestDto requestDto) {
-
-    Long userId = SecurityUtil.getCurrentUserId();
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new UserNotFoundException(userId));
+      MoneyBoxTransferRequestDto requestDto, boolean isAuto, long userId) {
 
     String API_URL = BASE_URL + "/transfer/" + apiName;
+    if (isAuto) {//자동환전이라면
+
+      API_URL += "/auto";
+    }else{
+
+      userId = SecurityUtil.getCurrentUserId();
+    }
+    long finalUserId = userId;
+
+    User user = userRepository.findByUserId(finalUserId)
+        .orElseThrow(() -> new UserNotFoundException(finalUserId));
 
     Header header = Header.builder()
         .apiKey(apiKeys.get("API_KEY"))
@@ -161,7 +168,7 @@ public class TransactionService {
     Map<String, Object> body = new HashMap<>();
     body.put("Header", header);
     body.put("transferType", requestDto.getTransferType());
-    body.put("accountId", requestDto.getAccountId());
+    body.put("accountNo", requestDto.getAccountNo());
     body.put("sourceCurrencyCode", requestDto.getSourceCurrencyCode());
     body.put("targetCurrencyCode", requestDto.getTargetCurrencyCode());
     body.put("transactionBalance", requestDto.getTransactionBalance());
@@ -200,7 +207,8 @@ public class TransactionService {
     if (transactionType != null) {
       body.put("transactionType", transactionType);
     }
-    body.put("moneyBoxId", requestDto.getMoneyBoxId());
+    body.put("accountNo", requestDto.getAccountNo());
+    body.put("currencyCode", requestDto.getCurrencyCode());
     body.put("startDate", requestDto.getStartDate());
     body.put("endDate", requestDto.getEndDate());
     body.put("orderByType", requestDto.getOrderByType());

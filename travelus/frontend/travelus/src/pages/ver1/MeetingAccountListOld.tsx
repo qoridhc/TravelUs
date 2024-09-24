@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../redux/store";
-import { editJoinedAccountList } from "../../../redux/accountSlice";
-import MeetingAccount from "../../../components/account/MeetingAccountOld";
-import JoinedMeetingAccount from "../../../components/account/JoinedMeetingAccountOld";
+import { RootState } from "../../redux/store";
+import { editJoinedAccountList } from "../../redux/accountSlice";
+import MeetingAccount from "../../components/account/MeetingAccountOld";
+import JoinedMeetingAccount from "../../components/account/JoinedMeetingAccountOld";
 import { useEffect } from "react";
-import { accountApi } from "../../../api/account";
+import { accountApi } from "../../api/account";
 
 const MeetingAccountList = () => {
   const accountList = useSelector((state: RootState) => state.account.accountList);

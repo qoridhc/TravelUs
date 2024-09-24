@@ -17,7 +17,7 @@ public class TransferMBRequestDto {
   private TransferType transferType;
 
   //통장 id
-  private Long accountId;
+  private String accountNo;
 
   //변경 전 통화
   private CurrencyType sourceCurrencyCode;

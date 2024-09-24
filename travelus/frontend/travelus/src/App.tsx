@@ -24,24 +24,33 @@ import TransferConfirm from "./pages/transfer/TransferConfirm";
 import TransferSuccess from "./pages/transfer/TransferSuccess";
 import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
-import AccountCreate from "./pages/account/AccountCreate";
+import AccountCreate from "./pages/ver1/AccountCreateOld";
 import ExchangeRate from "./pages/exchange/ExchangeRate";
 import Exchange from "./pages/exchange/Exchange";
 import SelectAccount from "./pages/exchange/SelectAccount";
 import Settlement from "./pages/settle/Settlement";
 import Detail from "./pages/viewaccount/Detail";
 import GroupAccountPage from "./pages/viewaccount/ViewAccount";
-import AccountCreateComplete from "./pages/account/AccountCreateComplete";
-import GeneralMeetingAccountCreate from "./pages/account/GeneralMeetingAccountCreate";
-import MeetingAccountCreatePrepare from "./pages/account/meetingAccount/MeetingAccountCreatePrepare";
-import ForeignMeetingAccountCreate from "./pages/account/ForeignMeetingAccountCreate";
-import MeetingAccountCreateComplete from "./pages/account/meetingAccount/MeetingAccountCreateComplete";
+import AccountCreateComplete from "./pages/ver1/AccountCreateComplete";
+import GeneralMeetingAccountCreate from "./pages/ver1/GeneralMeetingAccountCreate";
+import MeetingAccountCreatePrepare from "./pages/ver1/MeetingAccountCreatePrepare";
+import ForeignMeetingAccountCreate from "./pages/ver1/ForeignMeetingAccountCreate";
+import MeetingAccountCreateComplete from "./pages/ver1/MeetingAccountCreateComplete";
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
 import Transaction from "./pages/transaction/Transaction";
 import PrivateRoute from "./pages/user/PrivateRoute";
-import { Sign } from "crypto";
 import SelectSettlementAmount from "./pages/settlement/SelectSettlementAmount";
 import ForeignCurrencyExchange from "./pages/settlement/ForeignCurrencyExchange";
+import SettlementInfo from "./pages/settlement/SettlementInfo";
+import EditMembers from "./pages/settlement/EditMembers";
+import BalanceSettlementCompleted from "./pages/settlement/BalanceSettlementCompleted";
+import UserInfoOfCreateMeetingAccount from "./pages/MeetingAccount/UserInfoOfCreateMeetingAccount";
+import MeetingInfoOfCreateMeetingAccount from "./pages/MeetingAccount/MeetingInfoOfCreateMeetingAccount";
+import PasswordOfCreateMeetingAccount from "./pages/MeetingAccount/PasswordOfCreateMeetingAccount";
+import CheckPasswordOfCreateMeetingAccount from "./pages/MeetingAccount/CheckPasswordOfCreateMeetingAccount";
+import IDVerificationOfCreateMeetingAccount from "./pages/MeetingAccount/IDVerificationOfCreateMeetingAccount";
+import CompletedOfCreateMeetingAccount from "./pages/MeetingAccount/CompletedOfCreateMeetingAccount";
+import UserInfoOfCreateAccount from "./pages/account/UserInfoOfCreateAccount";
 
 function App() {
   return (
@@ -88,13 +97,16 @@ function App() {
           <Route path="/userupdate/address" element={<UserAddressUpdate />} />
           <Route path="/userupdate/password" element={<UserPasswordUpdate />} />
 
+          {/* 입출금통장 생성 */}
+          <Route path="/userinfoofcreateaccount" element={<UserInfoOfCreateAccount />} />
+
           {/* 모임통장 생성 */}
-          <Route path="/accountcreate" element={<AccountCreate />} />
-          <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />} />
-          <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
-          <Route path="/foreignmeetingaccountcreate" element={<ForeignMeetingAccountCreate />} />
-          <Route path="/accountcreatecomplete" element={<AccountCreateComplete />} />
-          <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
+          <Route path="/userinfoofcreatemeetingaccount" element={<UserInfoOfCreateMeetingAccount />} />
+          <Route path="/meetinginfoofcreatemeetingaccount" element={<MeetingInfoOfCreateMeetingAccount />} />
+          <Route path="/passwordofcreatemeetingaccount/:type" element={<PasswordOfCreateMeetingAccount />} />
+          <Route path="/checkpasswordofcreatemeetingaccount" element={<CheckPasswordOfCreateMeetingAccount />} />
+          <Route path="/idverificationofcreatemeetingaccount/:type" element={<IDVerificationOfCreateMeetingAccount />} />
+          <Route path="/completedofcreatemeetingaccount/:type" element={<CompletedOfCreateMeetingAccount />} />
 
           {/* 모임통장 상세 */}
           <Route path="/account/:userId" element={<GroupAccountPage />} />
@@ -123,7 +135,18 @@ function App() {
           {/* 정산 */}
           <Route path="/selectsettlementamount" element={<SelectSettlementAmount />}></Route>
           <Route path="/settlementforeigncurrencyexchange" element={<ForeignCurrencyExchange />}></Route>
-          <Route path="/settlement" element={<Settlement />}></Route>
+          <Route path="/settlement" element={<SettlementInfo />}></Route>
+          <Route path="/editmembers" element={<EditMembers />}></Route>
+          <Route path="/balancesettlementcompleted" element={<BalanceSettlementCompleted />}></Route>
+          {/* <Route path="/settlement" element={<Settlement />}></Route> */}
+
+          {/* ver1 */}
+          <Route path="/accountcreate" element={<AccountCreate />} />
+          <Route path="/accountcreatecomplete" element={<AccountCreateComplete />} />
+          <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />} />
+          <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
+          <Route path="/foreignmeetingaccountcreate" element={<ForeignMeetingAccountCreate />} />
+          <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
         </Routes>
       </BrowserRouter>
     </div>

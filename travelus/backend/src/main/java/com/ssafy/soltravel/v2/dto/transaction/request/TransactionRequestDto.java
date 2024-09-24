@@ -8,8 +8,8 @@ import lombok.Data;
 @Data
 public class TransactionRequestDto {
 
-    @Schema(description = "계좌 Id", example = "1")
-    Long accountId;
+    @Schema(description = "계좌번호", example = "001-69042343-209")
+    String accountNo;
 
     @Schema(description = "머니박스 통화", example = "KRW")
     CurrencyType currencyCode;

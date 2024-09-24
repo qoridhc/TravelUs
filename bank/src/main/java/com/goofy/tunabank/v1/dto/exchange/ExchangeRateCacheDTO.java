@@ -13,5 +13,6 @@ public class ExchangeRateCacheDTO {
 
   String CurrencyCode;
   double ExchangeRate;
-  String timeLastUpdateUtc;
+  String created;
+  int exchangeMin;
 }
