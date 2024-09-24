@@ -14,10 +14,16 @@ interface SignUpAddressProps {
 }
 
 const SignUpAddress = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [address, setAddress] = useState<string>("");
   const [addressDetail, setAddressDetail] = useState<string>("");
+  const [fullAddress, setFullAddress] = useState<string>("");
   const [step, setStep] = useState<number>(0);
   const [isFormValid, setIsFormValid] = useState(false);
+  const signUpInformation = useSelector((state: RootState) => state.userInformation.SignUpUserInformation);
+
+  // console.log("signUpInformation", signUpInformation);
 
   useEffect(() => {
     if (step === 0 && address !== "") {
@@ -27,11 +33,9 @@ const SignUpAddress = () => {
 
   useEffect(() => {
     // 모든 필드가 유효한지 확인
-    // const allFieldsValid = Object.values(errors).every((error) => !error);
-    // const allFieldsFilled = Object.values(inputs).every((value) => value !== "");
-
     const allFieldsFilled = address !== "" && addressDetail !== "";
 
+    setFullAddress(`${address} ${addressDetail}`);
     setIsFormValid(allFieldsFilled);
   }, [address, addressDetail]);
 
@@ -45,6 +49,29 @@ const SignUpAddress = () => {
       setAddressDetail(addressDetail);
     }
   };
+
+  const handleSignUp = async () => {
+    const formData = new FormData();
+
+    formData.append("id", signUpInformation.id);
+    formData.append("password", signUpInformation.password);
+    formData.append("name", signUpInformation.name);
+    formData.append("phone", signUpInformation.phone);
+    formData.append("birthday", signUpInformation.birthday);
+    formData.append("address", fullAddress);
+
+    try {
+      const response = await userApi.fetchSignUp(formData);
+
+      if (response.status === 200) {
+        console.log("회원가입 성공");
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("회원가입 에러:", error);
+    }
+  };
+    
 
   return (
     <div className="w-full min-h-screen p-5 bg-white flex flex-col justify-between">
@@ -71,6 +98,7 @@ const SignUpAddress = () => {
         </div>
       </div>
       <button
+        onClick={handleSignUp}
         className={`w-full mb-5 py-3 text-white rounded-lg ${isFormValid ? "bg-[#1429A0]" : "bg-gray-300"}`}
         disabled={!isFormValid}>
         가입하기
