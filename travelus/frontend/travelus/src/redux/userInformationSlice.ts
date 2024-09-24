@@ -16,6 +16,7 @@ const initialState: UserInformationState = {
     birthday: "",
     phone: "",
     verificationCode: "",
+    address: "",
   },
   UserInfo: {
     name: "",

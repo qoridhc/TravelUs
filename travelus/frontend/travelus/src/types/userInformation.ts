@@ -7,6 +7,7 @@ export interface SignUpUserInfo {
   birthday: string;
   phone: string;
   verificationCode: string;
+  address: string;
 }
 
 // 유저 정보

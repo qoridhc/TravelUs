@@ -88,8 +88,8 @@ function App() {
 
           {/* 회원 */}
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/signup/basicinformation" element={<SignUpBasicInformation />} />
+          {/* <Route path="/signup" element={<SignUp />} /> */}
+          <Route path="/signup" element={<SignUpBasicInformation />} />
           <Route path="/signup/address" element={<SignUpAddress />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/userupdate" element={<UserUpdate />} />

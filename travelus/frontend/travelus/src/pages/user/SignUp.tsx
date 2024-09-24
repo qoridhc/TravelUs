@@ -50,7 +50,7 @@ const SignUp = () => {
         return true;
       }
     } catch (error) {
-      alert("인증번호를 다시 확인해주세요");
+      // alert("인증번호를 다시 확인해주세요");
       return false;
     }
   };
