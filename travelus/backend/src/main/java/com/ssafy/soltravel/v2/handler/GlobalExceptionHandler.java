@@ -6,7 +6,7 @@ import com.ssafy.soltravel.v2.exception.InvalidCredentialsException;
 import com.ssafy.soltravel.v2.exception.LackOfBalanceException;
 import com.ssafy.soltravel.v2.exception.RefundAccountNotFoundException;
 import com.ssafy.soltravel.v2.exception.UserNotFoundException;
-import com.ssafy.soltravel.v2.exception.account.InvalidGroupAccountException;
+import com.ssafy.soltravel.v2.exception.account.InvalidPersonalAccountException;
 import com.ssafy.soltravel.v2.exception.group.InvalidGroupIdException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -82,8 +82,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(InvalidGroupAccountException.class)
-    public ResponseEntity<ResponseDto> handleInvalidGroupAccountException(InvalidGroupAccountException e) {
+    @ExceptionHandler(InvalidPersonalAccountException.class)
+    public ResponseEntity<ResponseDto> handleInvalidGroupAccountException(InvalidPersonalAccountException e) {
         ResponseDto errorResponse = new ResponseDto(
             "BAD REQUEST",
             e.getMessage()
