@@ -119,11 +119,11 @@ public class UserController {
 
     @Operation(summary = "프로필 이미지 변경", description = "사진을 업로드해 프로필 이미지를 변경합니다.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "변경 성공", content = @Content(schema = @Schema(implementation = UserSearchResponseDto.class))),
+        @ApiResponse(responseCode = "200", description = "변경 성공", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
         @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @PostMapping("/update/profile")
+    @PostMapping(name = "/update/profile", consumes = "multipart/form-data")
     public ResponseEntity<?> updateUserProfile(@ModelAttribute ProfileUpdateRequestDto request) throws IOException {
 
         LogUtil.info("requested", request.toString());
