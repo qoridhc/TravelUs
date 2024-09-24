@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +43,18 @@ public class GroupController {
 
         GroupDto accountDto = groupService.createNewGroup(requestDto);
 
-        return  ResponseEntity.status(HttpStatus.CREATED).body(accountDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(accountDto);
+    }
+
+    // 모임 조회
+    @GetMapping("/{groupId}")
+    public ResponseEntity<GroupDto> getGroupInfo(
+        @PathVariable Long groupId
+    ) {
+
+        GroupDto accountDto = groupService.getGroupInfo(groupId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(accountDto);
     }
 
     // === 참여자 관련 메서드 ===

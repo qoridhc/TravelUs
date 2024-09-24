@@ -100,6 +100,15 @@ public class GroupService {
         return groupDto;
     }
 
+    // 모임 조회
+    public GroupDto getGroupInfo(Long groupId) {
+
+        TravelGroup travelGroup = groupRepository.findById(groupId).orElseThrow(InvalidGroupIdException::new);
+
+        return groupMapper.toDto(travelGroup);
+
+    }
+
     // 신규 참여자 생성
     public ParticipantDto createNewParticipant(CreateParticipantRequestDto requestDto) {
 
@@ -109,10 +118,9 @@ public class GroupService {
             .orElseThrow(() -> new UserNotFoundException(userId));
 
         TravelGroup group = groupRepository.findById(requestDto.getGroupId())
-            .orElseThrow(() -> new InvalidGroupIdException());
+            .orElseThrow(InvalidGroupIdException::new);
 
-        InquireAccountRequestDto inquireAccountRequestDto = new InquireAccountRequestDto(
-            requestDto.getPersonalAccountNo());
+        InquireAccountRequestDto inquireAccountRequestDto = new InquireAccountRequestDto(requestDto.getPersonalAccountNo());
 
         AccountDto accountDto = accountService.getByAccountNo(inquireAccountRequestDto);
 
