@@ -83,7 +83,7 @@ const MeetingTransaction = () => {
                 navigate("/transfer/selectbank");
               }}
               className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
-              재환전
+              환전
             </button>
           </div>
         </div>
