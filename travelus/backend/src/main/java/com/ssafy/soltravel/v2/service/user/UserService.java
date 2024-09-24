@@ -4,6 +4,7 @@ package com.ssafy.soltravel.v2.service.user;
 
 import com.ssafy.soltravel.v2.domain.Enum.AccountType;
 import com.ssafy.soltravel.v2.domain.User;
+import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserCreateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserDetailDto;
@@ -87,12 +88,26 @@ public class UserService implements UserDetailsService {
   }
 
 
+  public ResponseDto checkDupUser(String id) {
+    LogUtil.info("duplicate check", id);
+
+    User user = userRepository.findByEmail(id).orElse(null);
+    if (user == null) {
+      return new ResponseDto("SUCCESS", "존재하지 않는 ID입니다.");
+    }
+    else{
+      return new ResponseDto("FAIL", "존재하는 ID입니다.");
+    }
+  }
+
   /*
   * 회원가입
   */ 
   public long createUser(UserCreateRequestDto createDto) throws IOException {
 
     LogUtil.info("createDto", createDto);
+
+    checkDupUser(createDto.getId());
 
     // 외부 API 요청용 Body 생성(로그인)
     UserCreateRequestBody body = UserCreateRequestBody.builder()
@@ -204,4 +219,6 @@ public class UserService implements UserDetailsService {
         .isExit(user.getIsExit())
         .build();
   }
+
+
 }
