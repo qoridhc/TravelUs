@@ -17,8 +17,8 @@ public class UserLoginRequestDto {
 
     @NotNull
     @NotBlank
-    @Schema(description = "사용자의 이메일 주소", example = "user@google.com", required = true)
-    private String email;
+    @Schema(description = "사용자의 아이디", example = "hdw123", required = true)
+    private String id;
 
     @NotNull
     @NotBlank
