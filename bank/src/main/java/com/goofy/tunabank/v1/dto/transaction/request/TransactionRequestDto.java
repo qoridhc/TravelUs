@@ -13,8 +13,11 @@ public class TransactionRequestDto {
   @JsonProperty("Header")
   private Header header;
   
-  //계좌 Id
+  //계좌번호
   private String accountNo;
+
+  //계좌 비밀번호
+  private String accountPassword;
 
   //통화 Code
   private CurrencyType currencyCode;
