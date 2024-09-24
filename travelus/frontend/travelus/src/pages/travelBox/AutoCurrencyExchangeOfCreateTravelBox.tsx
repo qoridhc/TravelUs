@@ -8,7 +8,7 @@ const AutoCurrencyExchangeOfCreateTravelBox = () => {
   const navigate = useNavigate();
 
   const handleNext = () => {
-    navigate("/autocurrencyexchangeofcreatetravelbox");
+    navigate("/passwordofcreatemeetingaccount/travelbox");
   };
 
   return (

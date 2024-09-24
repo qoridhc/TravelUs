@@ -14,7 +14,11 @@ const PasswordOfCreateMeetingAccount = () => {
   useEffect(() => {
     if (password.length === 4) {
       dispatch(setAccountPassword(""));
-      navigate("/checkpasswordofcreatemeetingaccount", { state: { originalPassword: password, type: params.type } });
+      if (params.type === "travelbox") {
+        navigate("/completedofcreatemeetingaccount/travelbox");
+      } else {
+        navigate("/checkpasswordofcreatemeetingaccount", { state: { originalPassword: password, type: params.type } });
+      }
     }
   }, [password]);
 
@@ -22,9 +26,13 @@ const PasswordOfCreateMeetingAccount = () => {
     <div className="h-full grid grid-rows-[2fr_1fr]">
       <div className="flex flex-col justify-center items-center space-y-10">
         <p className="text-xl text-center font-medium leading-tight">
-          {params.type === "meeting" ? "모임통장" : "튜나뱅크"}에서 사용할
+          {params.type === "travelbox"
+            ? "모임통장의 비밀번호를"
+            : params.type === "meeting"
+            ? "모임통장에서 사용할"
+            : "튜나뱅크에서 사용할"}
           <br />
-          비밀번호를 입력해주세요
+          {params.type === "travelbox" ? "입력해주세요" : "비밀번호를 입력해주세요"}
         </p>
 
         <div className="flex space-x-3">

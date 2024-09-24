@@ -22,11 +22,18 @@ const CompletedOfCreateMeetingAccount = () => {
           <img className="w-20 aspect-1" src="/assets/confirmIcon.png" alt="확인아이콘" />
 
           <div className="text-2xl flex flex-col justify-center">
-            <div className="flex">
-              <p>튜나뱅크&nbsp;</p>
-              <p className="text-[#1429A0] font-semibold">{params.type === "meeting" ? "모임통장" : "입출금통장"}</p>
-              <p>이</p>
-            </div>
+            {params.type === "travelbox" ? (
+              <div className="flex">
+                <p className="text-[#1429A0] font-semibold">트래블박스</p>
+                <p>가</p>
+              </div>
+            ) : (
+              <div className="flex">
+                <p>튜나뱅크&nbsp;</p>
+                <p className="text-[#1429A0] font-semibold">{params.type === "meeting" ? "모임통장" : "입출금통장"}</p>
+                <p>이</p>
+              </div>
+            )}
             <p className="text-center">개설되었어요</p>
           </div>
         </div>
