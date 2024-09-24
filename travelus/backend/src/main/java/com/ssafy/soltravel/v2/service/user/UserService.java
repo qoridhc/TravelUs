@@ -235,12 +235,8 @@ public class UserService implements UserDetailsService {
    );
 
     // 프로필 이미지 저장
-    MultipartFile profile = request.getFile();
-    String profileImageUrl = apiKeys.get("DEFAULT_PROFILE_URL");
-    if(profile != null && !profile.isEmpty()) {
-      profileImageUrl = fileService.saveProfileImage(profile);
-    }
-
+    LogUtil.info("이미지", request.getProfileImg().getName());
+    String profileImageUrl = fileService.saveProfileImage(request.getProfileImg());
     user.updateProfile(profileImageUrl);
   }
 }

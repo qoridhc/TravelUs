@@ -1,6 +1,7 @@
 package com.ssafy.soltravel.v2.dto.user;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -16,7 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class ProfileUpdateRequestDto {
 
+  @JsonProperty("profileImg")
   @NotNull
   @Schema(description = "변경할 프로필 이미지", example = "file")
-  MultipartFile file;
+  MultipartFile profileImg;
 }
