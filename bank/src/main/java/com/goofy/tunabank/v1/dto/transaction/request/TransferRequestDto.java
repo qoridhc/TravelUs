@@ -15,11 +15,11 @@ public class TransferRequestDto {
   //이체 종류
   private TransferType transferType;
 
-  //출금 계좌 Id
-  private Long withdrawalAccountId;
+  //출금 계좌번호
+  private String withdrawalAccountNo;
 
-  //입금 계좌 Id
-  private Long depositAccountId;
+  //입금 계좌번호
+  private String depositAccountNo;
 
   //금액
   private double transactionBalance;

@@ -33,15 +33,15 @@ public class CardController {
   }
 
   @PostMapping("/list")
-  public ResponseEntity issueNewCard(@RequestBody CardListRequestDto request){
+  public ResponseEntity getCardList(@RequestBody CardListRequestDto request){
     LogUtil.info("카드 조회 요청", request.getHeader());
     List<CardListResponseDto> response = cardService.findAllCards(request);
-    return new ResponseEntity(new RecWrapper<>(response), HttpStatus.CREATED);
+    return new ResponseEntity(new RecWrapper<>(response), HttpStatus.OK);
   }
 
   @PostMapping("/payment")
   public ResponseEntity makeCardPayment(@RequestBody CardPaymentRequestDto request){
-    LogUtil.info("카드 조회 요청", request);
+    LogUtil.info("카드 결제", request);
     CardPaymentResponseDto response = cardService.makeCardPayment(request);
     return new ResponseEntity(new RecWrapper<>(response), HttpStatus.CREATED);
   }

@@ -14,7 +14,7 @@ public class TransactionRequestDto {
   private Header header;
   
   //계좌 Id
-  private Long accountId;
+  private String accountNo;
 
   //통화 Code
   private CurrencyType currencyCode;

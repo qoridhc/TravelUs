@@ -97,7 +97,7 @@ public class TransactionController {
         @RequestBody MoneyBoxTransferRequestDto requestDto
     ) {
 
-        ResponseEntity<List<TransferHistoryResponseDto>> response = transactionService.postMoneyBoxTransfer(requestDto);
+        ResponseEntity<List<TransferHistoryResponseDto>> response = transactionService.postMoneyBoxTransfer(requestDto,false,-1);
         return response;
     }
 
