@@ -12,10 +12,11 @@ const CheckPasswordOfCreateMeetingAccount = () => {
   useEffect(() => {
     if (password.length === 4) {
       if (location.state.originalPassword === password) {
-        navigate("/idverificationofcreatemeetingaccount");
+        console.log(location.state.type);
+        navigate(`/idverificationofcreatemeetingaccount/${location.state.type}`);
       } else {
         alert("비밀번호가 일치하지 않습니다.");
-        navigate("/passwordofcreatemeetingaccount");
+        navigate(`/passwordofcreatemeetingaccount/${location.state.type}`);
       }
     }
   }, [password]);
