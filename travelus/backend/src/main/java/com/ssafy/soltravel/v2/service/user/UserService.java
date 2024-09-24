@@ -141,6 +141,8 @@ public class UserService implements UserDetailsService {
     // 저장할 수 있게 변환 후 저장
     User user = UserMapper.convertCreateDtoToUserWithUserKey(createDto, profileImageUrl, userKey);
     userRepository.save(user);
+//    notificationService.subscribe(userId);
+
     return user.getUserId();
   }
 

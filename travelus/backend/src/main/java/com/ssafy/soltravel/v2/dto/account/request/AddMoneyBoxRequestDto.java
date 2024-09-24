@@ -13,9 +13,6 @@ public class AddMoneyBoxRequestDto {
     @Schema(description = "조회할 계좌 번호", example = "002-4262233-209")
     private String accountNo;
 
-    @Schema(description = "계좌 비밀번호", example = "password123!")
-    private String accountPassword;
-
     @Schema(description = "통화 코드 ( KRW / USD / JPY / EUR / CNY )", example = "USD")
     private CurrencyType currencyCode;
 

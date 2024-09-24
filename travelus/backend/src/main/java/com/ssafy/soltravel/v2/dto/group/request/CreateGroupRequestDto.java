@@ -6,11 +6,8 @@ import lombok.Data;
 @Data
 public class CreateGroupRequestDto {
 
-    @Schema(description = "모임의 계좌 번호", example = "002-4561621-209")
-    private String groupAccountNo;
-
-    @Schema(description = "모임 계좌의 비밀번호", example = "password123!")
-    private String accountPassword;
+    @Schema(description = "새로 만들 모임 계좌의 비밀번호", example = "1234")
+    private String groupAccountPassword;
 
     @Schema(description = "모임의 이름", example = "TravalUs 여행 모임")
     private String groupName;
@@ -23,4 +20,11 @@ public class CreateGroupRequestDto {
 
     @Schema(description = "여행 종료 날짜", example = "2024-01-07")
     private String travelEndDate;
+
+    @Schema(description = "정산 받은 개인 계좌번호", example = "002-4561621-209")
+    private String personalAccountNo;
+
+
 }
+
+
