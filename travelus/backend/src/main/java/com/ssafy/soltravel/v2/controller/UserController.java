@@ -1,7 +1,6 @@
 package com.ssafy.soltravel.v2.controller;
 
 import com.ssafy.soltravel.v2.dto.ResponseDto;
-import com.ssafy.soltravel.v2.dto.user.EmailValidationDto;
 import com.ssafy.soltravel.v2.dto.user.UserCreateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserDupCheckRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchRequestDto;
@@ -60,7 +59,7 @@ public class UserController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @PostMapping(value="/join", consumes = "multipart/form-data")
+    @PostMapping(value = "/join", consumes = "multipart/form-data")
     public ResponseEntity<?> createUser(@ModelAttribute UserCreateRequestDto joinDto)
         throws IOException {
 
@@ -75,7 +74,7 @@ public class UserController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @PostMapping(value="/join/test", consumes = "multipart/form-data")
+    @PostMapping(value = "/join/test", consumes = "multipart/form-data")
     public ResponseEntity<ResponseDto> createUserWithoutAPI(@ModelAttribute UserCreateRequestDto joinDto)
         throws IOException {
 
@@ -112,16 +111,16 @@ public class UserController {
         List<UserSearchResponseDto> response = userService.searchAllUser(searchDto);
         return ResponseEntity.ok().body(response);
     }
-
-    @Operation(summary = "모임원 이메일 유효성 검사", description = "이메일을 통해 회원인지 확인합니다.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = EmailValidationDto.class))),
-        @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
-        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
-    })
-    @GetMapping("/validate-email/{email}")
-    public ResponseEntity<EmailValidationDto> validateEmail(@PathVariable String email) {
-
-        return ResponseEntity.ok().body(accountService.getPersonalAccountByEmail(email));
-    }
+//
+//    @Operation(summary = "모임원 이메일 유효성 검사", description = "이메일을 통해 회원인지 확인합니다.")
+//    @ApiResponses(value = {
+//        @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = EmailValidationDto.class))),
+//        @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
+//        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+//    })
+//    @GetMapping("/validate-email/{email}")
+//    public ResponseEntity<EmailValidationDto> validateEmail(@PathVariable String email) {
+//
+//        return ResponseEntity.ok().body(accountService.getPersonalAccountByEmail(email));
+//    }
 }
