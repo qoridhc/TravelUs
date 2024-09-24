@@ -5,7 +5,7 @@ import com.ssafy.soltravel.v2.exception.auth.InvalidAuthCodeException;
 import com.ssafy.soltravel.v2.exception.auth.InvalidCredentialsException;
 import com.ssafy.soltravel.v2.exception.LackOfBalanceException;
 import com.ssafy.soltravel.v2.exception.RefundAccountNotFoundException;
-import com.ssafy.soltravel.v2.exception.UserNotFoundException;
+import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.exception.account.InvalidPersonalAccountException;
 import com.ssafy.soltravel.v2.exception.group.InvalidGroupIdException;
 import org.springframework.http.HttpStatus;
