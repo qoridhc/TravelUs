@@ -47,14 +47,19 @@ public class GroupController {
     }
 
     // 모임 조회
+    @Operation(summary = "모임 정보 조회", description = "특정 모임의 정보를 조회하는 API.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "모임 정보 조회 성공", content = @Content(schema = @Schema(implementation = GroupDto.class))),
+        @ApiResponse(responseCode = "404", description = "모임을 찾을 수 없음", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
     @GetMapping("/{groupId}")
     public ResponseEntity<GroupDto> getGroupInfo(
         @PathVariable Long groupId
     ) {
-
         GroupDto accountDto = groupService.getGroupInfo(groupId);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(accountDto);
+        return ResponseEntity.status(HttpStatus.OK).body(accountDto);
     }
 
     // === 참여자 관련 메서드 ===
