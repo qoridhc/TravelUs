@@ -56,6 +56,7 @@ import SelectSettlementAmount from "./pages/settlement/balanceSettlement/SelectS
 import ForeignCurrencyExchange from "./pages/settlement/balanceSettlement/ForeignCurrencyExchange";
 import BalanceSettlementCompleted from "./pages/settlement/balanceSettlement/BalanceSettlementCompleted";
 import SettlementInfo from "./pages/settlement/balanceSettlement/SettlementInfo";
+import ExpenditureTransactionDetail from "./pages/settlement/expenditureSettlement/ExpenditureTransactionDetail";
 
 function App() {
   return (
@@ -152,6 +153,11 @@ function App() {
           <Route path="/settlement" element={<SettlementInfo />}></Route>
           <Route path="/editmembers" element={<EditMembers />}></Route>
           <Route path="/balancesettlementcompleted" element={<BalanceSettlementCompleted />}></Route>
+
+          {/* 지출정산 */}
+          <Route
+            path="/settlement/expenditure/transaction/detail/:id"
+            element={<ExpenditureTransactionDetail />}></Route>
 
           {/* ver1 */}
           <Route path="/accountcreate" element={<AccountCreate />} />
