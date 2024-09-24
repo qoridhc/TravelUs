@@ -21,7 +21,7 @@ const ExchangeRateInputMui = () => {
           />
           <BsDot />
           <input
-            className="w-16 text-left border-b-2 border-[#D7D7D7] placeholder:text-black outline-none"
+            className="w-16 text-right border-b-2 border-[#D7D7D7] placeholder:text-black outline-none"
             type="number"
             placeholder="0"
           />
