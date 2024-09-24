@@ -94,7 +94,6 @@ public class AccountService {
 
     body.put("Header", header);
     body.put("accountNo", requestDto.getAccountNo());
-    body.put("accountPassword", requestDto.getAccountPassword());
 
     // 특정 계좌 조회
     ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
@@ -108,33 +107,32 @@ public class AccountService {
     return accountDto;
   }
 
-  public ResponseEntity<List<AccountDto>> getAllByUserId(Long userId, boolean isForeign) {
-//
-//    User user = userRepository.findByUserId(userId)
-//        .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
-//
-//    List<AccountDto> accountDtos = null;
-//
-//    if (isForeign) {
-//      List<ForeignAccount> foreignAccounts = foreignAccountRepository.findAllByUserId(userId);
-//
-//      accountDtos = foreignAccounts.stream().map(accountMapper::toCreateAccountDto)
-//          .collect(Collectors.toList());
-//
-//    } else {
-//      List<GeneralAccount> generalAccounts = generalAccountRepository.findAllByUser_userId(userId);
-//
-//      accountDtos = generalAccounts.stream().map(accountMapper::toCreateAccountDto)
-//          .collect(Collectors.toList());
-//    }
-//
-//    return ResponseEntity.status(HttpStatus.OK).body(accountDtos);
+  public List<AccountDto> getAllByUserId() {
 
-    return null;
+    Long userId = SecurityUtil.getCurrentUserId();
+
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new UserNotFoundException(userId));
+
+    String API_URL = BASE_URL + "inquireAccountList";
+
+    BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
+
+    Map<String, Object> body = new HashMap<>();
+
+    body.put("Header", header);
+
+    // 특정 유저 전체 계좌 조회
+    ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+
+    // REC 부분을 Object 타입으로 받기
+    List<Map<String, Object>> recObjectList = (List<Map<String, Object>>) response.getBody().get("REC");
+
+    List<AccountDto> accountDtoList = objectMapper.convertValue(recObjectList, new TypeReference<List<AccountDto>>() {});
+
+    return accountDtoList;
 
   }
-
-
 
   // 계좌 신규 머니박스 추가
   public List<MoneyBoxDto> addMoneyBox(AddMoneyBoxRequestDto requestDto) {
@@ -151,7 +149,6 @@ public class AccountService {
 
     body.put("Header", header);
     body.put("accountNo", requestDto.getAccountNo());
-    body.put("accountPassword", requestDto.getAccountPassword());
     body.put("currencyCode", requestDto.getCurrencyCode());
 
     // 머니박스 추가

@@ -51,10 +51,7 @@ public class GroupService {
         User user = userRepository.findByUserId(userId)
             .orElseThrow(() -> new UserNotFoundException(userId));
 
-        InquireAccountRequestDto inquireAccountRequestDto = new InquireAccountRequestDto(
-            requestDto.getGroupAccountNo(),
-            requestDto.getAccountPassword()
-        );
+        InquireAccountRequestDto inquireAccountRequestDto = new InquireAccountRequestDto(requestDto.getGroupAccountNo());
 
         AccountDto accountDto = accountService.getByAccountNo(inquireAccountRequestDto);
 
@@ -80,10 +77,7 @@ public class GroupService {
         TravelGroup group = groupRepository.findById(requestDto.getGroupId())
             .orElseThrow(() -> new InvalidGroupIdException());
 
-        InquireAccountRequestDto inquireAccountRequestDto = new InquireAccountRequestDto(
-            requestDto.getPersonalAccountNo(),
-            requestDto.getAccountPassword()
-        );
+        InquireAccountRequestDto inquireAccountRequestDto = new InquireAccountRequestDto(requestDto.getPersonalAccountNo());
 
         AccountDto accountDto = accountService.getByAccountNo(inquireAccountRequestDto);
 
