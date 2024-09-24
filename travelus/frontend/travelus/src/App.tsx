@@ -25,7 +25,7 @@ import AccountCreate from "./pages/ver1/AccountCreateOld";
 import ExchangeRate from "./pages/exchange/ExchangeRate";
 import Exchange from "./pages/exchange/Exchange";
 import SelectAccount from "./pages/exchange/SelectAccount";
-import Settlement from "./pages/settle/Settlement";
+import Settlement from "./pages/ver1/Settlement";
 import Detail from "./pages/viewaccount/Detail";
 import GroupAccountPage from "./pages/viewaccount/ViewAccount";
 import AccountCreateComplete from "./pages/ver1/AccountCreateComplete";
@@ -48,6 +48,7 @@ import CheckPasswordOfCreateMeetingAccount from "./pages/MeetingAccount/CheckPas
 import IDVerificationOfCreateMeetingAccount from "./pages/MeetingAccount/IDVerificationOfCreateMeetingAccount";
 import CompletedOfCreateMeetingAccount from "./pages/MeetingAccount/CompletedOfCreateMeetingAccount";
 import UserInfoOfCreateAccount from "./pages/account/UserInfoOfCreateAccount";
+import CurrencyInfoOfCreateTravelBox from "./pages/travelBox/CurrencyInfoOfCreateTravelBox";
 
 function App() {
   return (
@@ -102,7 +103,10 @@ function App() {
           <Route path="/meetinginfoofcreatemeetingaccount" element={<MeetingInfoOfCreateMeetingAccount />} />
           <Route path="/passwordofcreatemeetingaccount/:type" element={<PasswordOfCreateMeetingAccount />} />
           <Route path="/checkpasswordofcreatemeetingaccount" element={<CheckPasswordOfCreateMeetingAccount />} />
-          <Route path="/idverificationofcreatemeetingaccount/:type" element={<IDVerificationOfCreateMeetingAccount />} />
+          <Route
+            path="/idverificationofcreatemeetingaccount/:type"
+            element={<IDVerificationOfCreateMeetingAccount />}
+          />
           <Route path="/completedofcreatemeetingaccount/:type" element={<CompletedOfCreateMeetingAccount />} />
 
           {/* 모임통장 상세 */}
@@ -111,6 +115,9 @@ function App() {
           <Route path="/joinedmeetingaccount/:id" element={<JoinedMeetingAccountDetail />} />
           <Route path="/account" element={<ViewAccount />} />
           <Route path="/accounthistory/:accountNo" element={<AccountHistory />} />
+
+          {/* 트래블박스 생성 */}
+          <Route path="/currencyinfoofcreatetravelbox" element={<CurrencyInfoOfCreateTravelBox />} />
 
           {/* 이체 */}
           <Route path="/transfer/selectbank" element={<TransferSelectBank />} />
@@ -130,7 +137,6 @@ function App() {
           <Route path="/settlement" element={<SettlementInfo />}></Route>
           <Route path="/editmembers" element={<EditMembers />}></Route>
           <Route path="/balancesettlementcompleted" element={<BalanceSettlementCompleted />}></Route>
-          {/* <Route path="/settlement" element={<Settlement />}></Route> */}
 
           {/* ver1 */}
           <Route path="/accountcreate" element={<AccountCreate />} />
@@ -139,6 +145,7 @@ function App() {
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
           <Route path="/foreignmeetingaccountcreate" element={<ForeignMeetingAccountCreate />} />
           <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
+          {/* <Route path="/settlement" element={<Settlement />}></Route> */}
         </Routes>
       </BrowserRouter>
     </div>
