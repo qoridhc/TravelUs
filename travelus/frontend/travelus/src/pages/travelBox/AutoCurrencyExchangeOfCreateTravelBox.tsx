@@ -1,16 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router";
-import CurrencyInputMui from "../../components/travelBox/CurrencyInputMui";
+import ExchangeRateInputMui from "../../components/travelBox/ExchangeRateInputMui";
+import ExchangeAmmountInput from "../../components/travelBox/ExchangeAmmountInput";
 
-const CurrencyInfoOfCreateTravelBox = () => {
+const AutoCurrencyExchangeOfCreateTravelBox = () => {
   const navigate = useNavigate();
+
   const handleNext = () => {
     navigate("/autocurrencyexchangeofcreatetravelbox");
   };
 
   return (
-    <div className="h-full p-5 pb-8 flex flex-col justify-between">
+    <div className="h-full p-5 pb-8 flex flex-col justify-between relative">
       <div className="grid gap-14">
         <div className="flex items-center">
           <IoIosArrowBack className="text-2xl" />
@@ -24,12 +26,13 @@ const CurrencyInfoOfCreateTravelBox = () => {
             </div>
 
             <div className="text-2xl font-semibold">
-              <p>통화를</p>
-              <p>선택해주세요</p>
+              <p>희망 환율이 되면</p>
+              <p>자동으로 환전할게요</p>
             </div>
           </div>
 
-          <CurrencyInputMui />
+          <ExchangeRateInputMui />
+          <ExchangeAmmountInput />
         </div>
       </div>
 
@@ -42,4 +45,4 @@ const CurrencyInfoOfCreateTravelBox = () => {
   );
 };
 
-export default CurrencyInfoOfCreateTravelBox;
+export default AutoCurrencyExchangeOfCreateTravelBox;

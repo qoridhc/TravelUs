@@ -49,6 +49,7 @@ import IDVerificationOfCreateMeetingAccount from "./pages/MeetingAccount/IDVerif
 import CompletedOfCreateMeetingAccount from "./pages/MeetingAccount/CompletedOfCreateMeetingAccount";
 import UserInfoOfCreateAccount from "./pages/account/UserInfoOfCreateAccount";
 import CurrencyInfoOfCreateTravelBox from "./pages/travelBox/CurrencyInfoOfCreateTravelBox";
+import AutoCurrencyExchangeOfCreateTravelBox from "./pages/travelBox/AutoCurrencyExchangeOfCreateTravelBox";
 
 function App() {
   return (
@@ -118,6 +119,7 @@ function App() {
 
           {/* 트래블박스 생성 */}
           <Route path="/currencyinfoofcreatetravelbox" element={<CurrencyInfoOfCreateTravelBox />} />
+          <Route path="/autocurrencyexchangeofcreatetravelbox" element={<AutoCurrencyExchangeOfCreateTravelBox />} />
 
           {/* 이체 */}
           <Route path="/transfer/selectbank" element={<TransferSelectBank />} />
