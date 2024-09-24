@@ -3,6 +3,7 @@ package com.ssafy.soltravel.v2.controller;
 import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.user.EmailValidationDto;
 import com.ssafy.soltravel.v2.dto.user.UserCreateRequestDto;
+import com.ssafy.soltravel.v2.dto.user.UserDupCheckRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchResponseDto;
 import com.ssafy.soltravel.v2.service.account.AccountService;
@@ -45,11 +46,11 @@ public class UserController {
     })
     @PostMapping(value = "/dup-check")
     public ResponseEntity<?> createUser(
-        @Parameter(description = "중복 검사를 수행할 사용자 아이디", required = true, example = "user123")
-        @RequestBody String id) throws IOException {
+        @Schema(description = "중복 검사를 수행할 사용자 아이디", required = true, example = "중복검사 할 아이디, 쌍따옴표는 빼주세요")
+        @RequestBody UserDupCheckRequestDto request ) throws IOException {
 
-        LogUtil.info("requested", id);
-        return ResponseEntity.status(HttpStatus.OK).body(userService.checkDupUser(id));
+        LogUtil.info("requested", request.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(userService.checkDupUser(request.getId()));
     }
 
 
