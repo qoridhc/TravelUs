@@ -163,7 +163,6 @@ public class TransactionService {
    */
   public List<TransactionResponseDto> processAutoExchange(TransferMBRequestDto requestDto) {
 
-
     requestDto.setAccountPassword(getPassword(requestDto.getAccountNo()));
     return processMoneyBoxTransfer(requestDto);
   }
@@ -175,23 +174,28 @@ public class TransactionService {
   public List<TransactionResponseDto> processMoneyBoxTransfer(TransferMBRequestDto requestDto) {
 
     double beforeAmount = requestDto.getTransactionBalance();//해당 머니박스의 통화단위임
+    String summary = "";
     ExchangeAmountRequestDto exchangeAmountRequestDto = switch (requestDto.getSourceCurrencyCode()) {
-      case USD -> exchangeService.calculateAmountFromForeignCurrencyToKRW(
-          requestDto.getSourceCurrencyCode(),
-          beforeAmount);// 외화 -> 원화
+      case USD -> {
+        summary = "재환전";
+        yield exchangeService.calculateAmountFromForeignCurrencyToKRW(
+            requestDto.getSourceCurrencyCode(),
+            beforeAmount); // 외화 -> 원화
+      }
       default -> {
+        summary = "환전";
         // 원화 -> 외화일 때만 10원 단위로 조정
         if (beforeAmount % 10 != 0) {
           beforeAmount -= (beforeAmount % 10);
         }
         yield exchangeService.calculateAmountFromKRWToForeignCurrency(
-            requestDto.getTargetCurrencyCode(), beforeAmount);// 원화 -> 외화
+            requestDto.getTargetCurrencyCode(), beforeAmount); // 원화 -> 외화
       }
     };
 
     double calculatedAmount = exchangeAmountRequestDto.getAmount();
     double exchangeRate = exchangeAmountRequestDto.getExchangeRate();
-    String summary = "적용 환율: " + exchangeRate;
+    summary += (", 적용 환율: " + exchangeRate);
 
     // 출금 머니박스
     MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountNo(),
