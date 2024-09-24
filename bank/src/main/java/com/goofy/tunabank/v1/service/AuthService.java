@@ -31,7 +31,7 @@ public class AuthService {
   public ApiKeyIssueReponseDto issueApiKey(ApiKeyIssueRequestDto request) {
 
     // 1. 이메일 등록 유무 검증
-    User user = userRepository.findByEmail(request.getManagerId()).orElseThrow(
+    User user = userRepository.findByCredentialId(request.getManagerId()).orElseThrow(
         () -> new UserNotFoundException(request)
     );
 

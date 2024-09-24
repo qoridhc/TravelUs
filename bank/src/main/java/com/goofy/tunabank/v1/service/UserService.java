@@ -10,7 +10,7 @@ import com.goofy.tunabank.v1.dto.user.UserJoinRequestDto;
 import com.goofy.tunabank.v1.dto.user.UserJoinResponseDto;
 import com.goofy.tunabank.v1.dto.user.UserSearchRequestDto;
 import com.goofy.tunabank.v1.dto.user.UserSearchResponseDto;
-import com.goofy.tunabank.v1.exception.user.EmailDuplicatedException;
+import com.goofy.tunabank.v1.exception.user.IdDuplicatedException;
 import com.goofy.tunabank.v1.exception.user.UserExitException;
 import com.goofy.tunabank.v1.exception.user.UserKeyNotFoundException;
 import com.goofy.tunabank.v1.exception.user.UserNotFoundException;
@@ -18,6 +18,7 @@ import com.goofy.tunabank.v1.mapper.UserMapper;
 import com.goofy.tunabank.v1.provider.KeyProvider;
 import com.goofy.tunabank.v1.repository.KeyRepository;
 import com.goofy.tunabank.v1.repository.UserRepository;
+import com.goofy.tunabank.v1.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,19 +44,21 @@ public class UserService {
   * */
   public UserJoinResponseDto createUser(UserJoinRequestDto request) {
 
-    // 1. 이메일 중복 검사
-    String email = request.getUserId();
-    User user = userRepository.findByEmail(email).orElse(null);
+    LogUtil.info(request.toString());
+
+    // 1. 아이디 중복 검사
+    String id = request.getUserId();
+    User user = userRepository.findByCredentialId(id).orElse(null);
 
     if (user != null) {
-      throw new EmailDuplicatedException(email);
+      throw new IdDuplicatedException(id);
     }
 
     // 2. UserKey 생성
     String userKey = keyProvider.generateUserKey();
 
     // 3. 유저 & 키 엔티티 생성
-    User createdUser = User.createUser(email, Role.USER);
+    User createdUser = User.createUser(id, Role.USER);
     Key createdKey = Key.createKey(createdUser, KeyType.USER, userKey);
 
     // 4. 저장
@@ -72,7 +75,7 @@ public class UserService {
   public UserSearchResponseDto searchUser(UserSearchRequestDto request) {
 
     // 유저 조회
-    User user = userRepository.findByEmail(request.getUserId()).orElseThrow(
+    User user = userRepository.findByCredentialId(request.getUserId()).orElseThrow(
         () -> new UserNotFoundException(request.getUserId())
     );
 
@@ -129,7 +132,7 @@ public class UserService {
 
     // 유저 탈퇴 여부 확인
     if(user.getIsExit()){
-      throw new UserExitException(user.getEmail());
+      throw new UserExitException(user.getCredentialId());
     }
 
     return user;
