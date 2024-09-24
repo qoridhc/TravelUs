@@ -124,7 +124,7 @@ public class UserController {
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
     @GetMapping("/update/profile")
-    public ResponseEntity<?> updateUserProfile(@ModelAttribute ProfileUpdateRequestDto request) {
+    public ResponseEntity<?> updateUserProfile(@ModelAttribute ProfileUpdateRequestDto request) throws IOException {
 
         LogUtil.info("requested", request.toString());
         userService.updateUserProfile(request);

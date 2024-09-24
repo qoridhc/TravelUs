@@ -132,7 +132,7 @@ public class UserService implements UserDetailsService {
     createDto.setPassword(PasswordEncoder.encrypt(createDto.getId(), createDto.getPassword()));
 
     // 프로필 이미지 저장
-    MultipartFile profile = createDto.getFile();
+    MultipartFile profile = null; //createDto.getFile();
     String profileImageUrl = apiKeys.get("DEFAULT_PROFILE_URL");
     if(profile != null && !profile.isEmpty()) {
       profileImageUrl = fileService.saveProfileImage(profile);
@@ -199,7 +199,7 @@ public class UserService implements UserDetailsService {
     createDto.setPassword(PasswordEncoder.encrypt(createDto.getId(), createDto.getPassword()));
 
     // 프로필 이미지 저장
-    MultipartFile profile = createDto.getFile();
+    MultipartFile profile = null; //createDto.getFile();
     String profileImageUrl = null;
     if(profile != null && !profile.isEmpty()) {
       profileImageUrl = fileService.saveProfileImage(profile);
@@ -227,9 +227,20 @@ public class UserService implements UserDetailsService {
   }
 
 
-  public void updateUserProfile(ProfileUpdateRequestDto request) {
+  public void updateUserProfile(ProfileUpdateRequestDto request) throws IOException {
 
+   Long userId = SecurityUtil.getCurrentUserId();
+   User user = userRepository.findByUserId(userId).orElseThrow(
+       () -> new UserNotFoundException(userId)
+   );
 
+    // 프로필 이미지 저장
+    MultipartFile profile = request.getFile();
+    String profileImageUrl = apiKeys.get("DEFAULT_PROFILE_URL");
+    if(profile != null && !profile.isEmpty()) {
+      profileImageUrl = fileService.saveProfileImage(profile);
+    }
 
+    user.updateProfile(profileImageUrl);
   }
 }
