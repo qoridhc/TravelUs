@@ -7,8 +7,8 @@ import { AccountInfo } from "../../types/account";
 
 interface Props {
   index: number;
-  account: AccountInfo;
-  foreignAccount: AccountInfo;
+  account: any;
+  foreignAccount: any;
 }
 
 const MeetingAccount = ({ index, account, foreignAccount }: Props) => {
