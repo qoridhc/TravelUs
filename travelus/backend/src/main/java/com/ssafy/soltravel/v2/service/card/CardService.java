@@ -163,10 +163,8 @@ public class CardService {
   */
   private Double getBalance(String accountNo, String currencyCode) {
 
-    //TODO: 통장 비밀번호 빼기
     InquireAccountRequestDto inquireDto = InquireAccountRequestDto.builder()
         .accountNo(accountNo)
-        .accountPassword("1234")
         .build();
 
     AccountDto account = accountService.getByAccountNo(inquireDto);
