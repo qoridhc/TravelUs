@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import { accountApi } from "../../api/account";
+import { accountApi } from "../../../api/account";
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { RootState } from "../../../redux/store";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -14,8 +14,8 @@ import { PiAirplaneTiltFill } from "react-icons/pi";
 import { FaUserFriends, FaBriefcase, FaHeart } from "react-icons/fa";
 
 import { RiHome5Line } from "react-icons/ri";
-import AccountDetail from "../../components/account/AccountDetail";
-import { AccountInfo } from "../../types/account";
+import AccountDetail from "../../../components/account/AccountDetail";
+import { AccountInfo } from "../../../types/account";
 
 const JoinedMeetingAccountDetail = () => {
   const navigate = useNavigate();
@@ -29,65 +29,65 @@ const JoinedMeetingAccountDetail = () => {
   const [memberList, setMemberList] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-const getAccountTypeFromIconName = (iconName: string) => {
-  switch (iconName) {
-    case "airPlane":
-      return "여행";
-    case "friend":
-      return "친구";
-    case "family":
-      return "가족";
-    case "lover":
-      return "연인";
-    case "job":
-      return "직장";
-    default:
-      return "여행";
-  }
-};
-
-const getIcon = (iconName: string) => {
-  // 아이콘별 배경색을 정의하는 객체
-  const iconBackgrounds: Record<string, string> = {
-    airPlane: "bg-[#638ee4]",
-    friend: "bg-[#F5E198]",
-    family: "bg-[#FFB555]",
-    lover: "bg-[#EB8CA2]",
-    job: "bg-[#95DBC1]",
-    default: "bg-[#638ee4]", // 기본 배경색
+  const getAccountTypeFromIconName = (iconName: string) => {
+    switch (iconName) {
+      case "airPlane":
+        return "여행";
+      case "friend":
+        return "친구";
+      case "family":
+        return "가족";
+      case "lover":
+        return "연인";
+      case "job":
+        return "직장";
+      default:
+        return "여행";
+    }
   };
 
-  // 해당 아이콘의 배경색을 가져오고, 없으면 기본값 사용
-  const backgroundClass = iconBackgrounds[iconName] || iconBackgrounds.default;
+  const getIcon = (iconName: string) => {
+    // 아이콘별 배경색을 정의하는 객체
+    const iconBackgrounds: Record<string, string> = {
+      airPlane: "bg-[#638ee4]",
+      friend: "bg-[#F5E198]",
+      family: "bg-[#FFB555]",
+      lover: "bg-[#EB8CA2]",
+      job: "bg-[#95DBC1]",
+      default: "bg-[#638ee4]", // 기본 배경색
+    };
 
-  const containerClasses = `w-6 h-6 ${backgroundClass} rounded-full flex justify-center items-center text-white`;
-  const iconClasses = "w-4 h-4"; // 아이콘 자체 크기를 줄이기 위한 클래스
+    // 해당 아이콘의 배경색을 가져오고, 없으면 기본값 사용
+    const backgroundClass = iconBackgrounds[iconName] || iconBackgrounds.default;
 
-  let IconComponent;
+    const containerClasses = `w-6 h-6 ${backgroundClass} rounded-full flex justify-center items-center text-white`;
+    const iconClasses = "w-4 h-4"; // 아이콘 자체 크기를 줄이기 위한 클래스
 
-  switch (iconName) {
-    case "airPlane":
-      IconComponent = <PiAirplaneTiltFill className={iconClasses} />;
-      break;
-    case "friend":
-      IconComponent = <FaUserFriends className={iconClasses} />;
-      break;
-    case "family":
-      IconComponent = <IoHome className={iconClasses} />;
-      break;
-    case "lover":
-      IconComponent = <FaHeart className={iconClasses} />;
-      break;
-    case "job":
-      IconComponent = <FaBriefcase className={iconClasses} />;
-      break;
-    default:
-      IconComponent = <PiAirplaneTiltFill className={iconClasses} />;
-      break;
-  }
+    let IconComponent;
 
-  return <span className={containerClasses}>{IconComponent}</span>;
-};
+    switch (iconName) {
+      case "airPlane":
+        IconComponent = <PiAirplaneTiltFill className={iconClasses} />;
+        break;
+      case "friend":
+        IconComponent = <FaUserFriends className={iconClasses} />;
+        break;
+      case "family":
+        IconComponent = <IoHome className={iconClasses} />;
+        break;
+      case "lover":
+        IconComponent = <FaHeart className={iconClasses} />;
+        break;
+      case "job":
+        IconComponent = <FaBriefcase className={iconClasses} />;
+        break;
+      default:
+        IconComponent = <PiAirplaneTiltFill className={iconClasses} />;
+        break;
+    }
+
+    return <span className={containerClasses}>{IconComponent}</span>;
+  };
 
   useEffect(() => {
     // 특정 외화모임통장 조회
@@ -109,7 +109,6 @@ const getIcon = (iconName: string) => {
     // accountList에서 numberId와 일치하는 계좌 찾기
     const account = joinedAccountList.find((acc) => acc.id === numberId);
     setSelectedAccount(account || null);
-
   }, [joinedAccountList, numberId]);
 
   useEffect(() => {
@@ -135,7 +134,6 @@ const getIcon = (iconName: string) => {
   if (selectedAccount === null) {
     return <p>계좌 정보를 불러오는 중입니다...</p>;
   }
-
 
   return (
     <>
