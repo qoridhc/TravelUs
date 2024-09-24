@@ -36,12 +36,17 @@ import MeetingAccountCreateComplete from "./pages/account/MeetingAccountCreateCo
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
 import Transaction from "./pages/transaction/Transaction";
 import PrivateRoute from "./pages/user/PrivateRoute";
-import { Sign } from "crypto";
 import SelectSettlementAmount from "./pages/settlement/SelectSettlementAmount";
 import ForeignCurrencyExchange from "./pages/settlement/ForeignCurrencyExchange";
 import SettlementInfo from "./pages/settlement/SettlementInfo";
 import EditMembers from "./pages/settlement/EditMembers";
 import BalanceSettlementCompleted from "./pages/settlement/BalanceSettlementCompleted";
+import UserInfoOfCreateGeneralMeeting from "./pages/MeetingAccount/UserInfoOfCreateMeetingAccount";
+import MeetingInfoOfCreateMeetingAccount from "./pages/MeetingAccount/MeetingInfoOfCreateMeetingAccount";
+import PasswordOfCreateMeetingAccount from "./pages/MeetingAccount/PasswordOfCreateMeetingAccount";
+import CheckPasswordOfCreateMeetingAccount from "./pages/MeetingAccount/CheckPasswordOfCreateMeetingAccount";
+import IDVerificationOfCreateMeetingAccount from "./pages/MeetingAccount/IDVerificationOfCreateMeetingAccount";
+import CompletedOfCreateMeetingAccount from "./pages/MeetingAccount/CompletedOfCreateMeetingAccount";
 
 function App() {
   return (
@@ -88,12 +93,21 @@ function App() {
           <Route path="/userupdate/address" element={<UserAddressUpdate />} />
           <Route path="/userupdate/password" element={<UserPasswordUpdate />} />
 
-          {/* 모임통장 생성 */}
+          {/* 입출금통장 생성 */}
           <Route path="/accountcreate" element={<AccountCreate />} />
+          <Route path="/accountcreatecomplete" element={<AccountCreateComplete />} />
+
+          {/* 모임통장 생성 */}
+          <Route path="/userinfoofcreateeneralmeeting" element={<UserInfoOfCreateGeneralMeeting />} />
+          <Route path="/meetinginfoofcreatemeetingaccount" element={<MeetingInfoOfCreateMeetingAccount />} />
+          <Route path="/passwordofcreatemeetingaccount" element={<PasswordOfCreateMeetingAccount />} />
+          <Route path="/checkpasswordofcreatemeetingaccount" element={<CheckPasswordOfCreateMeetingAccount />} />
+          <Route path="/idverificationofcreatemeetingaccount" element={<IDVerificationOfCreateMeetingAccount />} />
+          <Route path="/completedofcreatemeetingaccount" element={<CompletedOfCreateMeetingAccount />} />
+
           <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
           <Route path="/foreignmeetingaccountcreate" element={<ForeignMeetingAccountCreate />} />
-          <Route path="/accountcreatecomplete" element={<AccountCreateComplete />} />
           <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
 
           {/* 모임통장 상세 */}
@@ -108,7 +122,7 @@ function App() {
           <Route path="/transfer/setmoney" element={<TransferSetMoney />} />
           <Route path="/transfer/confirm" element={<TransferConfirm />} />
           <Route path="/transfer/success" element={<TransferSuccess />} />
-          
+
           {/* 환전 */}
           <Route path="/exchange" element={<Exchange />}></Route>
           <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
