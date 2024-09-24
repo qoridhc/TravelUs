@@ -3,6 +3,7 @@ package com.goofy.tunabank.v1.service;
 import com.goofy.tunabank.v1.domain.Account;
 import com.goofy.tunabank.v1.domain.Bank;
 import com.goofy.tunabank.v1.domain.Currency;
+import com.goofy.tunabank.v1.domain.Enum.AccountType;
 import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
 import com.goofy.tunabank.v1.domain.MoneyBox;
 import com.goofy.tunabank.v1.domain.User;
@@ -16,6 +17,7 @@ import com.goofy.tunabank.v1.exception.account.DuplicateCurrencyException;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountPasswordException;
 import com.goofy.tunabank.v1.exception.account.InvalidBankIdException;
+import com.goofy.tunabank.v1.exception.account.InvalidGroupAccountIdException;
 import com.goofy.tunabank.v1.exception.account.RefundAccountRequiredException;
 import com.goofy.tunabank.v1.mapper.AccountMapper;
 import com.goofy.tunabank.v1.mapper.MoneyBoxMapper;
@@ -87,6 +89,10 @@ public class AccountService {
 
         if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
             throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
+        }
+
+        if (!account.getAccountType().equals(AccountType.G)) {
+            throw new InvalidGroupAccountIdException();
         }
 
         boolean isExistCurrencyCode = account.getMoneyBoxes().stream()
