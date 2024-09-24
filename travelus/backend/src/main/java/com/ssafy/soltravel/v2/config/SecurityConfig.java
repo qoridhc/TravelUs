@@ -43,9 +43,11 @@ public class SecurityConfig {
                     new AntPathRequestMatcher("/api/v2/swagger-ui/**"),
                     new AntPathRequestMatcher("/api/v2/v3/api-docs/**"),
                     new AntPathRequestMatcher("/api/v2/notification/subscribe/**"),
-                    new AntPathRequestMatcher("/api/v2/exchange/**")
-                ).permitAll() // 개발용 임시 permitAll처리
-                .anyRequest().permitAll()
+                    new AntPathRequestMatcher("/api/v2/exchange/**"),
+                    new AntPathRequestMatcher("/api/v2/actuator/health")
+                ).permitAll()
+                .anyRequest()
+                .authenticated()
             //.anyRequest().authenticated()
         ).formLogin(form -> form
             .defaultSuccessUrl("/api/v2/auth/test-ok", true)
