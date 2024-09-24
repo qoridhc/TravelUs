@@ -19,6 +19,7 @@ import com.ssafy.soltravel.v2.service.AwsFileService;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.PasswordEncoder;
+import com.ssafy.soltravel.v2.util.SecurityUtil;
 import com.ssafy.soltravel.v2.util.WebClientUtil;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -158,7 +159,8 @@ public class UserService implements UserDetailsService {
   /*
   * 사용자 계정 검색(단건, userId) 
   */
-  public UserSearchResponseDto searchOneUser(Long userId) {
+  public UserSearchResponseDto searchOneUser() {
+    Long userId = SecurityUtil.getCurrentUserId();
     User user = userRepository.findByUserId(userId).orElseThrow(
         () -> new UserNotFoundException(userId)
     );
@@ -217,6 +219,7 @@ public class UserService implements UserDetailsService {
         .birth(user.getBirth())
         .registerAt(user.getRegisterAt())
         .isExit(user.getIsExit())
+        .profileImg(user.getProfile())
         .build();
   }
 

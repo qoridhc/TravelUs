@@ -90,11 +90,11 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @GetMapping("/search/{userId}")
-    public ResponseEntity<?> searchUser(@PathVariable(name = "userId") Long userId) {
+    @GetMapping("/search")
+    public ResponseEntity<?> searchUser() {
 
-        LogUtil.info("requested", userId);
-        UserSearchResponseDto response = userService.searchOneUser(userId);
+        LogUtil.info("requested");
+        UserSearchResponseDto response = userService.searchOneUser();
         return ResponseEntity.ok().body(response);
     }
 
