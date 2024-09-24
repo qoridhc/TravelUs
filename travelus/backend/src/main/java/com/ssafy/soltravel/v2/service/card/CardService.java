@@ -1,6 +1,7 @@
 package com.ssafy.soltravel.v2.service.card;
 
 
+import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.card.CardRequestDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
@@ -170,11 +171,10 @@ public class CardService {
 
     AccountDto account = accountService.getByAccountNo(inquireDto);
     MoneyBoxDto moneyBox = account.getMoneyBoxDtos().stream()
-        .filter(mb -> mb.getCurrencyCode().equals(currencyCode)).findFirst().get();
+        .filter(mb -> mb.getCurrencyCode().equals(CurrencyType.valueOf(currencyCode)))
+        .findFirst()
+        .orElseThrow(() -> new MoneyBoxNotFoundException(currencyCode));
 
-    if(moneyBox == null) {
-      throw new MoneyBoxNotFoundException(currencyCode);
-    }
     return moneyBox.getBalance();
   }
 
