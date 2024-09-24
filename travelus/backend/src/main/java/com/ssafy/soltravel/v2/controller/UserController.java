@@ -9,6 +9,7 @@ import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.service.user.UserService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,6 +37,22 @@ public class UserController {
     private final UserService userService;
     private final AccountService accountService;
 
+    @Operation(summary = "아이디 중복검사", description = "회원가입 전 아이디를 검사합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "중복된 아이디가 없습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @PostMapping(value = "/dup-check")
+    public ResponseEntity<?> createUser(
+        @Parameter(description = "중복 검사를 수행할 사용자 아이디", required = true, example = "user123")
+        @RequestBody String id) throws IOException {
+
+        LogUtil.info("requested", id);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.checkDupUser(id));
+    }
+
+
     @Operation(summary = "회원가입", description = "새로운 사용자를 등록합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "회원 가입 성공", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
@@ -46,10 +64,11 @@ public class UserController {
         throws IOException {
 
         LogUtil.info("requested", joinDto.toString());
-        return ResponseEntity.status(HttpStatus.OK).body(userService.createUser(joinDto));
+        userService.createUser(joinDto);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto());
     }
 
-    @Operation(summary = "회원가입 테스트", description = "새로운 사용자를 등록합니다.(신한 api 사용하지 않는 버전)")
+    @Operation(summary = "회원가입 테스트", description = "새로운 사용자를 등록합니다.(은행 api 사용하지 않는 버전)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "회원 가입 성공", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
         @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),

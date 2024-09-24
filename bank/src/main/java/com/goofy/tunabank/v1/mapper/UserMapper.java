@@ -14,13 +14,13 @@ public interface UserMapper {
 
   UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-  @Mapping(source = "createdUser.email", target = "userId")
+  @Mapping(source = "createdUser.credentialId", target = "userId")
   @Mapping(source = "createdKey.value", target = "userKey")
   @Mapping(source = "createdUser.createdAt", target = "created")
   @Mapping(source = "createdUser.updateAt", target = "modified")
   UserJoinResponseDto toUserJoinResponseDto(User createdUser, Key createdKey);
 
-  @Mapping(source = "user.email", target = "userId")
+  @Mapping(source = "user.credentialId", target = "userId")
   @Mapping(source = "key.value", target = "userKey")
   @Mapping(source = "user.createdAt", target = "created")
   @Mapping(source = "user.updateAt", target = "modified")

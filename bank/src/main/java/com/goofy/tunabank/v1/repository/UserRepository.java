@@ -17,9 +17,9 @@ public class UserRepository {
     return Optional.ofNullable(em.find(User.class, id));
   }
 
-  public Optional<User> findByEmail(String email) {
-    List<User> result = em.createQuery("select u from User u where u.email = :email")
-        .setParameter("email", email)
+  public Optional<User> findByCredentialId(String credentialId) {
+    List<User> result = em.createQuery("select u from User u where u.credentialId = :credentialId")
+        .setParameter("credentialId", credentialId)
         .getResultList();
     return result.stream().findFirst();
   }

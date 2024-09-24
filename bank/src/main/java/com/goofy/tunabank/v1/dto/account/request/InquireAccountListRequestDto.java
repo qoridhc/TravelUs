@@ -5,11 +5,9 @@ import com.goofy.tunabank.v1.common.Header;
 import lombok.Data;
 
 @Data
-public class InquireAccountRequestDto {
+public class InquireAccountListRequestDto {
 
     @JsonProperty("Header")
-    private Header Header;
-
-    private String accountNo;
+    private Header header;
 
 }
