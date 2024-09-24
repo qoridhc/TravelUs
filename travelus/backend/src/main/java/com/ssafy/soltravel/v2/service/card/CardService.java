@@ -1,21 +1,25 @@
 package com.ssafy.soltravel.v2.service.card;
 
 
+import com.ssafy.soltravel.v2.dto.account.AccountDto;
+import com.ssafy.soltravel.v2.dto.card.CardRequestDto;
+import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
+import com.ssafy.soltravel.v2.exception.moneybox.MoneyBoxNotFoundException;
+import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.common.BankHeader;
 import com.ssafy.soltravel.v2.domain.User;
+import com.ssafy.soltravel.v2.dto.account.request.InquireAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.card.CardIssueRequestDto;
 import com.ssafy.soltravel.v2.dto.card.CardListRequestDto;
 import com.ssafy.soltravel.v2.dto.card.CardPaymentRequestDto;
 import com.ssafy.soltravel.v2.dto.card.CardPaymentResponseDto;
 import com.ssafy.soltravel.v2.dto.card.CardResponseDto;
-import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
-import com.ssafy.soltravel.v2.exception.UserNotFoundException;
-import com.ssafy.soltravel.v2.mapper.CardMapper;
+import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import com.ssafy.soltravel.v2.util.WebClientUtil;
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -35,6 +39,7 @@ public class CardService {
   private final WebClientUtil webClientUtil;
   private final Map<String, String> apiKeys;
   private final UserRepository userRepository;
+  private final AccountService accountService;
 
   /*
   * 카드 발급
@@ -105,9 +110,19 @@ public class CardService {
   */
   public CardPaymentResponseDto makeCardPayment(CardPaymentRequestDto request) {
 
+    // 유저 조회
     Long userId = SecurityUtil.getCurrentUserId();
     User user = userRepository.findByUserId(userId).orElseThrow(
         () -> new UserNotFoundException(userId)
+    );
+
+    // 카드 조회
+    CardResponseDto card = findCard(request.getCardNo(), user.getUserKey());
+
+    // 통잔 잔액 조회
+    Double beforeBalance = getBalance(
+        card.getWithdrawalAccountNo(),
+        request.getCurrencyCode()
     );
 
     request.setTransactionId(UUID.randomUUID().toString());
@@ -123,8 +138,72 @@ public class CardService {
     );
 
     Map<String, Object> recObject = (Map<String, Object>) response.getBody().get("REC");
+    CardPaymentResponseDto respponse = toPaymentDto(recObject);
+
+    // 통장 잔액 조회
+    Double afterBalance = getBalance(
+        card.getWithdrawalAccountNo(),
+        request.getCurrencyCode()
+    );
+
+    // 결제 금액 확인
+    BigDecimal before = BigDecimal.valueOf(beforeBalance);
+    BigDecimal after = BigDecimal.valueOf(afterBalance);
+    if(after.subtract(before).doubleValue() != request.getPaymentBalance()) {
+
+    }
+
     return toPaymentDto(recObject);
   }
+
+
+  /*
+  * 특정 통화 코드 통잔 잔액 조회
+  */
+  private Double getBalance(String accountNo, String currencyCode) {
+
+    //TODO: 통장 비밀번호 빼기
+    InquireAccountRequestDto inquireDto = InquireAccountRequestDto.builder()
+        .accountNo(accountNo)
+        .accountPassword("1234")
+        .build();
+
+    AccountDto account = accountService.getByAccountNo(inquireDto);
+    MoneyBoxDto moneyBox = account.getMoneyBoxDtos().stream()
+        .filter(mb -> mb.getCurrencyCode().equals(currencyCode)).findFirst().get();
+
+    if(moneyBox == null) {
+      throw new MoneyBoxNotFoundException(currencyCode);
+    }
+    return moneyBox.getBalance();
+  }
+
+
+  /*
+  * 카드 단건 조회
+  */
+  private CardResponseDto findCard(String cardNo, String userKey) {
+
+    // body 셋팅
+    CardRequestDto requestDto = CardRequestDto.builder()
+        .cardNo(cardNo)
+        .header(
+            BankHeader.createHeader(apiKeys.get("API_KEY"), userKey)
+        )
+        .build();
+
+    // 요청
+    ResponseEntity<Map<String, Object>> response = webClientUtil.request(
+        DEFAULT_REQUEST_URI+"/search", requestDto, CardRequestDto.class
+    );
+
+    Map<String, Object> recObject = (Map<String, Object>) response.getBody().get("REC");
+    return toDto(recObject);
+  }
+
+
+
+
 
   private CardResponseDto toDto(Map<String, Object> response) {
     CardResponseDto dto = CardResponseDto.builder()
