@@ -288,7 +288,7 @@ public class TransactionService {
   @Transactional(readOnly = true)
   public MoneyBox findMoneyBoxByAccountAndCurrencyCode(String accountNo, CurrencyType
       currencyCode) {
-    return moneyBoxRepository.findMoneyBoxByAccountAndCurrencyCode(accountNo, currencyCode)
+    return moneyBoxRepository.findMoneyBoxByAccountNoAndCurrency(accountNo, currencyCode)
         .orElseThrow(() -> new MoneyBoxNotFoundException(accountNo, currencyCode));
   }
 

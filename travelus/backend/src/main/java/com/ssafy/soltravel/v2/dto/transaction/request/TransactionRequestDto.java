@@ -8,18 +8,21 @@ import lombok.Data;
 @Data
 public class TransactionRequestDto {
 
-    @Schema(description = "계좌번호", example = "001-69042343-209")
-    String accountNo;
+  @Schema(description = "계좌번호", example = "001-69042343-209")
+  String accountNo;
 
-    @Schema(description = "머니박스 통화", example = "KRW")
-    CurrencyType currencyCode;
+  @Schema(description = "계좌 비밀번호", example = "1234")
+  private String accountPassword;
 
-    @Schema(description = "거래 타입", example = "D")
-    TransactionType transactionType;
+  @Schema(description = "머니박스 통화", example = "KRW")
+  CurrencyType currencyCode;
 
-    @Schema(description = "거래 금액", example = "5000")
-    Long transactionBalance;
+  @Schema(description = "거래 타입", example = "D")
+  TransactionType transactionType;
 
-    @Schema(description = "거래 요약", example = "월급 입금")
-    String transactionSummary;
+  @Schema(description = "거래 금액", example = "5000")
+  Long transactionBalance;
+
+  @Schema(description = "거래 요약", example = "월급 입금")
+  String transactionSummary;
 }

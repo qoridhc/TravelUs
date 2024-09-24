@@ -91,6 +91,7 @@ public class TransactionService {
     Map<String, Object> body = new HashMap<>();
     body.put("Header", header);
     body.put("accountNo", requestDto.getAccountNo());
+    body.put("accountPassword", requestDto.getAccountPassword());
     body.put("currencyCode", requestDto.getCurrencyCode());
     body.put("transactionType", requestDto.getTransactionType());
     body.put("transactionBalance", requestDto.getTransactionBalance());
@@ -126,6 +127,7 @@ public class TransactionService {
     body.put("Header", header);
     body.put("transferType", requestDto.getTransferType());
     body.put("withdrawalAccountNo", requestDto.getWithdrawalAccountNo());
+    body.put("accountPassword", requestDto.getAccountPassword());
     body.put("depositAccountNo", requestDto.getDepositAccountNo());
     body.put("transactionBalance", requestDto.getTransactionBalance());
     body.put("withdrawalTransactionSummary", requestDto.getWithdrawalTransactionSummary());
@@ -169,6 +171,7 @@ public class TransactionService {
     body.put("Header", header);
     body.put("transferType", requestDto.getTransferType());
     body.put("accountNo", requestDto.getAccountNo());
+    body.put("accountPassword", requestDto.getAccountPassword());
     body.put("sourceCurrencyCode", requestDto.getSourceCurrencyCode());
     body.put("targetCurrencyCode", requestDto.getTargetCurrencyCode());
     body.put("transactionBalance", requestDto.getTransactionBalance());
