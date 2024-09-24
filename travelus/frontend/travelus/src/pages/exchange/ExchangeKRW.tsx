@@ -71,12 +71,12 @@ const ExchangeKRWFlow: React.FC = () => {
         </div>
         
         <div className="mb-6">
-          <div className="mb-4">
-            <p className="text-gray-500 text-sm mb-1">환전 금액</p>
+          <div className="mb-4 flex justify-between">
+            <p className="text-gray-500 text-sm">환전 금액</p>
             <p className="text-lg">{inputAmount} USD → {calculatedKRW} KRW</p>
           </div>
-          <div>
-            <p className="text-gray-500 text-sm mb-1">적용 환율</p>
+          <div className="flex justify-between">
+            <p className="text-gray-500 text-sm">적용 환율</p>
             <p className="text-lg">{exchangeRate.toFixed(2)} 원</p>
           </div>
         </div>
@@ -162,7 +162,7 @@ const ExchangeKRWFlow: React.FC = () => {
 
       <div className="p-4 mt-auto">
         <div className="flex items-center justify-center mb-4 text-gray-600">
-          <FcMoneyTransfer className="mr-2 text-xl" />
+          <FcMoneyTransfer className="mr-2 text-xl text-[#1429A0]" />
           <p>수수료는 튜나뱅크가 낼게요</p>
         </div>
         <button 
