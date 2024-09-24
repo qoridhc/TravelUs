@@ -84,7 +84,7 @@ public class TransactionController {
   public ResponseEntity<RecWrapper<?>> transferBetweenMoneyBoxesAuto(
       @RequestBody TransferMBRequestDto requestDto) {
 
-    List<TransactionResponseDto> response = transactionService.processMoneyBoxTransfer(requestDto);
+    List<TransactionResponseDto> response = transactionService.processAutoExchange(requestDto);
     return ResponseEntity.ok(new RecWrapper<>(response));
   }
 

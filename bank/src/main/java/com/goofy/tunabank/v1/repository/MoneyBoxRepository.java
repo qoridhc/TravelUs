@@ -12,13 +12,6 @@ public interface MoneyBoxRepository extends JpaRepository<MoneyBox,Long> {
   @Query("SELECT mb FROM MoneyBox mb " +
       "JOIN FETCH mb.currency c " +
       "JOIN FETCH mb.account a " +
-      "WHERE a.accountNo  = :accountNo  " +
-      "AND c.currencyCode = :currencyCode")
-  Optional<MoneyBox> findMoneyBoxByAccountAndCurrencyCode(@Param("accountNo") String accountNo, @Param("currencyCode") CurrencyType currencyCode);
-
-  @Query("SELECT mb FROM MoneyBox mb " +
-      "JOIN FETCH mb.currency c " +
-      "JOIN FETCH mb.account a " +
       "WHERE a.id = :accountId " +
       "AND c.currencyCode = :currencyCode")
   Optional<MoneyBox> findMoneyBoxByAccountAndCurrency(@Param("accountId") Long accountId, @Param("currencyCode") CurrencyType currencyCode);

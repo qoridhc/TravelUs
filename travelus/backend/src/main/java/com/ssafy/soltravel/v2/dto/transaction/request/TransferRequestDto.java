@@ -13,6 +13,9 @@ public class TransferRequestDto {
     @Schema(description = "출금 계좌번호", example = "1")
     String withdrawalAccountNo;
 
+    @Schema(description = "계좌 비밀번호", example = "1234")
+    private String accountPassword;
+
     @Schema(description = "입금 계좌번호", example = "2")
     String depositAccountNo;
 
