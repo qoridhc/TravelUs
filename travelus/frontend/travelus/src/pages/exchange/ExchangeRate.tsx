@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, ChevronRightCircle } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { exchangeApi } from '../../api/exchange';
 import { ExchangeRateInfo, currencyNames } from '../../types/exchange';
 
@@ -83,23 +83,26 @@ const ExchangeRateList: React.FC = () => {
   }
 
   return (
-    <div className="m-3">
-      <div className="bg-white rounded-lg shadow mb-4">
-        <h2 className="p-4 text-lg font-bold">실시간 환율</h2>
-        {exchangeRates.map((rate, index) => (
-          <ExchangeRateItem key={index} {...rate} />
-        ))}
-      </div>
-      <div className="bg-gray-100 rounded-lg p-4 text-sm text-gray-600">
-        <h3 className="font-bold mb-2">튜나뱅크 환율 안내</h3>
-        <ul className="list-disc pl-5 space-y-1">
-          <li>위 환율은 매매기준율로 1시간마다 업데이트돼요.</li>
-          <li>위 환율은 튜나뱅크 외화 모임 통장으로 환전될 때 적용돼요.</li>
-          <li>위 환율의 변동 정보는 어제 오전 10시 기준으로 계산돼요.</li>
-          <li>위 환율과 환전할 때 적용되는 환율은 거래 시점에 따라 다를 수 있어요.</li>
-        </ul>
+    <div className="h-full p-5 pb-8">
+      <div className="m-3">
+        <div className="bg-white rounded-lg shadow mb-4">
+          <h2 className="p-4 text-lg font-bold">실시간 환율</h2>
+          {exchangeRates.map((rate, index) => (
+            <ExchangeRateItem key={index} {...rate} />
+          ))}
+        </div>
+        <div className="bg-gray-100 rounded-lg p-4 text-sm text-gray-600">
+          <h3 className="font-bold mb-2">튜나뱅크 환율 안내</h3>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>위 환율은 매매기준율로 1시간마다 업데이트돼요.</li>
+            <li>위 환율은 튜나뱅크 외화 모임 통장으로 환전될 때 적용돼요.</li>
+            <li>위 환율의 변동 정보는 어제 오전 10시 기준으로 계산돼요.</li>
+            <li>위 환율과 환전할 때 적용되는 환율은 거래 시점에 따라 다를 수 있어요.</li>
+          </ul>
+        </div>
       </div>
     </div>
+    
   );
 };
 
