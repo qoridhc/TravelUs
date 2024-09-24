@@ -11,7 +11,8 @@ import com.goofy.tunabank.v1.domain.User;
 import com.goofy.tunabank.v1.dto.card.CardIssueRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardIssueResponseDto;
 import com.goofy.tunabank.v1.dto.card.CardListRequestDto;
-import com.goofy.tunabank.v1.dto.card.CardListResponseDto;
+import com.goofy.tunabank.v1.dto.card.CardRequestDto;
+import com.goofy.tunabank.v1.dto.card.CardResponseDto;
 import com.goofy.tunabank.v1.dto.card.CardPaymentRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardPaymentResponseDto;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
@@ -94,7 +95,7 @@ public class CardService {
   /*
   * 카드 목록 조회
   */
-  public List<CardListResponseDto> findAllCards(CardListRequestDto request) {
+  public List<CardResponseDto> findAllCards(CardListRequestDto request) {
 
     // 유저 조회
     User user = userService.findUserByHeader();
@@ -104,10 +105,30 @@ public class CardService {
 
     // DTO로 변환해서 return
     return cards.stream()
-        .map(card -> CardMapper.INSTANCE.cardToCardListResponseDto(card, DEFAULT_ISSUER_NAME))
+        .map(card -> CardMapper.INSTANCE.cardToCardResponseDto(card, DEFAULT_ISSUER_NAME))
         .collect(Collectors.toList());
   }
 
+  /*
+  * 카드 단건 조회
+  */
+  public CardResponseDto findCard(CardRequestDto request) {
+
+    // 유저 조회
+    User user = userService.findUserByHeader();
+
+    // 카드 조회
+    Card card = cardRepository.findByCardNo(request.getCardNo()).orElseThrow(
+        () -> new CardNotFoundException(request.getCardNo())
+    );
+
+    // 유저 카드 일치 조회
+    if(card.getAccount().getUser() != user) {
+      throw new CardOwnershipException(request.getCardNo());
+    }
+
+    return CardMapper.INSTANCE.cardToCardResponseDto(card, DEFAULT_ISSUER_NAME);
+  }
 
   /*
   * 결제
