@@ -3,6 +3,8 @@ package com.ssafy.soltravel.v2.dto.group;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +16,7 @@ public class GroupDto {
 
     private Long groupId;
 
-    private int groupAccountId;
+    private String groupAccountNo;
 
     private LocalDate travelStartDate;
 
@@ -24,9 +26,12 @@ public class GroupDto {
 
     private String icon;
 
+    private List<ParticipantDto> participants = new ArrayList<>();
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updatedAt;
+
 }
