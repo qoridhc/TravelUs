@@ -46,7 +46,7 @@ public class AccountController {
 
         List<AccountDto> accountDtoList = accountService.inqureAccountList();
 
-        return null;
+        return ResponseEntity.status(HttpStatus.OK).body(new RecWrapper<>(accountDtoList));
     }
 
     // 계좌 조회

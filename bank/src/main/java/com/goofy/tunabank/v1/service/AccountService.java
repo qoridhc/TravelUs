@@ -20,13 +20,13 @@ import com.goofy.tunabank.v1.exception.account.InvalidAccountPasswordException;
 import com.goofy.tunabank.v1.exception.account.InvalidBankIdException;
 import com.goofy.tunabank.v1.exception.account.InvalidGroupAccountIdException;
 import com.goofy.tunabank.v1.exception.account.RefundAccountRequiredException;
+import com.goofy.tunabank.v1.exception.account.UserAccountsNotFoundException;
 import com.goofy.tunabank.v1.mapper.AccountMapper;
 import com.goofy.tunabank.v1.mapper.MoneyBoxMapper;
-import com.goofy.tunabank.v1.repository.AccountRepository;
 import com.goofy.tunabank.v1.repository.BankRepository;
 import com.goofy.tunabank.v1.repository.CurrencyRepository;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
-import com.goofy.tunabank.v1.util.LogUtil;
+import com.goofy.tunabank.v1.repository.account.AccountRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -86,11 +86,14 @@ public class AccountService {
 
         User user = userService.findUserByHeader();
 
-        List<Account> allByUserId = accountRepository.findAllByUserUserId(user.getUserId());
+        List<Account> accountList = accountRepository.findAllAccountsByUserId(user.getUserId())
+            .orElseThrow(() -> new UserAccountsNotFoundException(user.getUserId()));
 
-        LogUtil.info("allByUserId: " + allByUserId);
+        List<AccountDto> accountDtoList = accountList.stream()
+            .map(accountMapper::toDto)
+            .toList();
 
-        return null;
+        return accountDtoList;
 
     }
 
@@ -131,14 +134,13 @@ public class AccountService {
         return new ResponseDto();
     }
 
-
     // ==== 머니 박스 생성 ====
     public List<MoneyBoxDto> addAccountMoneyBox(AddMoneyBoxRequestDto requestDto) {
 
         // 유저 정보 생성
         User user = userService.findUserByHeader();
 
-        Account account = accountRepository.findAccountByAccountNo(requestDto.getAccountNo())
+        Account account = accountRepository.findByAccountNo(requestDto.getAccountNo())
             .orElseThrow(() -> new InvalidAccountNoException(requestDto.getAccountNo()));
 
         if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
