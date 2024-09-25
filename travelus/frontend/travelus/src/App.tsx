@@ -61,6 +61,7 @@ import SettlementInfo from "./pages/settlement/balanceSettlement/SettlementInfo"
 import ExpenditureTransactionDetail from "./pages/settlement/expenditureSettlement/ExpenditureTransactionDetail";
 import ExpenditureSettlementInfo from "./pages/settlement/expenditureSettlement/ExpenditureSettlementInfo";
 import ExpenditureSettlementCompleted from "./pages/settlement/expenditureSettlement/ExpenditureSettlementCompleted";
+import TravelBoxCreatePrepare from "./pages/travelBox/TravelBoxCreatePrepare";
 
 function App() {
   return (
@@ -134,6 +135,7 @@ function App() {
           <Route path="/transaction/detail/travelbox/:id" element={<TravelBoxTransaction />} />
 
           {/* 트래블박스 생성 */}
+          <Route path="/travelbox/create/prepare" element={<TravelBoxCreatePrepare />} />
           <Route path="/currencyinfoofcreatetravelbox" element={<CurrencyInfoOfCreateTravelBox />} />
           <Route path="/autocurrencyexchangeofcreatetravelbox" element={<AutoCurrencyExchangeOfCreateTravelBox />} />
 
