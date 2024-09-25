@@ -1,6 +1,6 @@
 .mainSwiper {
   width: 100%;
-  height: 242px;
+  height: 210px;
 }
 
 .mainSwiper .swiper-slide {
@@ -8,6 +8,6 @@
 }
 
 .userSwiper {
-  width: 85%;
+  width: 100%;
   height: 100%;
 }
