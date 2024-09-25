@@ -6,8 +6,8 @@ import com.ssafy.soltravel.v2.domain.TravelGroup;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
-import com.ssafy.soltravel.v2.dto.group.GroupCodeGenerateRequestDto;
-import com.ssafy.soltravel.v2.dto.group.GroupCodeGenerateResponseDto;
+import com.ssafy.soltravel.v2.dto.group.request.GroupCodeGenerateRequestDto;
+import com.ssafy.soltravel.v2.dto.group.response.GroupCodeGenerateResponseDto;
 import com.ssafy.soltravel.v2.dto.group.GroupDto;
 import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateGroupRequestDto;
@@ -15,6 +15,7 @@ import com.ssafy.soltravel.v2.dto.group.request.CreateParticipantRequestDto;
 import com.ssafy.soltravel.v2.dto.group.response.GroupSummaryDto;
 import com.ssafy.soltravel.v2.exception.account.InvalidPersonalAccountException;
 import com.ssafy.soltravel.v2.exception.group.InvalidGroupIdException;
+import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.GroupMapper;
 import com.ssafy.soltravel.v2.repository.GroupRepository;
 import com.ssafy.soltravel.v2.repository.ParticipantRepository;
@@ -22,10 +23,15 @@ import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.service.user.UserService;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class GroupService {
 
     private final Map<String, String> apiKeys;
+    private final RedisTemplate<String, String> redisTemplate;
 
     private final UserService userService;
     private final AccountService accountService;
@@ -156,13 +163,35 @@ public class GroupService {
     * 모임 코드 생성
     */
     public GroupCodeGenerateResponseDto generateGroupCode(GroupCodeGenerateRequestDto request) {
+        User user = userRepository.findGroupMasterByGroupIdAndUserId(
+            request.getGroupId(),
+            securityUtil.getCurrentUserId()
+        ).orElseThrow(
+            ()-> new UserNotFoundException(securityUtil.getCurrentUserId())
+        );
 
-        TravelGroup travelGroup = groupRepository.findById(request.getGroupId())
-            .orElseThrow(InvalidGroupIdException::new);
+        String code = generateGroupCode(request.getGroupId());
+        redisTemplate.opsForValue().set(code, String.valueOf(request.getGroupId()), 5, TimeUnit.MINUTES);
 
-        User user = securityUtil.getUserByToken();
+        return GroupCodeGenerateResponseDto.builder()
+            .groupCode(code)
+            .build();
+    }
 
+    public GroupDto findGroupByCode(String code) {
+        Long groupId = Long.valueOf(redisTemplate.opsForValue().get(code));
+        return getGroupInfo(groupId);
+    }
 
-        return null;
+    private String generateGroupCode(Long groupId){
+        UUID uuid = UUID.randomUUID();
+
+        byte[] uuidBytes = ByteBuffer.wrap(new byte[16])
+            .putLong(uuid.getMostSignificantBits())
+            .putLong(uuid.getLeastSignificantBits())
+            .array();
+
+        String urlSafeUuid = Base64.getUrlEncoder().withoutPadding().encodeToString(uuidBytes);
+        return urlSafeUuid;
     }
 }

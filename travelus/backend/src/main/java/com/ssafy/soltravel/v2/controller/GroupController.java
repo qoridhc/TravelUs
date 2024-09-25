@@ -1,13 +1,14 @@
 package com.ssafy.soltravel.v2.controller;
 
-import com.ssafy.soltravel.v2.dto.group.GroupCodeGenerateRequestDto;
-import com.ssafy.soltravel.v2.dto.group.GroupCodeGenerateResponseDto;
+import com.ssafy.soltravel.v2.dto.group.request.GroupCodeGenerateRequestDto;
+import com.ssafy.soltravel.v2.dto.group.response.GroupCodeGenerateResponseDto;
 import com.ssafy.soltravel.v2.dto.group.GroupDto;
 import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateGroupRequestDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateParticipantRequestDto;
 import com.ssafy.soltravel.v2.dto.group.response.GroupSummaryDto;
 import com.ssafy.soltravel.v2.service.group.GroupService;
+import com.ssafy.soltravel.v2.util.LogUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -114,17 +115,34 @@ public class GroupController {
 
 
     // === 초대 url 생성 ===
-    @Operation(summary = "참여코드 생성", description = "모임 참여 코드 생성")
+    @Operation(summary = "참여코드 생성", description = "그룹 ID로 모임 참여 코드를 생성합니다.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "참여 코드 생성 성공", content = @Content(schema = @Schema(implementation = ParticipantDto.class))),
+        @ApiResponse(responseCode = "201", description = "참여 코드 생성 성공", content = @Content(schema = @Schema(implementation = GroupCodeGenerateResponseDto.class))),
         @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @GetMapping("/create/groupCode")
+    @PostMapping(value = "/create/groupCode")
     public ResponseEntity generateGroupCode(@RequestBody GroupCodeGenerateRequestDto request) {
+        LogUtil.info("모임 코드 생성", request);
         GroupCodeGenerateResponseDto response = groupService.generateGroupCode(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    // === 초대 url 확인 ===
+    @Operation(summary = "참여코드 조회", description = "어떤 모임의 참여코드인지 확인합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "참여 코드 조회 성공", content = @Content(schema = @Schema(implementation = GroupDto.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @GetMapping("/code/{code}")
+    public ResponseEntity findGroupByCode(@PathVariable String code) {
+        LogUtil.info("모임 코드 조회", code);
+        GroupDto response = groupService.findGroupByCode(code);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+
 
 //    @GetMapping()
 //    public ResponseEntity<ParticipantDto> getAllGroupsByUserId() {
