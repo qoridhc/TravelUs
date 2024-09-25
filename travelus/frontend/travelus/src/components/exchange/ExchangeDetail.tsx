@@ -207,7 +207,7 @@ const ExchangeDetail: React.FC = () => {
               className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
               외화 채우기
             </button>
-          </div>h
+          </div>
         </div>
       </div>
     </div>

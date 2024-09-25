@@ -102,7 +102,6 @@ const ExchangeRateList: React.FC = () => {
         </div>
       </div>
     </div>
-    
   );
 };
 
