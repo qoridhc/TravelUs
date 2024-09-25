@@ -23,4 +23,8 @@ public class CardProductRepository {
     return result.stream().findFirst();
   }
 
+  public List<CardProduct> findAll() {
+    return em.createQuery("select cp from CardProduct cp", CardProduct.class).getResultList();
+  }
+
 }
