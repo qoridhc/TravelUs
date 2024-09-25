@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack, IoIosCloseCircle } from "react-icons/io";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 
 const EditMembers = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const params = useParams();
 
   const allMemberList = [{ name: "박민규" }, { name: "박예진" }, { name: "이예림" }, { name: "허동원" }];
   const [selectedMemberList, setSelectedMemberList] = useState([
@@ -14,7 +15,11 @@ const EditMembers = () => {
   ]);
 
   const handleSelected = () => {
-    navigate("/settlement", { state: { members: selectedMemberList } });
+    if (params.type === "balance") {
+      navigate("/settlement", { state: { members: selectedMemberList } });
+    } else {
+      navigate("/settlement/expenditure/info", { state: { members: selectedMemberList } });
+    }
   };
 
   const toggleMemberSelection = (name: string) => {

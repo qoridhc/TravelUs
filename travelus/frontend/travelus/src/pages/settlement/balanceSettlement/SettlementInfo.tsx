@@ -23,7 +23,7 @@ const SettlementInfo = () => {
   };
 
   const handleMembers = () => {
-    navigate("/editmembers", { state: { selectedMemberList: members } });
+    navigate("/editmembers/balance", { state: { selectedMemberList: members } });
   };
 
   useEffect(() => {
