@@ -29,11 +29,15 @@ const IDVerificationOfCreateMeetingAccount = () => {
 
     try {
       const response = await groupApi.createMeetingAccount(data);
-      console.log(response.data);
+      console.log(response);
+      if (response.status === 201) {
+        navigate(`/meeting/create/completed/${params.type}`);
+      }
     } catch (error) {
+      alert("모임통장 개설에 실패했어요");
+      navigate("/");
       console.log(error);
     }
-    navigate(`/meeting/create/completed/${params.type}`);
   };
 
   return (
@@ -52,7 +56,7 @@ const IDVerificationOfCreateMeetingAccount = () => {
 
         <div className="px-5 grid gap-3">
           {guideText.map((text, index) => (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2" key={index}>
               <div className="w-5 aspect-1 bg-[#1429A0] rounded-full flex justify-center items-center">
                 <p className="text-xs text-white ">{index + 1}</p>
               </div>
