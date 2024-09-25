@@ -6,24 +6,28 @@ interface Member {
   name: string;
   amount: number;
 }
-
-const SettlementInfo = () => {
+const ExpenditureSettlementInfo = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const totalAmount = 160834;
+  const totalAmount = location.state.selectAmmount;
   const [members, setMembers] = useState<Member[]>([
-    { name: "박민규", amount: 53612 },
-    { name: "박예진", amount: 53611 },
-    { name: "이예림", amount: 53611 },
+    { name: "박민규", amount: 16649 },
+    { name: "박예진", amount: 16647 },
+    { name: "이예림", amount: 16647 },
   ]);
 
   const handleSettlement = () => {
-    navigate("/balancesettlementcompleted");
+    navigate("/settlement/expenditure/completed");
   };
 
   const handleMembers = () => {
-    navigate("/editmembers/balance", { state: { selectedMemberList: members } });
+    navigate("/editmembers/expenditure", { state: { selectedMemberList: members } });
+  };
+
+  // 금액을 한국 통화 형식으로 포맷(콤마가 포함된 형태)
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("ko-KR").format(amount);
   };
 
   useEffect(() => {
@@ -56,18 +60,8 @@ const SettlementInfo = () => {
         <div className="grid gap-8">
           <div className="px-5 text-2xl font-semibold tracking-wide">
             <div className="flex">
-              <p className="text-[#1429A0]">119.67 $</p>
-              <p>를</p>
-            </div>
-            <p>일반모임통장에 넣었어요</p>
-          </div>
-
-          <div className="w-full h-5 bg-[#F6F6F8]"></div>
-
-          <div className="px-5 text-2xl font-semibold tracking-wide">
-            <div className="flex">
               <p>총&nbsp;</p>
-              <p className="text-[#1429A0]">160,834원</p>
+              <p className="text-[#1429A0]">{formatCurrency(totalAmount)}</p>
               <p>을</p>
             </div>
 
@@ -106,4 +100,4 @@ const SettlementInfo = () => {
   );
 };
 
-export default SettlementInfo;
+export default ExpenditureSettlementInfo;

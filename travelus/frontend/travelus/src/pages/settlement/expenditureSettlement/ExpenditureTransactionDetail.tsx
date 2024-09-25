@@ -117,7 +117,7 @@ const ExpenditureTransactionDetail = () => {
   };
 
   const handleNext = () => {
-    navigate("/", { state: { selectAmmount } });
+    navigate("/settlement/expenditure/info", { state: { selectAmmount } });
   };
 
   return (
