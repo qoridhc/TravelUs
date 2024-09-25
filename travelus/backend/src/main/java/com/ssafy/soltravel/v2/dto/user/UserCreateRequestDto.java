@@ -48,4 +48,7 @@ public class UserCreateRequestDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Schema(description = "사용자의 생년월일", example = "1990-01-01")
     private LocalDate birth;
+
+    @Schema(description = "사용자의 성별(0: 여, 1: 남)", example = "1")
+    private Integer gender;
 }
