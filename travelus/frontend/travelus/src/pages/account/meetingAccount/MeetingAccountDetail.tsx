@@ -221,7 +221,9 @@ const MeetingAccountDetail = () => {
                 <p className="text-2xl font-bold">{formatCurrency(selectedAccount.balance)}원</p>
               </div>
               <div className="flex justify-between">
-                <button className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">채우기</button>
+                <button className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
+                  채우기
+                </button>
                 <button className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">환전</button>
               </div>
             </div>
@@ -241,12 +243,14 @@ const MeetingAccountDetail = () => {
                 </p>
               </div>
               <div className="flex justify-between">
-                <button className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">재환전</button>
+                <button className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
+                  재환전
+                </button>
                 <button className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">내역</button>
               </div>
             </div>
           </div>
-          <div className="p-5 pb-8 flex flex-col items-center justify-center space-y-2">
+          <div className="p-5 pb-8 flex flex-col items-center justify-center space-y-5">
             <button
               onClick={() => {
                 navigate("/selectsettlementamount");
@@ -254,7 +258,11 @@ const MeetingAccountDetail = () => {
               className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]">
               정산하기
             </button>
-            <button className="text-sm text-[#1429A0] font-semibold">개별지출 정산하기</button>
+            <button
+              className="text-sm text-[#1429A0] font-semibold"
+              onClick={() => navigate("/settlement/expenditure/transaction/detail/1")}>
+              개별지출 정산하기
+            </button>
           </div>
         </div>
       </div>
