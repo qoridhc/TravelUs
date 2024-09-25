@@ -15,9 +15,9 @@ const PasswordOfCreateMeetingAccount = () => {
     if (password.length === 4) {
       dispatch(setAccountPassword(""));
       if (params.type === "travelbox") {
-        navigate("/completedofcreatemeetingaccount/travelbox");
+        navigate("/meeting/create/completed/travelbox");
       } else {
-        navigate("/checkpasswordofcreatemeetingaccount", { state: { originalPassword: password, type: params.type } });
+        navigate("/meeting/create/password/check", { state: { originalPassword: password, type: params.type } });
       }
     }
   }, [password]);

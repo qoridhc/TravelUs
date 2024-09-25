@@ -1,7 +1,12 @@
 import { TextField } from "@mui/material";
 import React from "react";
 
-const GenderInputMui = () => {
+interface Props {
+  gender: string;
+  setGender: (name: string) => void;
+}
+
+const GenderInputMui = ({ gender, setGender }: Props) => {
   return (
     <TextField
       sx={{
@@ -21,9 +26,10 @@ const GenderInputMui = () => {
       }}
       id="gender"
       label="성별"
-      value="여성"
+      value={gender}
       variant="standard"
       autoComplete="off"
+      onChange={(e) => setGender(e.target.value)}
     />
   );
 };

@@ -150,7 +150,7 @@ const MeetingAccountListNew = () => {
                 <div>
                   <div
                     onClick={() => {
-                      navigate("/meetingaccountcreateprepare");
+                      navigate("/meeting/create/prepare");
                     }}
                     className="flex items-center space-x-4">
                     <div className="w-11 h-11 bg-zinc-200 rounded-full flex justify-center items-center">
@@ -165,7 +165,7 @@ const MeetingAccountListNew = () => {
                 <div
                   className="flex items-center space-x-4"
                   onClick={() => {
-                    navigate("/meetingaccountcreateprepare");
+                    navigate("/meeting/create/prepare");
                   }}>
                   <div className="w-11 h-11 bg-zinc-200 rounded-full flex justify-center items-center">
                     <IoMdAdd className="text-3xl text-zinc-400 font-bold" />
