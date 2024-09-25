@@ -41,18 +41,6 @@ const TransferSelectBank = () => {
             <div className="flex flex-col space-y-10">
               <div>
                 <AccountNumberInput value={accountNo} labelName="계좌 번호" onChange={handleAccountNoChange} />
-                {/* <label htmlFor="accountNoInput" className="text-zinc-600">
-                  계좌번호 입력
-                </label>
-                <input
-                  id="accountNoInput"
-                  onChange={handleAccountNoChange}
-                  type="text"
-                  placeholder="계좌번호를 입력해주세요"
-                  className="w-full px-1 py-3 text-lg font-bold outline-none focus:placeholder-transparent"
-                  value={accountNo}
-                />
-                <hr className="border border-zinc-200" /> */}
               </div>
 
               <div>
@@ -71,7 +59,9 @@ const TransferSelectBank = () => {
 
         <div>
           <button
-            onClick={() => {navigate("/transfer/setmoney");}}
+            onClick={() => {
+              navigate("/transfer/setmoney", { state: { accountNo } });
+            }}
             className={`w-full h-14 text-lg font-semibold rounded-xl tracking-wide ${
               isValidation ? "text-white bg-[#1429A0]" : "text-[#565656] bg-[#E3E4E4]"
             }`}

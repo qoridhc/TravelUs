@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { IoIosArrowBack } from "react-icons/io";
 
 interface TransferSuccessProps {
@@ -9,6 +9,12 @@ interface TransferSuccessProps {
 
 const TransferSuccess: React.FC<TransferSuccessProps> = (props) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { transferAmount } = location.state as { transferAmount: string };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("ko-KR").format(amount);
+  };
 
   return (
     <div className="h-full p-5 pb-8">
@@ -21,7 +27,7 @@ const TransferSuccess: React.FC<TransferSuccessProps> = (props) => {
               <span className="font-normal"> 님에게</span>
             </p>
             <p>
-              2,000,000원<span className="font-normal">을</span>
+              {formatCurrency(parseInt(transferAmount))}원<span className="font-normal">을</span>
             </p>
             <p className="font-normal">보냈어요</p>
           </div>
