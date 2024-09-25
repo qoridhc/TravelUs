@@ -1,7 +1,12 @@
 import { TextField } from "@mui/material";
 import React from "react";
 
-const NameInputMui = () => {
+interface Props {
+  name: string;
+  setName: (name: string) => void;
+}
+
+const NameInputMui = ({ name, setName }: Props) => {
   return (
     <TextField
       sx={{
@@ -21,9 +26,10 @@ const NameInputMui = () => {
       }}
       id="name"
       label="이름"
-      value="이예림"
+      value={name}
       variant="standard"
       autoComplete="off"
+      onChange={(e) => setName(e.target.value)}
     />
   );
 };

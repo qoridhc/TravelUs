@@ -1,7 +1,12 @@
 import { TextField } from "@mui/material";
 import React from "react";
 
-const BirthDateInputMui = () => {
+interface Props {
+  birthdate: string;
+  setBirthdate: (birthdate: string) => void;
+}
+
+const BirthDateInputMui = ({ birthdate, setBirthdate }: Props) => {
   return (
     <TextField
       sx={{
@@ -21,9 +26,10 @@ const BirthDateInputMui = () => {
       }}
       id="birthdate"
       label="생년월일"
-      value="2001년 12월 15일"
+      value={birthdate}
       variant="standard"
       autoComplete="off"
+      onChange={(e) => setBirthdate(e.target.value)}
     />
   );
 };
