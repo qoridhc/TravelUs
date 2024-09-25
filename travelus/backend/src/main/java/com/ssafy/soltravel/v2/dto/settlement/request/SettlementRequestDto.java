@@ -8,10 +8,10 @@ import lombok.Data;
 @Data
 public class SettlementRequestDto {
 
-  @Schema(description = "모임Id", example = "1")
+  @Schema(description = "모임 Id", example = "1")
   private Long groupId;
 
-  @Schema(description = "계좌번호", example = "")
+  @Schema(description = "계좌번호", example = "002-45579486-209")
   private String accountNo;
 
   @Schema(description = "계좌 비밀번호", example="1234")

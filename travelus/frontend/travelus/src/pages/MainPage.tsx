@@ -21,6 +21,7 @@ const MainPage = () => {
   const userId = localStorage.getItem("userId");
   const userIdNumber = userId ? parseInt(userId, 10) : 0;
   const [account, setAccount] = useState<AccountInfoNew | null>(null);
+  const [meetingAccountList, setMeetingAccountList] = useState<AccountInfoNew[]>([]);
 
   const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
   const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[]>([]);
@@ -83,6 +84,10 @@ const MainPage = () => {
         // API 호출
         const accountResponse = await accountApi.fetchAllAccountInfo();
         setAccount(accountResponse[0]);
+
+        // 모임통장(G 타입) 필터링하여 상태 업데이트
+        const meetingAccounts = accountResponse.filter((account: AccountInfoNew) => account.accountType === "G");
+        setMeetingAccountList(meetingAccounts);
         // Redux 스토어에 데이터 저장
         // dispatch(editAccountList(accountResponse));
         // dispatch(editForeingAccountList(foreignResponse));
@@ -92,7 +97,7 @@ const MainPage = () => {
     };
 
     fetchData();
-  }, [dispatch]); // 의존성 배열에 필요한 값 추가
+  }, []); // 의존성 배열에 필요한 값 추가
 
   return (
     <div className="w-full">
@@ -113,9 +118,9 @@ const MainPage = () => {
             </div>
           </div>
           <button
-            className="h-10 rounded-md bg-[#0046FF] font-bold text-white text-sm"
+            className="h-10 rounded-md bg-[#1429A0] font-bold text-white text-sm"
             onClick={() => {
-              navigate("/meetingaccountcreateprepare");
+              navigate("/meeting/create/prepare");
             }}>
             신청하기
           </button>
@@ -143,7 +148,7 @@ const MainPage = () => {
             </div>
             <div className="flex justify-end mt-3">
               <button
-                className="h-8 w-14 rounded-3xl bg-[#0046FF] font-bold text-white text-sm"
+                className="h-8 w-14 rounded-3xl bg-[#1429A0] font-bold text-white text-sm"
                 onClick={navigateTransfermation}>
                 이체
               </button>
@@ -153,20 +158,20 @@ const MainPage = () => {
 
         <div className="w-full flex flex-col items-center space-y-2">
           {/* 모임 통장 있을 시 표시 */}
-          {/* {accountList.length > 1 && (
+          {meetingAccountList.length > 1 && (
             <Swiper
               pagination={{
                 dynamicBullets: true,
               }}
               modules={[Pagination]}
               className="mainSwiper rounded-xl">
-              {accountList.slice(1).map((account, index) => (
+              {meetingAccountList.map((account, index) => (
                 <SwiperSlide>
-                  <MainMeetingAccount index={index} account={account} foreignAccount={foreignAccountList[index]} />
+                  <MainMeetingAccount index={index} account={account} />
                 </SwiperSlide>
               ))}
             </Swiper>
-          )} */}
+          )}
 
           {/* 환율 표시 */}
           <div
@@ -224,12 +229,12 @@ const MainPage = () => {
           />
         </div> */}
 
-        {/* 가계부 */}
+        {/* 머니로그 */}
         <div
-          className="w-full p-6 flex flex-col space-y-3 rounded-xl bg-blue-500 shadow-md"
+          className="w-full p-6 flex flex-col space-y-3 rounded-xl bg-[#4e7af3] shadow-md"
           onClick={navigateAccountBook}>
           <div className="flex items-center space-x-1">
-            <p className="text-md text-white font-bold flex justify-start">가계부</p>
+            <p className="text-md text-white font-bold flex justify-start">머니로그</p>
             <IoIosArrowForward className="text-white" />
           </div>
           <div className="flex items-center justify-between">
@@ -237,7 +242,7 @@ const MainPage = () => {
               <img className="w-12" src="/assets/budgetIcon.png" alt="가계부아이콘" />
               <div className="flex flex-col">
                 <p className="text-zinc-200 font-semibold text-sm">이번 여행</p>
-                <p className="text-zinc-200 font-semibold text-sm">가계부 확인하기</p>
+                <p className="text-zinc-200 font-semibold text-sm">머니로그 확인하기</p>
               </div>
             </div>
             <IoIosArrowForward className="text-white" />

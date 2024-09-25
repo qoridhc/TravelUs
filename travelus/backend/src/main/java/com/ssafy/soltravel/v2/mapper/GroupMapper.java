@@ -4,6 +4,8 @@ import com.ssafy.soltravel.v2.domain.Participant;
 import com.ssafy.soltravel.v2.domain.TravelGroup;
 import com.ssafy.soltravel.v2.dto.group.GroupDto;
 import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
+import com.ssafy.soltravel.v2.dto.group.response.GroupSummaryDto;
+import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -21,6 +23,7 @@ public interface GroupMapper {
 
     TravelGroup toEntity(GroupDto dto);
 
+    GroupSummaryDto groupToSummaryDto(TravelGroup dto, List<MoneyBoxDto> moneyBoxDtoList);
 
 
     /*

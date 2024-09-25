@@ -20,13 +20,14 @@ import AccountHistory from "./pages/accountHistory/AccountHistory";
 import ViewAccount from "./pages/viewaccount/Account";
 import TransferSelectBank from "./pages/transfer/TransferSelectBank";
 import TransferSetMoney from "./pages/transfer/TransferSetMoney";
+import TransferPassword from "./pages/transfer/TransferPassword";
 import TransferConfirm from "./pages/transfer/TransferConfirm";
 import TransferSuccess from "./pages/transfer/TransferSuccess";
 import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
 import AccountCreate from "./pages/ver1/AccountCreateOld";
 import ExchangeRate from "./pages/exchange/ExchangeRate";
-import ExchangeDetail from './components/exchange/ExchangeDetail';
+import ExchangeDetail from "./components/exchange/ExchangeDetail";
 import Exchange from "./pages/exchange/Exchange";
 import ExchangeKRWFlow from "./pages/exchange/ExchangeKRW";
 import SelectAccount from "./pages/exchange/SelectAccount";
@@ -44,14 +45,14 @@ import PrivateRoute from "./pages/user/PrivateRoute";
 import { Sign } from "crypto";
 import EditMembers from "./pages/settlement/EditMembers";
 import UserInfoOfCreateAccount from "./pages/account/UserInfoOfCreateAccount";
-import UserInfoOfCreateMeetingAccount from "./pages/MeetingAccount/UserInfoOfCreateMeetingAccount";
-import MeetingInfoOfCreateMeetingAccount from "./pages/MeetingAccount/MeetingInfoOfCreateMeetingAccount";
-import PasswordOfCreateMeetingAccount from "./pages/MeetingAccount/PasswordOfCreateMeetingAccount";
-import CheckPasswordOfCreateMeetingAccount from "./pages/MeetingAccount/CheckPasswordOfCreateMeetingAccount";
-import CompletedOfCreateMeetingAccount from "./pages/MeetingAccount/CompletedOfCreateMeetingAccount";
-import IDVerificationOfCreateMeetingAccount from "./pages/MeetingAccount/IDVerificationOfCreateMeetingAccount";
+import UserInfoOfCreateMeetingAccount from "./pages/meetingAccount/UserInfoOfCreateMeetingAccount";
+import MeetingInfoOfCreateMeetingAccount from "./pages/meetingAccount/MeetingInfoOfCreateMeetingAccount";
+import PasswordOfCreateMeetingAccount from "./pages/meetingAccount/PasswordOfCreateMeetingAccount";
+import CheckPasswordOfCreateMeetingAccount from "./pages/meetingAccount/CheckPasswordOfCreateMeetingAccount";
+import CompletedOfCreateMeetingAccount from "./pages/meetingAccount/CompletedOfCreateMeetingAccount";
+import IDVerificationOfCreateMeetingAccount from "./pages/meetingAccount/IDVerificationOfCreateMeetingAccount";
 import TravelBoxTransaction from "./pages/travelBox/TravelBoxTransactionDetail";
-import MeetingTransaction from "./pages/MeetingAccount/MeetingTransaction";
+import MeetingTransaction from "./pages/meetingAccount/MeetingTransaction";
 import CurrencyInfoOfCreateTravelBox from "./pages/travelBox/CurrencyInfoOfCreateTravelBox";
 import AutoCurrencyExchangeOfCreateTravelBox from "./pages/travelBox/AutoCurrencyExchangeOfCreateTravelBox";
 import SelectSettlementAmount from "./pages/settlement/balanceSettlement/SelectSettlementAmount";
@@ -110,16 +111,16 @@ function App() {
           <Route path="/userinfoofcreateaccount" element={<UserInfoOfCreateAccount />} />
 
           {/* 모임통장 생성 */}
-          <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />} />
-          <Route path="/userinfoofcreatemeetingaccount" element={<UserInfoOfCreateMeetingAccount />} />
-          <Route path="/meetinginfoofcreatemeetingaccount" element={<MeetingInfoOfCreateMeetingAccount />} />
-          <Route path="/passwordofcreatemeetingaccount/:type" element={<PasswordOfCreateMeetingAccount />} />
-          <Route path="/checkpasswordofcreatemeetingaccount" element={<CheckPasswordOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/prepare" element={<MeetingAccountCreatePrepare />} />
+          <Route path="/meeting/create/userinfo" element={<UserInfoOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/meetinginfo" element={<MeetingInfoOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/password/:type" element={<PasswordOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/password/check" element={<CheckPasswordOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/idverificationo/:type" element={<IDVerificationOfCreateMeetingAccount />} />
           <Route
-            path="/idverificationofcreatemeetingaccount/:type"
-            element={<IDVerificationOfCreateMeetingAccount />}
+            path="/meeting/create/completed/:type"
+            element={<CompletedOfCreateMeetingAccount />}
           />
-          <Route path="/completedofcreatemeetingaccount/:type" element={<CompletedOfCreateMeetingAccount />} />
 
           {/* 모임통장 상세 */}
           <Route path="/account/:userId" element={<GroupAccountPage />} />
@@ -143,6 +144,7 @@ function App() {
           {/* 이체 */}
           <Route path="/transfer/selectbank" element={<TransferSelectBank />} />
           <Route path="/transfer/setmoney" element={<TransferSetMoney />} />
+          <Route path="/transfer/password" element={<TransferPassword />} />
           <Route path="/transfer/confirm" element={<TransferConfirm />} />
           <Route path="/transfer/success" element={<TransferSuccess />} />
 

@@ -7,16 +7,16 @@ import lombok.Data;
 @Data
 public class TransferRequestDto {
 
-    @Schema(description = "이체 타입", example = "G")
+    @Schema(description = "이체 타입[G:일반이체]", example = "G")
     TransferType transferType;
 
-    @Schema(description = "출금 계좌번호", example = "1")
+    @Schema(description = "출금 계좌번호", example = "001-69042343-209")
     String withdrawalAccountNo;
 
     @Schema(description = "계좌 비밀번호", example = "1234")
     private String accountPassword;
 
-    @Schema(description = "입금 계좌번호", example = "2")
+    @Schema(description = "입금 계좌번호", example = "001-69042343-209")
     String depositAccountNo;
 
     @Schema(description = "거래 금액", example = "5000")

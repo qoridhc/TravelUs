@@ -12,7 +12,7 @@ const IDVerificationOfCreateMeetingAccount = () => {
   ];
 
   const handleNext = () => {
-    navigate(`/completedofcreatemeetingaccount/${params.type}`);
+    navigate(`/meeting/create/completed/${params.type}`);
   };
 
   return (

@@ -13,10 +13,10 @@ const CheckPasswordOfCreateMeetingAccount = () => {
     if (password.length === 4) {
       if (location.state.originalPassword === password) {
         console.log(location.state.type);
-        navigate(`/idverificationofcreatemeetingaccount/${location.state.type}`);
+        navigate(`/meeting/create/idverificationo/${location.state.type}`);
       } else {
         alert("비밀번호가 일치하지 않습니다.");
-        navigate(`/passwordofcreatemeetingaccount/${location.state.type}`);
+        navigate(`/meeting/create/password/${location.state.type}`);
       }
     }
   }, [password]);
