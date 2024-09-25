@@ -1,6 +1,6 @@
 package com.ssafy.soltravel.v2.dto.account;
 
-import com.ssafy.soltravel.v1.domain.Enum.AccountType;
+import com.ssafy.soltravel.v2.domain.Enum.AccountType;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;

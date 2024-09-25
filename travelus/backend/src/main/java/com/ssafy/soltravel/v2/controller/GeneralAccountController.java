@@ -63,7 +63,7 @@ public class GeneralAccountController {
         @RequestBody InquireAccountRequestDto requestDto
     ) {
 
-        AccountDto accountDto = accountService.getByAccountNo(requestDto);
+        AccountDto accountDto = accountService.getByAccountNo(requestDto.getAccountNo());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(accountDto);
     }

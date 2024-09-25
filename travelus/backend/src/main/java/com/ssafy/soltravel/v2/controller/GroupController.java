@@ -4,6 +4,7 @@ import com.ssafy.soltravel.v2.dto.group.GroupDto;
 import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateGroupRequestDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateParticipantRequestDto;
+import com.ssafy.soltravel.v2.dto.group.response.GroupSummaryDto;
 import com.ssafy.soltravel.v2.service.group.GroupService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +62,34 @@ public class GroupController {
         GroupDto accountDto = groupService.getGroupInfo(groupId);
 
         return ResponseEntity.status(HttpStatus.OK).body(accountDto);
+    }
+
+    @Operation(summary = "가입한 모든 모임 조회 (생성한거는 조회 X)", description = "사용자가 가입한 모든 모임의 요약 정보를 반환하는 API.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "모임 요약 정보 조회 성공",
+            content = @Content(schema = @Schema(implementation = GroupSummaryDto.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @GetMapping("/joined")
+    public ResponseEntity<List<GroupSummaryDto>> getAllJoinedGroup() {
+        List<GroupSummaryDto> groupSummaryDtoList = groupService.getAllJoinedGroup(false);
+
+        return ResponseEntity.status(HttpStatus.OK).body(groupSummaryDtoList);
+    }
+
+    @Operation(summary = "생성한 모든 모임 조회 (가입 한거는 X 생성만)", description = "사용자가 생성한 모든 모임의 요약 정보를 반환하는 API.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "모임 요약 정보 조회 성공",
+            content = @Content(schema = @Schema(implementation = GroupSummaryDto.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @GetMapping("/created")
+    public ResponseEntity<List<GroupSummaryDto>> getAllCreatedGroup() {
+        List<GroupSummaryDto> groupSummaryDtoList = groupService.getAllJoinedGroup(true);
+
+        return ResponseEntity.status(HttpStatus.OK).body(groupSummaryDtoList);
     }
 
     // === 참여자 관련 메서드 ===

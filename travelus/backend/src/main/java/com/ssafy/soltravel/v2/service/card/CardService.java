@@ -5,7 +5,6 @@ import com.ssafy.soltravel.v2.common.BankHeader;
 import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
-import com.ssafy.soltravel.v2.dto.account.request.InquireAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.card.CardIssueRequestDto;
 import com.ssafy.soltravel.v2.dto.card.CardListRequestDto;
 import com.ssafy.soltravel.v2.dto.card.CardPaymentRequestDto;
@@ -153,11 +152,7 @@ public class CardService {
      */
     private Double getBalance(String accountNo, String currencyCode) {
 
-        InquireAccountRequestDto inquireDto = InquireAccountRequestDto.builder()
-            .accountNo(accountNo)
-            .build();
-
-        AccountDto account = accountService.getByAccountNo(inquireDto);
+        AccountDto account = accountService.getByAccountNo(accountNo);
         MoneyBoxDto moneyBox = account.getMoneyBoxDtos().stream()
             .filter(mb -> mb.getCurrencyCode().equals(CurrencyType.valueOf(currencyCode)))
             .findFirst()
