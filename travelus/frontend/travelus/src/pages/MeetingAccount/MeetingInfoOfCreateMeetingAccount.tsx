@@ -5,8 +5,6 @@ import MeetingTypeInputMui from "../../components/meetingAccount/MeetingTypeInpu
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { setMeetingName, setMeetingType } from "../../redux/meetingAccountSlice";
-import TravelDateRangePicker from "../../components/account/inputField/TravelDateRangePicker";
-import { Dayjs } from "dayjs";
 
 const MeetingInfoOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
@@ -19,10 +17,6 @@ const MeetingInfoOfCreateMeetingAccount = () => {
 
   const [name, setName] = useState("");
   const [type, setType] = useState("");
-  const [travelSchedule, setTravelSchedule] = useState<{ startDate: Dayjs | null; endDate: Dayjs | null }>({
-    startDate: null,
-    endDate: null,
-  });
 
   const handleNext = () => {
     dispatch(setMeetingName(name));
@@ -35,20 +29,6 @@ const MeetingInfoOfCreateMeetingAccount = () => {
     if (menuStep < guideText.length) {
       setMenuStep(menuStep + 1);
     }
-  };
-
-  const handleTravelStartDate = (startDate: Dayjs) => {
-    setTravelSchedule((prevSchedule) => ({
-      ...prevSchedule,
-      startDate,
-    }));
-  };
-
-  const handleTravelEndDate = (endDate: Dayjs) => {
-    setTravelSchedule((prevSchedule) => ({
-      ...prevSchedule,
-      endDate,
-    }));
   };
 
   return (
@@ -71,11 +51,6 @@ const MeetingInfoOfCreateMeetingAccount = () => {
             </div>
           </div>
 
-          <TravelDateRangePicker
-            schedule={travelSchedule}
-            onStartChange={handleTravelStartDate}
-            onEndChange={handleTravelEndDate}
-          />
           {menuStep >= 2 ? <MeetingTypeInputMui meetingType={type} setMeetingType={setType} /> : <></>}
           {menuStep >= 1 ? (
             <MeetingNameInputMui meetingName={name} setMeetingName={setName} onInputComplete={handleNextStep} />
