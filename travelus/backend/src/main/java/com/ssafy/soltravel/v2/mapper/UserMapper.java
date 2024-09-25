@@ -1,6 +1,7 @@
 package com.ssafy.soltravel.v2.mapper;
 
 
+import com.ssafy.soltravel.v2.domain.Enum.Gender;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.user.UserCreateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserProfileResponseDto;
@@ -32,7 +33,8 @@ public class UserMapper {
             dto.getAddress(),
             dto.getBirth(),
             profileImageUrl,
-            userKey
+            userKey,
+            (dto.getGender()==0)?(Gender.FEMALE):(Gender.MALE)
         );
     }
 
