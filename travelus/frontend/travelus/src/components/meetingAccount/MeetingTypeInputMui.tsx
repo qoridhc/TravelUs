@@ -2,7 +2,12 @@ import React from "react";
 import { meetingAccountIconList } from "../../types/account";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
-const MeetingTypeInputMui = () => {
+interface Props {
+  meetingType: string;
+  setMeetingType: (type: string) => void;
+}
+
+const MeetingTypeInputMui = ({ meetingType, setMeetingType }: Props) => {
   return (
     <FormControl
       variant="standard"
@@ -23,6 +28,8 @@ const MeetingTypeInputMui = () => {
         labelId="meetingType"
         id="meetingType"
         label="meetingType"
+        value={meetingType}
+        onChange={(e) => setMeetingType(e.target.value)}
         MenuProps={{
           PaperProps: {
             sx: {
