@@ -19,6 +19,7 @@ import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.service.user.UserService;
+import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -135,6 +136,21 @@ public class GroupService {
         ParticipantDto participantDto = groupMapper.toParticipantDto(participant);
 
         return participantDto;
+    }
+
+    public void getAllGroupInfosByUserId() {
+
+        // 1. 토큰 기반 유저 아이디 추출
+        User user = securityUtil.getUserByToken();
+
+        List<TravelGroup> groupList = participantRepository.findAllGroupsByUserId(user.getUserId());
+
+//        groupList.stream().map((group) -> )
+
+        List<GroupDto> dtoList = groupMapper.toDtoList(groupList);
+
+        LogUtil.info("dtoList", dtoList);
+
     }
 
 }
