@@ -5,6 +5,7 @@ import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeResponseDto;
 import com.ssafy.soltravel.v2.service.exchange.ExchangeService;
+import com.ssafy.soltravel.v2.util.LogUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -100,4 +101,10 @@ public class ExchangeController {
 //
 //    return ResponseEntity.ok().body(exchangeService.getLatestExchangeRate(dto));
 //  }
+
+  @GetMapping("/rate/predict")
+  public ResponseEntity<?> predictExchangeRate(){
+    LogUtil.info("환율 예측");
+    return ResponseEntity.ok(exchangeService.getPredictions());
+  }
 }
