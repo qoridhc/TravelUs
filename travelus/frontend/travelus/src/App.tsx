@@ -20,6 +20,7 @@ import AccountHistory from "./pages/accountHistory/AccountHistory";
 import ViewAccount from "./pages/viewaccount/Account";
 import TransferSelectBank from "./pages/transfer/TransferSelectBank";
 import TransferSetMoney from "./pages/transfer/TransferSetMoney";
+import TransferPassword from "./pages/transfer/TransferPassword";
 import TransferConfirm from "./pages/transfer/TransferConfirm";
 import TransferSuccess from "./pages/transfer/TransferSuccess";
 import Header from "./components/common/Header";
@@ -143,6 +144,7 @@ function App() {
           {/* 이체 */}
           <Route path="/transfer/selectbank" element={<TransferSelectBank />} />
           <Route path="/transfer/setmoney" element={<TransferSetMoney />} />
+          <Route path="/transfer/password" element={<TransferPassword />} />
           <Route path="/transfer/confirm" element={<TransferConfirm />} />
           <Route path="/transfer/success" element={<TransferSuccess />} />
 

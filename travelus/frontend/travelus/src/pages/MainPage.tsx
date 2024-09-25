@@ -92,7 +92,7 @@ const MainPage = () => {
     };
 
     fetchData();
-  }, [dispatch]); // 의존성 배열에 필요한 값 추가
+  }, []); // 의존성 배열에 필요한 값 추가
 
   return (
     <div className="w-full">
