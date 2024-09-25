@@ -64,16 +64,30 @@ public class GroupController {
         return ResponseEntity.status(HttpStatus.OK).body(accountDto);
     }
 
-    @Operation(summary = "가입한 모든 모임 조회", description = "사용자가 가입한 모든 모임의 요약 정보를 반환하는 API.")
+    @Operation(summary = "가입한 모든 모임 조회 (생성한거는 조회 X)", description = "사용자가 가입한 모든 모임의 요약 정보를 반환하는 API.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "모임 요약 정보 조회 성공",
             content = @Content(schema = @Schema(implementation = GroupSummaryDto.class))),
         @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @GetMapping("joined")
-    public ResponseEntity<List<GroupSummaryDto>> getAllGroupSummaryByUserId() {
-        List<GroupSummaryDto> groupSummaryDtoList = groupService.getAllJoinedGroup();
+    @GetMapping("/joined")
+    public ResponseEntity<List<GroupSummaryDto>> getAllJoinedGroup() {
+        List<GroupSummaryDto> groupSummaryDtoList = groupService.getAllJoinedGroup(false);
+
+        return ResponseEntity.status(HttpStatus.OK).body(groupSummaryDtoList);
+    }
+
+    @Operation(summary = "생성한 모든 모임 조회 (가입 한거는 X 생성만)", description = "사용자가 생성한 모든 모임의 요약 정보를 반환하는 API.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "모임 요약 정보 조회 성공",
+            content = @Content(schema = @Schema(implementation = GroupSummaryDto.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @GetMapping("/created")
+    public ResponseEntity<List<GroupSummaryDto>> getAllCreatedGroup() {
+        List<GroupSummaryDto> groupSummaryDtoList = groupService.getAllJoinedGroup(true);
 
         return ResponseEntity.status(HttpStatus.OK).body(groupSummaryDtoList);
     }

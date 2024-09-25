@@ -133,12 +133,12 @@ public class GroupService {
     }
 
     // 특정 유저가 가입한(생성 x) 모임 전체 저회
-    public List<GroupSummaryDto> getAllJoinedGroup() {
+    public List<GroupSummaryDto> getAllJoinedGroup(boolean isMaster) {
 
         // 1. 토큰 기반 유저 아이디 추출
         User user = securityUtil.getUserByToken();
 
-        List<TravelGroup> groupList = participantRepository.findAllGroupsByUserId(user.getUserId());
+        List<TravelGroup> groupList = participantRepository.findAllGroupsByUserId(user.getUserId(), isMaster);
 
         return groupList.stream()
             .map((group) -> {
@@ -147,8 +147,6 @@ public class GroupService {
                 return GroupSummaryDto.createFromAccountDto(group, accountDto.getMoneyBoxDtos());
             })
             .toList();
-
-
     }
 
 }
