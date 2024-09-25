@@ -222,7 +222,11 @@ const MeetingAccountDetail = () => {
               </div>
               <div className="flex justify-between">
                 <button className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">채우기</button>
-                <button className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">환전</button>
+                <button
+                onClick={() => navigate('/exchange')}
+                className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
+                  환전
+                </button>
               </div>
             </div>
 
@@ -241,7 +245,12 @@ const MeetingAccountDetail = () => {
                 </p>
               </div>
               <div className="flex justify-between">
-                <button className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">재환전</button>
+                <button
+                onClick={() => navigate('/exchangekrw')}
+                className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold"
+                >
+                  재환전
+                </button>
                 <button className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">내역</button>
               </div>
             </div>

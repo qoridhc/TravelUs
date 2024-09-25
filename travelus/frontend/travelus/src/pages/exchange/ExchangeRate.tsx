@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import { ChevronRight } from "lucide-react";
+import { GoHome } from "react-icons/go";
 import { exchangeApi } from '../../api/exchange';
 import { ExchangeRateInfo, currencyNames } from '../../types/exchange';
 
@@ -83,14 +85,19 @@ const ExchangeRateList: React.FC = () => {
   }
 
   return (
-    <div className="h-full p-5 pb-8">
-      <div className="m-3">
+    <div className="h-full flex flex-col bg-gray-100">
+      <div className="p-5">
+        <Link to="/" className="inline-block mb-4">
+          <GoHome className="w-6 h-6 text-gray-600" />
+        </Link>
         <div className="bg-white rounded-lg shadow mb-4">
           <h2 className="p-4 text-lg font-bold">실시간 환율</h2>
           {exchangeRates.map((rate, index) => (
             <ExchangeRateItem key={index} {...rate} />
           ))}
         </div>
+      </div>
+      <div className="mt-auto p-5">
         <div className="bg-gray-100 rounded-lg p-4 text-sm text-gray-600">
           <h3 className="font-bold mb-2">튜나뱅크 환율 안내</h3>
           <ul className="list-disc pl-5 space-y-1">
