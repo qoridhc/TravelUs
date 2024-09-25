@@ -9,28 +9,41 @@ import { accountApi } from "../../api/account";
 
 interface Props {
   index: number;
-  account: AccountInfo;
+  account: any;
   accountId: number;
 }
 
 const JoinedMeetingAccount = ({ index, account, accountId }: Props) => {
   const navigate = useNavigate();
-  const [foreignAccount, setForeignAccount] = useState<AccountInfo | undefined>(undefined);
+  // const [foreignAccount, setForeignAccount] = useState<AccountInfo | undefined>(undefined);
 
-  useEffect(() => {
-    // 특정 외화모임통장 조회
-    const fetchData = async () => {
-      try {
-        const response = await accountApi.fetchForeignMeetingAccount(accountId);
-        setForeignAccount(response);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        alert("계좌 조회에 실패했습니다.");
-      }
-    };
+  // foreignAccount 더미데이터
+  const foreignAccount = {
+    id: 1,
+    name: "외화모임���장1",
+    accountNumber: "12345678901234567890",
+    balance: 340000,
+    currency: {
+      currencyCode: "USD",
+    },
+    type: "외화",
+    accountType: "모임",
+  };
 
-    fetchData();
-  }, [accountId]);
+  // useEffect(() => {
+  //   // 특정 외화모임통장 조회
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await accountApi.fetchForeignMeetingAccount(accountId);
+  //       setForeignAccount(response);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //       alert("계좌 조회에 실패했습니다.");
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [accountId]);
 
   // 숫자를 세 자리마다 쉼표로 구분하여 표시
   const formatCurrency = (amount: number) => {

@@ -53,10 +53,7 @@ export interface ExchangeResponse {
 export const currencyNames: { [key: string]: string } = {
   USD: '미국 달러',
   JPY: '일본 엔',
-  EUR: '유로',
-  GBP: '영국 파운드',
-  CHF: '스위스 프랑',
-  CAD: '캐나다 달러',
+  EUR: '유럽 유로',
   CNY: '중국 위안',
 };
 
@@ -65,8 +62,5 @@ export const currencyTypeList: Array<{text: string, value: string}> = [
   { text: "USD(미국/$)", value: "USD" },
   { text: "JPY(일본/¥)", value: "JPY" },
   { text: "EUR(유로/€)", value: "EUR" },
-  { text: "GBP(영국/£)", value: "GBP" },
-  { text: "CHF(스위스/₣)", value: "CHF" },
-  { text: "CAD(캐나다/$)", value: "CAD" },
   { text: "CNY(중국/¥)", value: "CNY" },
 ];

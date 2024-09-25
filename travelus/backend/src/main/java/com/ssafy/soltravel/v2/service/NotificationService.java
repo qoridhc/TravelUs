@@ -3,7 +3,7 @@ package com.ssafy.soltravel.v2.service;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeResponseDto;
 import com.ssafy.soltravel.v2.dto.notification.ExchangeNotificationDto;
 import com.ssafy.soltravel.v2.dto.notification.TransactionNotificationDto;
-import com.ssafy.soltravel.v2.dto.settlement.SettlementResponseDto;
+import com.ssafy.soltravel.v2.dto.settlement.response.SettlementResponseDto;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import java.io.IOException;

@@ -20,7 +20,15 @@ public class CreateParticipantRequestDto {
     @Schema(description = "참여자의 개인 계좌 번호", example = "002-6157654-209")
     private String personalAccountNo;
 
-    @Schema(description = "개인 계좌의 비밀번호", example = "password123!")
-    private String accountPassword;
+    // CreateGroupRequestDto로 CreateParticipantRequestDto 생성하는 팩토리 메서드
+    public static CreateParticipantRequestDto createDto(Long userId, Long groupId, boolean isMaster, String personalAccountNo) {
+
+        return CreateParticipantRequestDto.builder()
+            .userId(userId)
+            .groupId(groupId)
+            .isMaster(isMaster)
+            .personalAccountNo(personalAccountNo)
+            .build();
+    }
 
 }

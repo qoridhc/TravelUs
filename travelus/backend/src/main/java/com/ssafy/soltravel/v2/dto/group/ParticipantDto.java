@@ -7,6 +7,8 @@ public class ParticipantDto {
 
     private Long participantId;
 
+    private Long userId;
+
     private boolean isMaster;
 
     private String personalAccountNo;

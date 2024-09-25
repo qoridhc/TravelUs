@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 import { RootState } from "../../../redux/store";
 import { editJoinedAccountList } from "../../../redux/accountSlice";
 import MeetingAccount from "../../../components/account/MeetingAccount";
@@ -8,9 +9,91 @@ import { accountApi } from "../../../api/account";
 import { IoMdAdd } from "react-icons/io";
 
 const MeetingAccountListNew = () => {
-  const accountList = useSelector((state: RootState) => state.account.accountList);
-  const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
-  const joinedAccountList = useSelector((state: RootState) => state.account.joinedAccountList);
+  const navigate = useNavigate();
+  // const accountList = useSelector((state: RootState) => state.account.accountList);
+  // const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
+  // const joinedAccountList = useSelector((state: RootState) => state.account.joinedAccountList);
+
+  // accounstList 더미데이터
+  const accountList = [
+    {
+      id: 1,
+      groupName: "사랑스러운 지나네",
+      accountNo: "12345678901234567890",
+      iconName: "family",
+      accountOwner: "모임주1",
+      balance: 1021300,
+      accountDate: "2022-01-01",
+      accountStatus: "open",
+    },
+    {
+      id: 2,
+      groupName: "신암고 3학년 1반",
+      accountNo: "12345678901234567890",
+      iconName: "friend",
+      accountType: "모임",
+      accountOwner: "모임주1",
+      balance: 5032000,
+      accountDate: "2022-01-01",
+      accountStatus: "open",
+    },
+  ];
+
+  // joinedAccountList 더미데이터
+  const joinedAccountList = [
+    {
+      id: 1,
+      groupName: "모히또에서 몰디브 한잔",
+      accountNo: "12345678901234567890",
+      iconName: "lover",
+      accountOwner: "모임주1",
+      balance: 2123000,
+      accountDate: "2022-01-01",
+      accountStatus: "open",
+      joinedDate: "2022-01-01",
+    },
+    {
+      id: 2,
+      groupName: "ssafy 11기",
+      accountNo: "12345678901234567890",
+      iconName: "job",
+      accountOwner: "모임주2",
+      balance: 1000000,
+      accountDate: "2023-01-10",
+      accountStatus: "open",
+      joinedDate: "2023-01-10",
+    },
+  ];
+
+  // foreignAccount 더미데이터
+  const foreignAccountList = [
+    {
+      id: 1,
+      accountName: "외부모임1",
+      accountNo: "98765432109876543210",
+      accountType: "외부모임",
+      accountOwner: "외부모임주1",
+      balance: 1000000,
+      currency: {
+        currencyCode: "USD",
+      },
+      accountDate: "2022-01-01",
+      accountStatus: "open",
+    },
+    {
+      id: 2,
+      accountName: "외부모임2",
+      accountNo: "98765432109876543210",
+      accountType: "외부모임",
+      accountOwner: "외부모임주2",
+      balance: 1000000,
+      currency: {
+        currencyCode: "USD",
+      },
+      accountDate: "2023-02-13",
+      accountStatus: "open",
+    },
+  ];
 
   // 배열의 길이가 0이면 0을, 1 이상이면 accountList.length - 1을 표시
   const accountCount = accountList.length === 0 ? 0 : accountList.length - 1;
@@ -48,16 +131,21 @@ const MeetingAccountListNew = () => {
             {/* 내가 개설한 모임 통장 있을 시 표시 */}
             {accountList.length > 1 ? (
               <div className="flex flex-col space-y-7">
+                {/* 
                 {accountList.slice(1).map((account, index) => (
-                  <MeetingAccount
-                    key={index}
-                    index={index}
-                    account={account}
-                    foreignAccount={foreignAccountList[index]}
-                  />
+                  <MeetingAccount key={index} index={index} account={account} foreignAccount={foreignAccountList[index]} />
                 ))}
+                */}
+
+                {/* 더미데이터 용 */}
+                {accountList.map((account, index) => (
+                  <MeetingAccount key={index} index={index} account={account} foreignAccount={foreignAccountList[index]} />
+                ))}
+
                 <div>
-                  <div className="flex items-center space-x-4">
+                  <div
+                    onClick={() => {navigate("/userinfoofcreatemeetingaccount");}}
+                    className="flex items-center space-x-4">
                     <div className="w-11 h-11 bg-zinc-200 rounded-full flex justify-center items-center">
                       <IoMdAdd className="text-3xl text-zinc-400 font-bold" />
                     </div>

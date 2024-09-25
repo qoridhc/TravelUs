@@ -14,6 +14,9 @@ public class MoneyBoxTransferRequestDto {
   @Schema(description = "출금 계좌 번호", example = "002-45579486-209")
   String accountNo;
 
+  @Schema(description = "계좌 비밀번호", example = "1234")
+  private String accountPassword;
+
   @Schema(description = "환전 신청 moneyBox의 통화Code", example = "KRW")
   CurrencyType sourceCurrencyCode;
 
@@ -26,6 +29,7 @@ public class MoneyBoxTransferRequestDto {
   public static MoneyBoxTransferRequestDto create(
       TransferType transferType,
       String accountNo,
+      String accountPassword,
       CurrencyType sourceCurrencyCode,
       CurrencyType targetCurrencyCode,
       String transactionBalance) {
@@ -33,6 +37,7 @@ public class MoneyBoxTransferRequestDto {
     MoneyBoxTransferRequestDto requestDto = new MoneyBoxTransferRequestDto();
     requestDto.setTransferType(transferType);
     requestDto.setAccountNo(accountNo);
+    requestDto.setAccountPassword(accountPassword);
     requestDto.setSourceCurrencyCode(sourceCurrencyCode);
     requestDto.setTargetCurrencyCode(targetCurrencyCode);
     requestDto.setTransactionBalance(transactionBalance);

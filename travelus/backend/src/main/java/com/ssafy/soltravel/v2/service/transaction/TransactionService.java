@@ -30,197 +30,200 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TransactionService {
 
-  private final String BASE_URL = "http://localhost:8080/api/v1/bank/transaction";
-  private final Map<String, String> apiKeys;
-  private final WebClientUtil webClientUtil;
-  private final ModelMapper modelMapper;
-  private final UserRepository userRepository;
+    private final Map<String, String> apiKeys;
 
-  /**
-   * 입금
-   */
-  public ResponseEntity<TransactionResponseDto> postAccountDeposit(
-      TransactionRequestDto requestDto) {
+    private final UserRepository userRepository;
 
-    return processTransaction("deposit", requestDto);
-  }
+    private final SecurityUtil securityUtil;
+    private final WebClientUtil webClientUtil;
 
-  /**
-   * 출금
-   */
-  public ResponseEntity<TransactionResponseDto> postAccountWithdrawal(
-      TransactionRequestDto requestDto) {
+    private final ModelMapper modelMapper;
 
-    return processTransaction("withdrawal", requestDto);
-  }
+    private final String BASE_URL = "/transaction/";
 
-  /**
-   * 일반 이체
-   */
-  public ResponseEntity<List<TransferHistoryResponseDto>> postGeneralTransfer(
-      TransferRequestDto requestDto) {
+    /**
+     * 입금
+     */
+    public ResponseEntity<TransactionResponseDto> postAccountDeposit(
+        TransactionRequestDto requestDto) {
 
-    return processTransfer("general", requestDto);
-  }
-
-  /**
-   * 머니 박스 이체
-   */
-  public ResponseEntity<List<TransferHistoryResponseDto>> postMoneyBoxTransfer(
-      MoneyBoxTransferRequestDto requestDto, boolean isAuto, long userId) {
-
-    return processMoneyBoxTransfer("moneybox", requestDto, isAuto,userId);
-  }
-
-  /**
-   * 입출금 공통 요청 처리 메서드
-   */
-  private ResponseEntity<TransactionResponseDto> processTransaction(String apiName,
-      TransactionRequestDto requestDto) {
-
-    Long userId = SecurityUtil.getCurrentUserId();
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new UserNotFoundException(userId));
-
-    String API_URL = BASE_URL + "/" + apiName;
-
-    Header header = Header.builder()
-        .apiKey(apiKeys.get("API_KEY"))
-        .userKey(user.getUserKey()).build();
-
-    Map<String, Object> body = new HashMap<>();
-    body.put("Header", header);
-    body.put("accountNo", requestDto.getAccountNo());
-    body.put("currencyCode", requestDto.getCurrencyCode());
-    body.put("transactionType", requestDto.getTransactionType());
-    body.put("transactionBalance", requestDto.getTransactionBalance());
-    body.put("transactionSummary", requestDto.getTransactionSummary());
-
-    ResponseEntity<Map<String, Object>> response = webClientUtil.request(API_URL, body, Map.class);
-
-    Object recObject = response.getBody().get("REC");
-
-    TransactionResponseDto transactionResponseDto = modelMapper.map(recObject,
-        TransactionResponseDto.class);
-    return ResponseEntity.status(HttpStatus.OK).body(transactionResponseDto);
-  }
-
-
-  /**
-   * 이체 요청 처리 메서드
-   */
-  public ResponseEntity<List<TransferHistoryResponseDto>> processTransfer(String apiName,
-      TransferRequestDto requestDto) {
-
-    Long userId = SecurityUtil.getCurrentUserId();
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new UserNotFoundException(userId));
-
-    String API_URL = BASE_URL + "/transfer/" + apiName;
-
-    Header header = Header.builder()
-        .apiKey(apiKeys.get("API_KEY"))
-        .userKey(user.getUserKey()).build();
-
-    Map<String, Object> body = new HashMap<>();
-    body.put("Header", header);
-    body.put("transferType", requestDto.getTransferType());
-    body.put("withdrawalAccountNo", requestDto.getWithdrawalAccountNo());
-    body.put("depositAccountNo", requestDto.getDepositAccountNo());
-    body.put("transactionBalance", requestDto.getTransactionBalance());
-    body.put("withdrawalTransactionSummary", requestDto.getWithdrawalTransactionSummary());
-    body.put("depositTransactionSummary", requestDto.getDepositTransactionSummary());
-
-    ResponseEntity<Map<String, Object>> response = webClientUtil.request(API_URL, body, Map.class);
-
-    List<Object> recObject = (List<Object>) response.getBody().get("REC");
-
-    List<TransferHistoryResponseDto> responseDto = recObject.stream()
-        .map(value -> modelMapper.map(value, TransferHistoryResponseDto.class))
-        .collect(Collectors.toList());
-
-    return ResponseEntity.status(HttpStatus.OK).body(responseDto);
-  }
-
-  /**
-   * 머니박스 이체 요청 처리 메서드
-   */
-  public ResponseEntity<List<TransferHistoryResponseDto>> processMoneyBoxTransfer(String apiName,
-      MoneyBoxTransferRequestDto requestDto, boolean isAuto, long userId) {
-
-    String API_URL = BASE_URL + "/transfer/" + apiName;
-    if (isAuto) {//자동환전이라면
-
-      API_URL += "/auto";
-    }else{
-
-      userId = SecurityUtil.getCurrentUserId();
+        return processTransaction("deposit", requestDto);
     }
-    long finalUserId = userId;
 
-    User user = userRepository.findByUserId(finalUserId)
-        .orElseThrow(() -> new UserNotFoundException(finalUserId));
+    /**
+     * 출금
+     */
+    public ResponseEntity<TransactionResponseDto> postAccountWithdrawal(
+        TransactionRequestDto requestDto) {
 
-    Header header = Header.builder()
-        .apiKey(apiKeys.get("API_KEY"))
-        .userKey(user.getUserKey()).build();
-
-    Map<String, Object> body = new HashMap<>();
-    body.put("Header", header);
-    body.put("transferType", requestDto.getTransferType());
-    body.put("accountNo", requestDto.getAccountNo());
-    body.put("sourceCurrencyCode", requestDto.getSourceCurrencyCode());
-    body.put("targetCurrencyCode", requestDto.getTargetCurrencyCode());
-    body.put("transactionBalance", requestDto.getTransactionBalance());
-
-    ResponseEntity<Map<String, Object>> response = webClientUtil.request(API_URL, body, Map.class);
-
-    List<Object> recObject = (List<Object>) response.getBody().get("REC");
-
-    List<TransferHistoryResponseDto> responseDto = recObject.stream()
-        .map(value -> modelMapper.map(value, TransferHistoryResponseDto.class))
-        .collect(Collectors.toList());
-
-    return ResponseEntity.status(HttpStatus.OK).body(responseDto);
-  }
-
-  /**
-   * 거래 내역 조회
-   */
-  public ResponseEntity<List<TransferHistoryResponseDto>> getHistory(
-      TransactionHistoryRequestDto requestDto) {
-
-    Long userId = SecurityUtil.getCurrentUserId();
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new UserNotFoundException(userId));
-
-    String API_URL = BASE_URL + "/history";
-
-    Header header = Header.builder()
-        .apiKey(apiKeys.get("API_KEY"))
-        .userKey(user.getUserKey()).build();
-
-    LogUtil.info("requestDto: ", requestDto);
-    Map<String, Object> body = new HashMap<>();
-    body.put("Header", header);
-    TransactionType transactionType = requestDto.getTransactionType();
-    if (transactionType != null) {
-      body.put("transactionType", transactionType);
+        return processTransaction("withdrawal", requestDto);
     }
-    body.put("accountNo", requestDto.getAccountNo());
-    body.put("currencyCode", requestDto.getCurrencyCode());
-    body.put("startDate", requestDto.getStartDate());
-    body.put("endDate", requestDto.getEndDate());
-    body.put("orderByType", requestDto.getOrderByType());
 
-    ResponseEntity<Map<String, Object>> response = webClientUtil.request(API_URL, body, Map.class);
+    /**
+     * 일반 이체
+     */
+    public ResponseEntity<List<TransferHistoryResponseDto>> postGeneralTransfer(
+        TransferRequestDto requestDto) {
 
-    List<Object> recObject = (List<Object>) response.getBody().get("REC");
+        return processTransfer("general", requestDto);
+    }
 
-    List<TransferHistoryResponseDto> responseDto = recObject.stream()
-        .map(value -> modelMapper.map(value, TransferHistoryResponseDto.class))
-        .collect(Collectors.toList());
+    /**
+     * 머니 박스 이체
+     */
+    public ResponseEntity<List<TransferHistoryResponseDto>> postMoneyBoxTransfer(
+        MoneyBoxTransferRequestDto requestDto, boolean isAuto, long userId) {
 
-    return ResponseEntity.status(HttpStatus.OK).body(responseDto);
-  }
+        return processMoneyBoxTransfer("moneybox", requestDto, isAuto, userId);
+    }
+
+    /**
+     * 입출금 공통 요청 처리 메서드
+     */
+    private ResponseEntity<TransactionResponseDto> processTransaction(String apiName,
+        TransactionRequestDto requestDto) {
+
+        // 유저 조회
+        User user = securityUtil.getUserByToken();
+
+        String API_URL = BASE_URL + apiName;
+
+        Header header = Header.builder()
+            .apiKey(apiKeys.get("API_KEY"))
+            .userKey(user.getUserKey()).build();
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("Header", header);
+        body.put("accountNo", requestDto.getAccountNo());
+        body.put("accountPassword", requestDto.getAccountPassword());
+        body.put("currencyCode", requestDto.getCurrencyCode());
+        body.put("transactionType", requestDto.getTransactionType());
+        body.put("transactionBalance", requestDto.getTransactionBalance());
+        body.put("transactionSummary", requestDto.getTransactionSummary());
+
+        ResponseEntity<Map<String, Object>> response = webClientUtil.request(API_URL, body, Map.class);
+
+        Object recObject = response.getBody().get("REC");
+
+        TransactionResponseDto transactionResponseDto = modelMapper.map(recObject,
+            TransactionResponseDto.class);
+        return ResponseEntity.status(HttpStatus.OK).body(transactionResponseDto);
+    }
+
+
+    /**
+     * 이체 요청 처리 메서드
+     */
+    public ResponseEntity<List<TransferHistoryResponseDto>> processTransfer(String apiName,
+        TransferRequestDto requestDto) {
+
+        User user = securityUtil.getUserByToken();
+
+        String API_URL = BASE_URL + "transfer/" + apiName;
+
+        Header header = Header.builder()
+            .apiKey(apiKeys.get("API_KEY"))
+            .userKey(user.getUserKey()).build();
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("Header", header);
+        body.put("transferType", requestDto.getTransferType());
+        body.put("withdrawalAccountNo", requestDto.getWithdrawalAccountNo());
+        body.put("accountPassword", requestDto.getAccountPassword());
+        body.put("depositAccountNo", requestDto.getDepositAccountNo());
+        body.put("transactionBalance", requestDto.getTransactionBalance());
+        body.put("withdrawalTransactionSummary", requestDto.getWithdrawalTransactionSummary());
+        body.put("depositTransactionSummary", requestDto.getDepositTransactionSummary());
+
+        ResponseEntity<Map<String, Object>> response = webClientUtil.request(API_URL, body, Map.class);
+
+        List<Object> recObject = (List<Object>) response.getBody().get("REC");
+
+        List<TransferHistoryResponseDto> responseDto = recObject.stream()
+            .map(value -> modelMapper.map(value, TransferHistoryResponseDto.class))
+            .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
+    /**
+     * 머니박스 이체 요청 처리 메서드
+     */
+    public ResponseEntity<List<TransferHistoryResponseDto>> processMoneyBoxTransfer(String apiName,
+        MoneyBoxTransferRequestDto requestDto, boolean isAuto, long userId) {
+
+        String API_URL = BASE_URL + "transfer/" + apiName;
+        if (isAuto) {//자동환전이라면
+
+            API_URL += "/auto";
+        } else {
+
+            userId = securityUtil.getCurrentUserId();
+        }
+        long finalUserId = userId;
+
+        User user = userRepository.findByUserId(finalUserId)
+            .orElseThrow(() -> new UserNotFoundException(finalUserId));
+
+        Header header = Header.builder()
+            .apiKey(apiKeys.get("API_KEY"))
+            .userKey(user.getUserKey()).build();
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("Header", header);
+        body.put("transferType", requestDto.getTransferType());
+        body.put("accountNo", requestDto.getAccountNo());
+        body.put("accountPassword", requestDto.getAccountPassword());
+        body.put("sourceCurrencyCode", requestDto.getSourceCurrencyCode());
+        body.put("targetCurrencyCode", requestDto.getTargetCurrencyCode());
+        body.put("transactionBalance", requestDto.getTransactionBalance());
+
+        ResponseEntity<Map<String, Object>> response = webClientUtil.request(API_URL, body, Map.class);
+
+        List<Object> recObject = (List<Object>) response.getBody().get("REC");
+
+        List<TransferHistoryResponseDto> responseDto = recObject.stream()
+            .map(value -> modelMapper.map(value, TransferHistoryResponseDto.class))
+            .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
+    /**
+     * 거래 내역 조회
+     */
+    public ResponseEntity<List<TransferHistoryResponseDto>> getHistory(
+        TransactionHistoryRequestDto requestDto) {
+
+        User user = securityUtil.getUserByToken();
+
+        String API_URL = BASE_URL + "history";
+
+        Header header = Header.builder()
+            .apiKey(apiKeys.get("API_KEY"))
+            .userKey(user.getUserKey()).build();
+
+        LogUtil.info("requestDto: ", requestDto);
+        Map<String, Object> body = new HashMap<>();
+        body.put("Header", header);
+        TransactionType transactionType = requestDto.getTransactionType();
+        if (transactionType != null) {
+            body.put("transactionType", transactionType);
+        }
+        body.put("accountNo", requestDto.getAccountNo());
+        body.put("currencyCode", requestDto.getCurrencyCode());
+        body.put("startDate", requestDto.getStartDate());
+        body.put("endDate", requestDto.getEndDate());
+        body.put("orderByType", requestDto.getOrderByType());
+
+        ResponseEntity<Map<String, Object>> response = webClientUtil.request(API_URL, body, Map.class);
+
+        List<Object> recObject = (List<Object>) response.getBody().get("REC");
+
+        List<TransferHistoryResponseDto> responseDto = recObject.stream()
+            .map(value -> modelMapper.map(value, TransferHistoryResponseDto.class))
+            .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
 }

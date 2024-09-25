@@ -22,6 +22,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
             .selectFrom(account)
             .leftJoin(account.moneyBoxes, moneyBox).fetchJoin()
             .where(account.accountNo.eq(accountNo))
+            .orderBy(moneyBox.createdAt.asc())  // createdAt을 기준으로 오름차순 정렬
             .fetchOne();
 
         return Optional.ofNullable(result);
@@ -36,6 +37,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
         List<Account> result = queryFactory.selectFrom(account)
             .leftJoin(account.moneyBoxes, moneyBox).fetchJoin()
             .where(account.user.userId.eq(userId))
+            .orderBy(moneyBox.createdAt.asc())
             .fetch();
 
         return Optional.ofNullable(result);

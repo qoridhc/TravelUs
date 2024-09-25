@@ -66,7 +66,7 @@ const AccountTransaction: React.FC<AccountTransactionProps> = (props) => {
         <div className="p-5 grid grid-cols-3 items-center">
           <IoIosArrowBack
             onClick={() => {
-              navigate("/meetingaccount/1");
+              navigate("/");
             }}
             className="text-2xl"
           />
@@ -81,8 +81,12 @@ const AccountTransaction: React.FC<AccountTransactionProps> = (props) => {
           <div className="flex justify-between">
             <button className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">카드</button>
             <button
-              onClick={()=>{navigate("/transfer/selectbank")}}
-              className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">이체</button>
+              onClick={() => {
+                navigate("/transfer/selectbank");
+              }}
+              className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
+              이체
+            </button>
           </div>
         </div>
 
@@ -104,13 +108,7 @@ const AccountTransaction: React.FC<AccountTransactionProps> = (props) => {
                       })}
                     </p>
                   </div>
-                  <div className="flex flex-col">
-                    {transaction.transaction === "지출" ? (
-                      <p className="text-lg">- {transaction.amount} 원</p>
-                    ) : (
-                      <p className="text-lg text-[#026CE1]">{transaction.amount} 원</p>
-                    )}
-                  </div>
+                  <div className="flex flex-col">{transaction.transaction === "지출" ? <p className="text-lg">- {transaction.amount} 원</p> : <p className="text-lg text-[#026CE1]">{transaction.amount} 원</p>}</div>
                 </div>
               ))}
               <hr className="my-3" />

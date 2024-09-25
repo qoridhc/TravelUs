@@ -9,6 +9,11 @@ export const userApi = {
       },
     });
   },
+
+  // 아이디 중복 조회
+  fetchValidateId: (id: string) => {
+    return api.post(`/user/dup-check`, { id });
+  },
     
   // SMS 인증 전송
   fetchSendSmsValidation: (phone: string) => {
@@ -22,8 +27,8 @@ export const userApi = {
   },
 
   // 로그인
-  fetchLogin: (email: string, password: string) => {
-    return api.post(`/auth/login`, { email, password });
+  fetchLogin: (id: string, password: string) => {
+    return api.post(`/auth/login`, { id, password });
   },
 
   // 모임원 초대 시 이메일 유효성 검사

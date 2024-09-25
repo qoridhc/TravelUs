@@ -13,6 +13,8 @@ import com.goofy.tunabank.v1.dto.transaction.request.TransactionRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferMBRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.response.TransactionResponseDto;
+import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
+import com.goofy.tunabank.v1.exception.account.InvalidAccountPasswordException;
 import com.goofy.tunabank.v1.exception.transaction.InsufficientBalanceException;
 import com.goofy.tunabank.v1.exception.transaction.InvalidTransactionTypeException;
 import com.goofy.tunabank.v1.exception.transaction.InvalidWithdrawalAmountException;
@@ -21,6 +23,7 @@ import com.goofy.tunabank.v1.exception.transaction.TransactionHistoryNotFoundExc
 import com.goofy.tunabank.v1.exception.transaction.UnauthorizedTransactionException;
 import com.goofy.tunabank.v1.mapper.TransactionMapper;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
+import com.goofy.tunabank.v1.repository.account.AccountRepository;
 import com.goofy.tunabank.v1.repository.transaction.TransactionHistoryRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -40,9 +43,8 @@ public class TransactionService {
   private final TransactionMapper transactionMapper;
   private final ExchangeService exchangeService;
   private final UserService userService;
-  private static final int KRW_CURRENCY_ID = 1;
+  private final AccountRepository accountRepository;
 
-  //TODO: 비밀번호 검증
 
   /**
    * 입금 처리
@@ -85,7 +87,6 @@ public class TransactionService {
     return afterBalance.doubleValue();
   }
 
-
   /**
    * 입금 및 출금(원화, 외화)
    */
@@ -99,6 +100,9 @@ public class TransactionService {
     //거래 권한 확인
     User user = userService.findUserByHeader();
     validateUserAccess(user, moneyBox);
+
+    //비밀번호 검증
+    validatePassword(requestDto.getAccountPassword(), accountNo);
 
     TransactionType transactionType = requestDto.getTransactionType();
     double amount = requestDto.getTransactionBalance();
@@ -128,12 +132,16 @@ public class TransactionService {
   public List<TransactionResponseDto> processGeneralTransfer(TransferRequestDto requestDto) {
 
     // 출금 머니박스
-    MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getWithdrawalAccountNo(),
+    MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrencyCode(
+        requestDto.getWithdrawalAccountNo(),
         CurrencyType.KRW);
 
     //거래 권한 확인
     User user = userService.findUserByHeader();
     validateUserAccess(user, withdrawalBox);
+
+    //비밀번호 검증
+    validatePassword(requestDto.getAccountPassword(), requestDto.getWithdrawalAccountNo());
 
     // 입금 머니박스
     MoneyBox depositBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getDepositAccountNo(),
@@ -151,29 +159,43 @@ public class TransactionService {
   }
 
   /**
-   * 머니박스 이체
+   * 자동환전
+   */
+  public List<TransactionResponseDto> processAutoExchange(TransferMBRequestDto requestDto) {
+
+    requestDto.setAccountPassword(getPassword(requestDto.getAccountNo()));
+    return processMoneyBoxTransfer(requestDto);
+  }
+
+  /**
+   * 머니박스 이체(환전)
    */
   @Transactional
   public List<TransactionResponseDto> processMoneyBoxTransfer(TransferMBRequestDto requestDto) {
 
     double beforeAmount = requestDto.getTransactionBalance();//해당 머니박스의 통화단위임
+    String summary = "";
     ExchangeAmountRequestDto exchangeAmountRequestDto = switch (requestDto.getSourceCurrencyCode()) {
-      case USD ->
-          exchangeService.calculateAmountFromForeignCurrencyToKRW(requestDto.getSourceCurrencyCode(),
-              beforeAmount);// 외화 -> 원화
+      case USD -> {
+        summary = "재환전";
+        yield exchangeService.calculateAmountFromForeignCurrencyToKRW(
+            requestDto.getSourceCurrencyCode(),
+            beforeAmount); // 외화 -> 원화
+      }
       default -> {
+        summary = "환전";
         // 원화 -> 외화일 때만 10원 단위로 조정
         if (beforeAmount % 10 != 0) {
           beforeAmount -= (beforeAmount % 10);
         }
         yield exchangeService.calculateAmountFromKRWToForeignCurrency(
-            requestDto.getTargetCurrencyCode(), beforeAmount);// 원화 -> 외화
+            requestDto.getTargetCurrencyCode(), beforeAmount); // 원화 -> 외화
       }
     };
 
     double calculatedAmount = exchangeAmountRequestDto.getAmount();
     double exchangeRate = exchangeAmountRequestDto.getExchangeRate();
-    String summary = "적용 환율: " + exchangeRate;
+    summary += (", 적용 환율: " + exchangeRate);
 
     // 출금 머니박스
     MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountNo(),
@@ -182,6 +204,9 @@ public class TransactionService {
     //거래 권한 확인
     User user = userService.findUserByHeader();
     validateUserAccess(user, withdrawalBox);
+
+    //비밀번호 검증
+    validatePassword(requestDto.getAccountPassword(), requestDto.getAccountNo());
 
     // 입금 머니박스
     MoneyBox depositBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountNo(),
@@ -236,7 +261,6 @@ public class TransactionService {
         List.of(withdrawalTh, depositTh));
   }
 
-
   /**
    * 거래 내역 조회
    */
@@ -263,8 +287,9 @@ public class TransactionService {
    * 머니박스 조회
    */
   @Transactional(readOnly = true)
-  public MoneyBox findMoneyBoxByAccountAndCurrencyCode(String accountNo, CurrencyType currencyCode) {
-    return moneyBoxRepository.findMoneyBoxByAccountAndCurrencyCode(accountNo, currencyCode)
+  public MoneyBox findMoneyBoxByAccountAndCurrencyCode(String accountNo, CurrencyType
+      currencyCode) {
+    return moneyBoxRepository.findMoneyBoxByAccountNoAndCurrency(accountNo, currencyCode)
         .orElseThrow(() -> new MoneyBoxNotFoundException(accountNo, currencyCode));
   }
 
@@ -283,7 +308,6 @@ public class TransactionService {
     }
   }
 
-
   /**
    * 출금시 유효성 검증
    */
@@ -295,5 +319,24 @@ public class TransactionService {
     if (amount > currentBalance) {
       throw new InsufficientBalanceException(currentBalance, amount);
     }
+  }
+
+  /**
+   * 비밀번호 검증
+   */
+  private boolean validatePassword(String password, String accountNo) {
+
+    String accountPassword = getPassword(accountNo);
+
+    if (!password.equals(accountPassword)) {
+      throw new InvalidAccountPasswordException(password);
+    }
+    return true;
+  }
+
+  private String getPassword(String accountNo) {
+
+    return accountRepository.findPasswordByAccountNo(accountNo)
+        .orElseThrow(() -> new InvalidAccountNoException(accountNo));
   }
 }
