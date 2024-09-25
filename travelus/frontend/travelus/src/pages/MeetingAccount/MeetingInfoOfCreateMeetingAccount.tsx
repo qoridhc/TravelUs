@@ -5,6 +5,8 @@ import MeetingTypeInputMui from "../../components/meetingAccount/MeetingTypeInpu
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { setMeetingName, setMeetingType } from "../../redux/meetingAccountSlice";
+import TravelDateRangePicker from "../../components/account/inputField/TravelDateRangePicker";
+import { Dayjs } from "dayjs";
 
 const MeetingInfoOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
@@ -15,11 +17,17 @@ const MeetingInfoOfCreateMeetingAccount = () => {
     ["모임종류를", "선택해주세요"],
   ];
 
-  const [meetingName, setMeetingName] = useState("");
-  const [meetingType, setMeetingType] = useState("");
+  const [name, setName] = useState("");
+  const [type, setType] = useState("");
+  const [travelSchedule, setTravelSchedule] = useState<{ startDate: Dayjs | null; endDate: Dayjs | null }>({
+    startDate: null,
+    endDate: null,
+  });
 
   const handleNext = () => {
-    // dispatch(setMeetingName(meetingName));
+    dispatch(setMeetingName(name));
+    dispatch(setMeetingType(type));
+
     navigate("/meeting/create/password/meeting");
   };
 
@@ -27,6 +35,20 @@ const MeetingInfoOfCreateMeetingAccount = () => {
     if (menuStep < guideText.length) {
       setMenuStep(menuStep + 1);
     }
+  };
+
+  const handleTravelStartDate = (startDate: Dayjs) => {
+    setTravelSchedule((prevSchedule) => ({
+      ...prevSchedule,
+      startDate,
+    }));
+  };
+
+  const handleTravelEndDate = (endDate: Dayjs) => {
+    setTravelSchedule((prevSchedule) => ({
+      ...prevSchedule,
+      endDate,
+    }));
   };
 
   return (
@@ -49,13 +71,14 @@ const MeetingInfoOfCreateMeetingAccount = () => {
             </div>
           </div>
 
-          {menuStep >= 2 ? <MeetingTypeInputMui meetingType={meetingName} setMeetingType={setMeetingName} /> : <></>}
+          <TravelDateRangePicker
+            schedule={travelSchedule}
+            onStartChange={handleTravelStartDate}
+            onEndChange={handleTravelEndDate}
+          />
+          {menuStep >= 2 ? <MeetingTypeInputMui meetingType={type} setMeetingType={setType} /> : <></>}
           {menuStep >= 1 ? (
-            <MeetingNameInputMui
-              meetingName={meetingType}
-              setMeetingName={setMeetingType}
-              onInputComplete={handleNextStep}
-            />
+            <MeetingNameInputMui meetingName={name} setMeetingName={setName} onInputComplete={handleNextStep} />
           ) : (
             <></>
           )}
@@ -64,10 +87,10 @@ const MeetingInfoOfCreateMeetingAccount = () => {
 
       <button
         className={`w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0] ${
-          meetingName === "" || meetingType === "" ? "text-[#565656] bg-[#E3E4E4]" : "text-white bg-[#1429A0]"
+          name === "" || type === "" ? "text-[#565656] bg-[#E3E4E4]" : "text-white bg-[#1429A0]"
         }`}
         onClick={() => handleNext()}
-        disabled={meetingName === "" || meetingType === ""}>
+        disabled={name === "" || type === ""}>
         다음
       </button>
     </div>
