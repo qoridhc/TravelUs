@@ -9,10 +9,10 @@ import { useNavigate } from "react-router";
 const MeetingAccountCreateProcess = () => {
   const navigate = useNavigate();
   const noticeTextList = [
-    "개설 전, 개인 입출금통장이 존재해야합니다.",
-    "일반모임통장과 외화모임통장 모두를 개설해야합니다.",
-    "일반모임통장만 가입이 불가합니다.",
-    "외화모임통장만 가입이 불가합니다.",
+    "모임통장은 원화(KRW)로만 관리가 됩니다.",
+    "모임통장 개설 시, 입출금통장을 보유해야 합니다.",
+    "모임원은 초대 수락 시, 입출금통장을 보유해야 합니다.",
+    "트래블박스는 언제든 가입할 수 있습니다.",
   ];
 
   return (
@@ -27,13 +27,13 @@ const MeetingAccountCreateProcess = () => {
               className="text-2xl"
             />
           </div>
-          <p className="text-xl text-center font-semibold">계좌 개설 안내</p>
+          <p className="text-xl text-center font-semibold">개설 안내</p>
         </div>
 
         <div className="p-5 grid gap-8">
           <div className="text-2xl font-semibold">
             <p>해외여행 올인원 모임통장</p>
-            <p>계좌개설에 대해 알려드립니다</p>
+            <p>개설에 대해 알려드립니다</p>
           </div>
 
           <div className="grid gap-5">
@@ -42,7 +42,7 @@ const MeetingAccountCreateProcess = () => {
               <div className="flex space-x-2">
                 <p className="text-[#0471E9] font-semibold">01</p>
                 <div>
-                  <p className="font-semibold">일반모임통장 계좌개설</p>
+                  <p className="font-semibold">모임통장 개설</p>
                   <p className="text-sm text-[#565656]">원화(KRW)로 관리되는 모임통장</p>
                 </div>
               </div>
@@ -53,8 +53,8 @@ const MeetingAccountCreateProcess = () => {
               <div className="flex space-x-2">
                 <p className="text-[#0471E9] font-semibold">02</p>
                 <div>
-                  <p className="font-semibold">외화모임통장 계좌개설</p>
-                  <p className="text-sm text-[#565656]">원화는 통화로 관리되는 모임통장</p>
+                  <p className="font-semibold">트래블박스 개설</p>
+                  <p className="text-sm text-[#565656]">원화는 통화로 관리되는 박스</p>
                 </div>
               </div>
             </div>
@@ -79,7 +79,7 @@ const MeetingAccountCreateProcess = () => {
       <div className="px-5 py-10">
         <button
           className={`w-full py-3 text-white bg-[#0471E9] rounded-lg`}
-          onClick={() => navigate("/generalmeetingaccountcreate")}>
+          onClick={() => navigate("/userinfoofcreatemeetingaccount")}>
           가입하기
         </button>
       </div>

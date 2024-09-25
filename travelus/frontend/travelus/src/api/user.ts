@@ -37,7 +37,7 @@ export const userApi = {
   },
 
   // 유저 조회
-  fetchUser: (userId: string) => {
-    return api.get(`/user/search/${userId}`);
+  fetchUser: () => {
+    return api.get(`/user/search`);
   },
 };
