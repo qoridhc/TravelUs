@@ -49,7 +49,7 @@ const UserInfoOfCreateMeetingAccount = () => {
         <div className="h-full p-5 pb-8 flex flex-col justify-between">
           <div className="grid gap-14">
             <div className="flex items-center">
-              <IoIosArrowBack className="text-2xl" />
+              <IoIosArrowBack className="text-2xl" onClick={() => navigate("/meeting/create/prepare")} />
             </div>
 
             <div className="grid gap-10">
