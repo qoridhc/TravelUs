@@ -7,8 +7,8 @@ import lombok.Data;
 @Data
 public class AddMoneyBoxRequestDto {
 
-    @Schema(description = "계좌를 조회하는 유저의 ID", example = "1")
-    private Long userId;
+    @Schema(description = "계좌 비밀번호", example = "1234")
+    private String accountPassword;
 
     @Schema(description = "조회할 계좌 번호", example = "002-4262233-209")
     private String accountNo;
