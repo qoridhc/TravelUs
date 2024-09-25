@@ -5,7 +5,6 @@ import com.ssafy.soltravel.v2.domain.Enum.SettlementType;
 import com.ssafy.soltravel.v2.domain.Enum.TransactionType;
 import com.ssafy.soltravel.v2.domain.Enum.TransferType;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
-import com.ssafy.soltravel.v2.dto.account.request.InquireAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.group.GroupDto;
 import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.SettlementParticipantRequestDto;
@@ -16,12 +15,9 @@ import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDt
 import com.ssafy.soltravel.v2.exception.group.GroupMasterNotFoundException;
 import com.ssafy.soltravel.v2.exception.participant.ParticipantNotFoundException;
 import com.ssafy.soltravel.v2.service.account.AccountService;
-import com.ssafy.soltravel.v2.service.exchange.ExchangeService;
 import com.ssafy.soltravel.v2.service.group.GroupService;
 import com.ssafy.soltravel.v2.service.transaction.TransactionService;
 import com.ssafy.soltravel.v2.util.LogUtil;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,10 +32,10 @@ public class SettlementService {
   private final AccountService accountService;
   private final GroupService groupService;
 
-    public void executeSettlement(SettlementRequestDto settlementRequestDto) {
+  public void executeSettlement(SettlementRequestDto settlementRequestDto) {
 
-        SettlementType type = settlementRequestDto.getSettlementType();
-        AccountDto account = accountService.getByAccountNo(settlementRequestDto.getAccountNo());
+    SettlementType type = settlementRequestDto.getSettlementType();
+    AccountDto account = accountService.getByAccountNo(settlementRequestDto.getAccountNo());
 
     GroupDto group = groupService.getGroupInfo(settlementRequestDto.getGroupId());
     List<ParticipantDto> participants = group.getParticipants();
@@ -69,7 +65,8 @@ public class SettlementService {
   public void settleOnlyKRW(SettlementRequestDto settlementRequestDto, long masterUserId) {
 
     /**
-     * 1. 원화만 정산
+     * 2.원화 출금
+     * 3.개인 입금
      */
     transactionService.postAccountWithdrawal(
         new TransactionRequestDto(settlementRequestDto.getAccountNo(),
@@ -84,7 +81,8 @@ public class SettlementService {
       CurrencyType currencyCode, long masterUserId) {
 
     /**
-     * 2. 외화만 정산
+     * 2.외화 정산출금
+     * 3.개인 정산입금
      */
     transactionService.postAccountWithdrawal(
         new TransactionRequestDto(settlementRequestDto.getAccountNo(),
@@ -99,20 +97,18 @@ public class SettlementService {
       long masterUserId) {
 
     /**
-     * 모두 정산
+     * 1.재환전
+     * 2.원화 정산출금
+     * 3.개인 정산입금
      */
-    public void settleBoth(SettlementRequestDto settlementRequestDto, CurrencyType currencyCode) {
 
-        /**
-         * 1.재환전
-         * 2.원화 정산출금
-         * 3.개인 정산입금
-         */
+    List<TransferHistoryResponseDto> response = transactionService.postMoneyBoxTransfer(
+        MoneyBoxTransferRequestDto.create(TransferType.M, settlementRequestDto.getAccountNo(),
+            settlementRequestDto.getAccountPassword(), currencyCode, CurrencyType.KRW,
+            settlementRequestDto.getAmounts().get(1)), false, -1).getBody();
 
-        List<TransferHistoryResponseDto> response = transactionService.postMoneyBoxTransfer(
-            MoneyBoxTransferRequestDto.create(TransferType.M, settlementRequestDto.getAccountNo(),
-                settlementRequestDto.getAccountPassword(), currencyCode, CurrencyType.KRW,
-                settlementRequestDto.getAmounts().get(1)), false, -1).getBody();
+    String transactionAmount = response.get(1).getTransactionAmount();
+    LogUtil.info("재환전되어서 원화에 입금된 금액:", transactionAmount);
 
     transactionService.postAccountWithdrawal(
         new TransactionRequestDto(settlementRequestDto.getAccountNo(),
@@ -127,7 +123,7 @@ public class SettlementService {
   private void paySettlementToMembers(String groupName, List<ParticipantDto> participants,
       List<SettlementParticipantRequestDto> requestDtos) {
 
-        for (SettlementParticipantRequestDto requestDto : requestDtos) {
+    for (SettlementParticipantRequestDto requestDto : requestDtos) {
 
       long participantId = requestDto.getParticipantId();
       ParticipantDto participant = participants.stream()
@@ -141,20 +137,5 @@ public class SettlementService {
               String.valueOf(requestDto.getAmount()), String.format("[%s] 자동 정산 입금", groupName)),
           participant.getUserId());
     }
-
-    /**
-     * 정산금 계산
-     */
-    private double divideBalance(double amount, int N, boolean isKRW) {
-        BigDecimal amountBD = BigDecimal.valueOf(amount);
-        BigDecimal dividedAmount = amountBD.divide(BigDecimal.valueOf(N), RoundingMode.DOWN);
-
-        if (isKRW) {
-            // 원화일 경우 소수점 0자리에서 내림
-            return dividedAmount.setScale(0, RoundingMode.DOWN).doubleValue();
-        } else {
-            // 외화일 경우 소수점 둘째 자리에서 내림
-            return dividedAmount.setScale(2, RoundingMode.DOWN).doubleValue();
-        }
-    }
+  }
 }
