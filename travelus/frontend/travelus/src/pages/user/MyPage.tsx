@@ -25,7 +25,7 @@ const MyPage = () => {
     const userId = localStorage.getItem("userId");
     if (userId) {
       userApi
-        .fetchUser(userId)
+        .fetchUser()
         .then((response) => {
           setUserData(response.data); // API 응답 데이터를 상태로 설정
           dispatch(editUserInformation(response.data)); // Redux 스토어에 유저 정보 저장

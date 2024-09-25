@@ -61,7 +61,7 @@ public class UserRepository {
         .where(
             userIdEq(qUser, searchDto.getUserId()),
             userNameLike(qUser, searchDto.getName()),
-            userEmailEq(qUser, searchDto.getEmail())
+            userEmailEq(qUser, searchDto.getId())
         )
         .limit(1000)
         .fetch();

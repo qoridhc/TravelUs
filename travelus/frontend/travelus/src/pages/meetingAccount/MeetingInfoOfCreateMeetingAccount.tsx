@@ -1,15 +1,25 @@
-import { TextField } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
-import NameInputMui from "../../components/meetingAccount/NameInputMui";
-import BirthDateInputMui from "../../components/meetingAccount/BirthDateInputMui";
-import GenderInputMui from "../../components/meetingAccount/GenderInputMui";
+import MeetingNameInputMui from "../../components/meetingAccount/MeetingNameInputMui";
+import MeetingTypeInputMui from "../../components/meetingAccount/MeetingTypeInputMui";
 import { useNavigate } from "react-router";
 
-const UserInfoOfCreateMeetingAccount = () => {
+const MeetingInfoOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
+  const [menuStep, setMenuStep] = useState(1); // 1 : 모임명, 2 : 모임종류
+  const guideText = [
+    ["모임명을", "입력해주세요"],
+    ["모임종류를", "선택해주세요"],
+  ];
+
   const handleNext = () => {
-    navigate("/meetinginfoofcreatemeetingaccount");
+    navigate("/meeting/create/password/meeting");
+  };
+
+  const handleNextStep = () => {
+    if (menuStep < guideText.length) {
+      setMenuStep(menuStep + 1);
+    }
   };
 
   return (
@@ -27,14 +37,13 @@ const UserInfoOfCreateMeetingAccount = () => {
             </div>
 
             <div className="text-2xl font-semibold">
-              <p>모임주 이예림님의 정보를</p>
-              <p>확인해주세요</p>
+              <p>{guideText[menuStep - 1][0]}</p>
+              <p>{guideText[menuStep - 1][1]}</p>
             </div>
           </div>
 
-          <NameInputMui />
-          <BirthDateInputMui />
-          <GenderInputMui />
+          {menuStep >= 2 ? <MeetingTypeInputMui /> : <></>}
+          {menuStep >= 1 ? <MeetingNameInputMui onInputComplete={handleNextStep} /> : <></>}
         </div>
       </div>
 
@@ -47,4 +56,4 @@ const UserInfoOfCreateMeetingAccount = () => {
   );
 };
 
-export default UserInfoOfCreateMeetingAccount;
+export default MeetingInfoOfCreateMeetingAccount;

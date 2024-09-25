@@ -20,6 +20,24 @@ export interface AccountInfo {
   preferenceExchange: string;
 }
 
+// 계좌 정보 (신규 ver)
+export interface AccountInfoNew {
+  accountId: number,
+  accountNo: string,
+  accountPassword: string,
+  accountType: string,
+  bankCode: number,
+  moneyBoxDtos: [
+    {
+      moneyBoxId: number,
+      balance: number,
+      currencyCode: string
+    }
+  ],
+  createdAt: string,
+  updatedAt: string
+}
+
 
 // 거래 내역 조회
 export interface Transaction {

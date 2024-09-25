@@ -36,11 +36,10 @@ public class SettlementService {
   private final AccountService accountService;
   private final GroupService groupService;
 
-  public void executeSettlement(SettlementRequestDto settlementRequestDto) {
+    public void executeSettlement(SettlementRequestDto settlementRequestDto) {
 
-    SettlementType type = settlementRequestDto.getSettlementType();
-    AccountDto account = accountService.getByAccountNo(
-        new InquireAccountRequestDto(settlementRequestDto.getAccountNo()));
+        SettlementType type = settlementRequestDto.getSettlementType();
+        AccountDto account = accountService.getByAccountNo(settlementRequestDto.getAccountNo());
 
     GroupDto group = groupService.getGroupInfo(settlementRequestDto.getGroupId());
     List<ParticipantDto> participants = group.getParticipants();
@@ -70,8 +69,7 @@ public class SettlementService {
   public void settleOnlyKRW(SettlementRequestDto settlementRequestDto, long masterUserId) {
 
     /**
-     * 2.원화 출금
-     * 3.개인 입금
+     * 1. 원화만 정산
      */
     transactionService.postAccountWithdrawal(
         new TransactionRequestDto(settlementRequestDto.getAccountNo(),
@@ -86,8 +84,7 @@ public class SettlementService {
       CurrencyType currencyCode, long masterUserId) {
 
     /**
-     * 2.외화 정산출금
-     * 3.개인 정산입금
+     * 2. 외화만 정산
      */
     transactionService.postAccountWithdrawal(
         new TransactionRequestDto(settlementRequestDto.getAccountNo(),
@@ -102,18 +99,20 @@ public class SettlementService {
       long masterUserId) {
 
     /**
-     * 1.재환전
-     * 2.원화 정산출금
-     * 3.개인 정산입금
+     * 모두 정산
      */
+    public void settleBoth(SettlementRequestDto settlementRequestDto, CurrencyType currencyCode) {
 
-    List<TransferHistoryResponseDto> response = transactionService.postMoneyBoxTransfer(
-        MoneyBoxTransferRequestDto.create(TransferType.M, settlementRequestDto.getAccountNo(),
-            settlementRequestDto.getAccountPassword(), currencyCode, CurrencyType.KRW,
-            settlementRequestDto.getAmounts().get(1)), false, -1).getBody();
+        /**
+         * 1.재환전
+         * 2.원화 정산출금
+         * 3.개인 정산입금
+         */
 
-    String transactionAmount = response.get(1).getTransactionAmount();
-    LogUtil.info("재환전되어서 원화에 입금된 금액:", transactionAmount);
+        List<TransferHistoryResponseDto> response = transactionService.postMoneyBoxTransfer(
+            MoneyBoxTransferRequestDto.create(TransferType.M, settlementRequestDto.getAccountNo(),
+                settlementRequestDto.getAccountPassword(), currencyCode, CurrencyType.KRW,
+                settlementRequestDto.getAmounts().get(1)), false, -1).getBody();
 
     transactionService.postAccountWithdrawal(
         new TransactionRequestDto(settlementRequestDto.getAccountNo(),
@@ -128,7 +127,7 @@ public class SettlementService {
   private void paySettlementToMembers(String groupName, List<ParticipantDto> participants,
       List<SettlementParticipantRequestDto> requestDtos) {
 
-    for (SettlementParticipantRequestDto requestDto : requestDtos) {
+        for (SettlementParticipantRequestDto requestDto : requestDtos) {
 
       long participantId = requestDto.getParticipantId();
       ParticipantDto participant = participants.stream()
@@ -142,21 +141,20 @@ public class SettlementService {
               String.valueOf(requestDto.getAmount()), String.format("[%s] 자동 정산 입금", groupName)),
           participant.getUserId());
     }
-  }
 
-  /**
-   * 정산금 계산
-   */
-  private double divideBalance(double amount, int N, boolean isKRW) {
-    BigDecimal amountBD = BigDecimal.valueOf(amount);
-    BigDecimal dividedAmount = amountBD.divide(BigDecimal.valueOf(N), RoundingMode.DOWN);
+    /**
+     * 정산금 계산
+     */
+    private double divideBalance(double amount, int N, boolean isKRW) {
+        BigDecimal amountBD = BigDecimal.valueOf(amount);
+        BigDecimal dividedAmount = amountBD.divide(BigDecimal.valueOf(N), RoundingMode.DOWN);
 
-    if (isKRW) {
-      // 원화일 경우 소수점 0자리에서 내림
-      return dividedAmount.setScale(0, RoundingMode.DOWN).doubleValue();
-    } else {
-      // 외화일 경우 소수점 둘째 자리에서 내림
-      return dividedAmount.setScale(2, RoundingMode.DOWN).doubleValue();
+        if (isKRW) {
+            // 원화일 경우 소수점 0자리에서 내림
+            return dividedAmount.setScale(0, RoundingMode.DOWN).doubleValue();
+        } else {
+            // 외화일 경우 소수점 둘째 자리에서 내림
+            return dividedAmount.setScale(2, RoundingMode.DOWN).doubleValue();
+        }
     }
-  }
 }

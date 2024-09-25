@@ -139,12 +139,19 @@ const MeetingAccountListNew = () => {
 
                 {/* 더미데이터 용 */}
                 {accountList.map((account, index) => (
-                  <MeetingAccount key={index} index={index} account={account} foreignAccount={foreignAccountList[index]} />
+                  <MeetingAccount
+                    key={index}
+                    index={index}
+                    account={account}
+                    foreignAccount={foreignAccountList[index]}
+                  />
                 ))}
 
                 <div>
                   <div
-                    onClick={() => {navigate("/userinfoofcreatemeetingaccount");}}
+                    onClick={() => {
+                      navigate("/meeting/create/prepare");
+                    }}
                     className="flex items-center space-x-4">
                     <div className="w-11 h-11 bg-zinc-200 rounded-full flex justify-center items-center">
                       <IoMdAdd className="text-3xl text-zinc-400 font-bold" />
@@ -155,7 +162,11 @@ const MeetingAccountListNew = () => {
               </div>
             ) : (
               <div>
-                <div className="flex items-center space-x-4">
+                <div
+                  className="flex items-center space-x-4"
+                  onClick={() => {
+                    navigate("/meeting/create/prepare");
+                  }}>
                   <div className="w-11 h-11 bg-zinc-200 rounded-full flex justify-center items-center">
                     <IoMdAdd className="text-3xl text-zinc-400 font-bold" />
                   </div>

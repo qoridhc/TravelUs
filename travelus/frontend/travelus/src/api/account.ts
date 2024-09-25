@@ -1,6 +1,6 @@
 
 import api from "../lib/axios";
-import { AccountInfo, AccountParticipants, MeetingAccountCreate } from "../types/account";
+import { AccountInfo, AccountInfoNew, AccountParticipants, MeetingAccountCreate } from "../types/account";
 
 export const accountApi = {
     // 일반 계좌 정보 가져오기
@@ -13,13 +13,19 @@ export const accountApi = {
     fetchForeignAccountInfo: async (userId: number): Promise<AccountInfo[]> => {
       const response = await api.get(`/account/foreign/${userId}/all`)
       return response.data
-    },
+  },
+  
+  // 사용자의 모들 계좌 조회
+  fetchAllAccountInfo: async (): Promise<AccountInfoNew[]> => {
+    const response = await api.get(`/accounts/inquireAccountList`);
+    return response.data;
+  },
 
-    // 모임통장 참여자 정보 가져오기
-    fetchParticipantInfo: async (accountId: number): Promise<AccountParticipants> => {
-      const response = await api.get(`/account/${accountId}/participants`)
-      return response.data
-    },
+  // 모임통장 참여자 정보 가져오기
+  fetchParticipantInfo: async (accountId: number): Promise<AccountParticipants> => {
+    const response = await api.get(`/account/${accountId}/participants`)
+    return response.data
+  },
 
     // 모임통장 생성
   fetchCreateMeetingAccount: async (userId: number, data: MeetingAccountCreate): Promise<MeetingAccountCreate> => {

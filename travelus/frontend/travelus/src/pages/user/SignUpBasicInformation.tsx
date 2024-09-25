@@ -235,13 +235,10 @@ const SignUpBasicInformation = () => {
     console.log("중복확인");
     try {
       const response = await userApi.fetchValidateId(inputs.id);
-      console.log("아이디 중복확인 응답", response);
       if (response.data.status === "FAIL") {
         setIsIdDuplicated(true);
-        console.log("아이디 중복");
       } else if (response.data.status === "SUCCESS") {
         setIsIdDuplicated(false);
-        console.log("아이디 중복 아님");
         setStep(1);
       }
     }

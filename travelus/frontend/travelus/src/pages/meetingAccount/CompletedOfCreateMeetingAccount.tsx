@@ -15,6 +15,14 @@ const CompletedOfCreateMeetingAccount = () => {
     });
   };
 
+  const handleNext = () => {
+    if (params.type === "meeting") {
+      navigate("/travelbox/create/prepare");
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
     <div className="h-full p-5 pb-8">
       <div className="h-full flex flex-col justify-between">
@@ -56,7 +64,7 @@ const CompletedOfCreateMeetingAccount = () => {
 
           <button
             onClick={() => {
-              navigate("/");
+              handleNext();
             }}
             className={`w-full h-14 text-lg rounded-xl tracking-wide ${
               params.type === "meeting" ? "" : "text-white bg-[#1429A0]"
