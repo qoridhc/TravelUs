@@ -26,7 +26,7 @@ import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
 import AccountCreate from "./pages/ver1/AccountCreateOld";
 import ExchangeRate from "./pages/exchange/ExchangeRate";
-import ExchangeDetail from './components/exchange/ExchangeDetail';
+import ExchangeDetail from "./components/exchange/ExchangeDetail";
 import Exchange from "./pages/exchange/Exchange";
 import ExchangeKRWFlow from "./pages/exchange/ExchangeKRW";
 import SelectAccount from "./pages/exchange/SelectAccount";
@@ -110,16 +110,16 @@ function App() {
           <Route path="/userinfoofcreateaccount" element={<UserInfoOfCreateAccount />} />
 
           {/* 모임통장 생성 */}
-          <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />} />
-          <Route path="/userinfoofcreatemeetingaccount" element={<UserInfoOfCreateMeetingAccount />} />
-          <Route path="/meetinginfoofcreatemeetingaccount" element={<MeetingInfoOfCreateMeetingAccount />} />
-          <Route path="/passwordofcreatemeetingaccount/:type" element={<PasswordOfCreateMeetingAccount />} />
-          <Route path="/checkpasswordofcreatemeetingaccount" element={<CheckPasswordOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/prepare" element={<MeetingAccountCreatePrepare />} />
+          <Route path="/meeting/create/userinfo" element={<UserInfoOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/meetinginfo" element={<MeetingInfoOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/password/:type" element={<PasswordOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/password/check" element={<CheckPasswordOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/idverificationo/:type" element={<IDVerificationOfCreateMeetingAccount />} />
           <Route
-            path="/idverificationofcreatemeetingaccount/:type"
-            element={<IDVerificationOfCreateMeetingAccount />}
+            path="/meeting/create/completed/:type"
+            element={<CompletedOfCreateMeetingAccount />}
           />
-          <Route path="/completedofcreatemeetingaccount/:type" element={<CompletedOfCreateMeetingAccount />} />
 
           {/* 모임통장 상세 */}
           <Route path="/account/:userId" element={<GroupAccountPage />} />

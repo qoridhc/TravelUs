@@ -13,7 +13,7 @@ const UserInfoOfCreateAccount = () => {
   const [gender, setGender] = useState("");
 
   const handleNext = () => {
-    navigate("/passwordofcreatemeetingaccount/nomeeting");
+    navigate("/meeting/create/password/nomeeting");
   };
 
   const getUserInfo = async () => {

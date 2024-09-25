@@ -15,7 +15,7 @@ const UserInfoOfCreateMeetingAccount = () => {
   const [gender, setGender] = useState("여성");
 
   const handleNext = () => {
-    navigate("/meetinginfoofcreatemeetingaccount");
+    navigate("/meeting/create/meetinginfo");
   };
 
   const formatDateToKorean = (dateString: string) => {

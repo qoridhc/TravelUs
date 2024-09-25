@@ -13,7 +13,7 @@ const MeetingInfoOfCreateMeetingAccount = () => {
   ];
 
   const handleNext = () => {
-    navigate("/passwordofcreatemeetingaccount/meeting");
+    navigate("/meeting/create/password/meeting");
   };
 
   const handleNextStep = () => {
