@@ -6,11 +6,11 @@ import com.ssafy.soltravel.v2.domain.TravelGroup;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
-import com.ssafy.soltravel.v2.dto.account.request.InquireAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.group.GroupDto;
 import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateGroupRequestDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateParticipantRequestDto;
+import com.ssafy.soltravel.v2.dto.group.response.GroupSummaryDto;
 import com.ssafy.soltravel.v2.exception.account.InvalidPersonalAccountException;
 import com.ssafy.soltravel.v2.exception.group.InvalidGroupIdException;
 import com.ssafy.soltravel.v2.mapper.GroupMapper;
@@ -19,7 +19,6 @@ import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.service.user.UserService;
-import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,17 +72,14 @@ public class GroupService {
         // 개인 참여자 생성
 
         // 1. 모임 정산에 사용할 개인 계좌 유효성 검증
-        InquireAccountRequestDto inquireAccountRequestDto = new InquireAccountRequestDto(requestDto.getPersonalAccountNo());
+        AccountDto personalAccount = accountService.getByAccountNo(requestDto.getPersonalAccountNo());
 
-        AccountDto personalAccount = accountService.getByAccountNo(inquireAccountRequestDto);
-
-        if (!personalAccount.getAccountType().equals(AccountType.I)) {
+        if (personalAccount.getAccountType() != AccountType.I) {
             throw new InvalidPersonalAccountException();
         }
 
         // 2. 참여자 생성
         CreateParticipantRequestDto createParticipantRequestDto = CreateParticipantRequestDto.createDto(
-            user.getUserId(),
             group.getGroupId(),
             true,
             requestDto.getPersonalAccountNo()
@@ -118,15 +114,13 @@ public class GroupService {
         // 2. 그룹 조회
         TravelGroup group = groupRepository.findById(requestDto.getGroupId()).orElseThrow(InvalidGroupIdException::new);
 
-        InquireAccountRequestDto inquireAccountRequestDto = new InquireAccountRequestDto(requestDto.getPersonalAccountNo());
-
-        AccountDto accountDto = accountService.getByAccountNo(inquireAccountRequestDto);
+        AccountDto accountDto = accountService.getByAccountNo(requestDto.getPersonalAccountNo());
 
         // 3. 참여자 생성
         Participant participant = Participant.createParticipant(
             user,
             group,
-            requestDto.isMaster(),
+            false,
             requestDto.getPersonalAccountNo()
         );
 
@@ -138,18 +132,22 @@ public class GroupService {
         return participantDto;
     }
 
-    public void getAllGroupInfosByUserId() {
+    // 특정 유저가 가입한(생성 x) 모임 전체 저회
+    public List<GroupSummaryDto> getAllJoinedGroup() {
 
         // 1. 토큰 기반 유저 아이디 추출
         User user = securityUtil.getUserByToken();
 
         List<TravelGroup> groupList = participantRepository.findAllGroupsByUserId(user.getUserId());
 
-//        groupList.stream().map((group) -> )
+        return groupList.stream()
+            .map((group) -> {
+                AccountDto accountDto = accountService.getByAccountNo(group.getGroupAccountNo());
 
-        List<GroupDto> dtoList = groupMapper.toDtoList(groupList);
+                return GroupSummaryDto.createFromAccountDto(group, accountDto.getMoneyBoxDtos());
+            })
+            .toList();
 
-        LogUtil.info("dtoList", dtoList);
 
     }
 
