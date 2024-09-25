@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+// import { useNavigate } from 'react-router';
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { FcMoneyTransfer } from "react-icons/fc"
 import ExchangeCompletion from '../../components/exchange/ExchangeCompletion';
@@ -38,7 +38,7 @@ const ExchangeFlow: React.FC = () => {
   const [isExchangeComplete, setIsExchangeComplete] = useState(false);
   const exchangeRate = 1343.98;
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     const numericAmount = parseFloat(inputAmount);
@@ -67,11 +67,11 @@ const ExchangeFlow: React.FC = () => {
     setIsAccountMenuOpen(false);
   };
 
-  const handleClose = () => {
-    setIsExchangeComplete(false);
-    setInputAmount('');
-    setCalculatedKRW('0');
-  };
+  // const handleClose = () => {
+  //   setIsExchangeComplete(false);
+  //   setInputAmount('');
+  //   setCalculatedKRW('0');
+  // };
 
   if (isExchangeComplete) {
     return <ExchangeCompletion amount={inputAmount} exchangeRate={exchangeRate} />;

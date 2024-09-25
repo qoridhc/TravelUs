@@ -116,9 +116,7 @@ const ExchangeDetail: React.FC = () => {
   }
 
   return (
-    <div className="h-full p-5 pb-8">
-      <div className="container mx-auto max-w-md px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="container mx-auto max-w-md h-full p-5 pb-8">
           <button 
             onClick={() => navigate(-1)} 
             className="flex items-center text-blue-600 mb-4"
@@ -140,7 +138,7 @@ const ExchangeDetail: React.FC = () => {
               onClick={() => setActiveTab('exchange')}
               className={`flex-1 py-2 text-center ${
                 activeTab === 'exchange'
-                  ? 'bg-white text-[#353535] font-bold border-b-2 border-[#026CE1]'
+                  ? 'bg-white text-[#353535] font-bold border-b-2 border-[#353535]'
                   : 'bg-gray-100 text-gray-600'
               }`}
             >
@@ -150,7 +148,7 @@ const ExchangeDetail: React.FC = () => {
               onClick={() => setActiveTab('prediction')}
               className={`flex-1 py-2 text-center ${
                 activeTab === 'prediction'
-                  ? 'bg-white text-[#353535] font-bold border-b-2 border-[#026CE1]'
+                  ? 'bg-white text-[#353535] font-bold border-b-2 border-[#353535]'
                   : 'bg-gray-100 text-gray-600'
               }`}
             >
@@ -198,10 +196,12 @@ const ExchangeDetail: React.FC = () => {
               <p>환율 예측 기능은 준비 중입니다.</p>
             </div>
           )}
-          <div className="flex justify-between">
-            <button className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
+          <div className="flex justify-between mt-auto">
+            <button
+              onClick={() => navigate('/exchangekrw')} 
+              className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
               원화로 바꾸기
-            </button>
+            </button> 
             <button
               onClick={() => navigate('/exchange')}
               className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
@@ -209,8 +209,6 @@ const ExchangeDetail: React.FC = () => {
             </button>
           </div>
         </div>
-      </div>
-    </div>
   );
 };
 
