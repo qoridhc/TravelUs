@@ -1,4 +1,4 @@
-package com.ssafy.soltravel.v2.dto.group;
+package com.ssafy.soltravel.v2.dto.group.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupCodeGenerateRequestDto {
+public class GroupCodeGenerateResponseDto {
 
-  private Long groupId;
+  private String groupCode;
 }
