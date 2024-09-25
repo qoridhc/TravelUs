@@ -45,7 +45,7 @@ const SignUpBasicInformation = () => {
 
   const [isFormValid, setIsFormValid] = useState(false);
   const [isBasicFormValid, setIsBasicFormValid] = useState(false);
-  const [isIdDuplicated, setIsIdDuplicated] = useState(true);
+  const [isIdDuplicated, setIsIdDuplicated] = useState(false);
 
   const [inputs, setInputs] = useState<InputState>({
     id: "",
@@ -242,8 +242,8 @@ const SignUpBasicInformation = () => {
       } else if (response.data.status === "SUCCESS") {
         setIsIdDuplicated(false);
         console.log("아이디 중복 아님");
+        setStep(1);
       }
-      setStep(1);
     }
     catch (error) {
       console.error("Error validating id:", error);
@@ -313,6 +313,7 @@ const SignUpBasicInformation = () => {
                     labelName="아이디"
                     name={inputs.id}
                     error={errors.id}
+                    isIdDuplicated={isIdDuplicated}
                     onChange={handleChange}
                     handleIsIdDuplicated={handleIsIdDuplicated}
                   />
