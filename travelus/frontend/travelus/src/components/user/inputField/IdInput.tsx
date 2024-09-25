@@ -5,11 +5,19 @@ interface NameInputProps {
   labelName: string;
   name: string;
   error: boolean;
+  isIdDuplicated: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleIsIdDuplicated: () => void;
 }
 
-const IdInput: React.FC<NameInputProps> = ({ labelName, name, error, onChange, handleIsIdDuplicated }) => {
+const IdInput: React.FC<NameInputProps> = ({
+  labelName,
+  name,
+  error,
+  isIdDuplicated,
+  onChange,
+  handleIsIdDuplicated,
+}) => {
   return (
     <div className="flex justify-between items-start space-x-3">
       <TextField
@@ -27,7 +35,7 @@ const IdInput: React.FC<NameInputProps> = ({ labelName, name, error, onChange, h
             backgroundColor: "white",
             fontSize: "18px",
             fontWeight: "bold",
-            border: (theme) => `1px solid ${error ? theme.palette.error.main : "#9E9E9E"}`,
+            border: (theme) => `1px solid ${error || isIdDuplicated ? theme.palette.error.main : "#9E9E9E"}`,
             borderRadius: "10px",
           },
           "& .MuiInputLabel-root": {
@@ -47,7 +55,7 @@ const IdInput: React.FC<NameInputProps> = ({ labelName, name, error, onChange, h
         value={name}
         onChange={onChange}
         autoComplete="off"
-        helperText="영문 소문자 6~13자 (숫자 조합 가능)"
+        helperText={`${isIdDuplicated ? " 중복된 아이디입니다." : "영문 소문자 6~13자 (숫자 조합 가능)"}`}
         error={error}
       />
       <button

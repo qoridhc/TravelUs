@@ -58,14 +58,14 @@ public class GeneralAccountController {
         @ApiResponse(responseCode = "404", description = "계좌를 찾을 수 없음", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @GetMapping("/inquireAccount")
+    @PostMapping("/inquireAccount")
     public ResponseEntity<AccountDto> getByAccountNo(
         @RequestBody InquireAccountRequestDto requestDto
     ) {
 
         AccountDto accountDto = accountService.getByAccountNo(requestDto);
 
-     return  ResponseEntity.status(HttpStatus.CREATED).body(accountDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(accountDto);
     }
 
     @Operation(summary = "신규 머니박스 추가", description = "특정 계좌에 머니박스를 추가하는 API.")
@@ -86,10 +86,10 @@ public class GeneralAccountController {
 
         List<MoneyBoxDto> accountDto = accountService.addMoneyBox(requestDto);
 
-        return  ResponseEntity.status(HttpStatus.CREATED).body(accountDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(accountDto);
     }
 
-        @Operation(
+    @Operation(
         summary = "사용자의 모든 일반(개인/그룹) 계좌 조회",
         description = "특정 사용자의 모든 일반 계좌를 조회하는 API."
     )
@@ -106,7 +106,6 @@ public class GeneralAccountController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(accountDtoList);
     }
-
 
 //
 //    // 일반 통장 CRUD

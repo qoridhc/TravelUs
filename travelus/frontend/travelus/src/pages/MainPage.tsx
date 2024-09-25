@@ -12,7 +12,7 @@ import "../css/swiper.css";
 import "swiper/css/pagination";
 import "swiper/css";
 import ExchangeRate from "./exchange/ExchangeRate";
-import { ExchangeRateInfo } from '../types/exchange';
+import { ExchangeRateInfo } from "../types/exchange";
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -25,23 +25,22 @@ const MainPage = () => {
     {
       accountNo: "024-2133-1010-144",
       balance: 203009,
-
     },
   ];
   const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
   const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[]>([]);
 
   const navigateTransfermation = () => {
-    navigate("/transfer/selectbank")
-  }
+    navigate("/transfer/selectbank");
+  };
 
   const navigateAccountBook = () => {
-    navigate("/accountbookdetail")
-  }
+    navigate("/accountbookdetail");
+  };
 
   const navigateExchangeRate = () => {
-    navigate("/exchangerate")
-  }
+    navigate("/exchangerate");
+  };
 
   // 환율 받아오기
   const handleExchangeRatesUpdate = (rates: ExchangeRateInfo[]) => {
@@ -49,21 +48,21 @@ const MainPage = () => {
   };
 
   const getExchangeRate = (currencyCode: string) => {
-    const rate = exchangeRates.find(r => r.currencyCode === currencyCode);
-    return rate ? rate.exchangeRate.toFixed(2) : 'N/A';
+    const rate = exchangeRates.find((r) => r.currencyCode === currencyCode);
+    return rate ? rate.exchangeRate.toFixed(2) : "N/A";
   };
 
   const getLatestUpdateTime = () => {
-    if (exchangeRates.length === 0) return 'N/A';
-    const latestDate = new Date(Math.max(...exchangeRates.map(r => new Date(r.created).getTime())));
-    return latestDate.toLocaleString('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
+    if (exchangeRates.length === 0) return "N/A";
+    const latestDate = new Date(Math.max(...exchangeRates.map((r) => new Date(r.created).getTime())));
+    return latestDate.toLocaleString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
     });
   };
 
@@ -118,7 +117,7 @@ const MainPage = () => {
           <button
             className="h-10 rounded-md bg-[#0046FF] font-bold text-white text-sm"
             onClick={() => {
-              navigate("/userinfoofcreatemeetingaccount");
+              navigate("/meetingaccountcreateprepare");
             }}>
             신청하기
           </button>
@@ -127,11 +126,11 @@ const MainPage = () => {
         {/* 입출금 통장 있을 시 표시 */}
         {accountList && accountList.length > 0 && (
           <div className="w-full py-5 px-5 flex flex-col rounded-xl bg-white shadow-md">
-            <div 
-            className="flex flex-col space-y-3"
-            onClick={() => {
-              navigate(`/accounttransaction/1`);
-            }}>
+            <div
+              className="flex flex-col space-y-3"
+              onClick={() => {
+                navigate(`/accounttransaction/1`);
+              }}>
               <div className="flex justify-between items-center">
                 <div className="flex flex-col">
                   <p className="font-bold">트래블러스머니통장</p>
@@ -146,9 +145,8 @@ const MainPage = () => {
             </div>
             <div className="flex justify-end mt-3">
               <button
-              className="h-8 w-14 rounded-3xl bg-[#0046FF] font-bold text-white text-sm"
-              onClick={navigateTransfermation}
-              >
+                className="h-8 w-14 rounded-3xl bg-[#0046FF] font-bold text-white text-sm"
+                onClick={navigateTransfermation}>
                 이체
               </button>
             </div>
@@ -174,9 +172,8 @@ const MainPage = () => {
 
           {/* 환율 표시 */}
           <div
-          className="w-full p-6 flex flex-col space-y-2 rounded-xl bg-white shadow-md"
-          onClick={navigateExchangeRate}
-          >
+            className="w-full p-6 flex flex-col space-y-2 rounded-xl bg-white shadow-md"
+            onClick={navigateExchangeRate}>
             <div className="flex items-center space-x-1">
               <p className="text-md font-bold flex justify-start">환율</p>
               <IoIosArrowForward className="text-[#565656]" />
@@ -190,7 +187,7 @@ const MainPage = () => {
                   <img className="w-6 h-5 rounded-sm" src="/assets/flag/flagOfTheUnitedStates.png" alt="미국" />
                   <p>USD</p>
                 </div>
-                <p className="text-lg font-semibold">{getExchangeRate('USD')}</p>
+                <p className="text-lg font-semibold">{getExchangeRate("USD")}</p>
               </div>
               <div className="w-[0.8px] h-14 bg-gray-300"></div>
               <div className="w-24 p-1 flex flex-col justify-center items-center space-y-2">
@@ -198,7 +195,7 @@ const MainPage = () => {
                   <img className="w-6 h-5 rounded-sm border" src="/assets/flag/flagOfJapan.png" alt="미국" />
                   <p>JPY</p>
                 </div>
-                <p className="text-lg font-semibold">{getExchangeRate('JPY')}</p>
+                <p className="text-lg font-semibold">{getExchangeRate("JPY")}</p>
               </div>
               <div className="w-[0.8px] h-14 bg-gray-300"></div>
               <div className="w-24 p-1 flex flex-col justify-center items-center space-y-2">
@@ -206,14 +203,14 @@ const MainPage = () => {
                   <img className="w-6 h-5 rounded-sm" src="/assets/flag/flagOfEurope.png" alt="미국" />
                   <p>EUR</p>
                 </div>
-                <p className="text-lg font-semibold">{getExchangeRate('EUR')}</p>
+                <p className="text-lg font-semibold">{getExchangeRate("EUR")}</p>
               </div>
             </div>
             <button
               onClick={(e) => {
                 navigate("/exchange");
                 e.stopPropagation();
-                navigate("/exchange")
+                navigate("/exchange");
               }}
               className="h-10 rounded-md bg-[#EAEAEA] font-bold text-sm">
               환전신청
@@ -231,9 +228,8 @@ const MainPage = () => {
 
         {/* 가계부 */}
         <div
-        className="w-full p-6 flex flex-col space-y-3 rounded-xl bg-blue-500 shadow-md"
-        onClick={navigateAccountBook}
-        >
+          className="w-full p-6 flex flex-col space-y-3 rounded-xl bg-blue-500 shadow-md"
+          onClick={navigateAccountBook}>
           <div className="flex items-center space-x-1">
             <p className="text-md text-white font-bold flex justify-start">가계부</p>
             <IoIosArrowForward className="text-white" />

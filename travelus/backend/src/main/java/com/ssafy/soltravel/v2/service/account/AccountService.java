@@ -3,21 +3,13 @@ package com.ssafy.soltravel.v2.service.account;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ssafy.soltravel.v2.dto.account.request.AddMoneyBoxRequestDto;
-import com.ssafy.soltravel.v2.dto.account.request.InquireAccountRequestDto;
-import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
-import com.ssafy.soltravel.v2.service.WebClientService;
 import com.ssafy.soltravel.v2.common.BankHeader;
-import com.ssafy.soltravel.v2.domain.Enum.AccountType;
-import com.ssafy.soltravel.v2.domain.GeneralAccount;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.AddMoneyBoxRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.InquireAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
-import com.ssafy.soltravel.v2.dto.user.EmailValidationDto;
-import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.AccountMapper;
 import com.ssafy.soltravel.v2.repository.GeneralAccountRepository;
 import com.ssafy.soltravel.v2.repository.ParticipantRepository;
@@ -31,145 +23,137 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class AccountService {
 
-  private final Map<String, String> apiKeys;
-  private final WebClient webClient;
-  private final AccountMapper accountMapper;
-  private final ObjectMapper objectMapper;
+    private final Map<String, String> apiKeys;
 
-  private final UserRepository userRepository;
-  private final ParticipantRepository participantRepository;
-  private final GeneralAccountRepository generalAccountRepository;
+    private final WebClientService webClientService;
 
-  private final WebClientService webClientService;
+    private final UserRepository userRepository;
+    private final ParticipantRepository participantRepository;
+    private final GeneralAccountRepository generalAccountRepository;
 
-  private final String BASE_URL = "/accounts/";
+    private final AccountMapper accountMapper;
+    private final ObjectMapper objectMapper;
 
-  // 신규  계좌 생성
-  public AccountDto createGeneralAccount(
-      CreateAccountRequestDto requestDto
-  ) {
+    private final SecurityUtil securityUtil;
 
-    Long userId = requestDto.getUserId();
+    private final String BASE_URL = "/accounts/";
 
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new UserNotFoundException(userId));
+    // 신규  계좌 생성
+    public AccountDto createGeneralAccount(
+        CreateAccountRequestDto requestDto
+    ) {
 
-    Map<String, Object> body = new HashMap<>();
-    String API_URL = BASE_URL + "postAccount";
+        User user = securityUtil.getUserByToken();
 
-    BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
+        Map<String, Object> body = new HashMap<>();
+        String API_URL = BASE_URL + "postAccount";
 
-    body.put("Header", header);
-    body.put("accountType", requestDto.getAccountType());
-    body.put("accountPassword", requestDto.getAccountPassword());
-    body.put("bankId", requestDto.getBankId());
+        BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
 
-    // 일반 계좌 DB 저장 로직 유저 완성 시 추가
-    ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+        body.put("Header", header);
+        body.put("accountType", requestDto.getAccountType());
+        body.put("accountPassword", requestDto.getAccountPassword());
+        body.put("bankId", requestDto.getBankId());
 
-    // REC 부분을 Object 타입으로 받기
-    Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
+        // 일반 계좌 DB 저장 로직 유저 완성 시 추가
+        ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
 
-    // recObject -> AccountDto 매핑
-    AccountDto accountDto = objectMapper.convertValue(recObject, AccountDto.class);
+        // REC 부분을 Object 타입으로 받기
+        Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
 
-    return accountDto;
-  }
+        // recObject -> AccountDto 매핑
+        AccountDto accountDto = objectMapper.convertValue(recObject, AccountDto.class);
 
-  // 계좌 단건 조회 (AccountNo로) - 상세 정보 X
-  public AccountDto getByAccountNo(InquireAccountRequestDto requestDto) {
+        return accountDto;
+    }
 
-    Long userId = SecurityUtil.getCurrentUserId();
+    // 계좌 단건 조회 (AccountNo로) - 상세 정보 X
+    public AccountDto getByAccountNo(InquireAccountRequestDto requestDto) {
 
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new UserNotFoundException(userId));
+        User user = securityUtil.getUserByToken();
 
-    String API_URL = BASE_URL + "inquireAccount";
+        String API_URL = BASE_URL + "inquireAccount";
 
-    BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
+        BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
 
-    Map<String, Object> body = new HashMap<>();
+        Map<String, Object> body = new HashMap<>();
 
-    body.put("Header", header);
-    body.put("accountNo", requestDto.getAccountNo());
+        body.put("Header", header);
+        body.put("accountNo", requestDto.getAccountNo());
 
-    // 특정 계좌 조회
-    ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+        // 특정 계좌 조회
+        ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
 
-    // REC 부분을 Object 타입으로 받기
-    Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
+        // REC 부분을 Object 타입으로 받기
+        Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
 
-    // recObject -> AccountDto 매핑
-    AccountDto accountDto = objectMapper.convertValue(recObject, AccountDto.class);
+        // recObject -> AccountDto 매핑
+        AccountDto accountDto = objectMapper.convertValue(recObject, AccountDto.class);
 
-    return accountDto;
-  }
+        return accountDto;
+    }
 
-  // 계좌 전체 조회 (userId로)
-  public List<AccountDto> getAllByUserId() {
+    // 계좌 전체 조회 (userId로)
+    public List<AccountDto> getAllByUserId() {
 
-    Long userId = SecurityUtil.getCurrentUserId();
+        User user = securityUtil.getUserByToken();
 
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new UserNotFoundException(userId));
+        String API_URL = BASE_URL + "inquireAccountList";
 
-    String API_URL = BASE_URL + "inquireAccountList";
+        BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
 
-    BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
+        Map<String, Object> body = new HashMap<>();
 
-    Map<String, Object> body = new HashMap<>();
+        body.put("Header", header);
 
-    body.put("Header", header);
+        // 특정 유저 전체 계좌 조회
+        ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
 
-    // 특정 유저 전체 계좌 조회
-    ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+        // REC 부분을 Object 타입으로 받기
+        List<Map<String, Object>> recObjectList = (List<Map<String, Object>>) response.getBody().get("REC");
 
-    // REC 부분을 Object 타입으로 받기
-    List<Map<String, Object>> recObjectList = (List<Map<String, Object>>) response.getBody().get("REC");
+        List<AccountDto> accountDtoList = objectMapper.convertValue(recObjectList, new TypeReference<List<AccountDto>>() {
+        });
 
-    List<AccountDto> accountDtoList = objectMapper.convertValue(recObjectList, new TypeReference<List<AccountDto>>() {});
+        return accountDtoList;
 
-    return accountDtoList;
+    }
 
-  }
+    // 계좌 신규 머니박스 추가
+    public List<MoneyBoxDto> addMoneyBox(AddMoneyBoxRequestDto requestDto) {
 
-  // 계좌 신규 머니박스 추가
-  public List<MoneyBoxDto> addMoneyBox(AddMoneyBoxRequestDto requestDto) {
+        User user = securityUtil.getUserByToken();
 
-    Long userId = SecurityUtil.getCurrentUserId();
+        String API_URL = BASE_URL + "addMoneyBox";
 
-    User user = userRepository.findByUserId(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
 
-    String API_URL = BASE_URL + "addMoneyBox";
+        Map<String, Object> body = new HashMap<>();
 
-    BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
+        body.put("Header", header);
+        body.put("accountNo", requestDto.getAccountNo());
+        body.put("currencyCode", requestDto.getCurrencyCode());
+        body.put("accountPassword", requestDto.getAccountPassword());
 
-    Map<String, Object> body = new HashMap<>();
+        // 머니박스 추가
+        ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
 
-    body.put("Header", header);
-    body.put("accountNo", requestDto.getAccountNo());
-    body.put("currencyCode", requestDto.getCurrencyCode());
+        // WebClient 응답에서 REC 부분을 가져오기
+        List<Map<String, Object>> recObjectList = (List<Map<String, Object>>) response.getBody().get("REC");
 
-    // 머니박스 추가
-    ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+        // REC 데이터를 MoneyBoxDto 리스트로 변환
+        List<MoneyBoxDto> moneyBoxDtos = objectMapper.convertValue(recObjectList, new TypeReference<List<MoneyBoxDto>>() {
+        });
 
-    // WebClient 응답에서 REC 부분을 가져오기
-    List<Map<String, Object>> recObjectList = (List<Map<String, Object>>) response.getBody().get("REC");
-
-     // REC 데이터를 MoneyBoxDto 리스트로 변환
-    List<MoneyBoxDto> moneyBoxDtos = objectMapper.convertValue(recObjectList, new TypeReference<List<MoneyBoxDto>>() {});
-
-    // 변환된 리스트를 반환하거나, 다른 로직에 사용
-    return moneyBoxDtos;
-  }
-
+        // 변환된 리스트를 반환하거나, 다른 로직에 사용
+        return moneyBoxDtos;
+    }
 
 //  public ResponseEntity<DeleteAccountResponseDto> deleteAccount(
 //      String accountNo,

@@ -79,4 +79,11 @@ public class GroupController {
         return ResponseEntity.status(HttpStatus.CREATED).body(participantDto);
     }
 
+//    @GetMapping()
+//    public ResponseEntity<ParticipantDto> getAllGroupsByUserId() {
+//
+//        groupService.getAllGroupInfosByUserId();
+//
+//        return ResponseEntity.status(HttpStatus.CREATED).body(participantDto);
+//    }
 }
