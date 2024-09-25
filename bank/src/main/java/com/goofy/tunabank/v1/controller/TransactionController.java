@@ -89,6 +89,28 @@ public class TransactionController {
   }
 
   /**
+   * 자동정산입금
+   */
+  @PostMapping("/settlement/deposit")
+  public ResponseEntity<RecWrapper<TransactionResponseDto>> settlementDepositAuto(
+      @RequestBody TransactionRequestDto requestDto) {
+
+    TransactionResponseDto response = transactionService.processAutoSettlement(requestDto);
+    return ResponseEntity.ok(new RecWrapper<>(response));
+  }
+
+  /**
+   * 자동정산출금
+   */
+  @PostMapping("/settlement/withdrawal")
+  public ResponseEntity<RecWrapper<TransactionResponseDto>> settlementWithdrawalAuto(
+      @RequestBody TransactionRequestDto requestDto) {
+
+    TransactionResponseDto response = transactionService.processAutoSettlement(requestDto);
+    return ResponseEntity.ok(new RecWrapper<>(response));
+  }
+
+  /**
    * 환전 예상 금액 조회
    */
   @PostMapping("/exchange/estimate")

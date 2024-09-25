@@ -25,6 +25,7 @@ import com.goofy.tunabank.v1.mapper.TransactionMapper;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
 import com.goofy.tunabank.v1.repository.account.AccountRepository;
 import com.goofy.tunabank.v1.repository.transaction.TransactionHistoryRepository;
+import com.goofy.tunabank.v1.util.LogUtil;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -110,13 +111,14 @@ public class TransactionService {
 
     // 입금 또는 출금 처리
     afterBalance = switch (transactionType) {
-      case D -> processDeposit(moneyBox, amount);
-      case W -> processWithdrawal(moneyBox, amount);
+      case D, SD -> processDeposit(moneyBox, amount);
+      case W, SW -> processWithdrawal(moneyBox, amount);
       default -> throw new InvalidTransactionTypeException(transactionType);
     };
 
     Long nextId = getNextTransactionId();
 
+    LogUtil.info("transactionType:",transactionType);
     TransactionHistory transactionHistory = TransactionHistory.createTransactionHistory(nextId,
         transactionType, moneyBox, null, requestDto.getHeader().getTransmissionDateTime(), amount,
         afterBalance, requestDto.getTransactionSummary());
@@ -166,6 +168,16 @@ public class TransactionService {
     requestDto.setAccountPassword(getPassword(requestDto.getAccountNo()));
     return processMoneyBoxTransfer(requestDto);
   }
+
+  /**
+   * 정산 입출금
+   */
+  public TransactionResponseDto processAutoSettlement(TransactionRequestDto requestDto) {
+
+    requestDto.setAccountPassword(getPassword(requestDto.getAccountNo()));
+    return processTransaction(requestDto);
+  }
+
 
   /**
    * 머니박스 이체(환전)

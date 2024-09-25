@@ -14,7 +14,7 @@ public class TransactionRequestDto {
   String accountNo;
 
   @Schema(description = "계좌 비밀번호", example = "1234")
-  private String accountPassword;
+  String accountPassword;
 
   @Schema(description = "머니박스 통화", example = "KRW")
   CurrencyType currencyCode;

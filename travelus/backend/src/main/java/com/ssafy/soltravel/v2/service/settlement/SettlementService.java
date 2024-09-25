@@ -6,17 +6,20 @@ import com.ssafy.soltravel.v2.domain.Enum.TransactionType;
 import com.ssafy.soltravel.v2.domain.Enum.TransferType;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.InquireAccountRequestDto;
-import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
+import com.ssafy.soltravel.v2.dto.group.GroupDto;
+import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.SettlementParticipantRequestDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.SettlementRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
+import com.ssafy.soltravel.v2.exception.group.GroupMasterNotFoundException;
+import com.ssafy.soltravel.v2.exception.participant.ParticipantNotFoundException;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.service.exchange.ExchangeService;
+import com.ssafy.soltravel.v2.service.group.GroupService;
 import com.ssafy.soltravel.v2.service.transaction.TransactionService;
 import com.ssafy.soltravel.v2.util.LogUtil;
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -29,9 +32,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SettlementService {
 
-  private final ExchangeService exchangeService;
   private final TransactionService transactionService;
   private final AccountService accountService;
+  private final GroupService groupService;
 
   public void executeSettlement(SettlementRequestDto settlementRequestDto) {
 
@@ -39,22 +42,32 @@ public class SettlementService {
     AccountDto account = accountService.getByAccountNo(
         new InquireAccountRequestDto(settlementRequestDto.getAccountNo()));
 
+    GroupDto group = groupService.getGroupInfo(settlementRequestDto.getGroupId());
+    List<ParticipantDto> participants = group.getParticipants();
+    long masterUserId = participants.stream().filter(ParticipantDto::isMaster).findFirst()
+        .orElseThrow(() -> new GroupMasterNotFoundException(group.getGroupId())).getUserId();
+
     switch (type) {
       case G -> {
-        settleOnlyKRW(settlementRequestDto);
+        settleOnlyKRW(settlementRequestDto, masterUserId);
       }
       case F -> {
-        settleOnlyForeign(settlementRequestDto, account.getMoneyBoxDtos().get(1).getCurrencyCode());
+        settleOnlyForeign(settlementRequestDto, account.getMoneyBoxDtos().get(1).getCurrencyCode(),
+            masterUserId);
       }
       case BOTH ->
-          settleBoth(settlementRequestDto, account.getMoneyBoxDtos().get(1).getCurrencyCode());
+          settleBoth(settlementRequestDto, account.getMoneyBoxDtos().get(1).getCurrencyCode(),
+              masterUserId);
     }
+
+    paySettlementToMembers(group.getGroupName(), participants,
+        settlementRequestDto.getParticipants());
   }
 
   /**
    * 1. 원화만 정산
    */
-  public void settleOnlyKRW(SettlementRequestDto settlementRequestDto) {
+  public void settleOnlyKRW(SettlementRequestDto settlementRequestDto, long masterUserId) {
 
     /**
      * 2.원화 출금
@@ -62,17 +75,15 @@ public class SettlementService {
      */
     transactionService.postAccountWithdrawal(
         new TransactionRequestDto(settlementRequestDto.getAccountNo(),
-            settlementRequestDto.getAccountPassword(), CurrencyType.KRW, TransactionType.W,
-            settlementRequestDto.getAmounts().get(0), "자동 정산 출금"));
-
-    paySettlementToMembers(settlementRequestDto.getParticipants());
+            settlementRequestDto.getAccountPassword(), CurrencyType.KRW, TransactionType.SW,
+            settlementRequestDto.getAmounts().get(0), "자동 정산 출금"), masterUserId);
   }
 
   /**
    * 2. 외화만 정산
    */
   public void settleOnlyForeign(SettlementRequestDto settlementRequestDto,
-      CurrencyType currencyCode) {
+      CurrencyType currencyCode, long masterUserId) {
 
     /**
      * 2.외화 정산출금
@@ -80,16 +91,15 @@ public class SettlementService {
      */
     transactionService.postAccountWithdrawal(
         new TransactionRequestDto(settlementRequestDto.getAccountNo(),
-            settlementRequestDto.getAccountPassword(), currencyCode, TransactionType.W,
-            settlementRequestDto.getAmounts().get(1), "자동 정산 출금"));
-
-    paySettlementToMembers(settlementRequestDto.getParticipants());
+            settlementRequestDto.getAccountPassword(), currencyCode, TransactionType.SW,
+            settlementRequestDto.getAmounts().get(1), "자동 정산 출금"), masterUserId);
   }
 
   /**
    * 모두 정산
    */
-  public void settleBoth(SettlementRequestDto settlementRequestDto, CurrencyType currencyCode) {
+  public void settleBoth(SettlementRequestDto settlementRequestDto, CurrencyType currencyCode,
+      long masterUserId) {
 
     /**
      * 1.재환전
@@ -107,25 +117,30 @@ public class SettlementService {
 
     transactionService.postAccountWithdrawal(
         new TransactionRequestDto(settlementRequestDto.getAccountNo(),
-            settlementRequestDto.getAccountPassword(), CurrencyType.KRW, TransactionType.W,
-            settlementRequestDto.getAmounts().get(0) + transactionAmount, "자동 정산 출금"));
-
-
-    paySettlementToMembers(settlementRequestDto.getParticipants());
+            settlementRequestDto.getAccountPassword(), CurrencyType.KRW, TransactionType.SW,
+            settlementRequestDto.getAmounts().get(0) + transactionAmount, "자동 정산 출금"),
+        masterUserId);
   }
 
   /**
    * 개인 정산금 지급
    */
-  private void paySettlementToMembers(List<SettlementParticipantRequestDto> requestDtos) {
+  private void paySettlementToMembers(String groupName, List<ParticipantDto> participants,
+      List<SettlementParticipantRequestDto> requestDtos) {
 
     for (SettlementParticipantRequestDto requestDto : requestDtos) {
 
-      //TODO: 모임원 개인 계좌번호 필요
+      long participantId = requestDto.getParticipantId();
+      ParticipantDto participant = participants.stream()
+          .filter(p -> p.getParticipantId().equals(participantId)).findFirst()
+          .orElseThrow(() -> new ParticipantNotFoundException(participantId));
 
-//      transactionService.postAccountDeposit(new TransactionRequestDto(settlementRequestDto.getAccountNo(),
-//          null, CurrencyType.KRW, TransactionType.D,
-//          requestDto.getAmount(), "[모임명] 자동 정산 입금"));
+      String accountNo = participant.getPersonalAccountNo();
+
+      transactionService.postAccountDeposit(
+          new TransactionRequestDto(accountNo, null, CurrencyType.KRW, TransactionType.SD,
+              String.valueOf(requestDto.getAmount()), String.format("[%s] 자동 정산 입금", groupName)),
+          participant.getUserId());
     }
   }
 
