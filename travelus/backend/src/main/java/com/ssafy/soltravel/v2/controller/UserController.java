@@ -87,7 +87,7 @@ public class UserController {
     }
 
 
-    @Operation(summary = "단일 사용자 조회", description = "사용자 ID로 단일 사용자 정보를 조회합니다.")
+    @Operation(summary = "단일 사용자 조회", description = "토큰으로 단일 사용자 정보를 조회합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = UserSearchResponseDto.class))),
         @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음", content = @Content),
@@ -102,16 +102,16 @@ public class UserController {
     }
 
 
-    @Operation(summary = "모든 사용자 조회", description = "모든 사용자를 조건에 맞춰 조회합니다.")
+    @Operation(summary = "전체 사용자 조회(검색)", description = "모든 사용자를 조건에 맞춰 조회합니다. \n검색 기능을 구현해놨으므로, 아래 값 중에 검색하고자 하는 값만 넣고 요청보내면 됩니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = UserSearchResponseDto.class))),
         @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @GetMapping("/search/all")
-    public ResponseEntity<?> searchAllUser(@ModelAttribute UserSearchRequestDto searchDto) {
+    @PostMapping(value = "/search/all", produces = "application/json")
+    public ResponseEntity<?> searchAllUser(@RequestBody(required = false) UserSearchRequestDto searchDto) {
 
-        LogUtil.info("requested", searchDto.toString());
+        LogUtil.info("requested", searchDto);
         List<UserSearchResponseDto> response = userService.searchAllUser(searchDto);
         return ResponseEntity.ok().body(response);
     }

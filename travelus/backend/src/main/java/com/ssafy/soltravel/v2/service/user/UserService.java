@@ -148,8 +148,13 @@ public class UserService implements UserDetailsService {
      * 사용자 계정 검색(리스트)
      */
     public List<UserSearchResponseDto> searchAllUser(UserSearchRequestDto searchDto) {
+        if(searchDto == null){
+            searchDto = new UserSearchRequestDto();
+        }
+
+        UserSearchRequestDto finalSearchDto = searchDto;
         List<User> list = userRepository.findAll(searchDto).orElseThrow(
-            () -> new UserNotFoundException(searchDto)
+            () -> new UserNotFoundException(finalSearchDto)
         );
 
         return list.stream().map(this::convertUserToSearchResponseDto).collect(Collectors.toList());
@@ -213,13 +218,14 @@ public class UserService implements UserDetailsService {
         return UserSearchResponseDto.builder()
             .userId(user.getUserId())
             .name(user.getName())
-            .email(user.getEmail())
+            .id(user.getEmail())
             .phone(user.getPhone())
             .address(user.getAddress())
             .birth(user.getBirth())
             .registerAt(user.getRegisterAt())
             .isExit(user.getIsExit())
             .profileImg(user.getProfile())
+            .gender(String.valueOf(user.getGender()))
             .build();
     }
 
