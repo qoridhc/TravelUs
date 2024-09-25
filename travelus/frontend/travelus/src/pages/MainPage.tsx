@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { accountApi } from "../api/account";
+import { AccountInfoNew } from "../types/account";
 import { editAccountList, editForeingAccountList } from "../redux/accountSlice";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
@@ -19,14 +20,8 @@ const MainPage = () => {
   const dispatch = useDispatch();
   const userId = localStorage.getItem("userId");
   const userIdNumber = userId ? parseInt(userId, 10) : 0;
-  // const accountList = useSelector((state: RootState) => state.account.accountList);
-  // accountList 더미데이터
-  const accountList = [
-    {
-      accountNo: "024-2133-1010-144",
-      balance: 203009,
-    },
-  ];
+  const [account, setAccount] = useState<AccountInfoNew | null>(null);
+
   const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
   const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[]>([]);
 
@@ -80,14 +75,17 @@ const MainPage = () => {
     const fetchData = async () => {
       try {
         // 두 API를 병렬로 호출
-        const [accountResponse, foreignResponse] = await Promise.all([
-          accountApi.fetchAccountInfo(userIdNumber),
-          accountApi.fetchForeignAccountInfo(userIdNumber),
-        ]);
+        // const [accountResponse, foreignResponse] = await Promise.all([
+        //   accountApi.fetchAccountInfo(userIdNumber),
+        //   accountApi.fetchForeignAccountInfo(userIdNumber),
+        // ]);
 
+        // API 호출
+        const accountResponse = await accountApi.fetchAllAccountInfo();
+        setAccount(accountResponse[0]);
         // Redux 스토어에 데이터 저장
-        dispatch(editAccountList(accountResponse));
-        dispatch(editForeingAccountList(foreignResponse));
+        // dispatch(editAccountList(accountResponse));
+        // dispatch(editForeingAccountList(foreignResponse));
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -124,7 +122,7 @@ const MainPage = () => {
         </div>
 
         {/* 입출금 통장 있을 시 표시 */}
-        {accountList && accountList.length > 0 && (
+        {account && (
           <div className="w-full py-5 px-5 flex flex-col rounded-xl bg-white shadow-md">
             <div
               className="flex flex-col space-y-3"
@@ -134,11 +132,11 @@ const MainPage = () => {
               <div className="flex justify-between items-center">
                 <div className="flex flex-col">
                   <p className="font-bold">트래블러스머니통장</p>
-                  <p className="text-sm text-zinc-500">입출금 {formatAccountNumber(accountList[0].accountNo)}</p>
+                  <p className="text-sm text-zinc-500">입출금 {formatAccountNumber(account.accountNo)}</p>
                 </div>
               </div>
               <div className="flex items-center">
-                <p className="text-[1.3rem] font-semibold">{formatCurrency(accountList[0].balance)}</p>
+                <p className="text-[1.3rem] font-semibold">{formatCurrency(account.moneyBoxDtos[0].balance)}</p>
                 <p className="text-[1rem]">원</p>
               </div>
               <hr />
