@@ -6,6 +6,7 @@ import com.ssafy.soltravel.v2.domain.Enum.AccountType;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
+import com.ssafy.soltravel.v2.dto.user.ProfileUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserCreateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserDetailDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchRequestDto;
@@ -19,6 +20,7 @@ import com.ssafy.soltravel.v2.service.AwsFileService;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.PasswordEncoder;
+import com.ssafy.soltravel.v2.util.SecurityUtil;
 import com.ssafy.soltravel.v2.util.WebClientUtil;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -130,7 +132,7 @@ public class UserService implements UserDetailsService {
     createDto.setPassword(PasswordEncoder.encrypt(createDto.getId(), createDto.getPassword()));
 
     // 프로필 이미지 저장
-    MultipartFile profile = createDto.getFile();
+    MultipartFile profile = null; //createDto.getFile();
     String profileImageUrl = apiKeys.get("DEFAULT_PROFILE_URL");
     if(profile != null && !profile.isEmpty()) {
       profileImageUrl = fileService.saveProfileImage(profile);
@@ -160,7 +162,8 @@ public class UserService implements UserDetailsService {
   /*
   * 사용자 계정 검색(단건, userId) 
   */
-  public UserSearchResponseDto searchOneUser(Long userId) {
+  public UserSearchResponseDto searchOneUser() {
+    Long userId = SecurityUtil.getCurrentUserId();
     User user = userRepository.findByUserId(userId).orElseThrow(
         () -> new UserNotFoundException(userId)
     );
@@ -196,7 +199,7 @@ public class UserService implements UserDetailsService {
     createDto.setPassword(PasswordEncoder.encrypt(createDto.getId(), createDto.getPassword()));
 
     // 프로필 이미지 저장
-    MultipartFile profile = createDto.getFile();
+    MultipartFile profile = null; //createDto.getFile();
     String profileImageUrl = null;
     if(profile != null && !profile.isEmpty()) {
       profileImageUrl = fileService.saveProfileImage(profile);
@@ -219,8 +222,21 @@ public class UserService implements UserDetailsService {
         .birth(user.getBirth())
         .registerAt(user.getRegisterAt())
         .isExit(user.getIsExit())
+        .profileImg(user.getProfile())
         .build();
   }
 
 
+  public void updateUserProfile(ProfileUpdateRequestDto request) throws IOException {
+
+   Long userId = SecurityUtil.getCurrentUserId();
+   User user = userRepository.findByUserId(userId).orElseThrow(
+       () -> new UserNotFoundException(userId)
+   );
+
+    // 프로필 이미지 저장
+    LogUtil.info("이미지", request.getProfileImg().getName());
+    String profileImageUrl = fileService.saveProfileImage(request.getProfileImg());
+    user.updateProfile(profileImageUrl);
+  }
 }

@@ -11,7 +11,7 @@ import com.ssafy.soltravel.v2.dto.group.GroupDto;
 import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateGroupRequestDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateParticipantRequestDto;
-import com.ssafy.soltravel.v2.exception.UserNotFoundException;
+import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.exception.account.InvalidPersonalAccountException;
 import com.ssafy.soltravel.v2.exception.group.InvalidGroupIdException;
 import com.ssafy.soltravel.v2.mapper.GroupMapper;

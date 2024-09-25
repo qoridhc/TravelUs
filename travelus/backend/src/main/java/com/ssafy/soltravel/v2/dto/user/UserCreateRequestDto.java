@@ -18,9 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 public class UserCreateRequestDto {
 
-    @Schema(description = "사용자의 프로필 이미지", example = "file")
-    MultipartFile file;
-
     @NotNull
     @NotBlank
     @Schema(description = "사용자의 이름", example = "홍길동")

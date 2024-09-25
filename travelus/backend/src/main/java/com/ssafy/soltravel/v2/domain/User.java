@@ -106,4 +106,8 @@ public class User {
         user.userKey = "";
         return user;
     }
+
+    public void updateProfile(String profileImageUrl) {
+        this.profile = profileImageUrl;
+    }
 }
