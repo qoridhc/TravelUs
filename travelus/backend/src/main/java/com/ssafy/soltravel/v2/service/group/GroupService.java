@@ -6,6 +6,8 @@ import com.ssafy.soltravel.v2.domain.TravelGroup;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
+import com.ssafy.soltravel.v2.dto.group.GroupCodeGenerateRequestDto;
+import com.ssafy.soltravel.v2.dto.group.GroupCodeGenerateResponseDto;
 import com.ssafy.soltravel.v2.dto.group.GroupDto;
 import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateGroupRequestDto;
@@ -132,7 +134,7 @@ public class GroupService {
         return participantDto;
     }
 
-    // 특정 유저가 가입한(생성 x) 모임 전체 저회
+    // 특정 유저가 가입한(생성 x) 모임 전체 조회
     public List<GroupSummaryDto> getAllJoinedGroup(boolean isMaster) {
 
         // 1. 토큰 기반 유저 아이디 추출
@@ -149,4 +151,18 @@ public class GroupService {
             .toList();
     }
 
+    
+    /*
+    * 모임 코드 생성
+    */
+    public GroupCodeGenerateResponseDto generateGroupCode(GroupCodeGenerateRequestDto request) {
+
+        TravelGroup travelGroup = groupRepository.findById(request.getGroupId())
+            .orElseThrow(InvalidGroupIdException::new);
+
+        User user = securityUtil.getUserByToken();
+
+
+        return null;
+    }
 }

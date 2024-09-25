@@ -1,5 +1,7 @@
 package com.ssafy.soltravel.v2.controller;
 
+import com.ssafy.soltravel.v2.dto.group.GroupCodeGenerateRequestDto;
+import com.ssafy.soltravel.v2.dto.group.GroupCodeGenerateResponseDto;
 import com.ssafy.soltravel.v2.dto.group.GroupDto;
 import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateGroupRequestDto;
@@ -107,6 +109,21 @@ public class GroupController {
         ParticipantDto participantDto = groupService.createNewParticipant(requestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(participantDto);
+    }
+
+
+
+    // === 초대 url 생성 ===
+    @Operation(summary = "참여코드 생성", description = "모임 참여 코드 생성")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "참여 코드 생성 성공", content = @Content(schema = @Schema(implementation = ParticipantDto.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @GetMapping("/create/groupCode")
+    public ResponseEntity generateGroupCode(@RequestBody GroupCodeGenerateRequestDto request) {
+        GroupCodeGenerateResponseDto response = groupService.generateGroupCode(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 //    @GetMapping()
