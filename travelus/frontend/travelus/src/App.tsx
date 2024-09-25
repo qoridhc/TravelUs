@@ -26,7 +26,9 @@ import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
 import AccountCreate from "./pages/ver1/AccountCreateOld";
 import ExchangeRate from "./pages/exchange/ExchangeRate";
+import ExchangeDetail from './components/exchange/ExchangeDetail';
 import Exchange from "./pages/exchange/Exchange";
+import ExchangeKRWFlow from "./pages/exchange/ExchangeKRW";
 import SelectAccount from "./pages/exchange/SelectAccount";
 import Settlement from "./pages/ver1/Settlement";
 import Detail from "./pages/viewaccount/Detail";
@@ -79,8 +81,6 @@ function App() {
                       {/* 가계부 */}
                       <Route path="/accountbookdetail" element={<AccountBookDetail />} />
 
-                      {/* 환율 */}
-                      <Route path="/exchangerate" element={<ExchangeRate />} />
                       {/* Add other protected routes here */}
                     </Route>
                   </Routes>
@@ -141,9 +141,14 @@ function App() {
 
           {/* 환전 */}
           <Route path="/exchange" element={<Exchange />}></Route>
+          <Route path="/exchangekrw" element={<ExchangeKRWFlow />} />
           <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
           <Route path="/detail" element={<Detail />}></Route>
           <Route path="/transaction" element={<Transaction />}></Route>
+
+          {/* 환율 */}
+          <Route path="/exchangerate" element={<ExchangeRate />} />
+          <Route path="/exchangerate/:currencyCode" element={<ExchangeDetail />} />
 
           {/* 정산 */}
           <Route path="/selectsettlementamount" element={<SelectSettlementAmount />}></Route>
