@@ -110,6 +110,7 @@ function App() {
           <Route path="/userinfoofcreateaccount" element={<UserInfoOfCreateAccount />} />
 
           {/* 모임통장 생성 */}
+          <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/userinfoofcreatemeetingaccount" element={<UserInfoOfCreateMeetingAccount />} />
           <Route path="/meetinginfoofcreatemeetingaccount" element={<MeetingInfoOfCreateMeetingAccount />} />
           <Route path="/passwordofcreatemeetingaccount/:type" element={<PasswordOfCreateMeetingAccount />} />
@@ -173,7 +174,6 @@ function App() {
           {/* ver1 */}
           <Route path="/accountcreate" element={<AccountCreate />} />
           <Route path="/accountcreatecomplete" element={<AccountCreateComplete />} />
-          <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
           <Route path="/foreignmeetingaccountcreate" element={<ForeignMeetingAccountCreate />} />
           <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
