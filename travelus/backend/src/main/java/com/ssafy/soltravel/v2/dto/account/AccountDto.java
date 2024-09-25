@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.v2.dto.account;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ssafy.soltravel.v2.domain.Enum.AccountType;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,10 +15,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AccountDto {
 
     @Schema(description = "계좌의 고유 ID", example = "1")
     private Long accountId;
+
+    @Schema(description = "유저 이름", example = "김싸피")
+    private String userName;
 
     @Schema(description = "계좌 번호", example = "002-4560023-209")
     private String accountNo;
