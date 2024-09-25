@@ -1,5 +1,8 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router";
+import { groupApi } from "../../api/group";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const IDVerificationOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
@@ -10,13 +13,31 @@ const IDVerificationOfCreateMeetingAccount = () => {
     "빛이 반사되지 않는 곳에서 촬영해주세요.",
     "훼손되지 않은 신분증을 촬영해주세요.",
   ];
+  const meetingPassword = useSelector((state: RootState) => state.account.accountPassword);
+  const meetingName = useSelector((state: RootState) => state.meetingAccount.meetingName);
+  const meetingType = useSelector((state: RootState) => state.meetingAccount.meetingType);
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    const data = {
+      groupAccountPassword: meetingPassword,
+      groupName: meetingName,
+      icon: meetingType,
+      travelStartDate: "2024-01-01",
+      travelEndDate: "2024-01-07",
+      personalAccountNo: "001-30497657-209",
+    };
+
+    try {
+      const response = await groupApi.createMeetingAccount(data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
     navigate(`/meeting/create/completed/${params.type}`);
   };
 
   return (
-    <div className="h-full p-5 flex flex-col justify-between">
+    <div className="h-full p-5 pb-8 flex flex-col justify-between">
       <div className="mt-20 flex flex-col justify-center space-y-10">
         <div className="grid gap-3">
           <p className="text-2xl font-semibold">
