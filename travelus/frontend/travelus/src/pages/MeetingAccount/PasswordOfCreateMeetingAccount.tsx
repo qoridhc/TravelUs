@@ -38,9 +38,8 @@ const PasswordOfCreateMeetingAccount = () => {
         <div className="flex space-x-3">
           {[...Array(4)].map((_, index) => (
             <div
-              className={`w-4 aspect-1 ${
-                index < password.length ? "bg-[#565656]" : "bg-[#D9D9D9]"
-              } rounded-full`}></div>
+              className={`w-4 aspect-1 ${index < password.length ? "bg-[#565656]" : "bg-[#D9D9D9]"} rounded-full`}
+              key={index}></div>
           ))}
         </div>
       </div>
