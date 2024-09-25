@@ -11,10 +11,21 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = ParticipantMapper.class)
 public interface GroupMapper {
 
+    /*
+     *  그룹 매핑 메서드
+     */
     @Mapping(source = "participants", target = "participants")
     GroupDto toDto(TravelGroup travelGroup);
 
+    List<GroupDto> toDtoList(List<TravelGroup> groups);
+
     TravelGroup toEntity(GroupDto dto);
+
+
+
+    /*
+     *  참여자 매핑 메서드
+     */
 
     @Mapping(source = "id", target = "participantId")
     @Mapping(source = "user.userId", target = "userId")

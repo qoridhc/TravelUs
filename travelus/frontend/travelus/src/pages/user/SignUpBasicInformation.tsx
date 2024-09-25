@@ -45,7 +45,7 @@ const SignUpBasicInformation = () => {
 
   const [isFormValid, setIsFormValid] = useState(false);
   const [isBasicFormValid, setIsBasicFormValid] = useState(false);
-  const [isIdDuplicated, setIsIdDuplicated] = useState(true);
+  const [isIdDuplicated, setIsIdDuplicated] = useState(false);
 
   const [inputs, setInputs] = useState<InputState>({
     id: "",
@@ -231,10 +231,23 @@ const SignUpBasicInformation = () => {
     }
   }
 
-  const handleIsIdDuplicated = () => {
+  const handleIsIdDuplicated = async () => {
     console.log("중복확인");
-    setIsIdDuplicated(false);
-    setStep(1);
+    try {
+      const response = await userApi.fetchValidateId(inputs.id);
+      console.log("아이디 중복확인 응답", response);
+      if (response.data.status === "FAIL") {
+        setIsIdDuplicated(true);
+        console.log("아이디 중복");
+      } else if (response.data.status === "SUCCESS") {
+        setIsIdDuplicated(false);
+        console.log("아이디 중복 아님");
+        setStep(1);
+      }
+    }
+    catch (error) {
+      console.error("Error validating id:", error);
+    }
   };
 
   return (
@@ -300,6 +313,7 @@ const SignUpBasicInformation = () => {
                     labelName="아이디"
                     name={inputs.id}
                     error={errors.id}
+                    isIdDuplicated={isIdDuplicated}
                     onChange={handleChange}
                     handleIsIdDuplicated={handleIsIdDuplicated}
                   />
