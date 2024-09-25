@@ -1,11 +1,13 @@
 import { TextField } from "@mui/material";
 import React from "react";
 
-interface MeetingNameInputMuiProps {
+interface Props {
+  meetingName: string;
+  setMeetingName: (name: string) => void;
   onInputComplete: () => void;
 }
 
-const MeetingNameInputMui = ({ onInputComplete }: MeetingNameInputMuiProps) => {
+const MeetingNameInputMui = ({ meetingName, setMeetingName, onInputComplete }: Props) => {
   return (
     <TextField
       sx={{
@@ -25,8 +27,10 @@ const MeetingNameInputMui = ({ onInputComplete }: MeetingNameInputMuiProps) => {
       }}
       id="meetingname"
       label="모임명"
+      value={meetingName}
       variant="standard"
       autoComplete="off"
+      onChange={(e) => setMeetingName(e.target.value)}
       onBlur={onInputComplete} // 입력이 완료되면 호출
     />
   );

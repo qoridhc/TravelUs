@@ -117,10 +117,7 @@ function App() {
           <Route path="/meeting/create/password/:type" element={<PasswordOfCreateMeetingAccount />} />
           <Route path="/meeting/create/password/check" element={<CheckPasswordOfCreateMeetingAccount />} />
           <Route path="/meeting/create/idverificationo/:type" element={<IDVerificationOfCreateMeetingAccount />} />
-          <Route
-            path="/meeting/create/completed/:type"
-            element={<CompletedOfCreateMeetingAccount />}
-          />
+          <Route path="/meeting/create/completed/:type" element={<CompletedOfCreateMeetingAccount />} />
 
           {/* 모임통장 상세 */}
           <Route path="/account/:userId" element={<GroupAccountPage />} />
