@@ -26,9 +26,11 @@ import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
 import AccountCreate from "./pages/ver1/AccountCreateOld";
 import ExchangeRate from "./pages/exchange/ExchangeRate";
+import ExchangeDetail from './components/exchange/ExchangeDetail';
 import Exchange from "./pages/exchange/Exchange";
+import ExchangeKRWFlow from "./pages/exchange/ExchangeKRW";
 import SelectAccount from "./pages/exchange/SelectAccount";
-import Settlement from "./pages/settle/Settlement";
+import Settlement from "./pages/ver1/Settlement";
 import Detail from "./pages/viewaccount/Detail";
 import GroupAccountPage from "./pages/viewaccount/ViewAccount";
 import AccountCreateComplete from "./pages/ver1/AccountCreateComplete";
@@ -51,6 +53,10 @@ import CheckPasswordOfCreateMeetingAccount from "./pages/MeetingAccount/CheckPas
 import IDVerificationOfCreateMeetingAccount from "./pages/MeetingAccount/IDVerificationOfCreateMeetingAccount";
 import CompletedOfCreateMeetingAccount from "./pages/MeetingAccount/CompletedOfCreateMeetingAccount";
 import UserInfoOfCreateAccount from "./pages/account/UserInfoOfCreateAccount";
+import CurrencyInfoOfCreateTravelBox from "./pages/travelBox/CurrencyInfoOfCreateTravelBox";
+import AutoCurrencyExchangeOfCreateTravelBox from "./pages/travelBox/AutoCurrencyExchangeOfCreateTravelBox";
+import MeetingTransaction from "./pages/MeetingAccount/MeetingTransaction";
+import TravelBoxTransaction from "./pages/travelBox/TravelBoxTransactionDetail";
 
 function App() {
   return (
@@ -75,8 +81,6 @@ function App() {
                       {/* 가계부 */}
                       <Route path="/accountbookdetail" element={<AccountBookDetail />} />
 
-                      {/* 환율 */}
-                      <Route path="/exchangerate" element={<ExchangeRate />} />
                       {/* Add other protected routes here */}
                     </Route>
                   </Routes>
@@ -105,7 +109,10 @@ function App() {
           <Route path="/meetinginfoofcreatemeetingaccount" element={<MeetingInfoOfCreateMeetingAccount />} />
           <Route path="/passwordofcreatemeetingaccount/:type" element={<PasswordOfCreateMeetingAccount />} />
           <Route path="/checkpasswordofcreatemeetingaccount" element={<CheckPasswordOfCreateMeetingAccount />} />
-          <Route path="/idverificationofcreatemeetingaccount/:type" element={<IDVerificationOfCreateMeetingAccount />} />
+          <Route
+            path="/idverificationofcreatemeetingaccount/:type"
+            element={<IDVerificationOfCreateMeetingAccount />}
+          />
           <Route path="/completedofcreatemeetingaccount/:type" element={<CompletedOfCreateMeetingAccount />} />
 
           {/* 모임통장 상세 */}
@@ -119,6 +126,12 @@ function App() {
 
           {/* 통장 내역 */}
           <Route path="/accounttransaction/:id" element={<AccountTransaction />} />
+          <Route path="/meetingtransaction/:id" element={<MeetingTransaction />} />
+          <Route path="/transaction/detail/travelbox/:id" element={<TravelBoxTransaction />} />
+
+          {/* 트래블박스 생성 */}
+          <Route path="/currencyinfoofcreatetravelbox" element={<CurrencyInfoOfCreateTravelBox />} />
+          <Route path="/autocurrencyexchangeofcreatetravelbox" element={<AutoCurrencyExchangeOfCreateTravelBox />} />
 
           {/* 이체 */}
           <Route path="/transfer/selectbank" element={<TransferSelectBank />} />
@@ -128,9 +141,14 @@ function App() {
 
           {/* 환전 */}
           <Route path="/exchange" element={<Exchange />}></Route>
+          <Route path="/exchangekrw" element={<ExchangeKRWFlow />} />
           <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
           <Route path="/detail" element={<Detail />}></Route>
           <Route path="/transaction" element={<Transaction />}></Route>
+
+          {/* 환율 */}
+          <Route path="/exchangerate" element={<ExchangeRate />} />
+          <Route path="/exchangerate/:currencyCode" element={<ExchangeDetail />} />
 
           {/* 정산 */}
           <Route path="/selectsettlementamount" element={<SelectSettlementAmount />}></Route>
@@ -138,7 +156,6 @@ function App() {
           <Route path="/settlement" element={<SettlementInfo />}></Route>
           <Route path="/editmembers" element={<EditMembers />}></Route>
           <Route path="/balancesettlementcompleted" element={<BalanceSettlementCompleted />}></Route>
-          {/* <Route path="/settlement" element={<Settlement />}></Route> */}
 
           {/* ver1 */}
           <Route path="/accountcreate" element={<AccountCreate />} />
@@ -147,6 +164,7 @@ function App() {
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
           <Route path="/foreignmeetingaccountcreate" element={<ForeignMeetingAccountCreate />} />
           <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
+          {/* <Route path="/settlement" element={<Settlement />}></Route> */}
         </Routes>
       </BrowserRouter>
     </div>

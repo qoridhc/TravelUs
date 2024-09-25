@@ -27,8 +27,8 @@ export const userApi = {
   },
 
   // 로그인
-  fetchLogin: (email: string, password: string) => {
-    return api.post(`/auth/login`, { email, password });
+  fetchLogin: (id: string, password: string) => {
+    return api.post(`/auth/login`, { id, password });
   },
 
   // 모임원 초대 시 이메일 유효성 검사

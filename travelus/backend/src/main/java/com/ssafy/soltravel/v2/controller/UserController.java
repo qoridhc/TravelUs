@@ -2,7 +2,9 @@ package com.ssafy.soltravel.v2.controller;
 
 import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.user.EmailValidationDto;
+import com.ssafy.soltravel.v2.dto.user.ProfileUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserCreateRequestDto;
+import com.ssafy.soltravel.v2.dto.user.UserDupCheckRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchResponseDto;
 import com.ssafy.soltravel.v2.service.account.AccountService;
@@ -45,11 +47,11 @@ public class UserController {
     })
     @PostMapping(value = "/dup-check")
     public ResponseEntity<?> createUser(
-        @Parameter(description = "중복 검사를 수행할 사용자 아이디", required = true, example = "user123")
-        @RequestBody String id) throws IOException {
+        @Schema(description = "중복 검사를 수행할 사용자 아이디", required = true, example = "중복검사 할 아이디, 쌍따옴표는 빼주세요")
+        @RequestBody UserDupCheckRequestDto request ) throws IOException {
 
-        LogUtil.info("requested", id);
-        return ResponseEntity.status(HttpStatus.OK).body(userService.checkDupUser(id));
+        LogUtil.info("requested", request.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(userService.checkDupUser(request.getId()));
     }
 
 
@@ -59,7 +61,7 @@ public class UserController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @PostMapping(value="/join", consumes = "multipart/form-data")
+    @PostMapping(value = "/join", consumes = "multipart/form-data")
     public ResponseEntity<?> createUser(@ModelAttribute UserCreateRequestDto joinDto)
         throws IOException {
 
@@ -68,13 +70,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto());
     }
 
+
     @Operation(summary = "회원가입 테스트", description = "새로운 사용자를 등록합니다.(은행 api 사용하지 않는 버전)")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "회원 가입 성공", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
         @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @PostMapping(value="/join/test", consumes = "multipart/form-data")
+    @PostMapping(value = "/join/test", consumes = "multipart/form-data")
     public ResponseEntity<ResponseDto> createUserWithoutAPI(@ModelAttribute UserCreateRequestDto joinDto)
         throws IOException {
 
@@ -83,17 +86,18 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto());
     }
 
+
     @Operation(summary = "단일 사용자 조회", description = "사용자 ID로 단일 사용자 정보를 조회합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = UserSearchResponseDto.class))),
         @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @GetMapping("/search/{userId}")
-    public ResponseEntity<?> searchUser(@PathVariable(name = "userId") Long userId) {
+    @GetMapping("/search")
+    public ResponseEntity<?> searchUser() {
 
-        LogUtil.info("requested", userId);
-        UserSearchResponseDto response = userService.searchOneUser(userId);
+        LogUtil.info("requested");
+        UserSearchResponseDto response = userService.searchOneUser();
         return ResponseEntity.ok().body(response);
     }
 
@@ -112,15 +116,31 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
-    @Operation(summary = "모임원 이메일 유효성 검사", description = "이메일을 통해 회원인지 확인합니다.")
+
+    @Operation(summary = "프로필 이미지 변경", description = "사진을 업로드해 프로필 이미지를 변경합니다.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = EmailValidationDto.class))),
+        @ApiResponse(responseCode = "200", description = "변경 성공", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
         @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @GetMapping("/validate-email/{email}")
-    public ResponseEntity<EmailValidationDto> validateEmail(@PathVariable String email) {
+    @PostMapping(name = "/update/profile", consumes = "multipart/form-data")
+    public ResponseEntity<?> updateUserProfile(@ModelAttribute ProfileUpdateRequestDto request) throws IOException {
 
-        return ResponseEntity.ok().body(accountService.getPersonalAccountByEmail(email));
+        LogUtil.info("requested", request.toString());
+        userService.updateUserProfile(request);
+        return ResponseEntity.ok().body(new ResponseDto());
     }
+
+//
+//    @Operation(summary = "모임원 이메일 유효성 검사", description = "이메일을 통해 회원인지 확인합니다.")
+//    @ApiResponses(value = {
+//        @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = EmailValidationDto.class))),
+//        @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
+//        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+//    })
+//    @GetMapping("/validate-email/{email}")
+//    public ResponseEntity<EmailValidationDto> validateEmail(@PathVariable String email) {
+//
+//        return ResponseEntity.ok().body(accountService.getPersonalAccountByEmail(email));
+//    }
 }

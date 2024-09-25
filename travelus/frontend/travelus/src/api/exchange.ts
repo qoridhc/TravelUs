@@ -3,7 +3,7 @@ import { ExchangeRateInfo, ExchangeRequest, ExchangeResponse, ExchangeRateHistor
 
 export const exchangeApi = {
   getExchangeRates: async (): Promise<ExchangeRateInfo[]> => {
-    const response = await api.get('/exchange');
+    const response = await api.get('/exchange/rate');
     return response.data
   },
 

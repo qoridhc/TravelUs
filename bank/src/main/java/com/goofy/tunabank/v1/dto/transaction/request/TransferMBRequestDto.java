@@ -16,8 +16,11 @@ public class TransferMBRequestDto {
   //이체 종류
   private TransferType transferType;
 
-  //통장 id
+  //계좌번호
   private String accountNo;
+
+  //계좌 비밀번호
+  private String accountPassword;
 
   //변경 전 통화
   private CurrencyType sourceCurrencyCode;

@@ -11,7 +11,7 @@ import MainMeetingAccount from "../components/mainpage/MainMeetingAccount";
 import "../css/swiper.css";
 import "swiper/css/pagination";
 import "swiper/css";
-import ExchangeRate from '../components/exchange/ExchangeRate';
+import ExchangeRate from "./exchange/ExchangeRate";
 import { ExchangeRateInfo } from '../types/exchange';
 
 const MainPage = () => {
@@ -19,7 +19,15 @@ const MainPage = () => {
   const dispatch = useDispatch();
   const userId = localStorage.getItem("userId");
   const userIdNumber = userId ? parseInt(userId, 10) : 0;
-  const accountList = useSelector((state: RootState) => state.account.accountList);
+  // const accountList = useSelector((state: RootState) => state.account.accountList);
+  // accountList 더미데이터
+  const accountList = [
+    {
+      accountNo: "024-2133-1010-144",
+      balance: 203009,
+
+    },
+  ];
   const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
   const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[]>([]);
 
@@ -110,7 +118,7 @@ const MainPage = () => {
           <button
             className="h-10 rounded-md bg-[#0046FF] font-bold text-white text-sm"
             onClick={() => {
-              navigate("/meetingaccountcreateprepare");
+              navigate("/userinfoofcreatemeetingaccount");
             }}>
             신청하기
           </button>
@@ -122,7 +130,7 @@ const MainPage = () => {
             <div 
             className="flex flex-col space-y-3"
             onClick={() => {
-              navigate(`/accounthistory/${accountList[0].accountNo}`);
+              navigate(`/accounttransaction/1`);
             }}>
               <div className="flex justify-between items-center">
                 <div className="flex flex-col">
@@ -149,7 +157,7 @@ const MainPage = () => {
 
         <div className="w-full flex flex-col items-center space-y-2">
           {/* 모임 통장 있을 시 표시 */}
-          {accountList.length > 1 && (
+          {/* {accountList.length > 1 && (
             <Swiper
               pagination={{
                 dynamicBullets: true,
@@ -162,7 +170,7 @@ const MainPage = () => {
                 </SwiperSlide>
               ))}
             </Swiper>
-          )}
+          )} */}
 
           {/* 환율 표시 */}
           <div
@@ -214,12 +222,12 @@ const MainPage = () => {
         </div>
 
         {/* ExchangeRate 컴포넌트 (숨겨진 상태로 사용) */}
-        <div style={{ display: 'none' }}>
+        {/* <div style={{ display: 'none' }}>
           <ExchangeRate
             onCurrencyChange={() => {}}
             onExchangeRatesUpdate={handleExchangeRatesUpdate}
           />
-        </div>
+        </div> */}
 
         {/* 가계부 */}
         <div
