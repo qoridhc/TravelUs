@@ -34,6 +34,6 @@ public class SettlementController {
   public ResponseEntity<?> executeSettlement(
       @RequestBody SettlementRequestDto settlementRequestDto) {
     settlementService.executeSettlement(settlementRequestDto);
-    return null;
+    return ResponseEntity.ok().body("success");
   }
 }
