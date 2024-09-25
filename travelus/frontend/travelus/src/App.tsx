@@ -61,6 +61,7 @@ import SettlementInfo from "./pages/settlement/balanceSettlement/SettlementInfo"
 import ExpenditureTransactionDetail from "./pages/settlement/expenditureSettlement/ExpenditureTransactionDetail";
 import ExpenditureSettlementInfo from "./pages/settlement/expenditureSettlement/ExpenditureSettlementInfo";
 import ExpenditureSettlementCompleted from "./pages/settlement/expenditureSettlement/ExpenditureSettlementCompleted";
+import TravelBoxCreatePrepare from "./pages/travelBox/TravelBoxCreatePrepare";
 
 function App() {
   return (
@@ -109,6 +110,7 @@ function App() {
           <Route path="/userinfoofcreateaccount" element={<UserInfoOfCreateAccount />} />
 
           {/* 모임통장 생성 */}
+          <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/userinfoofcreatemeetingaccount" element={<UserInfoOfCreateMeetingAccount />} />
           <Route path="/meetinginfoofcreatemeetingaccount" element={<MeetingInfoOfCreateMeetingAccount />} />
           <Route path="/passwordofcreatemeetingaccount/:type" element={<PasswordOfCreateMeetingAccount />} />
@@ -134,6 +136,7 @@ function App() {
           <Route path="/transaction/detail/travelbox/:id" element={<TravelBoxTransaction />} />
 
           {/* 트래블박스 생성 */}
+          <Route path="/travelbox/create/prepare" element={<TravelBoxCreatePrepare />} />
           <Route path="/currencyinfoofcreatetravelbox" element={<CurrencyInfoOfCreateTravelBox />} />
           <Route path="/autocurrencyexchangeofcreatetravelbox" element={<AutoCurrencyExchangeOfCreateTravelBox />} />
 
@@ -171,7 +174,6 @@ function App() {
           {/* ver1 */}
           <Route path="/accountcreate" element={<AccountCreate />} />
           <Route path="/accountcreatecomplete" element={<AccountCreateComplete />} />
-          <Route path="/meetingaccountcreateprepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
           <Route path="/foreignmeetingaccountcreate" element={<ForeignMeetingAccountCreate />} />
           <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
