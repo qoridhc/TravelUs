@@ -26,7 +26,7 @@ import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
 import AccountCreate from "./pages/ver1/AccountCreateOld";
 import ExchangeRate from "./pages/exchange/ExchangeRate";
-import ExchangeDetail from './components/exchange/ExchangeDetail';
+import ExchangeDetail from "./components/exchange/ExchangeDetail";
 import Exchange from "./pages/exchange/Exchange";
 import ExchangeKRWFlow from "./pages/exchange/ExchangeKRW";
 import SelectAccount from "./pages/exchange/SelectAccount";

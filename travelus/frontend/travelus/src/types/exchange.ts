@@ -64,3 +64,44 @@ export const currencyTypeList: Array<{text: string, value: string}> = [
   { text: "EUR(유로/€)", value: "EUR" },
   { text: "CNY(중국/¥)", value: "CNY" },
 ];
+
+// --------------------------------------------------
+// 환율 예측 types 선언
+export interface ExchangeRateInfo2 {
+  currencyCode: string;
+  exchangeRate: number;
+  lastUpdated: string;
+}
+
+export interface RecentRates {
+  "1_week": { [date: string]: number };
+  "1_month": { [date: string]: number };
+  "3_months": { [date: string]: number };
+}
+
+export interface ConfidenceInterval {
+  lower: number;
+  upper: number;
+}
+
+export interface CurrencyPrediction {
+  forecast: { [date: string]: number };
+  average_forecast: number;
+  confidence_interval: ConfidenceInterval;
+  daily_changes: { [date: string]: number };
+  recent_rates: RecentRates;
+}
+
+export interface ExchangeRateInfo {
+  currencyCode: string;
+  exchangeRate: number;
+  lastUpdated: string;
+}
+
+export interface PredictionResponse {
+  USD: CurrencyPrediction;
+  JPY: CurrencyPrediction;
+  EUR: { recent_rates: RecentRates };
+  CNY: { recent_rates: RecentRates };
+  last_updated: string;
+}
