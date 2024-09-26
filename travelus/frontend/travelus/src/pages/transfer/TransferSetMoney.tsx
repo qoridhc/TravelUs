@@ -12,6 +12,7 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
   const location = useLocation();
   const { accountNo } = location.state as { accountNo: string };
   const [account, setAccount] = useState<AccountInfoNew | null>(null);
+  const [depositAccount, setDepositAccount] = useState<AccountInfoNew | null>(null);
   const [transferAmount, setTransferAmount] = useState<string>("");
   const [isValidation, setIsValidation] = useState<boolean>(false);
   const [exceedsMaxAmount, setExceedsMaxAmount] = useState<boolean>(false);
@@ -35,6 +36,11 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
         const accountResponse = await accountApi.fetchAllAccountInfo();
         setAccount(accountResponse[0]);
         setUserAmount(accountResponse[0].moneyBoxDtos[0].balance);
+
+        // 받는 사람 이름을 표시하기 위한 API 호출
+        const accountInfo = await accountApi.fetchSpecificAccountInfo(accountNo);
+        setDepositAccount(accountInfo);
+
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -112,10 +118,10 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
           <div className="flex flex-col space-y-16">
             <div className="flex flex-col space-y-2">
               <div className="flex items-center">
-                <p className="pr-1 text-lg font-extrabold">박예진</p>
+                <p className="pr-1 text-lg font-extrabold">{depositAccount?.userName}</p>
                 <p>님에게</p>
               </div>
-              <p className="text-sm">튜나뱅크 {accountNo}</p>
+              <p className="text-sm">튜나뱅크 {depositAccount?.accountNo}</p>
             </div>
 
             <div className="flex flex-col space-y-10">
@@ -173,7 +179,7 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
         <div>
           <button
             onClick={() => {
-              navigate("/transfer/password", { state: { accountNo, transferAmount } });
+              navigate("/transfer/password", { state: { accountNo, transferAmount, depositAccount } });
             }}
             className={`w-full h-14 text-lg font-semibold rounded-xl tracking-wide ${
               isValidation ? "text-white bg-[#1429A0]" : "text-[#565656] bg-[#E3E4E4]"

@@ -1,3 +1,4 @@
+import { UserInfo } from "../types/userInformation";
 import api from "../lib/axios";
 
 export const userApi = {
