@@ -162,3 +162,19 @@ export const meetingAccountIconList: Array<{text: string, value: string}> = [
 export interface meetingInvitationCode {
   groupCode: string;
 }
+
+// 거래 내역 조회 (New ver.)
+export interface TransactionNew {
+  
+}
+
+// 모임통장 거래 내역 조회 (New ver.)
+export interface MeetingTransactionNew {
+  transactionUniqueNo: string;
+  transactionType: string;
+  accountNo: string;
+  transactionDate: string;
+  transactionAmount: string;
+  transactionBalance: string;
+  transactionSummary: string;
+}

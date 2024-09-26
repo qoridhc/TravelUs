@@ -25,6 +25,7 @@ const MeetingAccountListNew = () => {
       try {
         const createdResponse = await accountApi.fetchCreatedMeetingAccount();
         setCreatedAccountList(createdResponse);
+        console.log(createdResponse);
 
         const joinedResponse = await accountApi.fetchJoinedMeetingAccount();
         setJoinedAccountList(joinedResponse);
