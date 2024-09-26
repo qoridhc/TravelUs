@@ -57,9 +57,8 @@ export const accountApi = {
     return response.data;
   },
 
-  // 모임통장 초대 코드 발급
- fetchInvitationCode: async (groupId: number): Promise<meetingInvitationCode> => {
-    const response = await api.post(`/groups/create/groupCode`, { "groupId": groupId });
-    return response.data;
+  // 모임 초대 코드 발급
+ fetchInvitationCode: (groupId: number) => {
+    return api.post(`/groups/create/groupCode`, { "groupId": groupId });
   }
 };
