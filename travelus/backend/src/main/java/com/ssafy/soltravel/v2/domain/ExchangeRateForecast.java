@@ -20,22 +20,18 @@ public class ExchangeRateForecast {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column
-  private Double rate;
+  @Column(nullable = false, unique = true)
+  private LocalDate date;
 
   @Column
   private CurrencyType currency;
 
   @Column
-  private LocalDate baseDate;
-
-  @Column
-  private Long date;
+  private Double rate;
 
 
-  public static ExchangeRateForecast create(LocalDate baseDate, Long date, CurrencyType currency, Double rate) {
+  public static ExchangeRateForecast create(LocalDate date, CurrencyType currency, Double rate) {
     ExchangeRateForecast forecast = new ExchangeRateForecast();
-    forecast.baseDate = baseDate;
     forecast.date = date;
     forecast.currency = currency;
     forecast.rate = rate;

@@ -34,17 +34,14 @@ public class ExchangeRateForecastService {
       // 기준일, 통화코드 저장
       List<ExchangeRateForecast> list = new ArrayList<>();
       CurrencyType currencyType = exchangeService.getCurrencyType(currency);
-      LocalDate baseDate = LocalDate.now();
 
-      // 예측 수행한 미래기준(기준일, 차일, 환율, 통화코드)를 저장
+      // 예측 수행한 미래기준(예측일, 통화 코드, 환율)를 저장
       forecast.forEach((date, rate) -> {
         LocalDate predDate = LocalDate.parse(date);
         Double predRate = Double.valueOf(rate);
 
-        long daysDiff = ChronoUnit.DAYS.between(baseDate, predDate);
         ExchangeRateForecast pred = ExchangeRateForecast.create(
-            baseDate,
-            daysDiff,
+            predDate,
             currencyType,
             predRate
         );
