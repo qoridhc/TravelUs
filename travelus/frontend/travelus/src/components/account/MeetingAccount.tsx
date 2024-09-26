@@ -68,7 +68,7 @@ const MeetingAccount = ({ account }: Props) => {
   return (
     <div
       onClick={() => {
-        navigate(`/meetingaccount/1`);
+        navigate(`/meetingaccount/${account.groupId}`, { state: { account } });
       }}
       className="w-full">
       <div className="flex items-center space-x-4">

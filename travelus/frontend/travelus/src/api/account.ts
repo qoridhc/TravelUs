@@ -51,6 +51,12 @@ export const accountApi = {
     return response.data;
   },
 
+  // 특정 모임 조회
+  fetchSpecificMeetingAccount: (groupId: number) => {
+    return api.get(`/groups/${groupId}`);
+  },
+
+
   // 특정 외화모임통장 조회
   fetchForeignMeetingAccount: async (accountId: number): Promise<AccountInfo> => {
     const response = await api.get(`/account/foreign/accountId/${accountId}`);
@@ -58,7 +64,7 @@ export const accountApi = {
   },
 
   // 모임 초대 코드 발급
- fetchInvitationCode: (groupId: number) => {
+  fetchInvitationCode: (groupId: number) => {
     return api.post(`/groups/create/groupCode`, { "groupId": groupId });
   }
 };
