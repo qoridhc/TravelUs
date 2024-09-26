@@ -1,7 +1,9 @@
 package com.ssafy.soltravel.v2.controller;
 
+import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateRegisterRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateResponseDto;
+import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateSaveRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeResponseDto;
 import com.ssafy.soltravel.v2.service.exchange.ExchangeService;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -103,8 +106,9 @@ public class ExchangeController {
 //  }
 
   @PostMapping("/rate/save")
-  public ResponseEntity<?> saveExchangeRate(){
-    LogUtil.info("환율 예측값 저장 요청");
-    return ResponseEntity.ok(exchangeService.savePredictions());
+  public ResponseEntity<?> saveExchangeRatePred(@RequestBody ExchangeRateSaveRequestDto request){
+    LogUtil.info("환율 예측값 저장 요청", request);
+    int response = exchangeService.saveExchangeRate(request);
+    return ResponseEntity.ok(new ResponseDto(String.format("예측값(%d) 저장 완료", response)));
   }
 }

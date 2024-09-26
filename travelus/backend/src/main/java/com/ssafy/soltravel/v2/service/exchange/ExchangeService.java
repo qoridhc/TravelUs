@@ -5,11 +5,14 @@ import com.ssafy.soltravel.v2.common.Header;
 import com.ssafy.soltravel.v2.config.RabbitMQConfig;
 import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
 import com.ssafy.soltravel.v2.domain.Enum.TransferType;
+import com.ssafy.soltravel.v2.domain.ExchangeRateForecast;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateCacheDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateRegisterRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateResponseDto;
+import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateSaveRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.targetAccountDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
+import com.ssafy.soltravel.v2.repository.ExchangeRateForecastRepository;
 import com.ssafy.soltravel.v2.repository.GroupRepository;
 import com.ssafy.soltravel.v2.service.transaction.TransactionService;
 import com.ssafy.soltravel.v2.util.LogUtil;
@@ -17,6 +20,9 @@ import com.ssafy.soltravel.v2.util.WebClientUtil;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,6 +58,7 @@ public class ExchangeService {
   private final RedisTemplate<String, String> redisTemplate;
   private final TransactionService transactionService;
   private final GroupRepository groupRepository;
+  private final ExchangeRateForecastRepository exchangeRateForecastRepository;
 
   private List<String> Currencies = List.of("USD", "JPY", "EUR", "CNY");
 
@@ -281,9 +288,38 @@ public class ExchangeService {
 
 
   //-----------------------------환율 예측-----------------------------
-  public String savePredictions() {
-    return "통신완료";
+  public int saveExchangeRate(ExchangeRateSaveRequestDto request) {
+    int length = 0;
+
+    for (String currency : request.getCurrencies().keySet()) {
+
+      // 예측 하지 않은 통화 코드는 제외
+      Map<String, String> forecast = request.getCurrencies().get(currency).getForecast();
+      if(forecast == null) continue;
+
+      // 기준일, 통화코드 저장
+      List<ExchangeRateForecast> list = new ArrayList<>();
+      CurrencyType currencyType = getCurrencyType(currency);
+      LocalDate baseDate = LocalDate.now();
+
+      // 예측 수행한 미래기준(기준일, 차일, 환율, 통화코드)를 저장
+      forecast.forEach((date, rate) -> {
+        LocalDate predDate = LocalDate.parse(date);
+        Double predRate = Double.valueOf(rate);
+
+        long daysDiff = ChronoUnit.DAYS.between(baseDate, predDate);
+        ExchangeRateForecast pred = ExchangeRateForecast.create(
+            baseDate,
+            daysDiff,
+            currencyType,
+            predRate
+        );
+        list.add(pred);
+      });
+
+      exchangeRateForecastRepository.save(list);
+      length += list.size();
+    }
+    return length;
   }
-
-
 }
