@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router";
 import { accountApi } from "../../api/account";
 import { userApi } from "../../api/user";
 import { transactionApi } from "../../api/transaction";
+import { AccountInfoNew } from "../../types/account";
 import { IoIosArrowBack } from "react-icons/io";
 
 interface TransferConfirmProps {
@@ -16,10 +17,11 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
   const [isValidation, setIsValidation] = useState<boolean>(false);
   const [withdrawalAccountNo, setWithdrawalAccountNo] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
-  const { accountNo, transferAmount, password } = location.state as {
+  const { accountNo, transferAmount, password, depositAccount } = location.state as {
     accountNo: string;
     transferAmount: string;
     password: string;
+    depositAccount: AccountInfoNew;
   };
 
   const formatAccountNumber = (accountNo: string) => {
@@ -43,7 +45,7 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
 
         // 사용자 이름을 위한 API 호출
         const userResponse = await userApi.fetchUser();
-        setUserName(userResponse.data.name);
+        setUserName(userResponse.name);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -86,7 +88,7 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
         </div>
         <div className="mb-16 flex flex-col items-center">
           <p className="text-2xl font-bold">
-            박예진
+            {depositAccount?.userName}
             <span className="font-normal"> 님에게</span>
           </p>
           <p className="text-2xl font-bold">{formatCurrency(parseInt(transferAmount))}원</p>

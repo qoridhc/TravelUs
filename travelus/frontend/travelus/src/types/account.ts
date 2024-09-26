@@ -23,6 +23,7 @@ export interface AccountInfo {
 // 계좌 정보 (신규 ver)
 export interface AccountInfoNew {
   accountId: number,
+  userName: string,
   accountNo: string,
   accountPassword: string,
   accountType: string,
