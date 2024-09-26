@@ -31,7 +31,9 @@ const IDVerificationOfCreateMeetingAccount = () => {
       const response = await groupApi.createMeetingAccount(data);
       console.log(response);
       if (response.status === 201) {
-        navigate(`/meeting/create/completed/${params.type}`);
+        navigate(`/meeting/create/completed/${params.type}`, {
+          state: { groupName: response.data.groupName, groupId: response.data.groupId },
+        });
       }
     } catch (error) {
       alert("모임통장 개설에 실패했어요");

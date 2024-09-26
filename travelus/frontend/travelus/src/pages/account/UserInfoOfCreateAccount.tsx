@@ -19,8 +19,8 @@ const UserInfoOfCreateAccount = () => {
   const getUserInfo = async () => {
     try {
       const response = await userApi.fetchUser();
-      setName(response.name);
-      setBirthdate(response.birth);
+      setName(response.data.name);
+      setBirthdate(response.data.birth);
       setGender("여성");
     } catch (error) {
       console.log(error);

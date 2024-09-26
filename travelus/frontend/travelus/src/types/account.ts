@@ -159,3 +159,8 @@ export const meetingAccountIconList: Array<{text: string, value: string}> = [
   { text: "연인", value: "lover" },
   { text: "직장", value: "job" },
 ];
+
+// 모임통장 초대 코드
+export interface meetingInvitationCode {
+  groupCode: string;
+}
