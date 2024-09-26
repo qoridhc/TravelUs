@@ -10,4 +10,6 @@ public class InquireAccountListRequestDto {
     @JsonProperty("Header")
     private Header header;
 
+    private String searchType;
+
 }
