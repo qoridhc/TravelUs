@@ -45,7 +45,7 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
 
         // 사용자 이름을 위한 API 호출
         const userResponse = await userApi.fetchUser();
-        setUserName(userResponse.name);
+        setUserName(userResponse.data.name);
       } catch (error) {
         console.error("Error fetching data:", error);
       }

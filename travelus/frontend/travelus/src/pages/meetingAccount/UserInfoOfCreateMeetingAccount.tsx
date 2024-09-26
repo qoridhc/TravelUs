@@ -27,8 +27,8 @@ const UserInfoOfCreateMeetingAccount = () => {
     try {
       setIsLoading(true);
       const response = await userApi.fetchUser();
-      setName(response.name);
-      setBirthdate(formatDateToKorean(response.birth));
+      setName(response.data.name);
+      setBirthdate(formatDateToKorean(response.data.birth));
       setGender("여성");
     } catch (error) {
       console.log(error);

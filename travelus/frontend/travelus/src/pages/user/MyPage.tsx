@@ -27,8 +27,8 @@ const MyPage = () => {
       userApi
         .fetchUser()
         .then((response) => {
-          setUserData(response); // API 응답 데이터를 상태로 설정
-          dispatch(editUserInformation(response)); // Redux 스토어에 유저 정보 저장
+          setUserData(response.data); // API 응답 데이터를 상태로 설정
+          dispatch(editUserInformation(response.data)); // Redux 스토어에 유저 정보 저장
         })
         .catch((error) => {
           console.error("Failed to fetch user data: ", error);
