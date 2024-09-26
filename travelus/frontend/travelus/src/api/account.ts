@@ -66,5 +66,10 @@ export const accountApi = {
   // 모임 초대 코드 발급
   fetchInvitationCode: (groupId: number) => {
     return api.post(`/groups/create/groupCode`, { "groupId": groupId });
-  }
+  },
+
+  // 거래 내역 조회
+  fetchTracsactionHistory: (accountNo: string, currencyCode: string , orderByType: string ) => {
+    return api.get(`/transaction/history?accountNo=${accountNo}&currencyCode=${currencyCode}&orderByType=${orderByType}`);
+  },
 };

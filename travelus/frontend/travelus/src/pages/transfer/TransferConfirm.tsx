@@ -64,12 +64,10 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
       depositTransactionSummary: userName,
     };
 
-    console.log("이체 데이터", data);
-
     try {
       const response = await transactionApi.Transfer(data);
       console.log("이체 성공");
-      navigate("/transfer/success", { state: { transferAmount } });
+      navigate("/transfer/success", { state: { transferAmount, depositAccount } });
     } catch (error) {
       console.error("이체 에러", error);
     }
