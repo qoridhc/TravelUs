@@ -11,24 +11,28 @@ const CompletedOfCreateMeetingAccount = () => {
   const [userName, setUserName] = useState("");
   const [groupCode, setGroupCode] = useState("");
 
-  const shareKakao = () => {
-    userApi
-      .fetchUser()
-      .then((response) => {
-        setUserName(response.name);
-      })
-      .catch((error) => {
-        console.log("user의 fetchUser : ", error);
-      });
+  const getUserName = async () => {
+    try {
+      const response = await userApi.fetchUser();
+      console.log("이름 : ", response.data.name);
+      setUserName(response.data.name);
+    } catch (error) {
+      console.log("user의 fetchUser : ", error);
+    }
+  };
 
-    accountApi
-      .fetchInvitationCode(location.state.groupId)
-      .then((response) => {
-        setGroupCode(response.groupCode);
-      })
-      .catch((error) => {
-        console.log("account의 fetchInvitationCode : ", error);
-      });
+  const getInvitationCode = async () => {
+    try {
+      const response = await accountApi.fetchInvitationCode(location.state.groupId);
+      setGroupCode(response.data.groupCode);
+    } catch (error) {
+      console.log("account의 fetchInvitationCode : ", error);
+    }
+  };
+
+  const shareKakao = () => {
+    getUserName();
+    getInvitationCode();
   };
 
   const sendKakao = () => {
