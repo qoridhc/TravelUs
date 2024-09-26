@@ -19,11 +19,14 @@ const InvitationOfMeeting = () => {
         </div>
       </div>
 
-      <button
-        className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
-        onClick={() => navigate("/login", { state: { type: "invite", code: params.code } })}>
-        로그인
-      </button>
+      <div className="grid gap-3">
+        <button
+          className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
+          onClick={() => navigate("/login", { state: { type: "invite", code: params.code } })}>
+          로그인
+        </button>
+        <p className="text-[#565656] text-center">초대 수락 전, 로그인을 먼저 해주세요</p>
+      </div>
     </div>
   );
 };
