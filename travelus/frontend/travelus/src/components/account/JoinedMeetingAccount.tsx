@@ -13,7 +13,7 @@ interface Props {
   accountId: number;
 }
 
-const JoinedMeetingAccount = ({ index, account, accountId }: Props) => {
+const JoinedMeetingAccount = ({ index, account }: Props) => {
   const navigate = useNavigate();
 
   // 숫자를 세 자리마다 쉼표로 구분하여 표시
@@ -73,7 +73,7 @@ const JoinedMeetingAccount = ({ index, account, accountId }: Props) => {
     <div
       key={index}
       onClick={() => {
-        navigate(`/meetingaccount/${index}`);
+        navigate(`/meetingaccount/${account.groupId}`);
       }}
       className="w-full">
       <div className="flex items-center space-x-4">

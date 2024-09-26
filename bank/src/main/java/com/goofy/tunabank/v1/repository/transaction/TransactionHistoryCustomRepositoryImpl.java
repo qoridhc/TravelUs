@@ -5,7 +5,7 @@ import com.goofy.tunabank.v1.domain.Enum.OrderByType;
 import com.goofy.tunabank.v1.domain.Enum.TransactionType;
 import com.goofy.tunabank.v1.domain.QTransactionHistory;
 import com.goofy.tunabank.v1.domain.TransactionHistory;
-import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDto;
+import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryListRequestDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -24,7 +24,8 @@ public class TransactionHistoryCustomRepositoryImpl implements TransactionHistor
   private final JPAQueryFactory queryFactory;
 
   @Override
-  public Optional<List<TransactionHistory>> findByCustomOrder(TransactionHistoryRequestDto requestDto) {
+  public Optional<List<TransactionHistory>> findByCustomOrder(
+      TransactionHistoryListRequestDto requestDto) {
     QTransactionHistory qTransactionHistory = QTransactionHistory.transactionHistory;
 
     List<TransactionHistory> transactionHistories = queryFactory

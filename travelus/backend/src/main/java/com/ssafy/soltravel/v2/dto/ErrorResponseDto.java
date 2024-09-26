@@ -12,31 +12,35 @@ import org.springframework.http.ResponseEntity;
 @Setter
 @AllArgsConstructor
 @ToString
-public class ResponseDto {
+public class ErrorResponseDto {
 
-    @Schema(description = "응답 상태", example = "SUCCESS")
+    @Schema(description = "응답 상태", example = "FAIL")
     private String status;
 
     @Schema(description = "응답 메시지", example = "요청 처리 완료.")
     private String message;
 
-    public ResponseDto() {
+    @Schema(example = "601")
+    private String code;
+
+    public ErrorResponseDto() {
         this.status = "SUCCESS";
         this.message = "요청 처리 완료";
     }
 
-    public ResponseDto(String message) {
-        this.status = "SUCCESS";
+    public ErrorResponseDto(String message, String code) {
+        this.status = "FAIL";
         this.message = message;
+        this.code = code;
     }
 
-    public static ResponseEntity<ResponseDto> databaseError(String message) {
-        ResponseDto responseBody = new ResponseDto("Database Error", message);
+    public static ResponseEntity<ErrorResponseDto> databaseError(String message) {
+        ErrorResponseDto responseBody = new ErrorResponseDto("Database Error", message);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
     }
 
-    public static ResponseEntity<ResponseDto> validationFail(String message) {
-        ResponseDto responseBody = new ResponseDto("Validation Failed", message);
+    public static ResponseEntity<ErrorResponseDto> validationFail(String message) {
+        ErrorResponseDto responseBody = new ErrorResponseDto("Validation Failed", message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
     }
 }

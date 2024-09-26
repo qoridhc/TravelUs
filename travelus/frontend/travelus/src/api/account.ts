@@ -17,7 +17,7 @@ export const accountApi = {
   },
   
   // 사용자의 모든 계좌 조회
-  fetchAllAccountInfo: async (): Promise<AccountInfoNew[]> => {
+  fetchAllAccountInfo: async (searchType: string): Promise<AccountInfoNew[]> => {
     const response = await api.get(`/accounts/inquireAccountList`);
     return response.data;
   },
@@ -52,6 +52,12 @@ export const accountApi = {
     return response.data;
   },
 
+  // 특정 모임 조회
+  fetchSpecificMeetingAccount: (groupId: number) => {
+    return api.get(`/groups/${groupId}`);
+  },
+
+
   // 특정 외화모임통장 조회
   fetchForeignMeetingAccount: async (accountId: number): Promise<AccountInfo> => {
     const response = await api.get(`/account/foreign/accountId/${accountId}`);
@@ -59,7 +65,7 @@ export const accountApi = {
   },
 
   // 모임 초대 코드 발급
- fetchInvitationCode: (groupId: number) => {
+  fetchInvitationCode: (groupId: number) => {
     return api.post(`/groups/create/groupCode`, { "groupId": groupId });
   },
  
