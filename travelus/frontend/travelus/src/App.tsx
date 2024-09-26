@@ -61,6 +61,7 @@ import ExpenditureSettlementCompleted from "./pages/settlement/expenditureSettle
 import TravelBoxCreatePrepare from "./pages/travelBox/TravelBoxCreatePrepare";
 import InvitationOfMeeting from "./pages/meetingAccount/InvitationOfMeeting";
 import InviteInfoOfMeeting from "./pages/meetingAccount/InviteInfoOfMeeting";
+import AlreadyInviteOfMeeting from "./pages/meetingAccount/AlreadyInviteOfMeeting";
 
 function App() {
   return (
@@ -118,13 +119,14 @@ function App() {
           <Route path="/meeting/create/completed/:type" element={<CompletedOfCreateMeetingAccount />} />
 
           {/* 모임통장 상세 */}
-          <Route path="/meetingaccount/:id" element={<MeetingAccountDetail />} />
+          <Route path="/meetingaccount" element={<MeetingAccountDetail />} />
           <Route path="/joinedmeetingaccount/:id" element={<JoinedMeetingAccountDetail />} />
           <Route path="/accounthistory/:accountNo" element={<AccountHistory />} />
           <Route path="/meetingaccount/management/:id" element={<MeetingAccountManagement />} />
           <Route path="/meetingaccount/management/:id/groupmember" element={<MeetingAccountGroupMember />} />
           <Route path="/meeting/invite/:code" element={<InvitationOfMeeting />} />
           <Route path="/meeting/invite/:code/info" element={<InviteInfoOfMeeting />} />
+          <Route path="/meeting/invite/participated" element={<AlreadyInviteOfMeeting />} />
 
           {/* 통장 내역 */}
           <Route path="/accounttransaction/:id" element={<AccountTransaction />} />
