@@ -22,7 +22,7 @@ const MeetingAccountList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await accountApi.fetchJoinedMeetingAccount(userIdNumber);
+        const response = await accountApi.fetchJoinedMeetingAccount();
         // Redux 스토어에 데이터 저장
         dispatch(editJoinedAccountList(response));
       } catch (error) {
@@ -76,9 +76,9 @@ const MeetingAccountList = () => {
             <div>
               <p className="my-3 font-bold">참여중인 모임통장</p>
               <div className="flex flex-col space-y-3">
-                {joinedAccountList.map((account, index) => (
-                  <JoinedMeetingAccount key={index} accountId={account.id} index={index} account={account} />
-                ))}
+                {/* {joinedAccountList.map((account, index) => (
+                  <JoinedMeetingAccount key={index} accountId={account.groupId} index={index} account={account} />
+                ))} */}
               </div>
             </div>
           ) : (

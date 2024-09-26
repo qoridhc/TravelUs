@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { useNavigate, useLocation } from "react-router";
+import { AccountInfoNew } from "../../types/account";
 import SecurityNumberKeyboard from "../../components/common/SecurityNumberKeyboard";
 import { setAccountPassword } from "../../redux/accountSlice";
 import { set } from "date-fns";
@@ -17,10 +18,11 @@ const TransferPassword: React.FC<TransferPasswordProps> = (props) => {
   const password = useSelector((state: RootState) => state.account.accountPassword);
   const { accountNo } = location.state as { accountNo: string };
   const { transferAmount } = location.state as { transferAmount: string };
+  const { depositAccount } = location.state as { depositAccount: AccountInfoNew };
 
   useEffect(() => {
     if (password.length === 4) {
-      navigate("/transfer/confirm", { state: { accountNo, transferAmount, password } });
+      navigate("/transfer/confirm", { state: { accountNo, transferAmount, password, depositAccount } });
       dispatch(setAccountPassword(""));
     }
   }, [password]);

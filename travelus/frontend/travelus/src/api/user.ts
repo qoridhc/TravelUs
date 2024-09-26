@@ -1,3 +1,4 @@
+import { UserInfo } from "../types/userInformation";
 import api from "../lib/axios";
 
 export const userApi = {
@@ -37,7 +38,8 @@ export const userApi = {
   },
 
   // 유저 조회
-  fetchUser: () => {
-    return api.get(`/user/search`);
+  fetchUser: async (): Promise<UserInfo> => {
+    const response = await api.get(`/user`);
+    return response.data;
   },
 };

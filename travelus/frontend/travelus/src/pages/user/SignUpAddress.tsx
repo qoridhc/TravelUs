@@ -40,7 +40,6 @@ const SignUpAddress = () => {
   }, [address, addressDetail]);
 
   const formatBirthDate = (birthDate: string) => {
-    // 19970726을 1997-07-26로 변환
     const year = birthDate.slice(0, 4);
     const month = birthDate.slice(4, 6);
     const day = birthDate.slice(6, 8);
@@ -60,7 +59,6 @@ const SignUpAddress = () => {
   };
 
   const handleSignUp = async () => {
-    console.log("회원가입 정보:", signUpInformation);
     const formData = new FormData();
 
     formData.append("id", signUpInformation.id);
@@ -69,17 +67,19 @@ const SignUpAddress = () => {
     formData.append("phone", signUpInformation.phone);
     formData.append("birth", formatBirthDate(signUpInformation.birthday));
     formData.append("address", fullAddress);
+    formData.append("gender", signUpInformation.gender);
 
-    try {
-      const response = await userApi.fetchSignUp(formData);
+    console.log("풀주소", fullAddress);
+    // try {
+    //   const response = await userApi.fetchSignUp(formData);
 
-      if (response.status === 200) {
-        console.log("회원가입 성공");
-        navigate("/login");
-      }
-    } catch (error) {
-      console.error("회원가입 에러:", error);
-    }
+    //   if (response.status === 200) {
+    //     console.log("회원가입 성공");
+    //     navigate("/login");
+    //   }
+    // } catch (error) {
+    //   console.error("회원가입 에러:", error);
+    // }
   };
     
 

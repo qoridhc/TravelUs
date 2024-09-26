@@ -23,6 +23,7 @@ export interface AccountInfo {
 // 계좌 정보 (신규 ver)
 export interface AccountInfoNew {
   accountId: number,
+  userName: string,
   accountNo: string,
   accountPassword: string,
   accountType: string,
@@ -36,6 +37,21 @@ export interface AccountInfoNew {
   ],
   createdAt: string,
   updatedAt: string
+}
+
+// 모임통장 정보
+export interface MeetingAccountInfo {
+  groupId: number;
+  groupAccountNo: string;
+  groupName: string;
+  icon: string;
+  moneyBoxDtoList: [
+    {
+      moneyBoxId: number;
+      balance: number;
+      currencyCode: string
+    }
+  ]
 }
 
 
