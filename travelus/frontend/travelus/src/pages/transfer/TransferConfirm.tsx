@@ -40,7 +40,7 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
     const fetchData = async () => {
       try {
         // 출금 계좌 번호를 위한 API 호출
-        const accountResponse = await accountApi.fetchAllAccountInfo();
+        const accountResponse = await accountApi.fetchAllAccountInfo("I");
         setWithdrawalAccountNo(accountResponse[0].accountNo);
 
         // 사용자 이름을 위한 API 호출

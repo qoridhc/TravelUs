@@ -16,8 +16,8 @@ export const accountApi = {
   },
   
   // 사용자의 모든 계좌 조회
-  fetchAllAccountInfo: async (): Promise<AccountInfoNew[]> => {
-    const response = await api.get(`/accounts/inquireAccountList`);
+  fetchAllAccountInfo: async (searchType: string): Promise<AccountInfoNew[]> => {
+    const response = await api.post(`/accounts/inquireAccountList`, { searchType });
     return response.data;
   },
 
