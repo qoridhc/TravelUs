@@ -1,6 +1,6 @@
 
 import api from "../lib/axios";
-import { AccountInfo, AccountInfoNew, AccountParticipants, MeetingAccountCreate } from "../types/account";
+import { AccountInfo, AccountInfoNew, MeetingAccountInfo, AccountParticipants, MeetingAccountCreate } from "../types/account";
 
 export const accountApi = {
     // 일반 계좌 정보 가져오기
@@ -39,9 +39,15 @@ export const accountApi = {
     return response.data;
   },
 
+  // 생성한 모임통장 정보 가져오기 (모임원인 경우)
+  fetchJoinedMeetingAccount: async (): Promise<MeetingAccountInfo[]> => {
+    const response = await api.get(`/groups/joined`);
+    return response.data;
+  },
+
   // 가입한 모임통장 정보 가져오기 (모임원인 경우)
-  fetchJoinedMeetingAccount: async (userId: number): Promise<AccountInfo[]> => {
-    const response = await api.get(`/account/${userId}/participants/all`);
+  fetchCreatedMeetingAccount: async (): Promise<MeetingAccountInfo[]> => {
+    const response = await api.get(`/groups/created`);
     return response.data;
   },
 

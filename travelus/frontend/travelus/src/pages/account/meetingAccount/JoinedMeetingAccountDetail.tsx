@@ -15,7 +15,7 @@ import { FaUserFriends, FaBriefcase, FaHeart } from "react-icons/fa";
 
 import { RiHome5Line } from "react-icons/ri";
 import AccountDetail from "../../../components/account/AccountDetail";
-import { AccountInfo } from "../../../types/account";
+import { MeetingAccountInfo } from "../../../types/account";
 
 const JoinedMeetingAccountDetail = () => {
   const navigate = useNavigate();
@@ -24,8 +24,8 @@ const JoinedMeetingAccountDetail = () => {
 
   const joinedAccountList = useSelector((state: RootState) => state.account.joinedAccountList);
   const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
-  const [selectedAccount, setSelectedAccount] = useState<AccountInfo | null>(null);
-  const [selectedForeignAccount, setSelectedForeignAccount] = useState<AccountInfo | null>(null);
+  const [selectedAccount, setSelectedAccount] = useState<MeetingAccountInfo | null>(null);
+  const [selectedForeignAccount, setSelectedForeignAccount] = useState<MeetingAccountInfo | null>(null);
   const [memberList, setMemberList] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -95,7 +95,7 @@ const JoinedMeetingAccountDetail = () => {
       try {
         const response = await accountApi.fetchForeignMeetingAccount(numberId);
         console.log(response);
-        setSelectedForeignAccount(response);
+        // setSelectedForeignAccount(response);
       } catch (error) {
         console.error("Error fetching data:", error);
         alert("계좌 조회에 실패했습니다.");
@@ -107,7 +107,7 @@ const JoinedMeetingAccountDetail = () => {
 
   useEffect(() => {
     // accountList에서 numberId와 일치하는 계좌 찾기
-    const account = joinedAccountList.find((acc) => acc.id === numberId);
+    const account = joinedAccountList.find((acc) => acc.groupId === numberId);
     setSelectedAccount(account || null);
   }, [joinedAccountList, numberId]);
 
@@ -117,7 +117,7 @@ const JoinedMeetingAccountDetail = () => {
         if (selectedAccount === null) return;
 
         setLoading(true); // 데이터 로딩 시작
-        const response = await accountApi.fetchParticipantInfo(selectedAccount.id);
+        const response = await accountApi.fetchParticipantInfo(selectedAccount.groupId);
         const participantNames = response.participants.map((participant: any) => participant.userInfo.username);
         setMemberList(participantNames);
       } catch (error) {
@@ -174,14 +174,14 @@ const JoinedMeetingAccountDetail = () => {
               </div>
             </div>
           </div>
-          <div className="w-full p-5 flex flex-col">
+          {/* <div className="w-full p-5 flex flex-col">
             <div className="mb-3 flex items-center space-x-[9px]">
               {getIcon(selectedAccount.iconName)}
               <p className="text-sm text-zinc-800 font-bold">{getAccountTypeFromIconName(selectedAccount.iconName)}</p>
             </div>
             <hr className="mb-3 border-0 border-t-[0.5px] border-zinc-200" />
             <AccountDetail isLeader={false} account={selectedAccount} foreignAccount={selectedForeignAccount} />
-          </div>
+          </div> */}
         </div>
       )}
     </>
