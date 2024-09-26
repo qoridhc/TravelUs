@@ -13,7 +13,7 @@ interface GenderInputProps {
 const GenderInput: React.FC<GenderInputProps> = ({ name, onChange }) => {
   return (
     <FormControl>
-      <FormLabel id="gender">Gender</FormLabel>
+      <FormLabel id="gender">성별</FormLabel>
       <RadioGroup className="pl-2" row aria-labelledby="gender" id="gender" onChange={onChange}>
         <FormControlLabel value="MALE" control={<Radio />} label="남성" />
         <FormControlLabel value="FEMALE" control={<Radio />} label="여성" />
