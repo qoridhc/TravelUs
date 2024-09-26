@@ -55,37 +55,28 @@ const MainPage = () => {
   };
 
   useEffect(() => {
-    // const fetchData = async () => {
-    //   try {
-    //     // 두 API를 병렬로 호출
-    //     const [accountResponse, foreignResponse, ...exchangeRatesResponses] = await Promise.all([
-    //       accountApi.fetchAccountInfo(userIdNumber),
-    //       accountApi.fetchForeignAccountInfo(userIdNumber),
-    //       ...CURRENCY_CODES.map((code) => exchangeRateApi.getExchangeRate(code)),
-    //     ]);
-
-    //     // Redux 스토어에 데이터 저장
-    //     dispatch(editAccountList(accountResponse));
-    //     dispatch(editForeingAccountList(foreignResponse));
-
-    //     // 환율 정보 상태 업데이트
-    //     setExchangeRates(exchangeRatesResponses);
-    //   } catch (error) {
-    //     console.error("Error fetching data:", error);
-    //   }
-    // };
-    const fetchExchangeRates = async () => {
+    const fetchData = async () => {
       try {
-        const rates = await Promise.all(CURRENCY_CODES.map((code) => exchangeRateApi.getExchangeRate(code)));
-        setExchangeRates(rates);
+        // 기존 API 호출
+        const accountResponse = await accountApi.fetchAllAccountInfo();
+        setAccount(accountResponse[0]);
+
+        const createdResponse = await accountApi.fetchCreatedMeetingAccount();
+        const joinedResponse = await accountApi.fetchJoinedMeetingAccount();
+
+        setMeetingAccountList([...createdResponse, ...joinedResponse]);
+
+        // 환율 정보 가져오기
+        const exchangeRatesPromises = CURRENCY_CODES.map((code) => exchangeRateApi.getExchangeRate(code));
+        const exchangeRatesResponse = await Promise.all(exchangeRatesPromises);
+        setExchangeRates(exchangeRatesResponse);
       } catch (error) {
-        console.error("Error fetching exchange rates:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    // fetchData();
-    fetchExchangeRates();
-  }, [dispatch, userIdNumber]); // 의존성 배열에 필요한 값 추가
+    fetchData();
+  }, []);
 
   const getExchangeRate = (currencyCode: string) => {
     const rate = exchangeRates.find((r) => r.currencyCode === currencyCode);
