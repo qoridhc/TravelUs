@@ -102,9 +102,9 @@ public class ExchangeController {
 //    return ResponseEntity.ok().body(exchangeService.getLatestExchangeRate(dto));
 //  }
 
-  @GetMapping("/rate/predict")
-  public ResponseEntity<?> predictExchangeRate(){
-    LogUtil.info("환율 예측");
-    return ResponseEntity.ok(exchangeService.getPredictions());
+  @PostMapping("/rate/save")
+  public ResponseEntity<?> saveExchangeRate(){
+    LogUtil.info("환율 예측값 저장 요청");
+    return ResponseEntity.ok(exchangeService.savePredictions());
   }
 }
