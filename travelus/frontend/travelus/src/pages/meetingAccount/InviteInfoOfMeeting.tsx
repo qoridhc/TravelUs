@@ -5,6 +5,8 @@ import AccountListInputMui from "../../components/meetingAccount/AccountListInpu
 import { AiTwotoneExclamationCircle } from "react-icons/ai";
 import { LuDot } from "react-icons/lu";
 import { accountApi } from "../../api/account";
+import { AxiosError } from "axios";
+import { AxiosErrorResponseData } from "../../types/axiosError";
 
 const InviteInfoOfMeeting = () => {
   const navigate = useNavigate();
@@ -24,6 +26,13 @@ const InviteInfoOfMeeting = () => {
         console.log("모임 아이디 : ", response);
         setGroupId(response.data.groupId);
       } catch (error) {
+        const axiosError = error as AxiosError;
+        if (axiosError.response && axiosError.response.data) {
+          const responseData = axiosError.response.data as AxiosErrorResponseData;
+          if (responseData.code === "601") {
+            alert(responseData.message);
+          }
+        }
         console.log("account의 fetchGroupIdByInvitationCode", error);
       }
     }
