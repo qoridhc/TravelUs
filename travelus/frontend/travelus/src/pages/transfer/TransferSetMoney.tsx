@@ -34,8 +34,8 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
       try {
         // 잔액을 위한 API 호출
         const accountResponse = await accountApi.fetchAllAccountInfo("I");
-        setAccount(accountResponse[0]);
-        setUserAmount(accountResponse[0].moneyBoxDtos[0].balance);
+        setAccount(accountResponse.data[0]);
+        setUserAmount(accountResponse.data[0].moneyBoxDtos[0].balance);
 
         // 받는 사람 이름을 표시하기 위한 API 호출
         const accountInfo = await accountApi.fetchSpecificAccountInfo(accountNo);
