@@ -13,8 +13,8 @@ public class AccountDto {
 
     private Long accountId;
 
-    private String userName;
-    
+    private String credentialId;
+
     private String accountNo;
 
     private String accountPassword;

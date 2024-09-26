@@ -107,7 +107,7 @@ public class AccountService {
 
         // DTO 변환
         AccountDto accountDto = accountMapper.toDto(account);
-        accountDto.setUserName(user.getUsername());
+        accountDto.setCredentialId(account.getUser().getCredentialId());
 
         List<MoneyBoxDto> moneyBoxDtoList = moneyBoxMapper.toDtoList(account.getMoneyBoxes());
         accountDto.setMoneyBoxDtos(moneyBoxDtoList);

@@ -9,6 +9,7 @@ import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.AddMoneyBoxRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
+import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.AccountMapper;
 import com.ssafy.soltravel.v2.repository.GeneralAccountRepository;
 import com.ssafy.soltravel.v2.repository.ParticipantRepository;
@@ -94,6 +95,12 @@ public class AccountService {
 
         // recObject -> AccountDto 매핑
         AccountDto accountDto = objectMapper.convertValue(recObject, AccountDto.class);
+
+        // email 로 유저 이름 조회
+        String email = recObject.get("credentialId");
+        User accountUser = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
+
+        accountDto.setUserName(accountUser.getName());
 
         return accountDto;
     }
