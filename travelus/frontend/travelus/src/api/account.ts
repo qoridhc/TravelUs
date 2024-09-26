@@ -15,9 +15,15 @@ export const accountApi = {
       return response.data
   },
   
-  // 사용자의 모들 계좌 조회
+  // 사용자의 모든 계좌 조회
   fetchAllAccountInfo: async (): Promise<AccountInfoNew[]> => {
     const response = await api.get(`/accounts/inquireAccountList`);
+    return response.data;
+  },
+
+  // 특정 계좌 조회
+  fetchSpecificAccountInfo: async (accountNo: string): Promise<AccountInfoNew> => {
+    const response = await api.post(`/accounts/inquireAccount`, { accountNo });
     return response.data;
   },
 
