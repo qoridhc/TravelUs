@@ -45,7 +45,7 @@ public class CardController {
 
 
 
-  @Operation(summary = "카드 목록 조회", description = "모든 사용자의 카드를 조회합니다.")
+  @Operation(summary = "카드 목록 조회", description = "사용자의 모든 카드를 조회합니다.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "성공적으로 조회됨"
           , content = @Content(mediaType = "application/json", schema = @Schema(implementation = CardResponseDto.class)))

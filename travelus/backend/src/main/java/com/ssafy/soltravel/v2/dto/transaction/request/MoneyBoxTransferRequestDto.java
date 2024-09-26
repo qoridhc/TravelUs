@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class MoneyBoxTransferRequestDto {
 
-  @Schema(description = "이체 타입", example = "M")
+  @Schema(description = "이체 타입[M:머니박스이체(환전/재환전)]", example = "M")
   TransferType transferType;
 
   @Schema(description = "출금 계좌 번호", example = "002-45579486-209")

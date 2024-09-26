@@ -276,4 +276,14 @@ public class ExchangeService {
     }
     return null;
   }
+
+
+
+
+  //-----------------------------환율 예측-----------------------------
+  public String savePredictions() {
+    return "통신완료";
+  }
+
+
 }

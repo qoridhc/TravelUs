@@ -20,13 +20,13 @@ const GroupAccount = (): React.ReactElement => {
       if (userId) {
         try {
           setIsLoading(true);
-          const [generalAccount, foreignAccount] = await Promise.all([
-            accountApi.fetchAccountInfo(userId),
-            accountApi.fetchForeignAccountInfo(userId)
-          ]);
+          // const [generalAccount, foreignAccount] = await Promise.all([
+          //   accountApi.fetchAccountInfo(userId),
+          //   accountApi.fetchForeignAccountInfo(userId)
+          // ]);
           // console.log(generalAccount, foreignAccount)
-          setGeneralAccounts(generalAccount);
-          setForeignAccounts(foreignAccount);
+          // setGeneralAccounts(generalAccount);
+          // setForeignAccounts(foreignAccount);
         } catch (error) {
           setError('계좌 정보를 불러오는 데 실패했습니다.');
           console.error('Error fetching account data:', error);

@@ -46,7 +46,7 @@ public class TransactionController {
         @RequestBody TransactionRequestDto requestDto
     ) {
 
-        ResponseEntity<TransactionResponseDto> response = transactionService.postAccountDeposit(requestDto);
+        ResponseEntity<TransactionResponseDto> response = transactionService.postAccountDeposit(requestDto,-1);
         return response;
     }
 
@@ -61,7 +61,7 @@ public class TransactionController {
         @RequestBody TransactionRequestDto requestDto
     ) {
 
-        ResponseEntity<TransactionResponseDto> response = transactionService.postAccountWithdrawal(requestDto);
+        ResponseEntity<TransactionResponseDto> response = transactionService.postAccountWithdrawal(requestDto,-1);
         return response;
     }
 

@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.v2.domain;
 
+import com.ssafy.soltravel.v2.domain.Enum.Gender;
 import com.ssafy.soltravel.v2.domain.Enum.Role;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -64,12 +65,16 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participant> participants;
 
+    @Column(name = "gender")
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     /*
      * 생성 메서드
      */
     public static User createUser(
         String name, String password, String email, String phone,
-        String address, LocalDate birth, String profileImageUrl, String userKey
+        String address, LocalDate birth, String profileImageUrl, String userKey, Gender gender
     ) {
 
         User user = new User();
@@ -85,6 +90,8 @@ public class User {
 
         user.profile = profileImageUrl;
         user.userKey = userKey;
+        user.gender = gender;
+
         return user;
     }
     public static User createUser(

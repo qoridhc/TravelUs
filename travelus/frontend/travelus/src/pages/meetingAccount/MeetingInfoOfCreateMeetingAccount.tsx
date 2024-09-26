@@ -3,17 +3,26 @@ import { IoIosArrowBack } from "react-icons/io";
 import MeetingNameInputMui from "../../components/meetingAccount/MeetingNameInputMui";
 import MeetingTypeInputMui from "../../components/meetingAccount/MeetingTypeInputMui";
 import { useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { setMeetingName, setMeetingType } from "../../redux/meetingAccountSlice";
 
 const MeetingInfoOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [menuStep, setMenuStep] = useState(1); // 1 : 모임명, 2 : 모임종류
   const guideText = [
     ["모임명을", "입력해주세요"],
     ["모임종류를", "선택해주세요"],
   ];
 
+  const [name, setName] = useState("");
+  const [type, setType] = useState("");
+
   const handleNext = () => {
-    navigate("/passwordofcreatemeetingaccount/meeting");
+    dispatch(setMeetingName(name));
+    dispatch(setMeetingType(type));
+
+    navigate("/meeting/create/password/meeting");
   };
 
   const handleNextStep = () => {
@@ -42,14 +51,21 @@ const MeetingInfoOfCreateMeetingAccount = () => {
             </div>
           </div>
 
-          {menuStep >= 2 ? <MeetingTypeInputMui /> : <></>}
-          {menuStep >= 1 ? <MeetingNameInputMui onInputComplete={handleNextStep} /> : <></>}
+          {menuStep >= 2 ? <MeetingTypeInputMui meetingType={type} setMeetingType={setType} /> : <></>}
+          {menuStep >= 1 ? (
+            <MeetingNameInputMui meetingName={name} setMeetingName={setName} onInputComplete={handleNextStep} />
+          ) : (
+            <></>
+          )}
         </div>
       </div>
 
       <button
-        className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
-        onClick={() => handleNext()}>
+        className={`w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0] ${
+          name === "" || type === "" ? "text-[#565656] bg-[#E3E4E4]" : "text-white bg-[#1429A0]"
+        }`}
+        onClick={() => handleNext()}
+        disabled={name === "" || type === ""}>
         다음
       </button>
     </div>

@@ -1,24 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useLocation } from "react-router";
+import { AccountInfoNew } from "../../types/account";
 import SecurityNumberKeyboard from "../../components/common/SecurityNumberKeyboard";
 import { setAccountPassword } from "../../redux/accountSlice";
+import { set } from "date-fns";
 
-const PasswordOfCreateMeetingAccount = () => {
+interface TransferPasswordProps {
+  // Define the props for your component here
+}
+
+const TransferPassword: React.FC<TransferPasswordProps> = (props) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
-  const params = useParams();
   const password = useSelector((state: RootState) => state.account.accountPassword);
+  const { accountNo } = location.state as { accountNo: string };
+  const { transferAmount } = location.state as { transferAmount: string };
+  const { depositAccount } = location.state as { depositAccount: AccountInfoNew };
 
   useEffect(() => {
     if (password.length === 4) {
+      navigate("/transfer/confirm", { state: { accountNo, transferAmount, password, depositAccount } });
       dispatch(setAccountPassword(""));
-      if (params.type === "travelbox") {
-        navigate("/completedofcreatemeetingaccount/travelbox");
-      } else {
-        navigate("/checkpasswordofcreatemeetingaccount", { state: { originalPassword: password, type: params.type } });
-      }
     }
   }, [password]);
 
@@ -26,13 +31,8 @@ const PasswordOfCreateMeetingAccount = () => {
     <div className="h-full grid grid-rows-[2fr_1fr]">
       <div className="flex flex-col justify-center items-center space-y-10">
         <p className="text-xl text-center font-medium leading-tight">
-          {params.type === "travelbox"
-            ? "모임통장의 비밀번호를"
-            : params.type === "meeting"
-            ? "모임통장에서 사용할"
-            : "튜나뱅크에서 사용할"}
           <br />
-          {params.type === "travelbox" ? "입력해주세요" : "비밀번호를 입력해주세요"}
+          비밀번호를 입력해주세요
         </p>
 
         <div className="flex space-x-3">
@@ -50,4 +50,4 @@ const PasswordOfCreateMeetingAccount = () => {
   );
 };
 
-export default PasswordOfCreateMeetingAccount;
+export default TransferPassword;

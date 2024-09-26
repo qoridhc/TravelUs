@@ -23,6 +23,22 @@ public class UserRepository {
     return user.getUserId();
   }
 
+  //TODO: master 값이 false인데
+  public Optional<User> findGroupMasterByGroupIdAndUserId(Long groupId, Long userId){
+    List<User> result = em.createQuery(
+        "SELECT u From User u " +
+            "join u.participants p " +
+            "join p.group g " +
+            "where u.userId = :userId " +
+            "and g.groupId = :groupId " 
+//            + "and p.isMaster = true"
+        )
+        .setParameter("userId", userId)
+        .setParameter("groupId", groupId)
+        .getResultList();
+    return result.stream().findFirst();
+  }
+
   public Optional<User> findByName(String name) {
     List<User> result = em.createQuery("select u from User u where u.name = :name", User.class)
         .setParameter("name", name)
@@ -61,7 +77,7 @@ public class UserRepository {
         .where(
             userIdEq(qUser, searchDto.getUserId()),
             userNameLike(qUser, searchDto.getName()),
-            userEmailEq(qUser, searchDto.getEmail())
+            userEmailEq(qUser, searchDto.getId())
         )
         .limit(1000)
         .fetch();

@@ -15,35 +15,6 @@ interface Props {
 
 const JoinedMeetingAccount = ({ index, account, accountId }: Props) => {
   const navigate = useNavigate();
-  // const [foreignAccount, setForeignAccount] = useState<AccountInfo | undefined>(undefined);
-
-  // foreignAccount 더미데이터
-  const foreignAccount = {
-    id: 1,
-    name: "외화모임���장1",
-    accountNumber: "12345678901234567890",
-    balance: 340000,
-    currency: {
-      currencyCode: "USD",
-    },
-    type: "외화",
-    accountType: "모임",
-  };
-
-  // useEffect(() => {
-  //   // 특정 외화모임통장 조회
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await accountApi.fetchForeignMeetingAccount(accountId);
-  //       setForeignAccount(response);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //       alert("계좌 조회에 실패했습니다.");
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [accountId]);
 
   // 숫자를 세 자리마다 쉼표로 구분하여 표시
   const formatCurrency = (amount: number) => {
@@ -106,22 +77,23 @@ const JoinedMeetingAccount = ({ index, account, accountId }: Props) => {
       }}
       className="w-full">
       <div className="flex items-center space-x-4">
-        <p>{getIcon(account.iconName)}</p>
+        <p>{getIcon(account.icon)}</p>
         <div className="w-full flex flex-col">
           <p className="text-zinc-600 font-bold text-[0.75rem]">{account.groupName}</p>
           <div className="w-full flex justify-between">
-            {/* <p className="">일반모임통장</p> */}
-            <p className="font-bold">{formatCurrency(account.balance)}원</p>
+            <p className="font-bold">{formatCurrency(account.moneyBoxDtoList[0].balance)}원</p>
           </div>
           <div className="text-sm w-full flex justify-between">
-            {foreignAccount && (
+            {account.moneyBoxDtoList.length > 1 ? (
               <div className="w-full flex justify-between items-center">
                 <p className="text-zinc-500 text-[0.83rem]">트래블박스</p>
-                <div className="text-[1rem] font-bold flex space-x-1">
-                  <p>{formatCurrency(foreignAccount.balance)}</p>
-                  <p>{foreignAccount.currency.currencyCode}</p>
+                <div className="text-[1rem] font-semibold flex space-x-1">
+                  <p>{formatCurrency(account.moneyBoxDtoList[1].balance)}</p>
+                  <p>{account.moneyBoxDtoList[1].currencyCode}</p>
                 </div>
               </div>
+            ) : (
+              <div className="w-full flex justify-between items-center"></div>
             )}
           </div>
         </div>

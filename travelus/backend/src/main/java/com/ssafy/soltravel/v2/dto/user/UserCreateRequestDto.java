@@ -1,6 +1,7 @@
 package com.ssafy.soltravel.v2.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ssafy.soltravel.v2.domain.Enum.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -48,4 +49,7 @@ public class UserCreateRequestDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Schema(description = "사용자의 생년월일", example = "1990-01-01")
     private LocalDate birth;
+
+    @Schema(description = "사용자의 성별(MALE , FEMALE)", example = "MALE")
+    private Gender gender;
 }

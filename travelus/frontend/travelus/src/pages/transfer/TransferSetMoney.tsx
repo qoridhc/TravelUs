@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { useLocation } from "react-router";
+import { AccountInfoNew } from "../../types/account";
+import { accountApi } from "../../api/account";
 import { IoIosArrowBack } from "react-icons/io";
 
 interface TransferSetMoneyProps {}
 
 const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { accountNo } = location.state as { accountNo: string };
+  const [account, setAccount] = useState<AccountInfoNew | null>(null);
+  const [depositAccount, setDepositAccount] = useState<AccountInfoNew | null>(null);
   const [transferAmount, setTransferAmount] = useState<string>("");
   const [isValidation, setIsValidation] = useState<boolean>(false);
   const [exceedsMaxAmount, setExceedsMaxAmount] = useState<boolean>(false);
   const [exceedsUserAmount, setExceedsUserAmount] = useState<boolean>(false);
   const MaxAmount = 100000000;
-  const userAmount = 3400100;
+  const [userAmount, setUserAmount] = useState<number>(0);
 
   useEffect(() => {
     const numberValue = Number(transferAmount);
@@ -21,6 +28,25 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
       setIsValidation(numberValue > 0 && numberValue <= MaxAmount && numberValue <= userAmount);
     }
   }, [transferAmount]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // 잔액을 위한 API 호출
+        const accountResponse = await accountApi.fetchAllAccountInfo();
+        setAccount(accountResponse[0]);
+        setUserAmount(accountResponse[0].moneyBoxDtos[0].balance);
+
+        // 받는 사람 이름을 표시하기 위한 API 호출
+        const accountInfo = await accountApi.fetchSpecificAccountInfo(accountNo);
+        setDepositAccount(accountInfo);
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const formatNumber = (num: string) => {
     return num.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -92,10 +118,10 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
           <div className="flex flex-col space-y-16">
             <div className="flex flex-col space-y-2">
               <div className="flex items-center">
-                <p className="pr-1 text-lg font-extrabold">박예진</p>
+                <p className="pr-1 text-lg font-extrabold">{depositAccount?.userName}</p>
                 <p>님에게</p>
               </div>
-              <p className="text-sm">튜나뱅크 00223344551928</p>
+              <p className="text-sm">튜나뱅크 {depositAccount?.accountNo}</p>
             </div>
 
             <div className="flex flex-col space-y-10">
@@ -123,7 +149,7 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
           </div>
           <div className="w-full absolute top-80">
             <div className="p-4 bg-zinc-100 rounded-lg">
-              <p className="text-sm">내 입출금통장 : {formatNumber(String(userAmount))} 원</p>
+              <p className="text-sm">내 입출금통장 : {formatNumber(String(account?.moneyBoxDtos[0].balance))} 원</p>
             </div>
             <div className="mt-2 flex justify-between">
               <button
@@ -153,7 +179,7 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
         <div>
           <button
             onClick={() => {
-              navigate("/transfer/confirm");
+              navigate("/transfer/password", { state: { accountNo, transferAmount, depositAccount } });
             }}
             className={`w-full h-14 text-lg font-semibold rounded-xl tracking-wide ${
               isValidation ? "text-white bg-[#1429A0]" : "text-[#565656] bg-[#E3E4E4]"

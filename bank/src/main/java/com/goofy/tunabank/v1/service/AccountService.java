@@ -100,13 +100,14 @@ public class AccountService {
     // ==== 계좌 조회 ====
     public AccountDto inquireAccount(InquireAccountRequestDto requestDto) {
 
-        userService.findUserByHeader();
+        User user = userService.findUserByHeader();
 
         Account account = accountRepository.findByAccountNo(requestDto.getAccountNo())
             .orElseThrow(() -> new InvalidAccountNoException(requestDto.getAccountNo()));
 
         // DTO 변환
         AccountDto accountDto = accountMapper.toDto(account);
+        accountDto.setCredentialId(account.getUser().getCredentialId());
 
         List<MoneyBoxDto> moneyBoxDtoList = moneyBoxMapper.toDtoList(account.getMoneyBoxes());
         accountDto.setMoneyBoxDtos(moneyBoxDtoList);

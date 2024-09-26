@@ -1,15 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router";
 import NameInputMui from "../../components/meetingAccount/NameInputMui";
 import BirthDateInputMui from "../../components/meetingAccount/BirthDateInputMui";
 import GenderInputMui from "../../components/meetingAccount/GenderInputMui";
+import { userApi } from "../../api/user";
 
 const UserInfoOfCreateAccount = () => {
   const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [birthdate, setBirthdate] = useState("");
+  const [gender, setGender] = useState("");
+
   const handleNext = () => {
-    navigate("/passwordofcreatemeetingaccount/nomeeting");
+    navigate("/meeting/create/password/nomeeting");
   };
+
+  const getUserInfo = async () => {
+    try {
+      const response = await userApi.fetchUser();
+      setName(response.data.name);
+      setBirthdate(response.data.birth);
+      setGender("여성");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getUserInfo();
+  }, []);
 
   return (
     <div className="h-full p-5 pb-8 flex flex-col justify-between">
@@ -24,9 +44,9 @@ const UserInfoOfCreateAccount = () => {
             <p>확인해주세요</p>
           </div>
 
-          <NameInputMui />
-          <BirthDateInputMui />
-          <GenderInputMui />
+          <NameInputMui name={name} setName={setName} />
+          <BirthDateInputMui birthdate={birthdate} setBirthdate={setBirthdate} />
+          <GenderInputMui gender={gender} setGender={setGender} />
         </div>
       </div>
 

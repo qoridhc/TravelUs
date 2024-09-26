@@ -12,8 +12,8 @@ public interface TransactionMapper {
   @Mapping(target = "transactionUniqueNo", source = "id")
   @Mapping(target = "accountNo", source = "transactionAccountNo")
   @Mapping(target = "transactionDate", source = "transactionAt")
-  @Mapping(target = "transactionAmount", expression = "java(String.format(\"%.0f\", th.getAmount()))")
-  @Mapping(target = "transactionBalance", expression = "java(String.format(\"%.0f\", th.getBalance()))")
+  @Mapping(target = "transactionAmount", expression = "java(String.format(\"%.2f\", th.getAmount()))")
+  @Mapping(target = "transactionBalance", expression = "java(String.format(\"%.2f\", th.getBalance()))")
   @Mapping(target = "transactionSummary", source = "summary")
   TransactionResponseDto convertTransactionHistoryToTransactionResponseDto(TransactionHistory th);
 

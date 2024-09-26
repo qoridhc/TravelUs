@@ -79,7 +79,7 @@ const MeetingAccountCreateProcess = () => {
       <div className="px-5 py-10">
         <button
           className={`w-full py-3 text-white bg-[#0471E9] rounded-lg`}
-          onClick={() => navigate("/userinfoofcreatemeetingaccount")}>
+          onClick={() => navigate("/meeting/create/userinfo")}>
           가입하기
         </button>
       </div>
