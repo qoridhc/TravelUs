@@ -77,7 +77,9 @@ const InviteInfoOfMeeting = () => {
         personalAccountNo: accountNo,
       };
       const response = await accountApi.fetchCreateParticipant(data);
-      console.log(response);
+      if (response.status === 201) {
+        navigate("/meetingaccountlist");
+      }
     } catch (error) {
       console.log("account의 fetchCreateParticipant", error);
     }
