@@ -3,6 +3,7 @@ package com.ssafy.soltravel.v2.controller;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.AddMoneyBoxRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
+import com.ssafy.soltravel.v2.dto.account.request.InquireAccountListRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.InquireAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
 import com.ssafy.soltravel.v2.service.account.AccountService;
@@ -18,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -98,11 +98,12 @@ public class GeneralAccountController {
         @ApiResponse(responseCode = "404", description = "계좌를 찾을 수 없음", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @GetMapping("/inquireAccountList")
+    @PostMapping("/inquireAccountList")
     public ResponseEntity<List<AccountDto>> getAllByUserId(
+        @RequestBody InquireAccountListRequestDto requestDto
     ) {
 
-        List<AccountDto> accountDtoList = accountService.getAllByUserId();
+        List<AccountDto> accountDtoList = accountService.getAllByUserId(requestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(accountDtoList);
     }

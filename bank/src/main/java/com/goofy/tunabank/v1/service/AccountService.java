@@ -12,6 +12,7 @@ import com.goofy.tunabank.v1.dto.account.AccountDto;
 import com.goofy.tunabank.v1.dto.account.request.AddMoneyBoxRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.DeleteAccountRequestDto;
+import com.goofy.tunabank.v1.dto.account.request.InquireAccountListRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.InquireAccountRequestDto;
 import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
 import com.goofy.tunabank.v1.exception.account.DuplicateCurrencyException;
@@ -27,6 +28,7 @@ import com.goofy.tunabank.v1.repository.BankRepository;
 import com.goofy.tunabank.v1.repository.CurrencyRepository;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
 import com.goofy.tunabank.v1.repository.account.AccountRepository;
+import com.goofy.tunabank.v1.util.LogUtil;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -82,7 +84,9 @@ public class AccountService {
     }
 
     // ==== 유저 계좌 전체 조회 ====
-    public List<AccountDto> inqureAccountList() {
+    public List<AccountDto> inqureAccountList(InquireAccountListRequestDto requestDto) {
+
+        LogUtil.info("requestDto", requestDto);
 
         User user = userService.findUserByHeader();
 
@@ -90,11 +94,16 @@ public class AccountService {
             .orElseThrow(() -> new UserAccountsNotFoundException(user.getUserId()));
 
         List<AccountDto> accountDtoList = accountList.stream()
+            .filter(account -> {
+                if (requestDto.getSearchType().equals("A")) {
+                    return true; // "A"인 경우 전체 조회
+                }
+                return account.getAccountType().name().equals(requestDto.getSearchType()); // "I"나 "G"인 경우 필터링
+            })
             .map(accountMapper::toDto)
             .toList();
 
         return accountDtoList;
-
     }
 
     // ==== 계좌 조회 ====
