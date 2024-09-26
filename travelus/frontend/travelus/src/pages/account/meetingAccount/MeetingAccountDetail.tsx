@@ -17,10 +17,10 @@ import { MeetingAccountInfo } from "../../../types/account";
 
 const MeetingAccountDetail = () => {
   const navigate = useNavigate();
-  const locationq = useLocation();
+  const location = useLocation();
   const { id } = useParams();
   const numberId = Number(id);
-  const { account } = locationq.state as { account: MeetingAccountInfo };
+  const { account } = location.state as { account: MeetingAccountInfo };
 
   // const accountList = useSelector((state: RootState) => state.account.accountList);
   // const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
@@ -155,7 +155,7 @@ const MeetingAccountDetail = () => {
           <div>
             <div
               onClick={() => {
-                navigate("/meetingtransaction/1");
+                navigate(`/meetingtransaction/${account.groupId}`, { state : { account } });
               }}
               className="mt-6 p-5 flex flex-col space-y-5">
               <div className="flex flex-col space-y-1">
