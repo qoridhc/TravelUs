@@ -12,7 +12,7 @@ import com.ssafy.soltravel.v2.dto.account_book.DetailAccountHistoryReadResponseD
 import com.ssafy.soltravel.v2.dto.account_book.ReceiptAnalysisDto;
 import com.ssafy.soltravel.v2.dto.account_book.ReceiptUploadRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.TransactionHistoryDto;
-import com.ssafy.soltravel.v2.dto.transaction.request.TransactionHistoryRequestDto;
+import com.ssafy.soltravel.v2.dto.transaction.request.TransactionHistoryListRequestDto;
 import com.ssafy.soltravel.v2.exception.LackOfBalanceException;
 import com.ssafy.soltravel.v2.mapper.AccountBookMapper;
 import com.ssafy.soltravel.v2.mapper.TransactionMapper;
@@ -120,7 +120,7 @@ public class AccountBookService {
         response.initList();
 
         // (가계부 요청 데이터)를 (외화 통장 이체 기록 요청 데이터)로 변환
-        TransactionHistoryRequestDto transactionDto =
+        TransactionHistoryListRequestDto transactionDto =
             TransactionMapper.convertAccountToTransaction(request);
         transactionDto.setOrderByType(OrderByType.ASC);
 
@@ -164,7 +164,7 @@ public class AccountBookService {
         List<DetailAccountHistoryReadResponseDto> response = new ArrayList<>();
 
         // (가계부 상세 요청 데이터)를 (외화 통장 이체 기록 요청 데이터)로 변환
-        TransactionHistoryRequestDto transactionDto =
+        TransactionHistoryListRequestDto transactionDto =
             TransactionMapper.convertDetailAccountToTransaction(request);
         transactionDto.setOrderByType(OrderByType.ASC);
 

@@ -5,9 +5,11 @@ import com.goofy.tunabank.v1.domain.Enum.TransactionType;
 import com.goofy.tunabank.v1.domain.Enum.TransferType;
 import com.goofy.tunabank.v1.domain.MoneyBox;
 import com.goofy.tunabank.v1.domain.TransactionHistory;
+import com.goofy.tunabank.v1.domain.TransactionHistoryId;
 import com.goofy.tunabank.v1.domain.User;
 import com.goofy.tunabank.v1.dto.exchange.ExchangeAmountRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.TransferDetailDto;
+import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryListRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferMBRequestDto;
@@ -118,7 +120,7 @@ public class TransactionService {
 
     Long nextId = getNextTransactionId();
 
-    LogUtil.info("transactionType:",transactionType);
+    LogUtil.info("transactionType:", transactionType);
     TransactionHistory transactionHistory = TransactionHistory.createTransactionHistory(nextId,
         transactionType, moneyBox, null, requestDto.getHeader().getTransmissionDateTime(), amount,
         afterBalance, requestDto.getTransactionSummary());
@@ -274,16 +276,30 @@ public class TransactionService {
   }
 
   /**
-   * 거래 내역 조회
+   * 거래 내역 목록 조회
    */
   @Transactional(readOnly = true)
   public List<TransactionResponseDto> getTransactionHistory(
-      TransactionHistoryRequestDto requestDto) {
+      TransactionHistoryListRequestDto requestDto) {
 
     List<TransactionHistory> transactionHistories = transactionHistoryRepository.findByCustomOrder(
         requestDto).orElseThrow(TransactionHistoryNotFoundException::new);
 
     return transactionMapper.convertTransactionHistoriesToResponseDtos(transactionHistories);
+  }
+
+  /**
+   * 거래 내역 단건 조회
+   */
+  @Transactional(readOnly = true)
+  public TransactionResponseDto getHistory(
+      TransactionHistoryRequestDto requestDto) {
+
+    TransactionHistory transactionHistory = transactionHistoryRepository.findById(
+        new TransactionHistoryId(requestDto.getTransactionHistoryId(),
+            requestDto.getTransactionType())).orElseThrow(TransactionHistoryNotFoundException::new);
+
+    return transactionMapper.convertTransactionHistoryToTransactionResponseDto(transactionHistory);
   }
 
   /**
