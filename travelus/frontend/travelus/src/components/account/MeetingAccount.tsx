@@ -6,12 +6,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { AccountInfo } from "../../types/account";
 
 interface Props {
-  index: number;
   account: any;
-  foreignAccount: any;
 }
 
-const MeetingAccount = ({ index, account, foreignAccount }: Props) => {
+const MeetingAccount = ({ account }: Props) => {
   const navigate = useNavigate();
 
   // 숫자를 세 자리마다 쉼표로 구분하여 표시
@@ -69,9 +67,8 @@ const MeetingAccount = ({ index, account, foreignAccount }: Props) => {
 
   return (
     <div
-      key={index}
       onClick={() => {
-        navigate(`/meetingaccount/${index}`);
+        navigate(`/meetingaccount/1`);
       }}
       className="w-full">
       <div className="flex items-center space-x-4">
@@ -84,10 +81,10 @@ const MeetingAccount = ({ index, account, foreignAccount }: Props) => {
           </div>
           <div className="w-full flex justify-between items-center">
             <p className="text-zinc-500 text-[0.83rem]">트래블박스</p>
-            <div className="text-[1rem] font-bold flex space-x-1">
+            {/* <div className="text-[1rem] font-bold flex space-x-1">
               <p className="">{formatCurrency(foreignAccount.balance)}</p>
               <p>{foreignAccount.currency.currencyCode}</p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

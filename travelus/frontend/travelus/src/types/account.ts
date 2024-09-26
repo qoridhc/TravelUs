@@ -39,6 +39,21 @@ export interface AccountInfoNew {
   updatedAt: string
 }
 
+// 모임통장 정보
+export interface MeetingAccountInfo {
+  groupId: number;
+  groupAccountNo: string;
+  groupName: string;
+  icon: string;
+  moneyBoxDtoList: [
+    {
+      moneyBoxId: number;
+      balance: number;
+      currencyCode: string
+    }
+  ]
+}
+
 
 // 거래 내역 조회
 export interface Transaction {

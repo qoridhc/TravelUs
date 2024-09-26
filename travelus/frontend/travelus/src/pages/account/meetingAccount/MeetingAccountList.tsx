@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { RootState } from "../../../redux/store";
@@ -7,97 +8,13 @@ import JoinedMeetingAccount from "../../../components/account/JoinedMeetingAccou
 import { useEffect } from "react";
 import { accountApi } from "../../../api/account";
 import { IoMdAdd } from "react-icons/io";
+import { MeetingAccountInfo } from "../../../types/account";
+import { set } from "date-fns";
 
 const MeetingAccountListNew = () => {
   const navigate = useNavigate();
-  // const accountList = useSelector((state: RootState) => state.account.accountList);
-  // const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
-  // const joinedAccountList = useSelector((state: RootState) => state.account.joinedAccountList);
-
-  // accounstList 더미데이터
-  const accountList = [
-    {
-      id: 1,
-      groupName: "사랑스러운 지나네",
-      accountNo: "12345678901234567890",
-      iconName: "family",
-      accountOwner: "모임주1",
-      balance: 1021300,
-      accountDate: "2022-01-01",
-      accountStatus: "open",
-    },
-    {
-      id: 2,
-      groupName: "신암고 3학년 1반",
-      accountNo: "12345678901234567890",
-      iconName: "friend",
-      accountType: "모임",
-      accountOwner: "모임주1",
-      balance: 5032000,
-      accountDate: "2022-01-01",
-      accountStatus: "open",
-    },
-  ];
-
-  // joinedAccountList 더미데이터
-  const joinedAccountList = [
-    {
-      id: 1,
-      groupName: "모히또에서 몰디브 한잔",
-      accountNo: "12345678901234567890",
-      iconName: "lover",
-      accountOwner: "모임주1",
-      balance: 2123000,
-      accountDate: "2022-01-01",
-      accountStatus: "open",
-      joinedDate: "2022-01-01",
-    },
-    {
-      id: 2,
-      groupName: "ssafy 11기",
-      accountNo: "12345678901234567890",
-      iconName: "job",
-      accountOwner: "모임주2",
-      balance: 1000000,
-      accountDate: "2023-01-10",
-      accountStatus: "open",
-      joinedDate: "2023-01-10",
-    },
-  ];
-
-  // foreignAccount 더미데이터
-  const foreignAccountList = [
-    {
-      id: 1,
-      accountName: "외부모임1",
-      accountNo: "98765432109876543210",
-      accountType: "외부모임",
-      accountOwner: "외부모임주1",
-      balance: 1000000,
-      currency: {
-        currencyCode: "USD",
-      },
-      accountDate: "2022-01-01",
-      accountStatus: "open",
-    },
-    {
-      id: 2,
-      accountName: "외부모임2",
-      accountNo: "98765432109876543210",
-      accountType: "외부모임",
-      accountOwner: "외부모임주2",
-      balance: 1000000,
-      currency: {
-        currencyCode: "USD",
-      },
-      accountDate: "2023-02-13",
-      accountStatus: "open",
-    },
-  ];
-
-  // 배열의 길이가 0이면 0을, 1 이상이면 accountList.length - 1을 표시
-  const accountCount = accountList.length === 0 ? 0 : accountList.length - 1;
-  const joinedAccountCount = joinedAccountList.length;
+  const [createdAccountList, setAccountList] = useState<MeetingAccountInfo[]>([]);
+  const [joinedAccountList, setJoinedAccountList] = useState<MeetingAccountInfo[]>([]);
 
   const dispatch = useDispatch();
   const userId = localStorage.getItem("userId") || "";
@@ -106,12 +23,13 @@ const MeetingAccountListNew = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await accountApi.fetchJoinedMeetingAccount(userIdNumber);
-        // Redux 스토어에 데이터 저장
-        dispatch(editJoinedAccountList(response));
+        const createdResponse = await accountApi.fetchCreatedMeetingAccount();
+        setAccountList(createdResponse);
+
+        const joinedResponse = await accountApi.fetchJoinedMeetingAccount();
+        setJoinedAccountList(joinedResponse);
       } catch (error) {
         console.error("Error fetching data:", error);
-        // alert("내가 가입한 모임 통장 조회에 실패했습니다.");
       }
     };
 
@@ -129,22 +47,10 @@ const MeetingAccountListNew = () => {
           <div className="p-6 bg-white rounded-xl">
             <p className="mb-7 text-lg font-bold">내가 개설한 모임통장</p>
             {/* 내가 개설한 모임 통장 있을 시 표시 */}
-            {accountList.length > 1 ? (
+            {createdAccountList.length > 1 ? (
               <div className="flex flex-col space-y-7">
-                {/* 
-                {accountList.slice(1).map((account, index) => (
-                  <MeetingAccount key={index} index={index} account={account} foreignAccount={foreignAccountList[index]} />
-                ))}
-                */}
-
-                {/* 더미데이터 용 */}
-                {accountList.map((account, index) => (
-                  <MeetingAccount
-                    key={index}
-                    index={index}
-                    account={account}
-                    foreignAccount={foreignAccountList[index]}
-                  />
+                {createdAccountList.map((account, index) => (
+                  <MeetingAccount key={index}  account={account} />
                 ))}
 
                 <div>
@@ -182,7 +88,7 @@ const MeetingAccountListNew = () => {
               <p className="mb-7 text-lg font-bold">참여중인 모임통장</p>
               <div className="flex flex-col space-y-3">
                 {joinedAccountList.map((account, index) => (
-                  <JoinedMeetingAccount key={index} accountId={account.id} index={index} account={account} />
+                  <JoinedMeetingAccount key={index} accountId={account.groupId} index={index} account={account} />
                 ))}
               </div>
             </div>
