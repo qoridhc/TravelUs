@@ -33,7 +33,7 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
     const fetchData = async () => {
       try {
         // 잔액을 위한 API 호출
-        const accountResponse = await accountApi.fetchAllAccountInfo();
+        const accountResponse = await accountApi.fetchAllAccountInfo("I");
         setAccount(accountResponse[0]);
         setUserAmount(accountResponse[0].moneyBoxDtos[0].balance);
 

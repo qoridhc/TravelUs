@@ -60,7 +60,7 @@ const MainPage = () => {
         // ]);
 
         // 입출금통장 출력을 위한 API 호출
-        const accountResponse = await accountApi.fetchAllAccountInfo();
+        const accountResponse = await accountApi.fetchAllAccountInfo("I");
         setAccount(accountResponse[0]);
 
         // 모임통장 출력을 위한 API 호출
