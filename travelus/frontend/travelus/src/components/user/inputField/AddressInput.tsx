@@ -25,10 +25,12 @@ const AddressInput: React.FC<AddressInputProps> = ({ labelName, name, onChange, 
   const open = useDaumPostcodePopup(postcodeScriptUrl);
 
   const handleComplete = (data: DaumPostcodeData) => {
+    setAddress(""); // 주소를 초기화
+
     let fullAddress = data.address;
     let extraAddress = "";
-    let localAddress = data.sido + " " + data.sigungu;
 
+    // 도로명 주소일 경우
     if (data.addressType === "R") {
       if (data.bname !== "") {
         extraAddress += data.bname;
@@ -36,12 +38,10 @@ const AddressInput: React.FC<AddressInputProps> = ({ labelName, name, onChange, 
       if (data.buildingName !== "") {
         extraAddress += extraAddress !== "" ? `, ${data.buildingName}` : data.buildingName;
       }
-      fullAddress = fullAddress.replace(localAddress, "");
       fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
     }
 
-    fullAddress = `${data.sido} ${data.sigungu}${fullAddress}`.trim();
-
+    // localAddress를 따로 사용하지 않고, fullAddress 그대로 사용
     setAddress(fullAddress.trim()); // setAddress를 호출하여 부모 컴포넌트의 상태를 업데이트
   };
 

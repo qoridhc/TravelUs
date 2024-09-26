@@ -85,14 +85,13 @@ const MainPage = () => {
         const accountResponse = await accountApi.fetchAllAccountInfo();
         setAccount(accountResponse[0]);
 
-        // 모임통장(G 타입) 필터링하여 상태 업데이트
         const meetingAccounts = accountResponse.filter((account: AccountInfoNew) => account.accountType === "G");
         setMeetingAccountList(meetingAccounts);
         // Redux 스토어에 데이터 저장
         // dispatch(editAccountList(accountResponse));
         // dispatch(editForeingAccountList(foreignResponse));
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching data:",  error);
       }
     };
 

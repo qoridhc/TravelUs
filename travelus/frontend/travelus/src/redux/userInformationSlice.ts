@@ -17,6 +17,7 @@ const initialState: UserInformationState = {
     phone: "",
     verificationCode: "",
     address: "",
+    gender: "",
   },
   UserInfo: {
     name: "",
