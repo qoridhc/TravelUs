@@ -2,15 +2,18 @@ import React, { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import Lottie from "lottie-react";
 import invitationAnimation from "../../lottie/invitationAnimation.json";
+import { useNavigate, useParams } from "react-router";
 
 const InvitationOfMeeting = () => {
+  const navigate = useNavigate();
+  const params = useParams();
   const [groupLeader, setGroupLeader] = useState("이예림");
 
   return (
     <div className="h-full p-5 pb-8 flex flex-col justify-between">
       <div>
         <div className="flex items-center">
-          <IoIosArrowBack className="text-2xl" />
+          <IoIosArrowBack className="text-2xl" onClick={() => navigate("/")} />
         </div>
 
         <div className="mt-32 flex flex-col items-center space-y-3">
@@ -22,7 +25,9 @@ const InvitationOfMeeting = () => {
         </div>
       </div>
 
-      <button className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]">
+      <button
+        className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
+        onClick={() => navigate(`/meeting/invite/${params.code}/info`)}>
         모임통장 참여하기
       </button>
     </div>
