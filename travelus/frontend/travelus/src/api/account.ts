@@ -1,7 +1,7 @@
 
 import api from "../lib/axios";
 import { AccountInfo, AccountInfoNew, MeetingAccountInfo, AccountParticipants, MeetingAccountCreate, meetingInvitationCode } from "../types/account";
-import { newParticipant } from "../types/meetingAccount";
+import { NewParticipant } from "../types/meetingAccount";
 
 export const accountApi = {
   // 일반 계좌 정보 가져오기
@@ -69,7 +69,7 @@ export const accountApi = {
   },
  
   // 모임원 추가
- fetchCreateParticipant: (data: newParticipant) => {
+ fetchCreateParticipant: (data: NewParticipant) => {
     return api.post(`/groups/createParticipant`, data);
   },
  

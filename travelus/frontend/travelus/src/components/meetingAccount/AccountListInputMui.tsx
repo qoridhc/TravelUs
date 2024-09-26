@@ -1,14 +1,14 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import React, { useState } from "react";
+import { AccountInfoNew } from "../../types/account";
 
 interface Props {
   accountNo: string;
   setAccountNo: (type: string) => void;
+  accountList: AccountInfoNew[];
 }
 
-const AccountListInputMui = ({ accountNo, setAccountNo }: Props) => {
-  const [accountList, setAccountList] = useState([]);
-
+const AccountListInputMui = ({ accountNo, setAccountNo, accountList }: Props) => {
   return (
     <FormControl
       variant="standard"
@@ -43,15 +43,15 @@ const AccountListInputMui = ({ accountNo, setAccountNo }: Props) => {
             },
           },
         }}>
-        {/* {accountList.map((account, index) => (
+        {accountList.map((account, index) => (
           <MenuItem
-            value={account.value}
+            value={account.accountNo}
             sx={{
               fontWeight: "bold",
             }}>
-            {account.text}
+            튜나뱅크 {account.accountNo}
           </MenuItem>
-        ))} */}
+        ))}
       </Select>
     </FormControl>
   );
