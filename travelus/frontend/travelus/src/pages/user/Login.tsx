@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { userApi } from "../../api/user";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "email") {
@@ -22,7 +23,14 @@ const Login = () => {
         sessionStorage.setItem("accessToken", response.data.accessToken);
         localStorage.setItem("userId", response.data.userId.toString());
         localStorage.setItem("userName", response.data.name);
-        navigate("/");
+
+        if (location.state.type === "invite") {
+          // 모임 초대장에서 넘어온 로그인일 경우, 초대장으로 연결
+          navigate(`/meeting/invite/${location.state.code}/info`);
+        } else {
+          // 그냥 로그인일 경우, 메인으로 연결
+          navigate("/");
+        }
       }
     } catch (error) {
       console.error("Error creating user:", error);
