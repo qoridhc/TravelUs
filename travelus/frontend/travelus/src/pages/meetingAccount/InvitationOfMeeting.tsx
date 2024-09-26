@@ -11,17 +11,11 @@ const InvitationOfMeeting = () => {
 
   return (
     <div className="h-full p-5 pb-8 flex flex-col justify-between">
-      <div>
-        <div className="flex items-center">
-          <IoIosArrowBack className="text-2xl" onClick={() => navigate("/")} />
-        </div>
-
-        <div className="mt-32 flex flex-col items-center space-y-3">
-          <Lottie className="w-36" animationData={invitationAnimation} />
-          <div className="text-2xl text-center font-semibold">
-            <p>{groupLeader}님의 모임통장</p>
-            <p>초대장 도착!</p>
-          </div>
+      <div className="mt-32 flex flex-col items-center space-y-3">
+        <Lottie className="w-36" animationData={invitationAnimation} />
+        <div className="text-2xl text-center font-semibold">
+          <p>{groupLeader}님의 모임통장</p>
+          <p>초대장 도착!</p>
         </div>
       </div>
 
