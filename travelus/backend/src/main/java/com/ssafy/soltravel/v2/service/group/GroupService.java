@@ -171,7 +171,7 @@ public class GroupService {
         );
 
         String code = generateGroupCode(request.getGroupId());
-        redisTemplate.opsForValue().set(code, String.valueOf(request.getGroupId()), 5, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(code, String.valueOf(request.getGroupId()), 24, TimeUnit.HOURS);
 
         return GroupCodeGenerateResponseDto.builder()
             .groupCode(code)
@@ -179,8 +179,11 @@ public class GroupService {
     }
 
     public GroupDto findGroupByCode(String code) {
-        Long groupId = Long.valueOf(redisTemplate.opsForValue().get(code));
-        return getGroupInfo(groupId);
+        String groupId = redisTemplate.opsForValue().get(code);
+        if(groupId == null) {
+            throw new InvalidGroupIdException("유효하지 않은 초대 코드입니다.");
+        }
+        return getGroupInfo(Long.valueOf(groupId));
     }
 
     private String generateGroupCode(Long groupId){
