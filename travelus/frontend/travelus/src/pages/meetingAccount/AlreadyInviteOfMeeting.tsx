@@ -5,14 +5,14 @@ import invitationAnimation from "../../lottie/invitationAnimation.json";
 
 const AlreadyInviteOfMeeting = () => {
   const navigate = useNavigate();
-  const [groupLeader, setGroupLeader] = useState("이예림");
+  const location = useLocation();
 
   return (
     <div className="h-full p-5 pb-8 flex flex-col justify-between">
       <div className="mt-32 flex flex-col items-center space-y-3">
         <Lottie className="w-36" animationData={invitationAnimation} />
         <div className="text-2xl text-center font-semibold">
-          <p>{groupLeader}님의 모임통장에</p>
+          <p>{location.state.groupInfo.groupLeader}님의 모임통장에</p>
           <p>이미 참여했어요!</p>
         </div>
       </div>

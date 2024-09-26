@@ -26,7 +26,7 @@ const Login = () => {
 
         if (location.state && location.state.type !== null) {
           // 모임 초대장에서 넘어온 로그인일 경우, 초대장으로 연결
-          navigate(`/meeting/invite/${location.state.code}/info`);
+          navigate(`/meeting/invite/${location.state.code}/info`, { state: { groupInfo: location.state.groupInfo } });
         } else {
           // 그냥 로그인일 경우, 메인으로 연결
           navigate("/");

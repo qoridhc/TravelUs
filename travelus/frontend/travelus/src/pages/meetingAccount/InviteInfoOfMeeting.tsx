@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import AccountListInputMui from "../../components/meetingAccount/AccountListInputMui";
 import { AiTwotoneExclamationCircle } from "react-icons/ai";
 import { LuDot } from "react-icons/lu";
@@ -13,6 +13,7 @@ import { ParticipantInfo } from "../../types/account";
 const InviteInfoOfMeeting = () => {
   const navigate = useNavigate();
   const params = useParams();
+  const location = useLocation();
   const noticeTextList = [
     "모임통장 기능에는 정산하기 기능이 있습니다.",
     "정산 시, 선택한 입출금통장으로 정산금이 입금됩니다.",
@@ -38,12 +39,13 @@ const InviteInfoOfMeeting = () => {
       try {
         const response = await accountApi.fetchGroupIdByInvitationCode(params.code);
         setGroupId(response.data.groupId);
+        console.log(response);
 
         // 이미 모임에 가입한 사용자인지 확인
         const isParticipate = response.data.participants.some((info: ParticipantInfo) => info.userId === userId);
         if (isParticipate) {
           // 이미 참여중 페이지로 이동
-          navigate("/meeting/invite/participated", { state: { groupInfo: response.data } });
+          navigate("/meeting/invite/participated", { state: { groupInfo: location.state.groupInfo } });
         }
       } catch (error) {
         const axiosError = error as AxiosError;
