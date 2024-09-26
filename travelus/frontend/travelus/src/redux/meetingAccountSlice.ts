@@ -4,11 +4,13 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 export interface meetingAccountState {
   meetingName: string;
   meetingType: string;
+  individualAccountNo: string;
 }
 
 const initialState: meetingAccountState = {
   meetingName: "",
   meetingType: "",
+  individualAccountNo: "",
 }
 
 export const meetingAccountSilce = createSlice({
@@ -21,9 +23,12 @@ export const meetingAccountSilce = createSlice({
     setMeetingType: (state, action: PayloadAction<string>) => {
       state.meetingType = action.payload;
     },
+    setindividualAccountNo: (state, action: PayloadAction<string>) => {
+      state.individualAccountNo = action.payload;
+    },
   },
 });
 
-export const { setMeetingName, setMeetingType } = meetingAccountSilce.actions;
+export const { setMeetingName, setMeetingType, setindividualAccountNo } = meetingAccountSilce.actions;
 
 export default meetingAccountSilce.reducer;

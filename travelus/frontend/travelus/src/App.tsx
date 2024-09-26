@@ -62,6 +62,7 @@ import TravelBoxCreatePrepare from "./pages/travelBox/TravelBoxCreatePrepare";
 import InvitationOfMeeting from "./pages/meetingAccount/InvitationOfMeeting";
 import InviteInfoOfMeeting from "./pages/meetingAccount/InviteInfoOfMeeting";
 import AlreadyInviteOfMeeting from "./pages/meetingAccount/AlreadyInviteOfMeeting";
+import SelectAccountOfMeeting from "./pages/meetingAccount/SelectAccountOfMeeting";
 
 function App() {
   return (
@@ -113,6 +114,7 @@ function App() {
           <Route path="/meeting/create/prepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/meeting/create/userinfo" element={<UserInfoOfCreateMeetingAccount />} />
           <Route path="/meeting/create/meetinginfo" element={<MeetingInfoOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/select/account" element={<SelectAccountOfMeeting />} />
           <Route path="/meeting/create/password/:type" element={<PasswordOfCreateMeetingAccount />} />
           <Route path="/meeting/create/password/check" element={<CheckPasswordOfCreateMeetingAccount />} />
           <Route path="/meeting/create/idverificationo/:type" element={<IDVerificationOfCreateMeetingAccount />} />
