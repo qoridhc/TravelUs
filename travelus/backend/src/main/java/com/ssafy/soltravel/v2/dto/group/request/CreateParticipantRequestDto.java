@@ -18,7 +18,7 @@ public class CreateParticipantRequestDto {
     private String personalAccountNo;
 
     // CreateGroupRequestDto로 CreateParticipantRequestDto 생성하는 팩토리 메서드
-    public static CreateParticipantRequestDto createDto(Long groupId, boolean isMaster, String personalAccountNo) {
+    public static CreateParticipantRequestDto createDto(Long groupId, String personalAccountNo) {
 
         return CreateParticipantRequestDto.builder()
             .groupId(groupId)
