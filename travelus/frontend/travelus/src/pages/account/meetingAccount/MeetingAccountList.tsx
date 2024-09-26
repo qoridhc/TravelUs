@@ -13,7 +13,7 @@ import { set } from "date-fns";
 
 const MeetingAccountListNew = () => {
   const navigate = useNavigate();
-  const [createdAccountList, setAccountList] = useState<MeetingAccountInfo[]>([]);
+  const [createdAccountList, setCreatedAccountList] = useState<MeetingAccountInfo[]>([]);
   const [joinedAccountList, setJoinedAccountList] = useState<MeetingAccountInfo[]>([]);
 
   const dispatch = useDispatch();
@@ -24,7 +24,7 @@ const MeetingAccountListNew = () => {
     const fetchData = async () => {
       try {
         const createdResponse = await accountApi.fetchCreatedMeetingAccount();
-        setAccountList(createdResponse);
+        setCreatedAccountList(createdResponse);
 
         const joinedResponse = await accountApi.fetchJoinedMeetingAccount();
         setJoinedAccountList(joinedResponse);
@@ -47,8 +47,8 @@ const MeetingAccountListNew = () => {
           <div className="p-6 bg-white rounded-xl">
             <p className="mb-7 text-lg font-bold">내가 개설한 모임통장</p>
             {/* 내가 개설한 모임 통장 있을 시 표시 */}
-            {createdAccountList.length > 1 ? (
-              <div className="flex flex-col space-y-7">
+            {createdAccountList.length > 0 ? (
+              <div className="flex flex-col space-y-5">
                 {createdAccountList.map((account, index) => (
                   <MeetingAccount key={index}  account={account} />
                 ))}
@@ -59,7 +59,7 @@ const MeetingAccountListNew = () => {
                       navigate("/meeting/create/prepare");
                     }}
                     className="flex items-center space-x-4">
-                    <div className="w-11 h-11 bg-zinc-200 rounded-full flex justify-center items-center">
+                    <div className="w-10 h-10 bg-zinc-200 rounded-full flex justify-center items-center">
                       <IoMdAdd className="text-3xl text-zinc-400 font-bold" />
                     </div>
                     <p className="font-bold text-[#949494]">모임통장 추가하기</p>
@@ -86,7 +86,7 @@ const MeetingAccountListNew = () => {
           {joinedAccountList.length > 0 ? (
             <div className="p-6 bg-white rounded-xl">
               <p className="mb-7 text-lg font-bold">참여중인 모임통장</p>
-              <div className="flex flex-col space-y-3">
+              <div className="flex flex-col space-y-5">
                 {joinedAccountList.map((account, index) => (
                   <JoinedMeetingAccount key={index} accountId={account.groupId} index={index} account={account} />
                 ))}
