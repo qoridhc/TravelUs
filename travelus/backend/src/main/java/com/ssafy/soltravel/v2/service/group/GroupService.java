@@ -81,12 +81,11 @@ public class GroupService {
         // 2. 참여자 생성
         CreateParticipantRequestDto createParticipantRequestDto = CreateParticipantRequestDto.createDto(
             group.getGroupId(),
-            true,
             requestDto.getPersonalAccountNo()
         );
 
         // 3. dto 변환
-        ParticipantDto newParticipantDto = createNewParticipant(createParticipantRequestDto);
+        ParticipantDto newParticipantDto = createNewParticipant(createParticipantRequestDto, true);
 
         List<ParticipantDto> participantDtoList = new ArrayList<>();
         participantDtoList.add(newParticipantDto);
@@ -106,7 +105,7 @@ public class GroupService {
     }
 
     // 신규 참여자 생성
-    public ParticipantDto createNewParticipant(CreateParticipantRequestDto requestDto) {
+    public ParticipantDto createNewParticipant(CreateParticipantRequestDto requestDto, boolean isMaster) {
 
         // 1. 토큰 기반 유저 아이디 추출
         User user = securityUtil.getUserByToken();
@@ -117,10 +116,11 @@ public class GroupService {
         AccountDto accountDto = accountService.getByAccountNo(requestDto.getPersonalAccountNo());
 
         // 3. 참여자 생성
+
         Participant participant = Participant.createParticipant(
             user,
             group,
-            false,
+            isMaster,
             requestDto.getPersonalAccountNo()
         );
 

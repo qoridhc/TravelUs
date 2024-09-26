@@ -104,7 +104,7 @@ public class GroupController {
         @RequestBody CreateParticipantRequestDto requestDto
     ) {
 
-        ParticipantDto participantDto = groupService.createNewParticipant(requestDto);
+        ParticipantDto participantDto = groupService.createNewParticipant(requestDto, false);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(participantDto);
     }
