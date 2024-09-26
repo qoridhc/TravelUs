@@ -15,7 +15,7 @@ const CompletedOfCreateMeetingAccount = () => {
     userApi
       .fetchUser()
       .then((response) => {
-        setUserName(response.data.name);
+        setUserName(response.name);
       })
       .catch((error) => {
         console.log("user의 fetchUser : ", error);
