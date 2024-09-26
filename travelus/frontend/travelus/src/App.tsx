@@ -61,6 +61,7 @@ import ExpenditureSettlementInfo from "./pages/settlement/expenditureSettlement/
 import ExpenditureSettlementCompleted from "./pages/settlement/expenditureSettlement/ExpenditureSettlementCompleted";
 import TravelBoxCreatePrepare from "./pages/travelBox/TravelBoxCreatePrepare";
 import InvitationOfMeeting from "./pages/meetingAccount/InvitationOfMeeting";
+import InviteInfoOfMeeting from "./pages/meetingAccount/InviteInfoOfMeeting";
 
 function App() {
   return (
@@ -124,6 +125,7 @@ function App() {
           <Route path="/meetingaccount/management/:id" element={<MeetingAccountManagement />} />
           <Route path="/meetingaccount/management/:id/groupmember" element={<MeetingAccountGroupMember />} />
           <Route path="/meeting/invite/:code" element={<InvitationOfMeeting />} />
+          <Route path="/meeting/invite/:code/info" element={<InviteInfoOfMeeting />} />
 
           {/* 통장 내역 */}
           <Route path="/accounttransaction/:id" element={<AccountTransaction />} />
