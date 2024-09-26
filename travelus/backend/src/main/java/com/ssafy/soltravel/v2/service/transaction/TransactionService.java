@@ -4,6 +4,7 @@ import com.ssafy.soltravel.v2.common.Header;
 import com.ssafy.soltravel.v2.domain.Enum.TransactionType;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
+import com.ssafy.soltravel.v2.dto.transaction.request.TransactionHistoryListRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionHistoryRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
@@ -11,7 +12,6 @@ import com.ssafy.soltravel.v2.dto.transaction.response.TransactionResponseDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.repository.UserRepository;
-import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import com.ssafy.soltravel.v2.util.WebClientUtil;
 import java.util.HashMap;
@@ -210,10 +210,10 @@ public class TransactionService {
   }
 
   /**
-   * 거래 내역 조회
+   * 거래 내역 목록 조회
    */
-  public ResponseEntity<List<TransferHistoryResponseDto>> getHistory(
-      TransactionHistoryRequestDto requestDto) {
+  public ResponseEntity<List<TransferHistoryResponseDto>> getHistoryList(
+      TransactionHistoryListRequestDto requestDto) {
 
     User user = securityUtil.getUserByToken();
 
@@ -223,7 +223,6 @@ public class TransactionService {
         .apiKey(apiKeys.get("API_KEY"))
         .userKey(user.getUserKey()).build();
 
-    LogUtil.info("requestDto: ", requestDto);
     Map<String, Object> body = new HashMap<>();
     body.put("Header", header);
     TransactionType transactionType = requestDto.getTransactionType();
@@ -243,6 +242,33 @@ public class TransactionService {
     List<TransferHistoryResponseDto> responseDto = recObject.stream()
         .map(value -> modelMapper.map(value, TransferHistoryResponseDto.class))
         .collect(Collectors.toList());
+
+    return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+  }
+
+  /**
+   * 거래 내역 단건 조회
+   */
+  public ResponseEntity<TransferHistoryResponseDto> getHistory(
+      TransactionHistoryRequestDto requestDto) {
+
+    User user = securityUtil.getUserByToken();
+
+    String API_URL = BASE_URL + "history/detail";
+
+    Header header = Header.builder()
+        .apiKey(apiKeys.get("API_KEY"))
+        .userKey(user.getUserKey()).build();
+
+    Map<String, Object> body = new HashMap<>();
+    body.put("Header", header);
+    body.put("transactionHistoryId", requestDto.getTransactionHistoryId());
+    body.put("transactionType", requestDto.getTransactionType());
+    ResponseEntity<Map<String, Object>> response = webClientUtil.request(API_URL, body, Map.class);
+    Object recObject = response.getBody().get("REC");
+
+    TransferHistoryResponseDto responseDto = modelMapper.map(recObject,
+        TransferHistoryResponseDto.class);
 
     return ResponseEntity.status(HttpStatus.OK).body(responseDto);
   }

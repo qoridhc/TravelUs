@@ -8,6 +8,7 @@ import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.AddMoneyBoxRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
+import com.ssafy.soltravel.v2.dto.account.request.InquireAccountListRequestDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.AccountMapper;
@@ -106,7 +107,7 @@ public class AccountService {
     }
 
     // 계좌 전체 조회 (userId로)
-    public List<AccountDto> getAllByUserId() {
+    public List<AccountDto> getAllByUserId(InquireAccountListRequestDto requestDto) {
 
         User user = securityUtil.getUserByToken();
 
@@ -117,6 +118,7 @@ public class AccountService {
         Map<String, Object> body = new HashMap<>();
 
         body.put("Header", header);
+        body.put("searchType", requestDto.getSearchType());
 
         // 특정 유저 전체 계좌 조회
         ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
@@ -128,7 +130,6 @@ public class AccountService {
         });
 
         return accountDtoList;
-
     }
 
     // 계좌 신규 머니박스 추가

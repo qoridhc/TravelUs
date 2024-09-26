@@ -1,6 +1,7 @@
 package com.goofy.tunabank.v1.controller;
 
 import com.goofy.tunabank.v1.common.RecWrapper;
+import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryListRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferMBRequestDto;
@@ -56,13 +57,25 @@ public class TransactionController {
   }
 
   /**
-   * 거래 내역 조회
+   * 거래 내역 목록 조회
    */
   @PostMapping("/history")
-  public ResponseEntity<RecWrapper<List<TransactionResponseDto>>> getTransactionHistory(
-      @RequestBody TransactionHistoryRequestDto requestDto) {
+  public ResponseEntity<RecWrapper<List<TransactionResponseDto>>> getTransactionHistoryList(
+      @RequestBody TransactionHistoryListRequestDto requestDto) {
 
     List<TransactionResponseDto> response = transactionService.getTransactionHistory(requestDto);
+    return ResponseEntity.ok(new RecWrapper<>(response));
+  }
+
+  /**
+   * 거래 내역 단건 조회
+   */
+  @PostMapping("/history/detail")
+  public ResponseEntity<RecWrapper<TransactionResponseDto>> getTransactionHistory(
+      @RequestBody TransactionHistoryRequestDto requestDto
+  ) {
+
+    TransactionResponseDto response = transactionService.getHistory(requestDto);
     return ResponseEntity.ok(new RecWrapper<>(response));
   }
 

@@ -10,6 +10,7 @@ import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateRegisterRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.targetAccountDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
+import com.ssafy.soltravel.v2.repository.ExchangeRateForecastRepository;
 import com.ssafy.soltravel.v2.repository.GroupRepository;
 import com.ssafy.soltravel.v2.service.transaction.TransactionService;
 import com.ssafy.soltravel.v2.util.LogUtil;
@@ -52,6 +53,7 @@ public class ExchangeService {
   private final RedisTemplate<String, String> redisTemplate;
   private final TransactionService transactionService;
   private final GroupRepository groupRepository;
+  private final ExchangeRateForecastRepository exchangeRateForecastRepository;
 
   private List<String> Currencies = List.of("USD", "JPY", "EUR", "CNY");
 
@@ -182,7 +184,7 @@ public class ExchangeService {
   /**
    * String의 currencyCode를 CurreucyType으로 변환
    */
-  private CurrencyType getCurrencyType(String currencyCode) {
+  public CurrencyType getCurrencyType(String currencyCode) {
 
     return switch (currencyCode) {
       case "USD" -> CurrencyType.USD;
@@ -276,14 +278,4 @@ public class ExchangeService {
     }
     return null;
   }
-
-
-
-
-  //-----------------------------환율 예측-----------------------------
-  public String savePredictions() {
-    return "통신완료";
-  }
-
-
 }
