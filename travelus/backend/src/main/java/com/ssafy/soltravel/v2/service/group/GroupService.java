@@ -173,7 +173,7 @@ public class GroupService {
         );
 
         String code = generateGroupCode(request.getGroupId());
-        redisTemplate.opsForValue().set(code, String.valueOf(request.getGroupId()), 30, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(code, String.valueOf(request.getGroupId()), 1, TimeUnit.DAYS);
 
         return GroupCodeGenerateResponseDto.builder()
             .groupCode(code)
