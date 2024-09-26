@@ -1,6 +1,6 @@
 import { ChartOptions, ChartDataset } from 'chart.js';
 
-export const setupChart = (currencyCode: string, formatCurrency: (value: number, currencyCode: string) => string): ChartOptions => {
+export const setupChart = (currencyCode: string, formatCurrency: (value: number, currencyCode: string) => string): ChartOptions<"line"> => {
   return {
     responsive: true,
     maintainAspectRatio: false,

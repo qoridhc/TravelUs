@@ -1,12 +1,38 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Line } from "react-chartjs-2";
-import { Chart, ChartData, ChartOptions } from "chart.js";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  ChartData,
+  ChartOptions,
+} from "chart.js";
 import { ChevronLeft } from "lucide-react";
 import { exchangeApi } from "../../api/exchange";
 import { ExchangeRateInfo2, CurrencyPrediction, RecentRates } from "../../types/exchange";
 import { setupChart } from "../../utils/chartSetup";
 import { calculateChange, formatCurrency, getLatestRate } from "../../utils/currencyUtils";
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+
+// 국가 이름 매핑
+const countryNameMapping: { [key: string]: string } = {
+  EUR: "Europe",
+  JPY: "Japan",
+  USD: "TheUnitedStates",
+  CNY: "China",
+};
+
+const getFlagImagePath = (currencyCode: string): string => {
+  const countryName = countryNameMapping[currencyCode] || currencyCode;
+  return `/assets/flag/flagOf${countryName}.png`;
+};
 
 // Types
 type PeriodKey = "1주" | "1달" | "3달";
@@ -25,7 +51,7 @@ const isRecentRatesOnly = (data: any): data is { recent_rates: RecentRates } => 
 const ExchangeDetail: React.FC = () => {
   const { currencyCode = "" } = useParams<{ currencyCode: string }>();
   const navigate = useNavigate();
-  const chartRef = useRef<Chart>(null);
+  const chartRef = useRef<ChartJS<"line">>(null);
 
   const [exchangeData, setExchangeData] = useState<ExchangeRateInfo2 | null>(null);
   const [historicalData, setHistoricalData] = useState<{ date: string; rate: number }[]>([]);
@@ -163,7 +189,7 @@ const ExchangeDetail: React.FC = () => {
 
   const renderChart = () => (
     <div className="mb-6 h-64">
-      <Line data={chartData} options={chartOptions} ref={chartRef} />
+      <Line data={chartData} options={chartOptions as ChartOptions<"line">} ref={chartRef} />
     </div>
   );
 
@@ -178,7 +204,7 @@ const ExchangeDetail: React.FC = () => {
         Back
       </button>
       <div className="flex items-center mb-4">
-        <img src={`/assets/flag/flagOf${currencyCode}.png`} alt={`${currencyCode} Flag`} className="w-8 h-6 mr-2" />
+        <img src={getFlagImagePath(currencyCode)} alt={`${currencyCode} Flag`} className="w-8 h-6 mr-2" />
         <h1 className="text-2xl font-bold">{currencyCode}</h1>
       </div>
       <div className="flex mb-6">

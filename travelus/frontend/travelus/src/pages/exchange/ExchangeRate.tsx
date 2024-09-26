@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { GoHome } from "react-icons/go";
-import { exchangeApi } from "../../api/exchange";
+import { exchangeRateApi } from "../../api/exchange";
 import { ExchangeRateInfo, currencyNames } from "../../types/exchange";
 
 const countryNameMapping: { [key: string]: string } = {
@@ -55,7 +55,7 @@ const ExchangeRateList: React.FC = () => {
   useEffect(() => {
     const fetchExchangeRates = async () => {
       try {
-        const data = await exchangeApi.getExchangeRates();
+        const data = await exchangeRateApi.getExchangeRates();
         const filteredRates = data.filter((rate) => ["USD", "JPY", "EUR", "CNY"].includes(rate.currencyCode));
         setExchangeRates(filteredRates);
         setIsLoading(false);

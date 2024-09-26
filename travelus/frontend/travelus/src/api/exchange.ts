@@ -31,25 +31,10 @@ interface PredictionResponse {
   last_updated: string;
 }
 
-const API_BASE_URL = "http://70.12.130.121:11209"; // FastAPI 서버의 기본 URL로 변경해주세요
+const API_BASE_URL = "http://70.12.130.121:11209"; // GPU 서버
 
 export const exchangeApi = {
-    getExchangeRates: async (): Promise<ExchangeRateInfo[]> => {
-    const response = await api.get('/exchange/rate');
-    return response.data
-  },
-
-  requestExchange: async (data: ExchangeRequest): Promise<ExchangeResponse> => {
-    const response = await api.post<ExchangeResponse>('/exchange', data)
-    return response.data
-  },
-
-  getExchangeRateHistory: async (data: ExchangeRateHistoryRequest): Promise<ExchangeRateHistoryResponse> => {
-    const response = await api.post<ExchangeRateHistoryResponse>('/exchange/latest', data);
-    return response.data
-  },
-  // 기존의 다른 API 메서드들...
-
+  // GPU 서버 요청 api
   getPrediction: async (): Promise<PredictionResponse> => {
     try {
       const response = await axios.get<PredictionResponse>(`${API_BASE_URL}/prediction`);
@@ -60,7 +45,7 @@ export const exchangeApi = {
     }
   },
 
-  // 특정 통화에 대한 최근 환율 데이터만 가져오는 메서드 (선택적)
+  // 특정 통화에 대한 최근 환율 데이터만 가져오는 메서드
   getRecentRates: async (currency: string): Promise<RecentRates> => {
     try {
       const response = await axios.get<{ recent_rates: RecentRates }>(`${API_BASE_URL}/recent-rates/${currency}`);
@@ -72,8 +57,24 @@ export const exchangeApi = {
   },
 };
 
+export const exchangeRateApi = {
+      getExchangeRates: async (): Promise<ExchangeRateInfo[]> => {
+    const response = await api.get<ExchangeRateInfo[]>('/exchange/rate');
+    return response.data
+  },
 
-// export const exchangeApi = {
+  getExchangeRate: async (currencyCode: string): Promise<ExchangeRateInfo> => {
+    const response = await api.get<ExchangeRateInfo>(`/exchange/rate/${currencyCode}`);
+    return response.data;
+  },
 
-// };
+  requestExchange: async (data: ExchangeRequest): Promise<ExchangeResponse> => {
+    const response = await api.post<ExchangeResponse>('/exchange', data)
+    return response.data
+  },
 
+  getExchangeRateHistory: async (data: ExchangeRateHistoryRequest): Promise<ExchangeRateHistoryResponse> => {
+    const response = await api.post<ExchangeRateHistoryResponse>('/exchange/latest', data);
+    return response.data
+  },
+}

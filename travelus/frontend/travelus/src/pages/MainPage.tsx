@@ -11,8 +11,10 @@ import MainMeetingAccount from "../components/mainpage/MainMeetingAccount";
 import "../css/swiper.css";
 import "swiper/css/pagination";
 import "swiper/css";
-import ExchangeRate from "./exchange/ExchangeRate";
 import { ExchangeRateInfo } from "../types/exchange";
+import { exchangeRateApi } from "../api/exchange";
+
+const CURRENCY_CODES = ["USD", "JPY", "EUR"];
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -42,30 +44,6 @@ const MainPage = () => {
     navigate("/exchangerate");
   };
 
-  // 환율 받아오기
-  const handleExchangeRatesUpdate = (rates: ExchangeRateInfo[]) => {
-    setExchangeRates(rates);
-  };
-
-  const getExchangeRate = (currencyCode: string) => {
-    const rate = exchangeRates.find((r) => r.currencyCode === currencyCode);
-    return rate ? rate.exchangeRate.toFixed(2) : "N/A";
-  };
-
-  const getLatestUpdateTime = () => {
-    if (exchangeRates.length === 0) return "N/A";
-    const latestDate = new Date(Math.max(...exchangeRates.map((r) => new Date(r.created).getTime())));
-    return latestDate.toLocaleString("ko-KR", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
-  };
-
   // 숫자를 세 자리마다 쉼표로 구분하여 표시
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("ko-KR").format(amount);
@@ -77,24 +55,54 @@ const MainPage = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // 두 API를 병렬로 호출
-        const [accountResponse, foreignResponse] = await Promise.all([
-          accountApi.fetchAccountInfo(userIdNumber),
-          accountApi.fetchForeignAccountInfo(userIdNumber),
-        ]);
+    // const fetchData = async () => {
+    //   try {
+    //     // 두 API를 병렬로 호출
+    //     const [accountResponse, foreignResponse, ...exchangeRatesResponses] = await Promise.all([
+    //       accountApi.fetchAccountInfo(userIdNumber),
+    //       accountApi.fetchForeignAccountInfo(userIdNumber),
+    //       ...CURRENCY_CODES.map((code) => exchangeRateApi.getExchangeRate(code)),
+    //     ]);
 
-        // Redux 스토어에 데이터 저장
-        dispatch(editAccountList(accountResponse));
-        dispatch(editForeingAccountList(foreignResponse));
+    //     // Redux 스토어에 데이터 저장
+    //     dispatch(editAccountList(accountResponse));
+    //     dispatch(editForeingAccountList(foreignResponse));
+
+    //     // 환율 정보 상태 업데이트
+    //     setExchangeRates(exchangeRatesResponses);
+    //   } catch (error) {
+    //     console.error("Error fetching data:", error);
+    //   }
+    // };
+    const fetchExchangeRates = async () => {
+      try {
+        const rates = await Promise.all(CURRENCY_CODES.map((code) => exchangeRateApi.getExchangeRate(code)));
+        setExchangeRates(rates);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching exchange rates:", error);
       }
     };
 
-    fetchData();
-  }, [dispatch]); // 의존성 배열에 필요한 값 추가
+    // fetchData();
+    fetchExchangeRates();
+  }, [dispatch, userIdNumber]); // 의존성 배열에 필요한 값 추가
+
+  const getExchangeRate = (currencyCode: string) => {
+    const rate = exchangeRates.find((r) => r.currencyCode === currencyCode);
+    return rate ? rate.exchangeRate.toFixed(2) : "N/A";
+  };
+
+  const getLatestUpdateTime = () => {
+    if (exchangeRates.length === 0) return "N/A";
+    return new Date(exchangeRates[0].created).toLocaleString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+  };
 
   return (
     <div className="w-full">
@@ -170,10 +178,10 @@ const MainPage = () => {
             </Swiper>
           )} */}
 
-          {/* 환율 표시 */}
+          {/* 환율 표시 부분 */}
           <div
             className="w-full p-6 flex flex-col space-y-2 rounded-xl bg-white shadow-md"
-            onClick={navigateExchangeRate}>
+            onClick={() => navigate("/exchangerate")}>
             <div className="flex items-center space-x-1">
               <p className="text-md font-bold flex justify-start">환율</p>
               <IoIosArrowForward className="text-[#565656]" />
@@ -182,33 +190,27 @@ const MainPage = () => {
               <p className="text-sm text-zinc-400">매매기준율 {getLatestUpdateTime()} </p>
             </div>
             <div className="flex justify-between items-center">
-              <div className="w-24 p-1 flex flex-col justify-center items-center space-y-2">
-                <div className="flex justify-center items-center space-x-1">
-                  <img className="w-6 h-5 rounded-sm" src="/assets/flag/flagOfTheUnitedStates.png" alt="미국" />
-                  <p>USD</p>
-                </div>
-                <p className="text-lg font-semibold">{getExchangeRate("USD")}</p>
-              </div>
-              <div className="w-[0.8px] h-14 bg-gray-300"></div>
-              <div className="w-24 p-1 flex flex-col justify-center items-center space-y-2">
-                <div className="flex justify-center items-center space-x-1">
-                  <img className="w-6 h-5 rounded-sm border" src="/assets/flag/flagOfJapan.png" alt="미국" />
-                  <p>JPY</p>
-                </div>
-                <p className="text-lg font-semibold">{getExchangeRate("JPY")}</p>
-              </div>
-              <div className="w-[0.8px] h-14 bg-gray-300"></div>
-              <div className="w-24 p-1 flex flex-col justify-center items-center space-y-2">
-                <div className="flex justify-center items-center space-x-1">
-                  <img className="w-6 h-5 rounded-sm" src="/assets/flag/flagOfEurope.png" alt="미국" />
-                  <p>EUR</p>
-                </div>
-                <p className="text-lg font-semibold">{getExchangeRate("EUR")}</p>
-              </div>
+              {CURRENCY_CODES.map((code, index) => (
+                <React.Fragment key={code}>
+                  {index > 0 && <div className="w-[0.8px] h-14 bg-gray-300"></div>}
+                  <div className="w-24 p-1 flex flex-col justify-center items-center space-y-2">
+                    <div className="flex justify-center items-center space-x-1">
+                      <img
+                        className="w-6 h-5 rounded-sm"
+                        src={`/assets/flag/flagOf${
+                          code === "USD" ? "TheUnitedStates" : code === "JPY" ? "Japan" : "Europe"
+                        }.png`}
+                        alt={code}
+                      />
+                      <p>{code}</p>
+                    </div>
+                    <p className="text-lg font-semibold">{getExchangeRate(code)}</p>
+                  </div>
+                </React.Fragment>
+              ))}
             </div>
             <button
               onClick={(e) => {
-                navigate("/exchange");
                 e.stopPropagation();
                 navigate("/exchange");
               }}
