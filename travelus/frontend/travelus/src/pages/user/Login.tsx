@@ -24,7 +24,7 @@ const Login = () => {
         localStorage.setItem("userId", response.data.userId.toString());
         localStorage.setItem("userName", response.data.name);
 
-        if (location.state.type === "invite") {
+        if (location.state && location.state.type !== null) {
           // 모임 초대장에서 넘어온 로그인일 경우, 초대장으로 연결
           navigate(`/meeting/invite/${location.state.code}/info`);
         } else {
