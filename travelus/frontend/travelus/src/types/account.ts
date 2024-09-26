@@ -45,13 +45,11 @@ export interface MeetingAccountInfo {
   groupAccountNo: string;
   groupName: string;
   icon: string;
-  moneyBoxDtoList: [
-    {
+  moneyBoxDtoList: Array<{
       moneyBoxId: number;
       balance: number;
       currencyCode: string
-    }
-  ]
+  }>;
 }
 
 

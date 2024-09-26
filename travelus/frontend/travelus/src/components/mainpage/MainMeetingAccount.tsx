@@ -4,11 +4,11 @@ import { IoHome } from "react-icons/io5";
 import { PiAirplaneTiltFill } from "react-icons/pi";
 import { FaUserFriends, FaBriefcase, FaHeart } from "react-icons/fa";
 import path from "path";
-import { AccountInfoNew } from "../../types/account";
+import { MeetingAccountInfo } from "../../types/account";
 
 interface Props {
   index: number;
-  account: AccountInfoNew;
+  account: MeetingAccountInfo;
 }
 
 const MainMeetingAccount = ({ index, account }: Props) => {
@@ -76,13 +76,13 @@ const MainMeetingAccount = ({ index, account }: Props) => {
           }}
           className="w-full p-5 flex flex-col rounded-xl bg-white shadow-md">
           <div className="flex flex-col space-y-4">
-            <div className="flex mb-3">
-              {/* {getIcon(account.iconName)} */}
-              <p className="font-bold">모임명입니다아아</p>
+            <div className="flex mb-3 space-x-2">
+              {getIcon(account.icon)}
+              <p className="font-bold">{account.groupName}</p>
             </div>
             <div className="rounded-md flex justify-between">
               <div className="flex items-center space-x-1">
-                <p className="text-[1.3rem] font-semibold">{formatCurrency(account.moneyBoxDtos[0].balance)}</p>
+                <p className="text-[1.3rem] font-semibold">{formatCurrency(account.moneyBoxDtoList[0].balance)}</p>
                 <p className="text-[1rem]">원</p>
               </div>
             </div>
@@ -91,7 +91,11 @@ const MainMeetingAccount = ({ index, account }: Props) => {
 
             <div className="flex justify-between">
               <p className="text-sm">트래블박스</p>
-              <p className="font-semibold">200 USD</p>
+              {account?.moneyBoxDtoList?.[1] ? (
+                <p className="font-semibold">{account.moneyBoxDtoList[1].balance}</p>
+              ) : (
+                <button className="font-semibold">개설하기</button>
+              )}
             </div>
             {/* {foreignAccount && (
               <div className="rounded-md flex justify-between">

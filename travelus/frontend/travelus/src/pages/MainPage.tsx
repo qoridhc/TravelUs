@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { accountApi } from "../api/account";
-import { AccountInfoNew } from "../types/account";
+import { AccountInfoNew, MeetingAccountInfo } from "../types/account";
 import { editAccountList, editForeingAccountList } from "../redux/accountSlice";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
@@ -21,7 +21,7 @@ const MainPage = () => {
   const userId = localStorage.getItem("userId");
   const userIdNumber = userId ? parseInt(userId, 10) : 0;
   const [account, setAccount] = useState<AccountInfoNew | null>(null);
-  const [meetingAccountList, setMeetingAccountList] = useState<AccountInfoNew[]>([]);
+  const [meetingAccountList, setMeetingAccountList] = useState<MeetingAccountInfo[]>([]);
 
   const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
   const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[]>([]);
@@ -81,17 +81,20 @@ const MainPage = () => {
         //   accountApi.fetchForeignAccountInfo(userIdNumber),
         // ]);
 
-        // API 호출
+        // 입출금통장 출력을 위한 API 호출
         const accountResponse = await accountApi.fetchAllAccountInfo();
         setAccount(accountResponse[0]);
 
-        const meetingAccounts = accountResponse.filter((account: AccountInfoNew) => account.accountType === "G");
-        setMeetingAccountList(meetingAccounts);
+        // 모임통장 출력을 위한 API 호출
+        const createdResponse = await accountApi.fetchCreatedMeetingAccount();
+        const joinedResponse = await accountApi.fetchJoinedMeetingAccount();
+
+        setMeetingAccountList([...createdResponse, ...joinedResponse]);
         // Redux 스토어에 데이터 저장
         // dispatch(editAccountList(accountResponse));
         // dispatch(editForeingAccountList(foreignResponse));
       } catch (error) {
-        console.error("Error fetching data:",  error);
+        console.error("Error fetching data:", error);
       }
     };
 
