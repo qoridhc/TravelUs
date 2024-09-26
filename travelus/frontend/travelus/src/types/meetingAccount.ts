@@ -3,3 +3,8 @@ export interface meetingAccountInfo {
   groupName: string;
   icon: string;
 }
+
+export interface newParticipant {
+  groupId: number;
+  personalAccountNo: string;
+}
