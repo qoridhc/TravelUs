@@ -34,7 +34,6 @@ import Settlement from "./pages/ver1/Settlement";
 import AccountCreateComplete from "./pages/ver1/AccountCreateComplete";
 import GeneralMeetingAccountCreate from "./pages/ver1/GeneralMeetingAccountCreate";
 import MeetingAccountCreatePrepare from "./pages/ver1/MeetingAccountCreatePrepare";
-import ForeignMeetingAccountCreate from "./pages/ver1/ForeignMeetingAccountCreate";
 import MeetingAccountCreateComplete from "./pages/ver1/MeetingAccountCreateComplete";
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
 import Transaction from "./pages/transaction/Transaction";
@@ -170,7 +169,6 @@ function App() {
           <Route path="/accountcreate" element={<AccountCreate />} />
           <Route path="/accountcreatecomplete" element={<AccountCreateComplete />} />
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
-          <Route path="/foreignmeetingaccountcreate" element={<ForeignMeetingAccountCreate />} />
           <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
           {/* <Route path="/settlement" element={<Settlement />}></Route> */}
         </Routes>

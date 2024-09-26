@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { GoHome } from "react-icons/go";
-import { exchangeApi } from '../../api/exchange';
-import { ExchangeRateInfo, currencyNames } from '../../types/exchange';
+import { exchangeRateApi } from "../../api/exchange";
+import { ExchangeRateInfo, currencyNames } from "../../types/exchange";
 
 const countryNameMapping: { [key: string]: string } = {
-  EUR: 'Europe',
-  JPY: 'Japan',
-  USD: 'TheUnitedStates',
-  CNY: 'China'
+  EUR: "Europe",
+  JPY: "Japan",
+  USD: "TheUnitedStates",
+  CNY: "China",
 };
 
 const getFlagImagePath = (currencyCode: string) => {
@@ -20,28 +20,23 @@ const getFlagImagePath = (currencyCode: string) => {
 
 const ExchangeRateItem: React.FC<ExchangeRateInfo> = ({ currencyCode, exchangeRate }) => {
   const navigate = useNavigate();
-  const currencyName = currencyNames[currencyCode] || '알 수 없는 통화';
-  const country = countryNameMapping[currencyCode] || '알 수 없는 국가';
+  const currencyName = currencyNames[currencyCode] || "알 수 없는 통화";
+  const country = countryNameMapping[currencyCode] || "알 수 없는 국가";
 
   const flagImagePath = getFlagImagePath(currencyCode);
 
   const handleClick = () => {
     navigate(`/exchangerate/${currencyCode}`);
-  }
+  };
 
   return (
-    <div 
+    <div
       className="m-3 flex items-center justify-between p-4 border-b cursor-pointer hover:bg-gray-100"
-      onClick={handleClick}
-    >
+      onClick={handleClick}>
       <div className="flex items-center">
-        <img
-         src={flagImagePath}
-         alt={`${country} flag`}
-         className="w-8 h-6 mr-2 object-cover rounded"
-        />
+        <img src={flagImagePath} alt={`${country} flag`} className="w-8 h-6 mr-2 object-cover rounded" />
         <div className="m-3">
-          <p className='font-bold'>{currencyName}</p>
+          <p className="font-bold">{currencyName}</p>
         </div>
       </div>
       <div className="text-right">
@@ -60,10 +55,8 @@ const ExchangeRateList: React.FC = () => {
   useEffect(() => {
     const fetchExchangeRates = async () => {
       try {
-        const data = await exchangeApi.getExchangeRates();
-        const filteredRates = data.filter(rate => 
-        ['USD', 'JPY', 'EUR', 'CNY'].includes(rate.currencyCode)
-        );
+        const data = await exchangeRateApi.getExchangeRates();
+        const filteredRates = data.filter((rate) => ["USD", "JPY", "EUR", "CNY"].includes(rate.currencyCode));
         setExchangeRates(filteredRates);
         setIsLoading(false);
       } catch (err) {
@@ -77,11 +70,11 @@ const ExchangeRateList: React.FC = () => {
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   if (error) {
-    return <div>{error}</div>
+    return <div>{error}</div>;
   }
 
   return (
