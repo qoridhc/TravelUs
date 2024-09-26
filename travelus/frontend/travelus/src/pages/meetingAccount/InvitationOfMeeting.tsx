@@ -27,8 +27,8 @@ const InvitationOfMeeting = () => {
 
       <button
         className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
-        onClick={() => navigate(`/meeting/invite/${params.code}/info`)}>
-        모임통장 참여하기
+        onClick={() => navigate("/login", { state: { type: "invite", code: params.code } })}>
+        로그인
       </button>
     </div>
   );
