@@ -1,16 +1,43 @@
-import React from "react";
-import { useNavigate, useParams } from "react-router";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router";
+import { userApi } from "../../api/user";
+import { accountApi } from "../../api/account";
 
 const CompletedOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
   const params = useParams();
+  const location = useLocation();
+
+  const [userName, setUserName] = useState("");
+  const [groupCode, setGroupCode] = useState("");
 
   const shareKakao = () => {
+    userApi
+      .fetchUser()
+      .then((response) => {
+        setUserName(response.data.name);
+      })
+      .catch((error) => {
+        console.log("user의 fetchUser : ", error);
+      });
+
+    accountApi
+      .fetchInvitationCode(location.state.groupId)
+      .then((response) => {
+        setGroupCode(response.groupCode);
+      })
+      .catch((error) => {
+        console.log("account의 fetchInvitationCode : ", error);
+      });
+  };
+
+  const sendKakao = () => {
     window.Kakao.Link.sendCustom({
       templateId: 112239,
       templateArgs: {
-        hostName: "이예림",
-        groupName: "구미 2반 D209",
+        hostName: userName,
+        groupName: location.state.groupName,
+        code: groupCode,
       },
     });
   };
@@ -22,6 +49,12 @@ const CompletedOfCreateMeetingAccount = () => {
       navigate("/");
     }
   };
+
+  useEffect(() => {
+    if (userName !== "" && groupCode !== "") {
+      sendKakao();
+    }
+  }, [groupCode]);
 
   return (
     <div className="h-full p-5 pb-8">
