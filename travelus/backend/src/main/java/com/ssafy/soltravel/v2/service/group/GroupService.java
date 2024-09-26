@@ -4,6 +4,7 @@ import com.ssafy.soltravel.v2.domain.Enum.AccountType;
 import com.ssafy.soltravel.v2.domain.Participant;
 import com.ssafy.soltravel.v2.domain.TravelGroup;
 import com.ssafy.soltravel.v2.domain.User;
+import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.group.request.GroupCodeGenerateRequestDto;
@@ -22,6 +23,7 @@ import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.service.user.UserService;
+import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -171,7 +173,7 @@ public class GroupService {
         );
 
         String code = generateGroupCode(request.getGroupId());
-        redisTemplate.opsForValue().set(code, String.valueOf(request.getGroupId()), 24, TimeUnit.HOURS);
+        redisTemplate.opsForValue().set(code, String.valueOf(request.getGroupId()), 1, TimeUnit.DAYS);
 
         return GroupCodeGenerateResponseDto.builder()
             .groupCode(code)
@@ -185,6 +187,17 @@ public class GroupService {
         }
         return getGroupInfo(Long.valueOf(groupId));
     }
+
+    public ResponseDto validGroupCode(String code) {
+        if(redisTemplate.hasKey(code)) {
+            Long expireTime = redisTemplate.getExpire(code);
+            return new ResponseDto(String.valueOf(expireTime));
+        }
+
+        LogUtil.info("키 존재하지 않음", code);
+        return new ResponseDto("유효하지 않은 키입니다.");
+    }
+
 
     private String generateGroupCode(Long groupId){
         UUID uuid = UUID.randomUUID();
