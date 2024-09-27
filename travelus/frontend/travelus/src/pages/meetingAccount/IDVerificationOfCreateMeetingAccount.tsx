@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { groupApi } from "../../api/group";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
@@ -9,6 +9,7 @@ const IDVerificationOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
   const params = useParams();
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const guideText = [
     "신분증 앞면이 선명하게 보이도록 가로로 촬영해주세요.",
@@ -16,14 +17,13 @@ const IDVerificationOfCreateMeetingAccount = () => {
     "빛이 반사되지 않는 곳에서 촬영해주세요.",
     "훼손되지 않은 신분증을 촬영해주세요.",
   ];
-  const meetingPassword = useSelector((state: RootState) => state.account.accountPassword);
   const meetingName = useSelector((state: RootState) => state.meetingAccount.meetingName);
   const meetingType = useSelector((state: RootState) => state.meetingAccount.meetingType);
   const individualAccountNo = useSelector((state: RootState) => state.meetingAccount.individualAccountNo);
 
   const handleNext = async () => {
     const data = {
-      groupAccountPassword: meetingPassword,
+      groupAccountPassword: location.state.password,
       groupName: meetingName,
       icon: meetingType,
       travelStartDate: "2024-01-01",
