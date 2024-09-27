@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { userApi } from "../../api/user";
+import { initializeFcmAndRegisterToken } from "../../utils/notificationUtils";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -23,6 +24,9 @@ const Login = () => {
         sessionStorage.setItem("accessToken", response.data.accessToken);
         localStorage.setItem("userId", response.data.userId.toString());
         localStorage.setItem("userName", response.data.name);
+
+        // 로그인 성공 시 FCM 초기설정 & 토큰 발급 및 저장
+        initializeFcmAndRegisterToken();
 
         if (location.state && location.state.type !== null) {
           // 모임 초대장에서 넘어온 로그인일 경우, 초대장으로 연결
