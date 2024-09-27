@@ -19,4 +19,5 @@ public class UserJoinRequestDto {
   @Length(min = 5, max = 40)
   private String userId;
 
+  private String userName;
 }

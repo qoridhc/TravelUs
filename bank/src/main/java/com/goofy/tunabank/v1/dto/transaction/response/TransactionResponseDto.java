@@ -16,8 +16,11 @@ public class TransactionResponseDto {
   //거래 종류
   private TransactionType transactionType;
 
-  //상대 계좌 번호
+  //상대방 계좌
   private String accountNo;
+
+  //상대방 이름
+  private String ownerName;
 
   //거래 일시
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")

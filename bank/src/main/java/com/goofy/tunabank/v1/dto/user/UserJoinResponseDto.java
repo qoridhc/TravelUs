@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserJoinResponseDto {
   String userId;
+  String userName;
   String userKey;
   LocalDateTime created;
   LocalDateTime modified;

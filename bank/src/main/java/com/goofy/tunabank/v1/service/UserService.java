@@ -37,11 +37,11 @@ public class UserService {
 
   private final UserMapper userMapper;
 
-  private final static String EXIT_USER_MESSAGE="탈퇴 유저입니다.";
+  private final static String EXIT_USER_MESSAGE = "탈퇴 유저입니다.";
 
   /*
-  * 회원 가입
-  * */
+   * 회원 가입
+   * */
   public UserJoinResponseDto createUser(UserJoinRequestDto request) {
 
     LogUtil.info(request.toString());
@@ -58,7 +58,7 @@ public class UserService {
     String userKey = keyProvider.generateUserKey();
 
     // 3. 유저 & 키 엔티티 생성
-    User createdUser = User.createUser(id, Role.USER);
+    User createdUser = User.createUser(id, request.getUserName(), Role.USER);
     Key createdKey = Key.createKey(createdUser, KeyType.USER, userKey);
 
     // 4. 저장
@@ -70,8 +70,8 @@ public class UserService {
   }
 
   /*
-  * 유저 조회
-  * */
+   * 유저 조회
+   * */
   public UserSearchResponseDto searchUser(UserSearchRequestDto request) {
 
     // 유저 조회
@@ -80,7 +80,7 @@ public class UserService {
     );
 
     // 탈퇴 유저 처리
-    if(user.getIsExit()) {
+    if (user.getIsExit()) {
       return UserSearchResponseDto.builder()
           .userId(EXIT_USER_MESSAGE)
           .userKey("")
@@ -91,7 +91,7 @@ public class UserService {
     Key key = keyRepository.findValidUserKeyByUser(user).orElse(null);
 
     // 유저 키 만료시, 자동 재발급
-    if(key == null) {
+    if (key == null) {
       key = keyRepository.findUserKeyByUser(user);
       String userKey = keyProvider.generateUserKey();
       key.updateKey(userKey);
@@ -102,8 +102,8 @@ public class UserService {
   }
 
   /*
-  * 유저 삭제
-  */
+   * 유저 삭제
+   */
   public UserDeleteResponseDto deleteUser(UserDeleteRequestDto request) {
 
     // userKey로 유저조회
@@ -116,8 +116,8 @@ public class UserService {
   }
 
   /*
-  * 비즈니스 로직용 유저 조회 메서드(유저키로 조회)
-  */
+   * 비즈니스 로직용 유저 조회 메서드(유저키로 조회)
+   */
   public User findUserByUserKey(String keyValue) {
     // key 조회
     Key userKey = keyRepository.findByKeyValueWithUser(keyValue).orElseThrow(
@@ -131,7 +131,7 @@ public class UserService {
     User user = userKey.getUser();
 
     // 유저 탈퇴 여부 확인
-    if(user.getIsExit()){
+    if (user.getIsExit()) {
       throw new UserExitException(user.getCredentialId());
     }
 
@@ -139,11 +139,12 @@ public class UserService {
   }
 
   /*
-  * 비즈니스 로직용 유저 조회 메서드2(아무것도 필요 없음)
-  */
+   * 비즈니스 로직용 유저 조회 메서드2(아무것도 필요 없음)
+   */
   public User findUserByHeader() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication == null || authentication.getPrincipal() == null || "0".equals(authentication.getPrincipal())) {
+    if (authentication == null || authentication.getPrincipal() == null || "0".equals(
+        authentication.getPrincipal())) {
       throw new UserKeyNotFoundException("0");
     }
 

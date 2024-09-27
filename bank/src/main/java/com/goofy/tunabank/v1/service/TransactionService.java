@@ -123,7 +123,6 @@ public class TransactionService {
 
         Long nextId = getNextTransactionId();
 
-        LogUtil.info("transactionType:", transactionType);
         TransactionHistory transactionHistory = TransactionHistory.createTransactionHistory(nextId,
             transactionType, moneyBox, null, requestDto.getHeader().getTransmissionDateTime(), amount,
             afterBalance, requestDto.getTransactionSummary());
