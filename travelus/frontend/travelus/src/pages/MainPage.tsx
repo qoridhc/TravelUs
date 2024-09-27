@@ -19,13 +19,9 @@ const CURRENCY_CODES = ["USD", "JPY", "EUR"];
 
 const MainPage = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const userId = localStorage.getItem("userId");
-  const userIdNumber = userId ? parseInt(userId, 10) : 0;
   const [account, setAccount] = useState<AccountInfoNew | null>(null);
   const [meetingAccountList, setMeetingAccountList] = useState<MeetingAccountInfo[]>([]);
 
-  const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
   const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[]>([]);
 
   const navigateTransfermation = () => {
@@ -53,15 +49,11 @@ const MainPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 두 API를 병렬로 호출
-        // const [accountResponse, foreignResponse] = await Promise.all([
-        //   accountApi.fetchAccountInfo(userIdNumber),
-        //   accountApi.fetchForeignAccountInfo(userIdNumber),
-        // ]);
-
         // 입출금통장 출력을 위한 API 호출
         const accountResponse = await accountApi.fetchAllAccountInfo("I");
-        setAccount(accountResponse.data[0]);
+        if (accountResponse.data.length > 0) {
+          setAccount(accountResponse.data[0]);
+        }
 
         // 모임통장 출력을 위한 API 호출
         const createdResponse = await accountApi.fetchCreatedMeetingAccount();
@@ -101,29 +93,53 @@ const MainPage = () => {
   return (
     <div className="w-full">
       <div className="w-full p-5 flex flex-col items-center space-y-4">
-        {/* 모임통장 신청 */}
-        <div className="w-full p-6 flex flex-col space-y-5 rounded-xl bg-white shadow-md">
-          <div className="flex justify-between items-center">
-            <div className="flex flex-col space-y-2">
-              <p className="text-sm">모임통장과 외화통장을 한 번에</p>
+        {account === null ? (
+          <div className="w-full p-6 flex flex-col space-y-5 rounded-xl bg-white shadow-md">
+            <div className="flex justify-between items-center">
+              <div className="flex flex-col space-y-2">
+                <p className="text-sm">트래블러스가 처음이신가요?</p>
+                <div>
+                  <p className="text-lg font-semibold">튜나뱅크</p>
+                  <p className="text-lg font-semibold">입출금통장이 필요해요</p>
+                </div>
+              </div>
+
               <div>
-                <p className="text-lg font-bold">더 편한 환전</p>
-                <p className="text-lg font-bold">해외여행 올인원 모임통장</p>
+                <img className="w-20" src="/assets/bankBookIcon.png" alt="올인원모임통장" />
               </div>
             </div>
-
-            <div>
-              <img className="w-20" src="/assets/bankBookIcon.png" alt="올인원모임통장" />
-            </div>
+            <button
+              className="h-10 rounded-md bg-[#1429A0] font-semibold text-white text-sm"
+              onClick={() => {
+                navigate("/account/create/userinfo");
+              }}>
+              개설하기
+            </button>
           </div>
-          <button
-            className="h-10 rounded-md bg-[#1429A0] font-bold text-white text-sm"
-            onClick={() => {
-              navigate("/meeting/create/prepare");
-            }}>
-            신청하기
-          </button>
-        </div>
+        ) : (
+          <div className="w-full p-6 flex flex-col space-y-5 rounded-xl bg-white shadow-md">
+            <div className="flex justify-between items-center">
+              <div className="flex flex-col space-y-2">
+                <p className="text-sm">모임통장과 외화통장을 한 번에</p>
+                <div>
+                  <p className="text-lg font-semibold">더 편한 환전</p>
+                  <p className="text-lg font-semibold">해외여행 올인원 모임통장</p>
+                </div>
+              </div>
+
+              <div>
+                <img className="w-20" src="/assets/bankBookIcon.png" alt="올인원모임통장" />
+              </div>
+            </div>
+            <button
+              className="h-10 rounded-md bg-[#1429A0] font-semibold text-white text-sm"
+              onClick={() => {
+                navigate("/meeting/create/prepare");
+              }}>
+              개설하기
+            </button>
+          </div>
+        )}
 
         {/* 입출금 통장 있을 시 표시 */}
         {account && (
@@ -177,7 +193,7 @@ const MainPage = () => {
             className="w-full p-6 flex flex-col space-y-2 rounded-xl bg-white shadow-md"
             onClick={() => navigate("/exchangerate")}>
             <div className="flex items-center space-x-1">
-              <p className="text-md font-bold flex justify-start">환율</p>
+              <p className="text-md font-semibold flex justify-start">환율</p>
               <IoIosArrowForward className="text-[#565656]" />
             </div>
             <div className="flex justify-end">
@@ -208,7 +224,7 @@ const MainPage = () => {
                 e.stopPropagation();
                 navigate("/exchange");
               }}
-              className="h-10 rounded-md bg-[#EAEAEA] font-bold text-sm">
+              className="h-10 rounded-md bg-[#EAEAEA] font-semibold text-sm">
               환전신청
             </button>
           </div>
@@ -227,15 +243,15 @@ const MainPage = () => {
           className="w-full p-6 flex flex-col space-y-3 rounded-xl bg-[#4e7af3] shadow-md"
           onClick={navigateAccountBook}>
           <div className="flex items-center space-x-1">
-            <p className="text-md text-white font-bold flex justify-start">머니로그</p>
+            <p className="text-md text-white font-semibold flex justify-start">머니로그</p>
             <IoIosArrowForward className="text-white" />
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-8">
               <img className="w-12" src="/assets/budgetIcon.png" alt="가계부아이콘" />
               <div className="flex flex-col">
-                <p className="text-zinc-200 font-semibold text-sm">이번 여행</p>
-                <p className="text-zinc-200 font-semibold text-sm">머니로그 확인하기</p>
+                <p className="text-zinc-200 text-sm">이번 여행</p>
+                <p className="text-zinc-200 text-sm">머니로그 확인하기</p>
               </div>
             </div>
             <IoIosArrowForward className="text-white" />
@@ -251,15 +267,15 @@ const MainPage = () => {
             className="w-full h-40 p-5 rounded-xl bg-white shadow-md flex flex-col justify-between items-start space-y-8">
             <img className="w-12" src="/assets/exchangeMoneyIcon.png" alt="환전아이콘" />
             <div>
-              <p className="font-bold">수수료 없는</p>
-              <p className="font-bold">환전하기</p>
+              <p className="font-semibold">수수료 없는</p>
+              <p className="font-semibold">환전하기</p>
             </div>
           </div>
 
           <div className="w-full h-40 p-5 rounded-xl bg-white shadow-md flex flex-col items-start space-y-8">
             <img className="w-12" src="/assets/creditCardIcon.png" alt="카드아이콘" />
             <div>
-              <p className="font-bold">카드 신청하기</p>
+              <p className="font-semibold">카드 신청하기</p>
             </div>
           </div>
         </div>
