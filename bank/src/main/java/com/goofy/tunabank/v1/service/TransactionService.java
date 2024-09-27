@@ -5,6 +5,8 @@ import com.goofy.tunabank.v1.domain.Enum.TransactionType;
 import com.goofy.tunabank.v1.domain.Enum.TransferType;
 import com.goofy.tunabank.v1.domain.MoneyBox;
 import com.goofy.tunabank.v1.domain.User;
+import com.goofy.tunabank.v1.domain.history.AbstractHistory;
+import com.goofy.tunabank.v1.domain.history.CardHistory;
 import com.goofy.tunabank.v1.domain.history.HistoryId;
 import com.goofy.tunabank.v1.domain.history.TransactionHistory;
 import com.goofy.tunabank.v1.dto.exchange.ExchangeAmountRequestDto;
@@ -23,7 +25,7 @@ import com.goofy.tunabank.v1.exception.transaction.InvalidWithdrawalAmountExcept
 import com.goofy.tunabank.v1.exception.transaction.MoneyBoxNotFoundException;
 import com.goofy.tunabank.v1.exception.transaction.TransactionHistoryNotFoundException;
 import com.goofy.tunabank.v1.exception.transaction.UnauthorizedTransactionException;
-import com.goofy.tunabank.v1.mapper.TransactionMapper;
+import com.goofy.tunabank.v1.mapper.HistoryMapper;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
 import com.goofy.tunabank.v1.repository.account.AccountRepository;
 import com.goofy.tunabank.v1.repository.transaction.TransactionHistoryRepository;
@@ -32,6 +34,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +46,7 @@ public class TransactionService {
 
     private final TransactionHistoryRepository transactionHistoryRepository;
     private final MoneyBoxRepository moneyBoxRepository;
-    private final TransactionMapper transactionMapper;
+    private final HistoryMapper historyMapper;
     private final ExchangeService exchangeService;
     private final UserService userService;
     private final AccountRepository accountRepository;
@@ -126,7 +129,7 @@ public class TransactionService {
             afterBalance, requestDto.getTransactionSummary());
 
         TransactionHistory th = transactionHistoryRepository.save(transactionHistory);
-        return transactionMapper.convertTransactionHistoryToTransactionResponseDto(th);
+        return historyMapper.toTransactionResponseDto(th);
     }
 
     /**
@@ -271,7 +274,7 @@ public class TransactionService {
         TransactionHistory depositTh = transactionHistoryRepository.save(depositTransactionHistory);
 
         // response 변환
-        return transactionMapper.convertTransactionHistoriesToResponseDtos(
+        return historyMapper.toTransactionResponseDtos(
             List.of(withdrawalTh, depositTh));
     }
 
@@ -279,14 +282,16 @@ public class TransactionService {
      * 거래 내역 목록 조회
      */
     @Transactional(readOnly = true)
-    public List<TransactionResponseDto> getTransactionHistory(
-        TransactionHistoryListRequestDto requestDto) {
+    public List<TransactionResponseDto> getTransactionHistory(TransactionHistoryListRequestDto requestDto) {
 
-        List<TransactionHistory> transactionHistories = transactionHistoryRepository.findByCustomOrder(requestDto)
+        // 거래 기록 조회
+        List<AbstractHistory> transactionHistories = transactionHistoryRepository.findHistoryByAccountNo(requestDto.getAccountNo())
             .orElseThrow(TransactionHistoryNotFoundException::new);
 
-        return transactionMapper.convertTransactionHistoriesToResponseDtos(transactionHistories);
+        // 거래 기록 리스트를 Mapper를 통해 Response DTO로 변환
+        return historyMapper.toTransactionResponseDtos(transactionHistories);
     }
+
 
     /**
      * 거래 내역 단건 조회
@@ -299,7 +304,7 @@ public class TransactionService {
             new HistoryId(requestDto.getTransactionHistoryId(),
                 requestDto.getTransactionType())).orElseThrow(TransactionHistoryNotFoundException::new);
 
-        return transactionMapper.convertTransactionHistoryToTransactionResponseDto(transactionHistory);
+        return historyMapper.toTransactionResponseDto(transactionHistory);
     }
 
     /**

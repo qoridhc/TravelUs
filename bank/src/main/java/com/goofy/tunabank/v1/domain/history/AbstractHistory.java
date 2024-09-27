@@ -42,6 +42,4 @@ public abstract class AbstractHistory {
 
     @Column(name = "balance")
     protected Double balance;
-
-    // 기타 공통 필드 및 메서드
 }
