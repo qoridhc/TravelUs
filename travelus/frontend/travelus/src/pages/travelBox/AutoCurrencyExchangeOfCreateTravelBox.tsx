@@ -1,15 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router";
 import ExchangeRateInputMui from "../../components/travelBox/ExchangeRateInputMui";
 import ExchangeAmmountInput from "../../components/travelBox/ExchangeAmmountInput";
+import { useDispatch, useSelector } from "react-redux";
+import { setExchangeTargetRate, setTravelboxInfo } from "../../redux/meetingAccountSlice";
+import { RootState } from "../../redux/store";
 
 const AutoCurrencyExchangeOfCreateTravelBox = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [exchangeRate, setExchangeRate] = useState(0);
+  const [exchangeRateFront, setExchangeRateFront] = useState(0);
+  const [exchangeRateBack, setExchangeRateBack] = useState(0);
+  const [exchangeAmount, setExchangeAmount] = useState(0);
+  const travelboxInfo = useSelector((state: RootState) => state.meetingAccount.travelboxInfo);
 
   const handleNext = () => {
+    dispatch(setExchangeTargetRate({ transactionBalance: exchangeAmount, targetRate: exchangeRate }));
     navigate("/meeting/create/password/travelbox");
   };
+
+  useEffect(() => {
+    setExchangeRate(Number(exchangeRateFront + "." + exchangeRateBack));
+  }, [exchangeRateFront, exchangeRateBack]);
 
   return (
     <div className="h-full p-5 pb-8 flex flex-col justify-between relative">
@@ -31,8 +45,13 @@ const AutoCurrencyExchangeOfCreateTravelBox = () => {
             </div>
           </div>
 
-          <ExchangeRateInputMui />
-          <ExchangeAmmountInput />
+          <ExchangeRateInputMui
+            exchangeRateFront={exchangeRateFront}
+            setExchangeRateFront={setExchangeRateFront}
+            exchangeRateBack={exchangeRateBack}
+            setExchangeRateBack={setExchangeRateBack}
+          />
+          <ExchangeAmmountInput exchangeAmount={exchangeAmount} setExchangeAmount={setExchangeAmount} />
         </div>
       </div>
 
