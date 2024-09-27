@@ -32,6 +32,7 @@ public interface GroupMapper {
 
     @Mapping(source = "id", target = "participantId")
     @Mapping(source = "user.userId", target = "userId")
+    @Mapping(source = "user.name", target = "userName")
     ParticipantDto toParticipantDto(Participant participant);
 
     List<ParticipantDto> toParticipantDtoList(List<Participant> participants);
