@@ -69,7 +69,7 @@ export const exchangeRateApi = {
   },
 
   requestExchange: async (data: ExchangeRequest): Promise<ExchangeResponse> => {
-    const response = await api.post<ExchangeResponse>('/exchange', data)
+    const response = await api.post<ExchangeResponse>('/transaction/transfer/moneybox', data)
     return response.data
   },
 

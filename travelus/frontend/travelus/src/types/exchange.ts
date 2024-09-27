@@ -26,27 +26,22 @@ export interface ExchangeRateHistoryResponse {
 
 // 환전 진행 관련 요청 / 응답
 export interface ExchangeRequest {
-  userId: number;
-  accountId: number;
+  transferType: string;
   accountNo: string;
-  currencyCode: string;
-  exchangeAmount: number;
-  exchangeRate: number;
+  accountPassword: string;
+  sourceCurrencyCode: string;
+  targetCurrencyCode: string;
+  transactionBalance: string;
 }
 
 export interface ExchangeResponse {
-  exchangeCurrencyDto: {
-    amount: number;
-    exchangeRate: number;
-    currency: string;
-  },
-  accountInfoDto: {
-    accountNo: string;
-    accountId: number;
-    amount: number;
-    balance: number;
-  },
-  executed_at: string;
+  transactionUniqueNo: string;
+  transactionType: string;
+  accountNo: string;
+  transactionDate: string;
+  transactionAmount: string;
+  ransactionBalance: string;
+  transactionSummary: string;
 }
 
 // 통화 종류
