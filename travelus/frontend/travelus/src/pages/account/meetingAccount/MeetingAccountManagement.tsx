@@ -25,7 +25,6 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
         const response = await accountApi.fetchSpecificMeetingAccount(numId);
         if (response.status === 200) {
           setAccountInfo(response.data);
-          console.log("모임 조회 성공", response.data);
         }
       } catch (error) {
         console.error("모임 조회 에러", error);
