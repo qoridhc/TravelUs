@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { IoIosArrowBack } from "react-icons/io";
 import { MdKeyboardArrowRight } from "react-icons/md";
 
@@ -7,6 +7,7 @@ interface Props {}
 
 const MeetingAccountGroupMember: React.FC<Props> = (props) => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const myId = 1;
 
   // 이름, 모임장 여부, 프로필 이미지를 가진 더미 데이터
@@ -42,7 +43,7 @@ const MeetingAccountGroupMember: React.FC<Props> = (props) => {
           <div className="items-end">
             <IoIosArrowBack
               onClick={() => {
-                navigate("/meetingaccount/management/1");
+                navigate(`/meetingaccount/management/${id}`);
               }}
               className="text-2xl"
             />

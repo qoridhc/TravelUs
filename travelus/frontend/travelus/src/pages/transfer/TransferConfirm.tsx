@@ -41,7 +41,7 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
       try {
         // 출금 계좌 번호를 위한 API 호출
         const accountResponse = await accountApi.fetchAllAccountInfo("I");
-        setWithdrawalAccountNo(accountResponse[0].accountNo);
+        setWithdrawalAccountNo(accountResponse.data[0].accountNo);
 
         // 사용자 이름을 위한 API 호출
         const userResponse = await userApi.fetchUser();
@@ -64,12 +64,10 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
       depositTransactionSummary: userName,
     };
 
-    console.log("이체 데이터", data);
-
     try {
       const response = await transactionApi.Transfer(data);
       console.log("이체 성공");
-      navigate("/transfer/success", { state: { transferAmount } });
+      navigate("/transfer/success", { state: { transferAmount, depositAccount } });
     } catch (error) {
       console.error("이체 에러", error);
     }

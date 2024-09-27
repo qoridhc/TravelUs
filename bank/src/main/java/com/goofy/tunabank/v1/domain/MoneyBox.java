@@ -1,5 +1,6 @@
 package com.goofy.tunabank.v1.domain;
 
+import com.goofy.tunabank.v1.domain.history.TransactionHistory;
 import com.goofy.tunabank.v1.util.LogUtil;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

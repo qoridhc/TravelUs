@@ -25,6 +25,11 @@ public class ResponseDto {
         this.message = "요청 처리 완료";
     }
 
+    public ResponseDto(String message) {
+        this.status = "SUCCESS";
+        this.message = message;
+    }
+
     public static ResponseEntity<ResponseDto> databaseError(String message) {
         ResponseDto responseBody = new ResponseDto("Database Error", message);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);

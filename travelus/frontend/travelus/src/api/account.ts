@@ -1,6 +1,7 @@
 
 import api from "../lib/axios";
 import { AccountInfo, AccountInfoNew, MeetingAccountInfo, AccountParticipants, MeetingAccountCreate, meetingInvitationCode } from "../types/account";
+import { NewParticipant } from "../types/meetingAccount";
 
 export const accountApi = {
   // 일반 계좌 정보 가져오기
@@ -16,15 +17,13 @@ export const accountApi = {
   },
   
   // 사용자의 모든 계좌 조회
-  fetchAllAccountInfo: async (searchType: string): Promise<AccountInfoNew[]> => {
-    const response = await api.post(`/accounts/inquireAccountList`, { searchType });
-    return response.data;
+  fetchAllAccountInfo: (searchType: string) => {
+    return api.post(`/accounts/inquireAccountList`, { searchType });
   },
 
   // 특정 계좌 조회
-  fetchSpecificAccountInfo: async (accountNo: string): Promise<AccountInfoNew> => {
-    const response = await api.post(`/accounts/inquireAccount`, { accountNo });
-    return response.data;
+  fetchSpecificAccountInfo:  (accountNo: string)  => {
+    return api.post(`/accounts/inquireAccount`, { accountNo });
   },
 
   // 모임통장 참여자 정보 가져오기
@@ -66,5 +65,20 @@ export const accountApi = {
   // 모임 초대 코드 발급
   fetchInvitationCode: (groupId: number) => {
     return api.post(`/groups/create/groupCode`, { "groupId": groupId });
-  }
+  },
+
+  // 모임원 추가
+  fetchCreateParticipant: (data: NewParticipant) => {
+    return api.post(`/groups/createParticipant`, data);
+  },
+
+  // 초대코드로 모임 정보 조회
+  fetchGroupIdByInvitationCode: (code: string) => {
+    return api.get(`/groups/code/${code}`);
+  },
+
+  // 거래 내역 조회
+  fetchTracsactionHistory: (accountNo: string, currencyCode: string , orderByType: string ) => {
+    return api.get(`/transaction/history?accountNo=${accountNo}&currencyCode=${currencyCode}&orderByType=${orderByType}`);
+  },
 };

@@ -6,6 +6,7 @@ import com.goofy.tunabank.v1.dto.account.AccountDto;
 import com.goofy.tunabank.v1.dto.account.request.AddMoneyBoxRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.DeleteAccountRequestDto;
+import com.goofy.tunabank.v1.dto.account.request.InquireAccountListRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.InquireAccountRequestDto;
 import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
 import com.goofy.tunabank.v1.service.AccountService;
@@ -42,9 +43,9 @@ public class AccountController {
 
     // 유저 계좌 전체 조회
     @PostMapping("/inquireAccountList")
-    public ResponseEntity<RecWrapper<List<AccountDto>>> createNewAccount() {
+    public ResponseEntity<RecWrapper<List<AccountDto>>> createNewAccount(@RequestBody InquireAccountListRequestDto requestDto) {
 
-        List<AccountDto> accountDtoList = accountService.inqureAccountList();
+        List<AccountDto> accountDtoList = accountService.inqureAccountList(requestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(new RecWrapper<>(accountDtoList));
     }

@@ -27,9 +27,10 @@ const UserInfoOfCreateMeetingAccount = () => {
     try {
       setIsLoading(true);
       const response = await userApi.fetchUser();
+      console.log(response);
       setName(response.data.name);
       setBirthdate(formatDateToKorean(response.data.birth));
-      setGender("여성");
+      setGender(response.data.gender === "MALE" ? "남성" : "여성");
     } catch (error) {
       console.log(error);
     } finally {

@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.v2.controller;
 
+import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.group.request.GroupCodeGenerateRequestDto;
 import com.ssafy.soltravel.v2.dto.group.response.GroupCodeGenerateResponseDto;
 import com.ssafy.soltravel.v2.dto.group.GroupDto;
@@ -143,6 +144,19 @@ public class GroupController {
     }
 
 
+    // === 초대 url 유효성 확인 ===
+    @Operation(summary = "참여코드 유효성 조회", description = "유효한 모임 초대코드인지 확인합니다(로그인X), 유효할 시 응답으로 만료까지 남은 시간을 초로 응답합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "참여 코드 조회 성공", content = @Content(schema = @Schema(implementation = GroupDto.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @GetMapping("/code/validation/{code}")
+    public ResponseEntity validGroupCode(@PathVariable String code) {
+        LogUtil.info("모임 코드 유효성 조회", code);
+        ResponseDto response = groupService.validGroupCode(code);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 
 //    @GetMapping()
 //    public ResponseEntity<ParticipantDto> getAllGroupsByUserId() {
