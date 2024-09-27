@@ -1,26 +1,29 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { groupApi } from "../../api/group";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { setMeetingAccountInfo, setTravelboxInfo } from "../../redux/meetingAccountSlice";
 
 const IDVerificationOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
   const params = useParams();
+  const dispatch = useDispatch();
+  const location = useLocation();
+
   const guideText = [
     "신분증 앞면이 선명하게 보이도록 가로로 촬영해주세요.",
     "검정색 등 어두운 바탕 위에서 촬영해주세요.",
     "빛이 반사되지 않는 곳에서 촬영해주세요.",
     "훼손되지 않은 신분증을 촬영해주세요.",
   ];
-  const meetingPassword = useSelector((state: RootState) => state.account.accountPassword);
   const meetingName = useSelector((state: RootState) => state.meetingAccount.meetingName);
   const meetingType = useSelector((state: RootState) => state.meetingAccount.meetingType);
   const individualAccountNo = useSelector((state: RootState) => state.meetingAccount.individualAccountNo);
 
   const handleNext = async () => {
     const data = {
-      groupAccountPassword: meetingPassword,
+      groupAccountPassword: location.state.password,
       groupName: meetingName,
       icon: meetingType,
       travelStartDate: "2024-01-01",
@@ -32,9 +35,22 @@ const IDVerificationOfCreateMeetingAccount = () => {
       const response = await groupApi.createMeetingAccount(data);
       console.log(response);
       if (response.status === 201) {
-        navigate(`/meeting/create/completed/${params.type}`, {
-          state: { groupName: response.data.groupName, groupId: response.data.groupId },
-        });
+        dispatch(
+          setMeetingAccountInfo({
+            groupAccountPassword: "",
+            groupName: response.data.groupName,
+            icon: response.data.icon,
+            groupId: response.data.groupId,
+          })
+        );
+        dispatch(
+          setTravelboxInfo({
+            accountPassword: "",
+            accountNo: response.data.groupAccountNo,
+            currencyCode: "",
+          })
+        );
+        navigate(`/meeting/create/completed/${params.type}`);
       }
     } catch (error) {
       alert("모임통장 개설에 실패했어요");

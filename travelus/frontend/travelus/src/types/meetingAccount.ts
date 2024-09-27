@@ -2,6 +2,18 @@ export interface MeetingAccountInfo {
   groupAccountPassword: string;
   groupName: string;
   icon: string;
+  groupId?: number;
+}
+
+export interface TravelboxInfo {
+  accountPassword: string;
+  accountNo: string;
+  currencyCode: string;
+}
+
+export interface ExchangeTargetInfo {
+  transactionBalance: number;
+  targetRate: number;
 }
 
 export interface NewParticipant {

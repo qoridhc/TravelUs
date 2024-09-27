@@ -2,20 +2,21 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { userApi } from "../../api/user";
 import { accountApi } from "../../api/account";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const CompletedOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
   const params = useParams();
-  const location = useLocation();
 
   const [userName, setUserName] = useState("");
   const [groupCode, setGroupCode] = useState("");
+  const meetingAccountInfo = useSelector((state: RootState) => state.meetingAccount.meetingAccounInfo);
 
   const getUserName = async () => {
     try {
       const response = await userApi.fetchUser();
       setUserName(response.data.name);
-      console.log(response.data.name);
     } catch (error) {
       console.log("user의 fetchUser : ", error);
     }
@@ -23,9 +24,10 @@ const CompletedOfCreateMeetingAccount = () => {
 
   const getInvitationCode = async () => {
     try {
-      const response = await accountApi.fetchInvitationCode(location.state.groupId);
-      setGroupCode(response.data.groupCode);
-      console.log(response.data.groupCode);
+      if (meetingAccountInfo.groupId !== undefined) {
+        const response = await accountApi.fetchInvitationCode(meetingAccountInfo.groupId);
+        setGroupCode(response.data.groupCode);
+      }
     } catch (error) {
       console.log("account의 fetchInvitationCode : ", error);
     }
@@ -41,7 +43,7 @@ const CompletedOfCreateMeetingAccount = () => {
       templateId: 112239,
       templateArgs: {
         groupLeader: userName,
-        groupName: location.state.groupName,
+        groupName: meetingAccountInfo.groupName,
         code: groupCode,
       },
     });
@@ -88,7 +90,7 @@ const CompletedOfCreateMeetingAccount = () => {
           {params.type === "meeting" ? (
             <button
               className="w-full h-14 text-[#565656] bg-[#FAE100] rounded-lg flex justify-center items-center space-x-2"
-              onClick={() => shareKakao()}>
+              onClick={() => (userName !== "" && groupCode !== "" ? sendKakao() : shareKakao())}>
               <img
                 className="w-6 aspect-1"
                 src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png"

@@ -1,12 +1,12 @@
 import React from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 const TravelBoxCreatePrepare = () => {
   const navigate = useNavigate();
 
   return (
     <div className="h-full p-5 pb-8 flex flex-col justify-between">
-      <div className="h-full text-2xl font-bold tracking-wider flex flex-col justify-center items-center">
+      <div className="h-full text-2xl font-semibold tracking-wider flex flex-col justify-center items-center">
         <div className="flex">
           <p>이어서,&nbsp;</p>
           <p className="text-[#1429A0]">트래블박스</p>

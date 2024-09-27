@@ -14,8 +14,8 @@ interface TransferPasswordProps {
 const TransferPassword: React.FC<TransferPasswordProps> = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
-  const password = useSelector((state: RootState) => state.account.accountPassword);
+
+  const [password, setPassword] = useState("");
   const { accountNo } = location.state as { accountNo: string };
   const { transferAmount } = location.state as { transferAmount: string };
   const { depositAccount } = location.state as { depositAccount: AccountInfoNew };
@@ -23,7 +23,6 @@ const TransferPassword: React.FC<TransferPasswordProps> = (props) => {
   useEffect(() => {
     if (password.length === 4) {
       navigate("/transfer/confirm", { state: { accountNo, transferAmount, password, depositAccount } });
-      dispatch(setAccountPassword(""));
     }
   }, [password]);
 
@@ -45,7 +44,7 @@ const TransferPassword: React.FC<TransferPasswordProps> = (props) => {
         </div>
       </div>
 
-      <SecurityNumberKeyboard />
+      <SecurityNumberKeyboard password={password} setPassword={setPassword} />
     </div>
   );
 };

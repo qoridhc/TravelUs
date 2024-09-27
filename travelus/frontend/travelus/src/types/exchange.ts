@@ -105,3 +105,10 @@ export interface PredictionResponse {
   CNY: { recent_rates: RecentRates };
   last_updated: string;
 }
+
+export interface TargetRate {
+  accountNo: string;
+  currencyCode: string;
+  transactionBalance: number;
+  targetRate: number;
+}
