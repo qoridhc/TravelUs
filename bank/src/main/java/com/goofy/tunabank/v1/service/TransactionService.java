@@ -8,6 +8,7 @@ import com.goofy.tunabank.v1.domain.User;
 import com.goofy.tunabank.v1.domain.history.TransactionHistory;
 import com.goofy.tunabank.v1.dto.exchange.ExchangeAmountRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.TransferDetailDto;
+import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryListRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferMBRequestDto;
@@ -205,6 +206,7 @@ public class TransactionService {
             }
         };
 
+
         double calculatedAmount = exchangeAmountRequestDto.getAmount();
         double exchangeRate = exchangeAmountRequestDto.getExchangeRate();
         summary += (", 적용 환율: " + exchangeRate);
@@ -233,6 +235,9 @@ public class TransactionService {
 
         return processTransferLogic(transferDetailDto);
     }
+
+
+    
 
     /**
      * 이체 공통 로직
@@ -318,7 +323,111 @@ public class TransactionService {
         if (userId != moneyBox.getAccount().getUser().getUserId()) {
             throw new UnauthorizedTransactionException(userId, accountId);
         }
+        yield exchangeService.calculateAmountFromKRWToForeignCurrency(
+            requestDto.getTargetCurrencyCode(), beforeAmount); // 원화 -> 외화
+      }
+    };
+
+
+  /**
+   * 이체 공통 로직
+   */
+  private List<TransactionResponseDto> processTransferLogic(TransferDetailDto dto) {
+
+    // 출금 처리
+    double withdrawalAfterBalance = processWithdrawal(dto.getWithdrawalBox(),
+        dto.getWithdrawalAmount());
+
+    // 입금 처리
+    double depositAfterBalance = processDeposit(dto.getDepositBox(), dto.getDepositAmount());
+
+    Long nextId = getNextTransactionId();
+
+    // 출금 기록 저장
+    TransactionType type =
+        dto.getTransferType() == TransferType.G ? TransactionType.TW : TransactionType.EW;
+    TransactionHistory withdrawalTransactionHistory = TransactionHistory.createTransactionHistory(
+        nextId, type, dto.getWithdrawalBox(), dto.getDepositBox().getAccount().getAccountNo(),
+        dto.getTransmissionDateTime(), dto.getWithdrawalAmount(), withdrawalAfterBalance,
+        dto.getWithdrawalSummary());
+
+    TransactionHistory withdrawalTh = transactionHistoryRepository.save(
+        withdrawalTransactionHistory);
+
+    // 입금 기록 저장
+    type = dto.getTransferType() == TransferType.G ? TransactionType.TD : TransactionType.ED;
+    TransactionHistory depositTransactionHistory = TransactionHistory.createTransactionHistory(
+        nextId, type, dto.getDepositBox(), dto.getWithdrawalBox().getAccount().getAccountNo(),
+        dto.getTransmissionDateTime(), dto.getDepositAmount(), depositAfterBalance,
+        dto.getDepositSummary());
+
+    TransactionHistory depositTh = transactionHistoryRepository.save(depositTransactionHistory);
+
+    // response 변환
+    return transactionMapper.convertTransactionHistoriesToResponseDtos(
+        List.of(withdrawalTh, depositTh));
+  }
+
+  /**
+   * 거래 내역 목록 조회
+   */
+  @Transactional(readOnly = true)
+  public List<TransactionResponseDto> getTransactionHistory(
+      TransactionHistoryListRequestDto requestDto) {
+
+    List<TransactionHistory> transactionHistories = transactionHistoryRepository.findByCustomOrder(
+        requestDto).orElseThrow(TransactionHistoryNotFoundException::new);
+
+    return transactionMapper.convertTransactionHistoriesToResponseDtos(transactionHistories);
+  }
+
+  /**
+   * 거래 내역 단건 조회
+   */
+  @Transactional(readOnly = true)
+  public TransactionResponseDto getHistory(
+      TransactionHistoryRequestDto requestDto) {
+
+    TransactionHistory transactionHistory = transactionHistoryRepository.findById(
+        new TransactionHistoryId(requestDto.getTransactionHistoryId(),
+            requestDto.getTransactionType())).orElseThrow(TransactionHistoryNotFoundException::new);
+
+    return transactionMapper.convertTransactionHistoryToTransactionResponseDto(transactionHistory);
+  }
+
+  /**
+   * 다음 거래 기록 id 조회
+   */
+  @Transactional(readOnly = true)
+  public Long getNextTransactionId() {
+    Long nextId = transactionHistoryRepository.findMaxAccountId();
+    return (nextId == null) ? 1L : nextId + 1;
+  }
+
+  /**
+   * 머니박스 조회
+   */
+  @Transactional(readOnly = true)
+  public MoneyBox findMoneyBoxByAccountAndCurrencyCode(String accountNo, CurrencyType
+      currencyCode) {
+    return moneyBoxRepository.findMoneyBoxByAccountNoAndCurrency(accountNo, currencyCode)
+        .orElseThrow(() -> new MoneyBoxNotFoundException(accountNo, currencyCode));
+  }
+
+  /**
+   * 거래 권한 검증
+   *
+   * @param user     : 거래 요청 user
+   * @param moneyBox : 거래 요청 머니박스
+   */
+  private void validateUserAccess(User user, MoneyBox moneyBox) {
+    long userId = user.getUserId();
+    long accountId = moneyBox.getAccount().getId();
+
+    if (userId != moneyBox.getAccount().getUser().getUserId()) {
+      throw new UnauthorizedTransactionException(userId, accountId);
     }
+  }
 
     /**
      * 출금시 유효성 검증

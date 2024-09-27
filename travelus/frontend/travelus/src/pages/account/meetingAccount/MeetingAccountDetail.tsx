@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate, useLocation } from "react-router";
 import { accountApi } from "../../../api/account";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
@@ -13,18 +13,18 @@ import { PiAirplaneTiltFill } from "react-icons/pi";
 import { FaUserFriends, FaBriefcase, FaHeart } from "react-icons/fa";
 
 import { GoHome } from "react-icons/go";
-import { AccountInfo } from "../../../types/account";
+import { MeetingAccountInfo } from "../../../types/account";
 
 const MeetingAccountDetail = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams();
-  const [numberIndex, setNumberIndex] = useState(Number(id) + 1);
+  const numberId = Number(id);
+  const { account } = location.state as { account: MeetingAccountInfo };
 
-  const accountList = useSelector((state: RootState) => state.account.accountList);
-  const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
-  const [selectedAccount, setSelectedAccount] = useState<AccountInfo | null>(null);
-  const [selectedForeignAccount, setSelectedForeignAccount] = useState<AccountInfo | null>(null);
-  const [memberList, setMemberList] = useState<string[]>([]);
+  // const accountList = useSelector((state: RootState) => state.account.accountList);
+  // const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
+
   const [loading, setLoading] = useState<boolean>(true);
 
   // 숫자를 세 자리마다 쉼표로 구분하여 표시
@@ -93,64 +93,6 @@ const MeetingAccountDetail = () => {
   };
 
   useEffect(() => {
-    // if (accountList.length > 0 && !isNaN(numberIndex)) {
-    //   if (numberIndex >= 0 && numberIndex < accountList.length) {
-    //     setSelectedAccount(accountList[numberIndex]);
-    //     setSelectedForeignAccount(foreignAccountList[numberIndex - 1]);
-    //   } else {
-    //     setSelectedAccount(null);
-    //     setSelectedForeignAccount(null);
-    //   }
-    // }
-
-    // 더미 데이터
-    const selectedAccountData: AccountInfo = {
-      id: 1,
-      bankCode: 1234,
-      dailyTransferLimit: "100000",
-      accountNo: "1234567890",
-      balance: 50000,
-      accountName: "John Doe",
-      accountType: "airPlane",
-      groupName: "사랑스러운 지나네",
-      iconName: "family",
-      travelStartDate: "2022-01-01",
-      travelEndDate: "2022-01-10",
-      currency: {
-        currencyCode: "USD",
-        currencyName: "US Dollar",
-      },
-      createdAt: "2022-01-01T00:00:00",
-      updatedAt: "2022-01-01T00:00:00",
-      preferenceExchange: "1340",
-    };
-
-    const selectedTravelBoxData: AccountInfo = {
-      id: 1,
-      bankCode: 1234,
-      dailyTransferLimit: "100000",
-      accountNo: "1234567890",
-      balance: 2246.69,
-      accountName: "John Doe",
-      accountType: "airPlane",
-      groupName: "사랑스러운 지나네",
-      iconName: "family",
-      travelStartDate: "2022-01-01",
-      travelEndDate: "2022-01-10",
-      currency: {
-        currencyCode: "USD",
-        currencyName: "US Dollar",
-      },
-      createdAt: "2022-01-01T00:00:00",
-      updatedAt: "2022-01-01T00:00:00",
-      preferenceExchange: "1340",
-    };
-
-    setSelectedAccount(selectedAccountData);
-    setSelectedForeignAccount(selectedTravelBoxData);
-  }, [accountList, numberIndex]);
-
-  useEffect(() => {
     // const getParticipants = async () => {
     //   try {
     //     if (selectedAccount === null) return;
@@ -172,14 +114,14 @@ const MeetingAccountDetail = () => {
     // 참여자 정보 조회 더미데이터
     const participants = ["John Doe", "Jane Doe", "Alice", "Bob", "Charlie"];
     setLoading(false); // 데이터 로딩 완료
-  }, [selectedAccount]);
+  }, []);
 
-  if (selectedAccount === null) {
+  if (account === null) {
     return <p>계좌 정보를 불러오는 중입니다...</p>;
   }
 
   return (
-    selectedForeignAccount && (
+    account && (
       <div className="h-full bg-[#EBF1FF] grid grid-rows-[35%_65%]">
         <div className="h-full p-5 pb-8">
           <div className="h-full flex flex-col justify-between">
@@ -200,10 +142,10 @@ const MeetingAccountDetail = () => {
             </div>
 
             <div className="flex flex-col items-center space-y-5">
-              <p className="text-lg font-semibold text-zinc-500">사랑스러운 박씨네</p>
+              <p className="text-lg font-semibold text-zinc-500">{account.groupName}</p>
               <div className="flex flex-col justify-center items-center space-y-1">
-                <p>{getIcon(selectedAccount.iconName)}</p>
-                <p className="text-sm">{getAccountTypeFromIconName(selectedAccount.iconName)}</p>
+                <p>{getIcon(account.icon)}</p>
+                <p className="text-sm">{getAccountTypeFromIconName(account.icon)}</p>
               </div>
             </div>
           </div>
@@ -213,21 +155,44 @@ const MeetingAccountDetail = () => {
           <div>
             <div
               onClick={() => {
-                navigate("/meetingtransaction/1");
+                navigate(`/meetingtransaction/${account.groupId}`, { state : { account } });
               }}
               className="mt-6 p-5 flex flex-col space-y-5">
               <div className="flex flex-col space-y-1">
-                <p>일반모임통장</p>
-                <p className="text-2xl font-bold">{formatCurrency(selectedAccount.balance)}원</p>
+                <p>모임통장</p>
+                <p className="text-2xl font-bold">{formatCurrency(account.moneyBoxDtoList[0].balance)}원</p>
               </div>
-              <div className="flex justify-between">
-                <button className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">채우기</button>
-                <button
-                onClick={() => navigate('/exchange')}
-                className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
-                  환전
-                </button>
-              </div>
+              {account.moneyBoxDtoList.length > 1 ? (
+                <div className="flex justify-between">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate("/transfer/selectbank");
+                    }}
+                    className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
+                    채우기
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate("/exchange");
+                    }}
+                    className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
+                    환전
+                  </button>
+                </div>
+              ) : (
+                <div className="flex justify-between">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate("/transfer/selectbank");
+                    }}
+                    className="w-full h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
+                    채우기
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="w-full h-4 bg-[#F6F6F8]"></div>
@@ -238,37 +203,56 @@ const MeetingAccountDetail = () => {
               }}
               className="p-5 flex flex-col space-y-5">
               <div className="flex flex-col space-y-1">
-                <p>트래블박스</p>
-                <p className="text-2xl font-bold">
-                  {formatCurrency(selectedForeignAccount?.balance)}
-                  <span>{selectedForeignAccount?.currency.currencyCode}</span>
-                </p>
-              </div>
-              <div className="flex justify-between">
-                <button
-                onClick={() => navigate('/exchangekrw')}
-                className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold"
-                >
-                  재환전
-                </button>
-                <button className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">내역</button>
+                {account.moneyBoxDtoList.length > 1 ? (
+                  <>
+                    <p>트래블박스</p>
+                    <p className="text-2xl font-bold">
+                      {formatCurrency(account.moneyBoxDtoList[1].balance)}
+                      <span>{account.moneyBoxDtoList[1].currencyCode}</span>
+                    </p>
+                    <div className="flex justify-between">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate("/exchangekrw");
+                        }}
+                        className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
+                        재환전
+                      </button>
+                      <button className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
+                        내역
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <></>
+                )}
               </div>
             </div>
           </div>
-          <div className="p-5 pb-8 flex flex-col items-center justify-center space-y-5">
-            <button
-              onClick={() => {
-                navigate("/selectsettlementamount");
-              }}
-              className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]">
-              정산하기
-            </button>
-            <button
-              className="text-sm text-[#1429A0] font-semibold"
-              onClick={() => navigate("/settlement/expenditure/transaction/detail/1")}>
-              개별지출 정산하기
-            </button>
-          </div>
+
+          {account.moneyBoxDtoList.length > 1 ? (
+            <div className="p-5 pb-8 flex flex-col items-center justify-center space-y-5">
+              <button
+                onClick={() => {
+                  navigate("/selectsettlementamount");
+                }}
+                className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]">
+                정산하기
+              </button>
+              <button
+                className="text-sm text-[#1429A0] font-semibold"
+                onClick={() => navigate("/settlement/expenditure/transaction/detail/1")}>
+                개별지출 정산하기
+              </button>
+            </div>
+          ) : (
+            <div className="p-5 pb-8 flex flex-col items-center justify-center space-y-5">
+              <button className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]">
+                트래블박스 개설하기
+              </button>
+            </div>
+          )}
         </div>
       </div>
     )

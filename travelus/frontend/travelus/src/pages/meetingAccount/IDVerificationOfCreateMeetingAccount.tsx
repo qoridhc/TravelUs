@@ -16,6 +16,7 @@ const IDVerificationOfCreateMeetingAccount = () => {
   const meetingPassword = useSelector((state: RootState) => state.account.accountPassword);
   const meetingName = useSelector((state: RootState) => state.meetingAccount.meetingName);
   const meetingType = useSelector((state: RootState) => state.meetingAccount.meetingType);
+  const individualAccountNo = useSelector((state: RootState) => state.meetingAccount.individualAccountNo);
 
   const handleNext = async () => {
     const data = {
@@ -24,14 +25,16 @@ const IDVerificationOfCreateMeetingAccount = () => {
       icon: meetingType,
       travelStartDate: "2024-01-01",
       travelEndDate: "2024-01-07",
-      personalAccountNo: "001-30497657-209",
+      personalAccountNo: individualAccountNo,
     };
 
     try {
       const response = await groupApi.createMeetingAccount(data);
       console.log(response);
       if (response.status === 201) {
-        navigate(`/meeting/create/completed/${params.type}`);
+        navigate(`/meeting/create/completed/${params.type}`, {
+          state: { groupName: response.data.groupName, groupId: response.data.groupId },
+        });
       }
     } catch (error) {
       alert("모임통장 개설에 실패했어요");

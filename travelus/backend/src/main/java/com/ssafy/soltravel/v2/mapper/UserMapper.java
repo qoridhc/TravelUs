@@ -34,7 +34,7 @@ public class UserMapper {
             dto.getBirth(),
             profileImageUrl,
             userKey,
-            (dto.getGender()==0)?(Gender.FEMALE):(Gender.MALE)
+            dto.getGender()
         );
     }
 

@@ -23,6 +23,7 @@ export interface AccountInfo {
 // 계좌 정보 (신규 ver)
 export interface AccountInfoNew {
   accountId: number,
+  userName: string,
   accountNo: string,
   accountPassword: string,
   accountType: string,
@@ -36,6 +37,19 @@ export interface AccountInfoNew {
   ],
   createdAt: string,
   updatedAt: string
+}
+
+// 모임통장 정보
+export interface MeetingAccountInfo {
+  groupId: number;
+  groupAccountNo: string;
+  groupName: string;
+  icon: string;
+  moneyBoxDtoList: Array<{
+      moneyBoxId: number;
+      balance: number;
+      currencyCode: string
+  }>;
 }
 
 
@@ -143,3 +157,24 @@ export const meetingAccountIconList: Array<{text: string, value: string}> = [
   { text: "연인", value: "lover" },
   { text: "직장", value: "job" },
 ];
+
+// 모임통장 초대 코드
+export interface meetingInvitationCode {
+  groupCode: string;
+}
+
+// 거래 내역 조회 (New ver.)
+export interface TransactionNew {
+  
+}
+
+// 모임통장 거래 내역 조회 (New ver.)
+export interface MeetingTransactionNew {
+  transactionUniqueNo: string;
+  transactionType: string;
+  accountNo: string;
+  transactionDate: string;
+  transactionAmount: string;
+  transactionBalance: string;
+  transactionSummary: string;
+}

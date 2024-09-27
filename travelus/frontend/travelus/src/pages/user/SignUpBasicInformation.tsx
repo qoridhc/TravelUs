@@ -13,6 +13,7 @@ import NameInput from "../../components/user/inputField/NameInput";
 import BirthdayInput from "../../components/user/inputField/BirthdayInput";
 import PhoneInput from "../../components/user/inputField/PhoneInput";
 import VerificationCodeInput from "../../components/user/inputField/VerificationCodeInput";
+import GenderInput from "../../components/user/inputField/GenderInput";
 import { set } from "date-fns";
 
 interface SignUpBasicInformationProps {
@@ -27,6 +28,7 @@ interface InputState {
   birthday: string;
   phone: string;
   verificationCode: string;
+  gender: string;
 }
 
 const SignUpBasicInformation = () => {
@@ -39,6 +41,7 @@ const SignUpBasicInformation = () => {
     "비밀번호를 확인해주세요",
     "이름을 알려주세요",
     "생년월일을 알려주세요",
+    "성별을 알려주세요",
     "휴대폰 인증을 진행해주세요",
     "전송된 인증번호를 입력해주세요",
   ];
@@ -55,6 +58,7 @@ const SignUpBasicInformation = () => {
     birthday: "",
     phone: "",
     verificationCode: "",
+    gender: "",
   });
 
   const [errors, setErrors] = useState({
@@ -79,6 +83,7 @@ const SignUpBasicInformation = () => {
         phone: "",
         verificationCode: "",
         address: "",
+        gender: "",
       })
     );
   }, []);
@@ -138,7 +143,7 @@ const SignUpBasicInformation = () => {
       console.error("Error sending verification code:", error);
       alert("인증 코드 발송 중 오류가 발생했습니다. 다시 시도해주세요.");
     }
-    setStep(6);
+    setStep(7);
   };
 
   const fetchVerifySmsCode = async () => {
@@ -146,7 +151,6 @@ const SignUpBasicInformation = () => {
       const formattedValue = inputs.phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
       const response = await userApi.fetchVerifySmsCode(formattedValue, inputs.verificationCode!);
 
-      console.log("인증번호응답", response);
       if (response.status === 200) {
         return true;
       }
@@ -205,6 +209,13 @@ const SignUpBasicInformation = () => {
     }
   }, [inputs.name, errors.name, step]);
 
+  // 생일 입력 처리
+  useEffect(() => {
+    if (step === 4 && inputs.birthday.length >= 10) {
+      setStep(5);
+    }
+  }, [inputs.birthday, step]);
+
   const handleNext = async () => {
     try {
       const isVerified = await fetchVerifySmsCode();
@@ -222,6 +233,7 @@ const SignUpBasicInformation = () => {
         phone: inputs.phone,
         verificationCode: inputs.verificationCode,
         address: "",
+        gender: inputs.gender,
       })
     );
 
@@ -256,8 +268,23 @@ const SignUpBasicInformation = () => {
           </div>
 
           <div className="grid gap-3">
-            {step < 5 ? (
+            {step < 6 ? (
               <>
+                <div
+                  className={`transition-transform duration-300 ease-in-out ${
+                    step > 4 ? "translate-y-[3px]" : "translate-y-0"
+                  }`}>
+                  {step > 4 && (
+                    <GenderInput
+                      name={inputs.gender}
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                        const selectedGender = event.target.value; // 선택된 값은 value로 가져옴
+                        setInputs((prev) => ({ ...prev, gender: selectedGender })); // gender 값 업데이트
+                      }}
+                    />
+                  )}
+                </div>
+
                 <div
                   className={`transition-transform duration-300 ease-in-out ${
                     step > 3 ? "translate-y-[3px]" : "translate-y-0"
@@ -320,9 +347,9 @@ const SignUpBasicInformation = () => {
               <>
                 <div
                   className={`transition-transform duration-300 ease-in-out ${
-                    step > 5 ? "translate-y-0" : "translate-y-[3px]"
+                    step > 6 ? "translate-y-0" : "translate-y-[3px]"
                   }`}>
-                  {step > 5 && (
+                  {step > 6 && (
                     <VerificationCodeInput
                       labelName="인증번호 입력"
                       name={inputs.verificationCode}
@@ -333,9 +360,9 @@ const SignUpBasicInformation = () => {
 
                 <div
                   className={`transition-transform duration-300 ease-in-out ${
-                    step > 4 ? "translate-y-[3px]" : "translate-y-0"
+                    step > 5 ? "translate-y-[3px]" : "translate-y-0"
                   }`}>
-                  {step > 4 && (
+                  {step > 5 && (
                     <PhoneInput
                       labelName="휴대폰 번호"
                       name={inputs.phone}
@@ -351,12 +378,12 @@ const SignUpBasicInformation = () => {
       </div>
 
       <div className="py-5">
-        {step < 5 ? (
+        {step < 6 ? (
           <>
             <button
               className={`w-full py-3 text-white rounded-lg ${isBasicFormValid ? "bg-[#1429A0]" : "bg-gray-300"}`}
               onClick={() => {
-                setStep(5);
+                setStep(6);
               }}
               disabled={!isBasicFormValid}>
               다음

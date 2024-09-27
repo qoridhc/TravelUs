@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router";
 import { accountApi } from "../../api/account";
 import { userApi } from "../../api/user";
 import { transactionApi } from "../../api/transaction";
+import { AccountInfoNew } from "../../types/account";
 import { IoIosArrowBack } from "react-icons/io";
 
 interface TransferConfirmProps {
@@ -16,10 +17,11 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
   const [isValidation, setIsValidation] = useState<boolean>(false);
   const [withdrawalAccountNo, setWithdrawalAccountNo] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
-  const { accountNo, transferAmount, password } = location.state as {
+  const { accountNo, transferAmount, password, depositAccount } = location.state as {
     accountNo: string;
     transferAmount: string;
     password: string;
+    depositAccount: AccountInfoNew;
   };
 
   const formatAccountNumber = (accountNo: string) => {
@@ -38,8 +40,8 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
     const fetchData = async () => {
       try {
         // 출금 계좌 번호를 위한 API 호출
-        const accountResponse = await accountApi.fetchAllAccountInfo();
-        setWithdrawalAccountNo(accountResponse[0].accountNo);
+        const accountResponse = await accountApi.fetchAllAccountInfo("I");
+        setWithdrawalAccountNo(accountResponse.data[0].accountNo);
 
         // 사용자 이름을 위한 API 호출
         const userResponse = await userApi.fetchUser();
@@ -62,12 +64,10 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
       depositTransactionSummary: userName,
     };
 
-    console.log("이체 데이터", data);
-
     try {
       const response = await transactionApi.Transfer(data);
       console.log("이체 성공");
-      navigate("/transfer/success", { state: { transferAmount } });
+      navigate("/transfer/success", { state: { transferAmount, depositAccount } });
     } catch (error) {
       console.error("이체 에러", error);
     }
@@ -86,7 +86,7 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
         </div>
         <div className="mb-16 flex flex-col items-center">
           <p className="text-2xl font-bold">
-            박예진
+            {depositAccount?.userName}
             <span className="font-normal"> 님에게</span>
           </p>
           <p className="text-2xl font-bold">{formatCurrency(parseInt(transferAmount))}원</p>

@@ -1,13 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { AccountInfo, GeneralMeetingAccountDetail } from "../types/account";
+import { AccountInfo, AccountInfoNew, MeetingAccountInfo, GeneralMeetingAccountDetail } from "../types/account";
 
 export interface AccountState {
   isKeyboard: boolean;
   accountPassword: string;
   accountList: Array<AccountInfo>;
   foreignAccountList: Array<AccountInfo>;
-  joinedAccountList: Array<AccountInfo>;
+  joinedAccountList: Array<MeetingAccountInfo>;
   generalMeetingAccountDetail: GeneralMeetingAccountDetail;
 }
 
@@ -43,7 +43,7 @@ export const userSilce = createSlice({
     editForeingAccountList: (state, action: PayloadAction<Array<AccountInfo>>) => {
       state.foreignAccountList = action.payload;
     },
-    editJoinedAccountList: (state, action: PayloadAction<Array<AccountInfo>>) => {
+    editJoinedAccountList: (state, action: PayloadAction<Array<MeetingAccountInfo>>) => {
       state.joinedAccountList = action.payload;
     },
     editGeneralMeetingAccountList: (state, action: PayloadAction<GeneralMeetingAccountDetail>) => {

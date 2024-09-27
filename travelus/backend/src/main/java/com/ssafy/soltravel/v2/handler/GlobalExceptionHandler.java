@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.v2.handler;
 
+import com.ssafy.soltravel.v2.dto.ErrorResponseDto;
 import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.exception.auth.InvalidAuthCodeException;
 import com.ssafy.soltravel.v2.exception.auth.InvalidCredentialsException;
@@ -92,7 +93,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidGroupIdException.class)
-    public ResponseEntity<ResponseDto> handleInvalidGroupIdException(InvalidGroupIdException e) {
+    public ResponseEntity<?> handleInvalidGroupIdException(InvalidGroupIdException e) {
+        if(e.getInvalidInvite()){
+            ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                e.getMessage(),
+                "601"
+            );
+            return new ResponseEntity<>(errorResponseDto, HttpStatus.BAD_REQUEST);
+        }
         ResponseDto errorResponse = new ResponseDto(
             "BAD REQUEST",
             e.getMessage()

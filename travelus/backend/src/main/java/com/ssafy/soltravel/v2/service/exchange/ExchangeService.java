@@ -10,6 +10,7 @@ import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateRegisterRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.targetAccountDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
+import com.ssafy.soltravel.v2.repository.ExchangeRateForecastRepository;
 import com.ssafy.soltravel.v2.repository.GroupRepository;
 import com.ssafy.soltravel.v2.service.transaction.TransactionService;
 import com.ssafy.soltravel.v2.util.LogUtil;
@@ -33,14 +34,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import reactor.core.publisher.Mono;
-import reactor.netty.http.client.HttpClient;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +53,7 @@ public class ExchangeService {
   private final RedisTemplate<String, String> redisTemplate;
   private final TransactionService transactionService;
   private final GroupRepository groupRepository;
+  private final ExchangeRateForecastRepository exchangeRateForecastRepository;
 
   private List<String> Currencies = List.of("USD", "JPY", "EUR", "CNY");
 
@@ -186,7 +184,7 @@ public class ExchangeService {
   /**
    * String의 currencyCode를 CurreucyType으로 변환
    */
-  private CurrencyType getCurrencyType(String currencyCode) {
+  public CurrencyType getCurrencyType(String currencyCode) {
 
     return switch (currencyCode) {
       case "USD" -> CurrencyType.USD;
@@ -280,39 +278,4 @@ public class ExchangeService {
     }
     return null;
   }
-
-
-
-
-  //-----------------------------환율 예측-----------------------------
-  public String getPredictions() {
-    WebClient webClient = WebClient.builder()
-        .baseUrl("http://70.12.130.121:11209")
-        .clientConnector(new ReactorClientHttpConnector(
-            HttpClient.create().followRedirect(true)
-        ))
-        .build();
-
-    Mono<String> responseMono = webClient.get()
-        .uri("/prediction")
-        .exchangeToMono(response -> {
-          if (response.statusCode().is2xxSuccessful()) {
-            return response.bodyToMono(String.class);
-          } else {
-            return response.createException().flatMap(Mono::error);
-          }
-        });
-
-    try {
-      String response = responseMono.block();
-      LogUtil.info("환예 결과", response);
-      return response;
-
-    } catch (Exception e) {
-      LogUtil.error("API 호출 실패", e.getMessage());
-      return null;
-    }
-  }
-
-
 }

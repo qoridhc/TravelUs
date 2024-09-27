@@ -17,7 +17,6 @@ import MeetingAccountGroupMember from "./pages/account/meetingAccount/MeetingAcc
 import JoinedMeetingAccountDetail from "./pages/account/meetingAccount/JoinedMeetingAccountDetail";
 import AccountTransaction from "./pages/account/AccountTransaction";
 import AccountHistory from "./pages/accountHistory/AccountHistory";
-import ViewAccount from "./pages/viewaccount/Account";
 import TransferSelectBank from "./pages/transfer/TransferSelectBank";
 import TransferSetMoney from "./pages/transfer/TransferSetMoney";
 import TransferPassword from "./pages/transfer/TransferPassword";
@@ -32,12 +31,9 @@ import Exchange from "./pages/exchange/Exchange";
 import ExchangeKRWFlow from "./pages/exchange/ExchangeKRW";
 import SelectAccount from "./pages/exchange/SelectAccount";
 import Settlement from "./pages/ver1/Settlement";
-import Detail from "./pages/viewaccount/Detail";
-import GroupAccountPage from "./pages/viewaccount/ViewAccount";
 import AccountCreateComplete from "./pages/ver1/AccountCreateComplete";
 import GeneralMeetingAccountCreate from "./pages/ver1/GeneralMeetingAccountCreate";
 import MeetingAccountCreatePrepare from "./pages/ver1/MeetingAccountCreatePrepare";
-import ForeignMeetingAccountCreate from "./pages/ver1/ForeignMeetingAccountCreate";
 import MeetingAccountCreateComplete from "./pages/ver1/MeetingAccountCreateComplete";
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
 import Transaction from "./pages/transaction/Transaction";
@@ -63,6 +59,10 @@ import ExpenditureTransactionDetail from "./pages/settlement/expenditureSettleme
 import ExpenditureSettlementInfo from "./pages/settlement/expenditureSettlement/ExpenditureSettlementInfo";
 import ExpenditureSettlementCompleted from "./pages/settlement/expenditureSettlement/ExpenditureSettlementCompleted";
 import TravelBoxCreatePrepare from "./pages/travelBox/TravelBoxCreatePrepare";
+import InvitationOfMeeting from "./pages/meetingAccount/InvitationOfMeeting";
+import InviteInfoOfMeeting from "./pages/meetingAccount/InviteInfoOfMeeting";
+import AlreadyInviteOfMeeting from "./pages/meetingAccount/AlreadyInviteOfMeeting";
+import SelectAccountOfMeeting from "./pages/meetingAccount/SelectAccountOfMeeting";
 
 function App() {
   return (
@@ -114,19 +114,21 @@ function App() {
           <Route path="/meeting/create/prepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/meeting/create/userinfo" element={<UserInfoOfCreateMeetingAccount />} />
           <Route path="/meeting/create/meetinginfo" element={<MeetingInfoOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/select/account" element={<SelectAccountOfMeeting />} />
           <Route path="/meeting/create/password/:type" element={<PasswordOfCreateMeetingAccount />} />
           <Route path="/meeting/create/password/check" element={<CheckPasswordOfCreateMeetingAccount />} />
           <Route path="/meeting/create/idverificationo/:type" element={<IDVerificationOfCreateMeetingAccount />} />
           <Route path="/meeting/create/completed/:type" element={<CompletedOfCreateMeetingAccount />} />
 
           {/* 모임통장 상세 */}
-          <Route path="/account/:userId" element={<GroupAccountPage />} />
-          <Route path="/meetingaccount/:id" element={<MeetingAccountDetail />} />
+          <Route path="/meetingaccount" element={<MeetingAccountDetail />} />
           <Route path="/joinedmeetingaccount/:id" element={<JoinedMeetingAccountDetail />} />
-          <Route path="/account" element={<ViewAccount />} />
           <Route path="/accounthistory/:accountNo" element={<AccountHistory />} />
           <Route path="/meetingaccount/management/:id" element={<MeetingAccountManagement />} />
           <Route path="/meetingaccount/management/:id/groupmember" element={<MeetingAccountGroupMember />} />
+          <Route path="/meeting/invite/:code" element={<InvitationOfMeeting />} />
+          <Route path="/meeting/invite/:code/info" element={<InviteInfoOfMeeting />} />
+          <Route path="/meeting/invite/participated" element={<AlreadyInviteOfMeeting />} />
 
           {/* 통장 내역 */}
           <Route path="/accounttransaction/:id" element={<AccountTransaction />} />
@@ -149,7 +151,6 @@ function App() {
           <Route path="/exchange" element={<Exchange />}></Route>
           <Route path="/exchangekrw" element={<ExchangeKRWFlow />} />
           <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
-          <Route path="/detail" element={<Detail />}></Route>
           <Route path="/transaction" element={<Transaction />}></Route>
 
           {/* 환율 */}
@@ -174,7 +175,6 @@ function App() {
           <Route path="/accountcreate" element={<AccountCreate />} />
           <Route path="/accountcreatecomplete" element={<AccountCreateComplete />} />
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
-          <Route path="/foreignmeetingaccountcreate" element={<ForeignMeetingAccountCreate />} />
           <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
           {/* <Route path="/settlement" element={<Settlement />}></Route> */}
         </Routes>
