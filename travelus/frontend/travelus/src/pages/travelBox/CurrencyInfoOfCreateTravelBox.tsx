@@ -1,11 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router";
 import CurrencyInputMui from "../../components/travelBox/CurrencyInputMui";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { setTravelboxInfo } from "../../redux/meetingAccountSlice";
 
 const CurrencyInfoOfCreateTravelBox = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [currency, setCurrency] = useState("");
+  const travelboxInfo = useSelector((state: RootState) => state.meetingAccount.travelboxInfo);
+
   const handleNext = () => {
+    const updatedTravelboxInfo = { ...travelboxInfo, currencyCode: currency };
+    dispatch(setTravelboxInfo(updatedTravelboxInfo));
     navigate("/autocurrencyexchangeofcreatetravelbox");
   };
 
@@ -29,7 +38,7 @@ const CurrencyInfoOfCreateTravelBox = () => {
             </div>
           </div>
 
-          <CurrencyInputMui />
+          <CurrencyInputMui currency={currency} setCurrency={setCurrency} />
         </div>
       </div>
 

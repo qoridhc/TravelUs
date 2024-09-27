@@ -3,7 +3,12 @@ import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import TypeSelect from "../account/inputField/TypeSelect";
 import { currencyTypeList } from "../../types/exchange";
 
-const CurrencyInputMui = () => {
+interface Props {
+  currency: string;
+  setCurrency: (type: string) => void;
+}
+
+const CurrencyInputMui = ({ currency, setCurrency }: Props) => {
   return (
     <FormControl
       variant="standard"
@@ -24,6 +29,8 @@ const CurrencyInputMui = () => {
         labelId="meetingType"
         id="meetingType"
         label="meetingType"
+        value={currency}
+        onChange={(e) => setCurrency(e.target.value)}
         MenuProps={{
           PaperProps: {
             sx: {
