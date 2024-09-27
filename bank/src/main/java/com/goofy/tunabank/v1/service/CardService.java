@@ -61,6 +61,7 @@ public class CardService {
     private final CardHistoryRepository cardHistoryRepository;
     private final MoneyBoxRepository moneyBoxRepository;
     private final MerchantRepository merchantRepository;
+    private final TransactionService transactionService;
 
     /*
      * 카드 신규 발급
@@ -265,8 +266,10 @@ public class CardService {
                 moneyBox.getCurrency().getExchangeRate())
             .doubleValue();
 
+        Long nextId = transactionService.getNextTransactionId();
+
         CardHistory cardHistory = CardHistory.createCardHistory(
-            card, moneyBox, merchant, request, wonAmount
+            nextId, card, moneyBox, merchant, request, wonAmount
         );
 
         cardHistoryRepository.save(cardHistory);

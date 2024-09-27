@@ -3,9 +3,9 @@ package com.goofy.tunabank.v1.repository.transaction;
 import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
 import com.goofy.tunabank.v1.domain.Enum.OrderByType;
 import com.goofy.tunabank.v1.domain.Enum.TransactionType;
-import com.goofy.tunabank.v1.domain.history.QTransactionHistory;
-import com.goofy.tunabank.v1.domain.history.TransactionHistory;
-import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDto;
+import com.goofy.tunabank.v1.domain.history.AbstractHistory;
+import com.goofy.tunabank.v1.domain.history.QAbstractHistory;
+import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryListRequestDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -24,49 +24,49 @@ public class TransactionHistoryCustomRepositoryImpl implements TransactionHistor
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<List<TransactionHistory>> findByCustomOrder(TransactionHistoryRequestDto requestDto) {
-        QTransactionHistory qTransactionHistory = QTransactionHistory.transactionHistory;
+    public Optional<List<AbstractHistory>> findByCustomOrder(TransactionHistoryListRequestDto requestDto) {
+        QAbstractHistory qAbstractHistory = QAbstractHistory.abstractHistory;
 
-        List<TransactionHistory> transactionHistories = queryFactory
-            .selectFrom(qTransactionHistory)
+        List<AbstractHistory> transactionHistories = queryFactory
+            .selectFrom(qAbstractHistory)
             .where(
-                accountNoAndCurrencyCodeEq(qTransactionHistory, requestDto.getAccountNo(), requestDto.getCurrencyCode()),
-                transactionTypeEq(qTransactionHistory, requestDto.getTransactionType()),
-                transactionDateRangeEq(qTransactionHistory, requestDto.getStartDate(), requestDto.getEndDate())
+                accountNoAndCurrencyCodeEq(qAbstractHistory, requestDto.getAccountNo(), requestDto.getCurrencyCode()),
+                transactionTypeEq(qAbstractHistory, requestDto.getTransactionType()),
+                transactionDateRangeEq(qAbstractHistory, requestDto.getStartDate(), requestDto.getEndDate())
             )
-            .orderBy(getOrderByExpression(qTransactionHistory, requestDto.getOrderByType()))
+            .orderBy(getOrderByExpression(qAbstractHistory, requestDto.getOrderByType()))
             .fetch();
 
         return transactionHistories.isEmpty() ? Optional.empty() : Optional.of(transactionHistories);
     }
 
-    private BooleanBuilder accountNoAndCurrencyCodeEq(QTransactionHistory qTransactionHistory, String accountNo,
+    private BooleanBuilder accountNoAndCurrencyCodeEq(QAbstractHistory qAbstractHistory, String accountNo,
         CurrencyType currencyCode) {
         BooleanBuilder builder = new BooleanBuilder();
         if (accountNo != null && currencyCode != null) {
-            builder.and(qTransactionHistory.moneyBox.account.accountNo.eq(accountNo))
-                .and(qTransactionHistory.moneyBox.currency.currencyCode.eq(currencyCode));
+            builder.and(qAbstractHistory.moneyBox.account.accountNo.eq(accountNo))
+                .and(qAbstractHistory.moneyBox.currency.currencyCode.eq(currencyCode));
         }
         return builder;
     }
 
-    private BooleanBuilder transactionTypeEq(QTransactionHistory qTransactionHistory, TransactionType transactionType) {
-        return transactionType != null ? new BooleanBuilder(qTransactionHistory.transactionType.eq(transactionType))
+    private BooleanBuilder transactionTypeEq(QAbstractHistory qAbstractHistory, TransactionType transactionType) {
+        return transactionType != null ? new BooleanBuilder(qAbstractHistory.transactionType.eq(transactionType))
             : new BooleanBuilder();
     }
 
-    private BooleanBuilder transactionDateRangeEq(QTransactionHistory qTransactionHistory, LocalDate startDate,
+    private BooleanBuilder transactionDateRangeEq(QAbstractHistory qAbstractHistory, LocalDate startDate,
         LocalDate endDate) {
         if (startDate != null && endDate != null) {
             LocalDateTime startDateTime = startDate.atStartOfDay();
             LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
-            return new BooleanBuilder(qTransactionHistory.transactionAt.between(startDateTime, endDateTime));
+            return new BooleanBuilder(qAbstractHistory.transactionAt.between(startDateTime, endDateTime));
         }
         return new BooleanBuilder();
     }
 
-    private OrderSpecifier<LocalDateTime> getOrderByExpression(QTransactionHistory qTransactionHistory, OrderByType orderByType) {
-        return orderByType == OrderByType.ASC ? qTransactionHistory.transactionAt.asc()
-            : qTransactionHistory.transactionAt.desc();
+    private OrderSpecifier<LocalDateTime> getOrderByExpression(QAbstractHistory qAbstractHistory, OrderByType orderByType) {
+        return orderByType == OrderByType.ASC ? qAbstractHistory.transactionAt.asc()
+            : qAbstractHistory.transactionAt.desc();
     }
 }

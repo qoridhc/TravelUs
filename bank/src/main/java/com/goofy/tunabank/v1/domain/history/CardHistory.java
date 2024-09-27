@@ -2,6 +2,7 @@ package com.goofy.tunabank.v1.domain.history;
 
 import com.goofy.tunabank.v1.domain.Card;
 import com.goofy.tunabank.v1.domain.Currency;
+import com.goofy.tunabank.v1.domain.Enum.TransactionType;
 import com.goofy.tunabank.v1.domain.Merchant;
 import com.goofy.tunabank.v1.domain.MoneyBox;
 import com.goofy.tunabank.v1.dto.card.CardPaymentRequestDto;
@@ -57,16 +58,18 @@ public class CardHistory extends AbstractHistory {
         cardHistory.exchangeRate = currency.getExchangeRate();
         cardHistory.transactionId = transactionId;
         cardHistory.transactionAt = LocalDateTime.now();
+        cardHistory.transactionType = TransactionType.CD;
         return cardHistory;
     }
 
     public static CardHistory createCardHistory(
-        Card card, MoneyBox moneyBox, Merchant merchant, CardPaymentRequestDto request, Double wonAmount
+        Long nextId, Card card, MoneyBox moneyBox, Merchant merchant, CardPaymentRequestDto request, Double wonAmount
     ) {
 
         CardHistory cardHistory = new CardHistory();
         Currency currency = moneyBox.getCurrency();
 
+        cardHistory.id = nextId;
         cardHistory.currency = currency;
         cardHistory.amount = request.getPaymentBalance();
         cardHistory.balance = moneyBox.getBalance();
@@ -76,6 +79,7 @@ public class CardHistory extends AbstractHistory {
         cardHistory.exchangeRate = currency.getExchangeRate();
         cardHistory.transactionId = request.getTransactionId();
         cardHistory.transactionAt = LocalDateTime.now();
+        cardHistory.transactionType = TransactionType.CD;
         return cardHistory;
     }
 }
