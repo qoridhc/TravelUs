@@ -1,7 +1,7 @@
 
 import api from "../lib/axios";
 import { AccountInfo, AccountInfoNew, MeetingAccountInfo, AccountParticipants, MeetingAccountCreate, meetingInvitationCode } from "../types/account";
-import { NewParticipant } from "../types/meetingAccount";
+import { NewParticipant, TravelboxInfo } from "../types/meetingAccount";
 
 export const accountApi = {
   // 일반 계좌 정보 가져오기
@@ -56,7 +56,6 @@ export const accountApi = {
     return api.get(`/groups/${groupId}`);
   },
 
-
   // 특정 외화모임통장 조회
   fetchForeignMeetingAccount: async (accountId: number): Promise<AccountInfo> => {
     const response = await api.get(`/account/foreign/accountId/${accountId}`);
@@ -81,5 +80,10 @@ export const accountApi = {
   // 거래 내역 조회
   fetchTracsactionHistory: (accountNo: string, currencyCode: string , orderByType: string ) => {
     return api.get(`/transaction/history?accountNo=${accountNo}&currencyCode=${currencyCode}&orderByType=${orderByType}`);
+  },
+
+  // 트래블박스 개설
+  fetchCreateTravelBox: (data: TravelboxInfo) => {
+    return api.post(`/accounts/addMoneyBox`, data)
   },
 };
