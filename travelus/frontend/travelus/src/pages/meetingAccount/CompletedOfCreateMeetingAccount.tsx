@@ -14,8 +14,8 @@ const CompletedOfCreateMeetingAccount = () => {
   const getUserName = async () => {
     try {
       const response = await userApi.fetchUser();
-      console.log("이름 : ", response.data.name);
       setUserName(response.data.name);
+      console.log(response.data.name);
     } catch (error) {
       console.log("user의 fetchUser : ", error);
     }
@@ -25,6 +25,7 @@ const CompletedOfCreateMeetingAccount = () => {
     try {
       const response = await accountApi.fetchInvitationCode(location.state.groupId);
       setGroupCode(response.data.groupCode);
+      console.log(response.data.groupCode);
     } catch (error) {
       console.log("account의 fetchInvitationCode : ", error);
     }
@@ -39,7 +40,7 @@ const CompletedOfCreateMeetingAccount = () => {
     window.Kakao.Link.sendCustom({
       templateId: 112239,
       templateArgs: {
-        hostName: userName,
+        groupLeader: userName,
         groupName: location.state.groupName,
         code: groupCode,
       },

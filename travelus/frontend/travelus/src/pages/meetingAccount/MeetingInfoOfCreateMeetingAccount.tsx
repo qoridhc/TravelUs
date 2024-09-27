@@ -22,7 +22,7 @@ const MeetingInfoOfCreateMeetingAccount = () => {
     dispatch(setMeetingName(name));
     dispatch(setMeetingType(type));
 
-    navigate("/meeting/create/password/meeting");
+    navigate("/meeting/create/select/account");
   };
 
   const handleNextStep = () => {

@@ -60,6 +60,9 @@ import ExpenditureSettlementInfo from "./pages/settlement/expenditureSettlement/
 import ExpenditureSettlementCompleted from "./pages/settlement/expenditureSettlement/ExpenditureSettlementCompleted";
 import TravelBoxCreatePrepare from "./pages/travelBox/TravelBoxCreatePrepare";
 import InvitationOfMeeting from "./pages/meetingAccount/InvitationOfMeeting";
+import InviteInfoOfMeeting from "./pages/meetingAccount/InviteInfoOfMeeting";
+import AlreadyInviteOfMeeting from "./pages/meetingAccount/AlreadyInviteOfMeeting";
+import SelectAccountOfMeeting from "./pages/meetingAccount/SelectAccountOfMeeting";
 
 function App() {
   return (
@@ -111,18 +114,21 @@ function App() {
           <Route path="/meeting/create/prepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/meeting/create/userinfo" element={<UserInfoOfCreateMeetingAccount />} />
           <Route path="/meeting/create/meetinginfo" element={<MeetingInfoOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/select/account" element={<SelectAccountOfMeeting />} />
           <Route path="/meeting/create/password/:type" element={<PasswordOfCreateMeetingAccount />} />
           <Route path="/meeting/create/password/check" element={<CheckPasswordOfCreateMeetingAccount />} />
           <Route path="/meeting/create/idverificationo/:type" element={<IDVerificationOfCreateMeetingAccount />} />
           <Route path="/meeting/create/completed/:type" element={<CompletedOfCreateMeetingAccount />} />
 
           {/* 모임통장 상세 */}
-          <Route path="/meetingaccount/:id" element={<MeetingAccountDetail />} />
+          <Route path="/meetingaccount" element={<MeetingAccountDetail />} />
           <Route path="/joinedmeetingaccount/:id" element={<JoinedMeetingAccountDetail />} />
           <Route path="/accounthistory/:accountNo" element={<AccountHistory />} />
           <Route path="/meetingaccount/management/:id" element={<MeetingAccountManagement />} />
           <Route path="/meetingaccount/management/:id/groupmember" element={<MeetingAccountGroupMember />} />
           <Route path="/meeting/invite/:code" element={<InvitationOfMeeting />} />
+          <Route path="/meeting/invite/:code/info" element={<InviteInfoOfMeeting />} />
+          <Route path="/meeting/invite/participated" element={<AlreadyInviteOfMeeting />} />
 
           {/* 통장 내역 */}
           <Route path="/accounttransaction/:id" element={<AccountTransaction />} />
