@@ -3,24 +3,78 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { useNavigate, useParams } from "react-router";
 import SecurityNumberKeyboard from "../../components/common/SecurityNumberKeyboard";
-import { setAccountPassword } from "../../redux/accountSlice";
+import { accountApi } from "../../api/account";
+import { AxiosError } from "axios";
+import { AxiosErrorResponseData } from "../../types/axiosError";
+import { exchangeRateApi } from "../../api/exchange";
 
 const PasswordOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const params = useParams();
-  const password = useSelector((state: RootState) => state.account.accountPassword);
+
+  const [password, setPassword] = useState("");
+  const [isTravelboxCreated, setIsTravelboxCreated] = useState(false);
+  const [isTargetRateCreated, setIsTargetRateCreated] = useState(false);
+  const travelboxInfo = useSelector((state: RootState) => state.meetingAccount.travelboxInfo);
+  const exchangeTargetInfo = useSelector((state: RootState) => state.meetingAccount.exchangeTargetInfo);
+
+  const createTravelbox = async () => {
+    const travelboxData = {
+      accountPassword: password,
+      accountNo: travelboxInfo.accountNo,
+      currencyCode: travelboxInfo.currencyCode,
+    };
+    try {
+      const response = await accountApi.fetchCreateTravelBox(travelboxData);
+      if (response.status === 201) {
+        setIsTravelboxCreated(true);
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response && axiosError.response.data && axiosError.response.data) {
+        const responseData = axiosError.response.data as AxiosErrorResponseData;
+        if (responseData.message === "ACCOUNT_PASSWORD_INVALID") {
+          setPassword("");
+          alert("비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
+        }
+      }
+      console.log("accountApi의 fetchCreateTravelBox : ", error);
+    }
+  };
+
+  const createTargetRate = async () => {
+    const targetRate = {
+      accountNo: travelboxInfo.accountNo,
+      currencyCode: travelboxInfo.currencyCode,
+      transactionBalance: exchangeTargetInfo.transactionBalance,
+      targetRate: exchangeTargetInfo.targetRate,
+    };
+    try {
+      const response = await exchangeRateApi.postExchangeTargetRate(targetRate);
+      if (response.status === 200) {
+        setIsTargetRateCreated(true);
+      }
+    } catch (error) {
+      console.log("exchangeRateApi의 postExchangeTargetRate : ", error);
+    }
+  };
 
   useEffect(() => {
     if (password.length === 4) {
-      dispatch(setAccountPassword(""));
       if (params.type === "travelbox") {
-        navigate("/meeting/create/completed/travelbox");
+        createTravelbox();
+        createTargetRate();
       } else {
         navigate("/meeting/create/password/check", { state: { originalPassword: password, type: params.type } });
       }
     }
   }, [password]);
+
+  useEffect(() => {
+    if (isTravelboxCreated && isTargetRateCreated) {
+      navigate("/meeting/create/completed/travelbox");
+    }
+  }, [isTravelboxCreated, isTargetRateCreated]);
 
   return (
     <div className="h-full grid grid-rows-[2fr_1fr]">
@@ -44,7 +98,7 @@ const PasswordOfCreateMeetingAccount = () => {
         </div>
       </div>
 
-      <SecurityNumberKeyboard />
+      <SecurityNumberKeyboard password={password} setPassword={setPassword} />
     </div>
   );
 };
