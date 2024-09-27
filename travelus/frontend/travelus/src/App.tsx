@@ -121,7 +121,7 @@ function App() {
           <Route path="/meeting/create/completed/:type" element={<CompletedOfCreateMeetingAccount />} />
 
           {/* 모임통장 상세 */}
-          <Route path="/meetingaccount" element={<MeetingAccountDetail />} />
+          <Route path="/meetingaccount/:id" element={<MeetingAccountDetail />} />
           <Route path="/joinedmeetingaccount/:id" element={<JoinedMeetingAccountDetail />} />
           <Route path="/accounthistory/:accountNo" element={<AccountHistory />} />
           <Route path="/meetingaccount/management/:id" element={<MeetingAccountManagement />} />

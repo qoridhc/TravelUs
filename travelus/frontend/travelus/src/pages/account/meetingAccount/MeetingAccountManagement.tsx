@@ -1,5 +1,7 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { MeetingAccountInfo } from "../../../types/account";
+import { accountApi } from "../../../api/account";
 import { IoIosArrowBack } from "react-icons/io";
 import { IoPeopleSharp } from "react-icons/io5";
 import { MdKeyboardArrowRight } from "react-icons/md";
@@ -12,13 +14,33 @@ interface MeetingAccountManagementProps {
 
 const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const numId = Number(id);
+  const [accountInfo, setAccountInfo] = useState<MeetingAccountInfo | null>(null);
+
+  useEffect(() => {
+    // 해당 모임 조회 API 호출
+    const fetchSpecificMeetingAccount = async () => {
+      try {
+        const response = await accountApi.fetchSpecificMeetingAccount(numId);
+        if (response.status === 200) {
+          setAccountInfo(response.data);
+        }
+      } catch (error) {
+        console.error("모임 조회 에러", error);
+      }
+    };
+
+    fetchSpecificMeetingAccount();
+  }, [id]);
+
   return (
     <div className="h-full">
       <div className="p-6 pb-8 flex flex-col space-y-8">
         <div className="grid grid-cols-3 items-center">
           <IoIosArrowBack
             onClick={() => {
-              navigate("/meetingaccount/1");
+              navigate(`/meetingaccount/${numId}`);
             }}
             className="text-2xl"
           />
@@ -26,8 +48,8 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
         </div>
 
         <div className="flex flex-col space-y-2">
-          <p className="text-lg font-semibold">사랑스러운 박씨네</p>
-          <p>계좌번호 · 002-82791231-123</p>
+          <p className="text-lg font-semibold">{accountInfo?.groupName}</p>
+          <p>계좌번호 · {accountInfo?.groupAccountNo}</p>
         </div>
 
         <div className="flex flex-col space-y-3">
@@ -37,10 +59,10 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
               <p className="text-zinc-500">모임원</p>
               <div
                 onClick={() => {
-                  navigate("/meetingaccount/management/1/groupmember");
+                  navigate(`/meetingaccount/management/${accountInfo?.groupId}/groupmember`);
                 }}
                 className="flex items-center">
-                <p>2명</p>
+                <p>{accountInfo?.participants.length}명</p>
                 <MdKeyboardArrowRight className="text-2xl text-zinc-600" />
               </div>
             </div>

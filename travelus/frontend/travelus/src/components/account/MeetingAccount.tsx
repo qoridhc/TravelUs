@@ -65,10 +65,11 @@ const MeetingAccount = ({ account }: Props) => {
     return <span className={containerClasses}>{IconComponent}</span>;
   };
 
+
   return (
     <div
       onClick={() => {
-        navigate(`/meetingaccount/${account.groupId}`, { state: { account } });
+        navigate(`/meetingaccount/${account.groupId}`);
       }}
       className="w-full">
       <div className="flex items-center space-x-4">

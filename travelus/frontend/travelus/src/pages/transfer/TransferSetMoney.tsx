@@ -39,7 +39,7 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
 
         // 받는 사람 이름을 표시하기 위한 API 호출
         const accountInfo = await accountApi.fetchSpecificAccountInfo(accountNo);
-        setDepositAccount(accountInfo);
+        setDepositAccount(accountInfo.data);
 
       } catch (error) {
         console.error("Error fetching data:", error);

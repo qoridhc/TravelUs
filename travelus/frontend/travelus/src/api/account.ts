@@ -22,9 +22,8 @@ export const accountApi = {
   },
 
   // 특정 계좌 조회
-  fetchSpecificAccountInfo: async (accountNo: string): Promise<AccountInfoNew> => {
-    const response = await api.post(`/accounts/inquireAccount`, { accountNo });
-    return response.data;
+  fetchSpecificAccountInfo:  (accountNo: string)  => {
+    return api.post(`/accounts/inquireAccount`, { accountNo });
   },
 
   // 모임통장 참여자 정보 가져오기
@@ -67,12 +66,12 @@ export const accountApi = {
   fetchInvitationCode: (groupId: number) => {
     return api.post(`/groups/create/groupCode`, { "groupId": groupId });
   },
- 
+
   // 모임원 추가
- fetchCreateParticipant: (data: NewParticipant) => {
+  fetchCreateParticipant: (data: NewParticipant) => {
     return api.post(`/groups/createParticipant`, data);
   },
- 
+
   // 초대코드로 모임 정보 조회
   fetchGroupIdByInvitationCode: (code: string) => {
     return api.get(`/groups/code/${code}`);

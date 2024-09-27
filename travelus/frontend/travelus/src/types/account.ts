@@ -39,18 +39,42 @@ export interface AccountInfoNew {
   updatedAt: string
 }
 
-// 모임통장 정보
+// 모임 정보
 export interface MeetingAccountInfo {
   groupId: number;
   groupAccountNo: string;
   groupName: string;
   icon: string;
   moneyBoxDtoList: Array<{
-      moneyBoxId: number;
-      balance: number;
-      currencyCode: string
+    moneyBoxId: number;
+    balance: number;
+    currencyCode: string
   }>;
-}
+  participants: Array<{
+    createdAt: string;
+    master: boolean;
+    participantId: number;
+    personalAccountNo: string;
+    updatedAt: string;
+    userId: number;
+  }>
+};
+
+// 모임통장 상세 정보
+export interface MeetingAccountDetailInfo {
+  accountId: number;
+  accountNo: string;
+  accountPassword: string;
+  accountType: string;
+  bankCode: number;
+  moneyBoxDtos: Array<{
+    moneyBoxId: number;
+    balance: number;
+    currencyCode: string
+  }>;
+  updatedAt: string;
+  userName: string;
+};
 
 
 // 거래 내역 조회

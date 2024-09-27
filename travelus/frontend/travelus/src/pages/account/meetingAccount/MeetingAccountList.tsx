@@ -16,16 +16,11 @@ const MeetingAccountListNew = () => {
   const [createdAccountList, setCreatedAccountList] = useState<MeetingAccountInfo[]>([]);
   const [joinedAccountList, setJoinedAccountList] = useState<MeetingAccountInfo[]>([]);
 
-  const dispatch = useDispatch();
-  const userId = localStorage.getItem("userId") || "";
-  const userIdNumber = userId ? parseInt(userId, 10) : 0;
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const createdResponse = await accountApi.fetchCreatedMeetingAccount();
         setCreatedAccountList(createdResponse);
-        console.log(createdResponse);
 
         const joinedResponse = await accountApi.fetchJoinedMeetingAccount();
         setJoinedAccountList(joinedResponse);
@@ -51,7 +46,7 @@ const MeetingAccountListNew = () => {
             {createdAccountList.length > 0 ? (
               <div className="flex flex-col space-y-5">
                 {createdAccountList.map((account, index) => (
-                  <MeetingAccount key={index}  account={account} />
+                  <MeetingAccount key={index} account={account} />
                 ))}
 
                 <div>
