@@ -1,12 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { meetingAccountInfo, TravelboxInfo } from "../types/meetingAccount";
+import { MeetingAccountInfo, TravelboxInfo } from "../types/meetingAccount";
 
 export interface meetingAccountState {
   meetingName: string;
   meetingType: string;
-  meetingAccounInfo: meetingAccountInfo;
+  meetingAccounInfo: MeetingAccountInfo;
   travelboxInfo: TravelboxInfo;
+  individualAccountNo: string;
 }
 
 const initialState: meetingAccountState = {
@@ -22,6 +23,7 @@ const initialState: meetingAccountState = {
     accountNo: "",
     currencyCode: "",
   },
+  individualAccountNo: "",
 }
 
 export const meetingAccountSilce = createSlice({
@@ -34,15 +36,18 @@ export const meetingAccountSilce = createSlice({
     setMeetingType: (state, action: PayloadAction<string>) => {
       state.meetingType = action.payload;
     },
-    setMeetingAccountInfo: (state, action: PayloadAction<meetingAccountInfo>) => {
+    setMeetingAccountInfo: (state, action: PayloadAction<MeetingAccountInfo>) => {
       state.meetingAccounInfo = action.payload;
     },
     setTravelboxInfo: (state, action: PayloadAction<TravelboxInfo>) => {
       state.travelboxInfo = action.payload;
     },
+    setindividualAccountNo: (state, action: PayloadAction<string>) => {
+      state.individualAccountNo = action.payload;
+    },
   },
 });
 
-export const { setMeetingName, setMeetingType, setMeetingAccountInfo, setTravelboxInfo } = meetingAccountSilce.actions;
+export const { setMeetingName, setMeetingType, setMeetingAccountInfo, setTravelboxInfo, setindividualAccountNo } = meetingAccountSilce.actions;
 
 export default meetingAccountSilce.reducer;

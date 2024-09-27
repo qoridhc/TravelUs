@@ -11,12 +11,13 @@ const CompletedOfCreateMeetingAccount = () => {
 
   const [userName, setUserName] = useState("");
   const [groupCode, setGroupCode] = useState("");
-  const meetingAccounInfo = useSelector((state: RootState) => state.meetingAccount.meetingAccounInfo);
+  const meetingAccountInfo = useSelector((state: RootState) => state.meetingAccount.meetingAccounInfo);
 
   const getUserName = async () => {
     try {
       const response = await userApi.fetchUser();
       setUserName(response.data.name);
+      console.log(response.data.name);
     } catch (error) {
       console.log("user의 fetchUser : ", error);
     }
@@ -24,8 +25,8 @@ const CompletedOfCreateMeetingAccount = () => {
 
   const getInvitationCode = async () => {
     try {
-      if (meetingAccounInfo.groupId !== undefined) {
-        const response = await accountApi.fetchInvitationCode(meetingAccounInfo.groupId);
+      if (meetingAccountInfo.groupId !== undefined) {
+        const response = await accountApi.fetchInvitationCode(meetingAccountInfo.groupId);
         setGroupCode(response.data.groupCode);
       }
     } catch (error) {
@@ -42,8 +43,8 @@ const CompletedOfCreateMeetingAccount = () => {
     window.Kakao.Link.sendCustom({
       templateId: 112239,
       templateArgs: {
-        hostName: userName,
-        groupName: meetingAccounInfo.groupName,
+        groupLeader: userName,
+        groupName: meetingAccountInfo.groupName,
         code: groupCode,
       },
     });
