@@ -4,13 +4,15 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushNotification;
+import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.domain.redis.RedisFcm;
 import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeResponseDto;
-import com.ssafy.soltravel.v2.dto.notification.NotificationRequestDto;
-import com.ssafy.soltravel.v2.dto.notification.PostTokenReq;
+import com.ssafy.soltravel.v2.dto.notification.PushNotificationRequestDto;
+import com.ssafy.soltravel.v2.dto.notification.RegisterNotificationRequestDto;
 import com.ssafy.soltravel.v2.dto.notification.TransactionNotificationDto;
 import com.ssafy.soltravel.v2.dto.settlement.response.SettlementResponseDto;
+import com.ssafy.soltravel.v2.exception.notification.FcmTokenNotFound;
 import com.ssafy.soltravel.v2.repository.redis.FcmTokenRepository;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
@@ -161,30 +163,32 @@ public class NotificationService {
         }
     }
 
-    // fcm
-    public ResponseDto saveFcmToken(PostTokenReq req) {
+    // 토큰 레디스 저장
+    public ResponseDto saveFcmToken(RegisterNotificationRequestDto requestDto) {
 
-        LogUtil.info("request", req);
+        LogUtil.info("requestDto", requestDto);
 
-        fcmTokenRepository.save(new RedisFcm(req.getUserId(), req.getToken()));
+        User user = securityUtil.getUserByToken();
+
+        fcmTokenRepository.save(new RedisFcm(user.getUserId(), requestDto.getFcmToken()));
 
         return new ResponseDto();
     }
 
     // 사용자에게 push 알림
-    public ResponseEntity<?> pushNotification(NotificationRequestDto requestDto) {
+    public ResponseEntity<?> pushNotification(PushNotificationRequestDto requestDto) {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         try {
 
+            // FCM 토큰 조회
             RedisFcm redisFcm = fcmTokenRepository.findById(requestDto.getTargetUserId())
-                .orElseThrow(() -> new IllegalArgumentException("유저에 해당하는 FCM 토큰 정보가 없습니다."));
+                .orElseThrow(() -> new FcmTokenNotFound(requestDto.getTargetUserId()));
 
-            String token = redisFcm.getFcmToken();
-
+            // FCM 메시지 생성
             Message message = Message.builder()
-                .setToken(token)
+                .setToken(redisFcm.getFcmToken())
                 .setWebpushConfig(WebpushConfig.builder()
                     .putHeader("ttl", "300")
                     .setNotification(new WebpushNotification(requestDto.getTitle(), requestDto.getMessage()))

@@ -3,15 +3,13 @@ package com.ssafy.soltravel.v2.service.user;
 
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.domain.redis.RedisPhone;
-import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthReissueRequestDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthReissueResponseDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthSMSSendRequestDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthSMSSendResponseDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthSMSVerificationRequestDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthSMSVerificationResponseDto;
-import com.ssafy.soltravel.v2.dto.notification.NotificationRequestDto;
-import com.ssafy.soltravel.v2.dto.notification.PostTokenReq;
+import com.ssafy.soltravel.v2.dto.notification.PushNotificationRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserLoginRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserLoginResponseDto;
 import com.ssafy.soltravel.v2.exception.auth.InvalidAuthCodeException;
@@ -79,10 +77,8 @@ public class AuthService {
         UserLoginResponseDto response = tokenService.saveRefreshToken(user.getUserId());
         response.setName(user.getName());
 
-        ResponseDto responseDto = notificationService.saveFcmToken(new PostTokenReq(user.getUserId(), "testFcmToken"));
-
         ResponseEntity<?> response1 = notificationService.pushNotification(
-            new NotificationRequestDto(user.getUserId(), "테스트 타이틀", "테스트 메시지"));
+            new PushNotificationRequestDto(user.getUserId(), "테스트 타이틀", "테스트 메시지"));
 
         return response;
     }

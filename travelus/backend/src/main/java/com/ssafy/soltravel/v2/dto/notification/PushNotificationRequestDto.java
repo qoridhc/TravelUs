@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class NotificationRequestDto {
+public class PushNotificationRequestDto {
 
     private Long targetUserId;
 

@@ -7,15 +7,13 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Data
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-public class PostTokenReq {
-    
-    Long userId;
+public class RegisterNotificationRequestDto {
 
     @NotBlank(message = "토큰을 입력해야 합니다.")
     @Schema(description = "FCM Token", example = "")
-    String token;
+    String fcmToken;
 }
