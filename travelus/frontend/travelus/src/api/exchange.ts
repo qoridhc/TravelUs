@@ -1,5 +1,5 @@
 import api from "../lib/axios";
-import { ExchangeRateInfo, ExchangeRequest, ExchangeResponse, ExchangeRateHistoryRequest, ExchangeRateHistoryResponse } from "../types/exchange";
+import { ExchangeRateInfo, ExchangeRequest, ExchangeResponse, ExchangeRateHistoryRequest, ExchangeRateHistoryResponse, TargetRate } from "../types/exchange";
 
 import axios from "axios";
 
@@ -58,7 +58,7 @@ export const exchangeApi = {
 };
 
 export const exchangeRateApi = {
-      getExchangeRates: async (): Promise<ExchangeRateInfo[]> => {
+  getExchangeRates: async (): Promise<ExchangeRateInfo[]> => {
     const response = await api.get<ExchangeRateInfo[]>('/exchange/rate');
     return response.data
   },
@@ -77,4 +77,9 @@ export const exchangeRateApi = {
     const response = await api.post<ExchangeRateHistoryResponse>('/exchange/latest', data);
     return response.data
   },
+
+  // 환율 저장
+  postExchangeTargetRate: (data: TargetRate) => {
+    return api.post(`/exchange/rate/target-rate`, data);
+  }
 }
