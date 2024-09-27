@@ -17,7 +17,6 @@ const CompletedOfCreateMeetingAccount = () => {
     try {
       const response = await userApi.fetchUser();
       setUserName(response.data.name);
-      console.log(response.data.name);
     } catch (error) {
       console.log("user의 fetchUser : ", error);
     }
@@ -91,7 +90,7 @@ const CompletedOfCreateMeetingAccount = () => {
           {params.type === "meeting" ? (
             <button
               className="w-full h-14 text-[#565656] bg-[#FAE100] rounded-lg flex justify-center items-center space-x-2"
-              onClick={() => shareKakao()}>
+              onClick={() => (userName !== "" && groupCode !== "" ? sendKakao() : shareKakao())}>
               <img
                 className="w-6 aspect-1"
                 src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_medium.png"
