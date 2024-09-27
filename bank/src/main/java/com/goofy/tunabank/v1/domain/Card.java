@@ -1,6 +1,7 @@
 package com.goofy.tunabank.v1.domain;
 
 
+import com.goofy.tunabank.v1.domain.history.CardHistory;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,47 +23,47 @@ import lombok.Getter;
 @Getter
 public class Card {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long cardId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long cardId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "account_id")
-  private Account account;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "card_product_id")
-  private CardProduct cardProduct;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "card_product_id")
+    private CardProduct cardProduct;
 
-  @Column(length = 20)
-  private String cardNo;
+    @Column(length = 20)
+    private String cardNo;
 
-  @Column(length = 4)
-  private String cvc;
+    @Column(length = 4)
+    private String cvc;
 
-  @Column
-  private LocalDateTime createAt;
+    @Column
+    private LocalDateTime createAt;
 
-  @Column
-  private LocalDateTime expireAt;
+    @Column
+    private LocalDateTime expireAt;
 
-  @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<CardHistory> history = new ArrayList<>();
+    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CardHistory> history = new ArrayList<>();
 
 
-  /*
-  * 생성 메서드
-  */
-  public static Card createCard(Account account, CardProduct cardProduct, String cardNo, String cvc){
-    Card card = new Card();
-    card.account = account;
-    card.cardProduct = cardProduct;
-    card.cardNo = cardNo;
-    card.cvc = cvc;
-    card.createAt = LocalDateTime.now();
-    card.expireAt = LocalDateTime.now().plusYears(5);
-    return card;
-  }
+    /*
+     * 생성 메서드
+     */
+    public static Card createCard(Account account, CardProduct cardProduct, String cardNo, String cvc) {
+        Card card = new Card();
+        card.account = account;
+        card.cardProduct = cardProduct;
+        card.cardNo = cardNo;
+        card.cvc = cvc;
+        card.createAt = LocalDateTime.now();
+        card.expireAt = LocalDateTime.now().plusYears(5);
+        return card;
+    }
 
 
 }

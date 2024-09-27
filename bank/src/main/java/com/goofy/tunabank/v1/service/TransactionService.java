@@ -4,8 +4,8 @@ import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
 import com.goofy.tunabank.v1.domain.Enum.TransactionType;
 import com.goofy.tunabank.v1.domain.Enum.TransferType;
 import com.goofy.tunabank.v1.domain.MoneyBox;
-import com.goofy.tunabank.v1.domain.TransactionHistory;
 import com.goofy.tunabank.v1.domain.User;
+import com.goofy.tunabank.v1.domain.history.TransactionHistory;
 import com.goofy.tunabank.v1.dto.exchange.ExchangeAmountRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.TransferDetailDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDto;
@@ -39,316 +39,316 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TransactionService {
 
-  private final TransactionHistoryRepository transactionHistoryRepository;
-  private final MoneyBoxRepository moneyBoxRepository;
-  private final TransactionMapper transactionMapper;
-  private final ExchangeService exchangeService;
-  private final UserService userService;
-  private final AccountRepository accountRepository;
+    private final TransactionHistoryRepository transactionHistoryRepository;
+    private final MoneyBoxRepository moneyBoxRepository;
+    private final TransactionMapper transactionMapper;
+    private final ExchangeService exchangeService;
+    private final UserService userService;
+    private final AccountRepository accountRepository;
 
 
-  /**
-   * 입금 처리
-   */
-  @Transactional
-  public double processDeposit(MoneyBox moneyBox, double amount) {
-    return updateAccountBalance(moneyBox, amount, true);
-  }
+    /**
+     * 입금 처리
+     */
+    @Transactional
+    public double processDeposit(MoneyBox moneyBox, double amount) {
+        return updateAccountBalance(moneyBox, amount, true);
+    }
 
-  /**
-   * 출금 처리
-   */
-  @Transactional
-  public double processWithdrawal(MoneyBox moneyBox, double amount)
-      throws InvalidWithdrawalAmountException {
+    /**
+     * 출금 처리
+     */
+    @Transactional
+    public double processWithdrawal(MoneyBox moneyBox, double amount)
+        throws InvalidWithdrawalAmountException {
 
-    // 출금 금액 검증
-    validateWithdrawal(moneyBox.getBalance(), amount);
-    return updateAccountBalance(moneyBox, amount, false);
-  }
+        // 출금 금액 검증
+        validateWithdrawal(moneyBox.getBalance(), amount);
+        return updateAccountBalance(moneyBox, amount, false);
+    }
 
-  /**
-   * 머니 박스 잔액 업데이트
-   */
-  @Transactional
-  public double updateAccountBalance(MoneyBox moneyBox, double amount, boolean isDeposit) {
+    /**
+     * 머니 박스 잔액 업데이트
+     */
+    @Transactional
+    public double updateAccountBalance(MoneyBox moneyBox, double amount, boolean isDeposit) {
 
-    BigDecimal currentBalance = BigDecimal.valueOf(moneyBox.getBalance());
-    BigDecimal transactionAmount = BigDecimal.valueOf(amount);
+        BigDecimal currentBalance = BigDecimal.valueOf(moneyBox.getBalance());
+        BigDecimal transactionAmount = BigDecimal.valueOf(amount);
 
-    BigDecimal afterBalance = isDeposit ? currentBalance.add(transactionAmount)
-        : currentBalance.subtract(transactionAmount);
+        BigDecimal afterBalance = isDeposit ? currentBalance.add(transactionAmount)
+            : currentBalance.subtract(transactionAmount);
 
-    afterBalance = afterBalance.setScale(2, RoundingMode.HALF_UP);
+        afterBalance = afterBalance.setScale(2, RoundingMode.HALF_UP);
 
-    moneyBox.setBalance(afterBalance.doubleValue());
-    moneyBox.setUpdatedAt(LocalDateTime.now());
-    moneyBoxRepository.save(moneyBox);
+        moneyBox.setBalance(afterBalance.doubleValue());
+        moneyBox.setUpdatedAt(LocalDateTime.now());
+        moneyBoxRepository.save(moneyBox);
 
-    return afterBalance.doubleValue();
-  }
+        return afterBalance.doubleValue();
+    }
 
-  /**
-   * 입금 및 출금(원화, 외화)
-   */
-  @Transactional
-  public TransactionResponseDto processTransaction(TransactionRequestDto requestDto) {
+    /**
+     * 입금 및 출금(원화, 외화)
+     */
+    @Transactional
+    public TransactionResponseDto processTransaction(TransactionRequestDto requestDto) {
 
-    String accountNo = requestDto.getAccountNo();
-    CurrencyType currencyCode = requestDto.getCurrencyCode();
-    MoneyBox moneyBox = findMoneyBoxByAccountAndCurrencyCode(accountNo, currencyCode);
+        String accountNo = requestDto.getAccountNo();
+        CurrencyType currencyCode = requestDto.getCurrencyCode();
+        MoneyBox moneyBox = findMoneyBoxByAccountAndCurrencyCode(accountNo, currencyCode);
 
-    //거래 권한 확인
-    User user = userService.findUserByHeader();
-    validateUserAccess(user, moneyBox);
+        //거래 권한 확인
+        User user = userService.findUserByHeader();
+        validateUserAccess(user, moneyBox);
 
-    //비밀번호 검증
-    validatePassword(requestDto.getAccountPassword(), accountNo);
+        //비밀번호 검증
+        validatePassword(requestDto.getAccountPassword(), accountNo);
 
-    TransactionType transactionType = requestDto.getTransactionType();
-    double amount = requestDto.getTransactionBalance();
-    double afterBalance = 0L;
+        TransactionType transactionType = requestDto.getTransactionType();
+        double amount = requestDto.getTransactionBalance();
+        double afterBalance = 0L;
 
-    // 입금 또는 출금 처리
-    afterBalance = switch (transactionType) {
-      case D, SD -> processDeposit(moneyBox, amount);
-      case W, SW -> processWithdrawal(moneyBox, amount);
-      default -> throw new InvalidTransactionTypeException(transactionType);
-    };
+        // 입금 또는 출금 처리
+        afterBalance = switch (transactionType) {
+            case D, SD -> processDeposit(moneyBox, amount);
+            case W, SW -> processWithdrawal(moneyBox, amount);
+            default -> throw new InvalidTransactionTypeException(transactionType);
+        };
 
-    Long nextId = getNextTransactionId();
+        Long nextId = getNextTransactionId();
 
-    LogUtil.info("transactionType:",transactionType);
-    TransactionHistory transactionHistory = TransactionHistory.createTransactionHistory(nextId,
-        transactionType, moneyBox, null, requestDto.getHeader().getTransmissionDateTime(), amount,
-        afterBalance, requestDto.getTransactionSummary());
+        LogUtil.info("transactionType:", transactionType);
+        TransactionHistory transactionHistory = TransactionHistory.createTransactionHistory(nextId,
+            transactionType, moneyBox, null, requestDto.getHeader().getTransmissionDateTime(), amount,
+            afterBalance, requestDto.getTransactionSummary());
 
-    TransactionHistory th = transactionHistoryRepository.save(transactionHistory);
-    return transactionMapper.convertTransactionHistoryToTransactionResponseDto(th);
-  }
+        TransactionHistory th = transactionHistoryRepository.save(transactionHistory);
+        return transactionMapper.convertTransactionHistoryToTransactionResponseDto(th);
+    }
 
-  /**
-   * 일반 이체 처리
-   */
-  @Transactional
-  public List<TransactionResponseDto> processGeneralTransfer(TransferRequestDto requestDto) {
+    /**
+     * 일반 이체 처리
+     */
+    @Transactional
+    public List<TransactionResponseDto> processGeneralTransfer(TransferRequestDto requestDto) {
 
-    // 출금 머니박스
-    MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrencyCode(
-        requestDto.getWithdrawalAccountNo(),
-        CurrencyType.KRW);
+        // 출금 머니박스
+        MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrencyCode(
+            requestDto.getWithdrawalAccountNo(),
+            CurrencyType.KRW);
 
-    //거래 권한 확인
-    User user = userService.findUserByHeader();
-    validateUserAccess(user, withdrawalBox);
+        //거래 권한 확인
+        User user = userService.findUserByHeader();
+        validateUserAccess(user, withdrawalBox);
 
-    //비밀번호 검증
-    validatePassword(requestDto.getAccountPassword(), requestDto.getWithdrawalAccountNo());
+        //비밀번호 검증
+        validatePassword(requestDto.getAccountPassword(), requestDto.getWithdrawalAccountNo());
 
-    // 입금 머니박스
-    MoneyBox depositBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getDepositAccountNo(),
-        CurrencyType.KRW);
+        // 입금 머니박스
+        MoneyBox depositBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getDepositAccountNo(),
+            CurrencyType.KRW);
 
-    TransferDetailDto transferDetailDto = TransferDetailDto.builder()
-        .transferType(requestDto.getTransferType()).withdrawalBox(withdrawalBox)
-        .withdrawalAmount(requestDto.getTransactionBalance())
-        .withdrawalSummary(requestDto.getWithdrawalTransactionSummary()).depositBox(depositBox)
-        .depositAmount(requestDto.getTransactionBalance())
-        .depositSummary(requestDto.getDepositTransactionSummary())
-        .transmissionDateTime(requestDto.getHeader().getTransmissionDateTime()).build();
+        TransferDetailDto transferDetailDto = TransferDetailDto.builder()
+            .transferType(requestDto.getTransferType()).withdrawalBox(withdrawalBox)
+            .withdrawalAmount(requestDto.getTransactionBalance())
+            .withdrawalSummary(requestDto.getWithdrawalTransactionSummary()).depositBox(depositBox)
+            .depositAmount(requestDto.getTransactionBalance())
+            .depositSummary(requestDto.getDepositTransactionSummary())
+            .transmissionDateTime(requestDto.getHeader().getTransmissionDateTime()).build();
 
-    return processTransferLogic(transferDetailDto);
-  }
+        return processTransferLogic(transferDetailDto);
+    }
 
-  /**
-   * 자동환전
-   */
-  public List<TransactionResponseDto> processAutoExchange(TransferMBRequestDto requestDto) {
+    /**
+     * 자동환전
+     */
+    public List<TransactionResponseDto> processAutoExchange(TransferMBRequestDto requestDto) {
 
-    requestDto.setAccountPassword(getPassword(requestDto.getAccountNo()));
-    return processMoneyBoxTransfer(requestDto);
-  }
+        requestDto.setAccountPassword(getPassword(requestDto.getAccountNo()));
+        return processMoneyBoxTransfer(requestDto);
+    }
 
-  /**
-   * 정산 입출금
-   */
-  public TransactionResponseDto processAutoSettlement(TransactionRequestDto requestDto) {
+    /**
+     * 정산 입출금
+     */
+    public TransactionResponseDto processAutoSettlement(TransactionRequestDto requestDto) {
 
-    requestDto.setAccountPassword(getPassword(requestDto.getAccountNo()));
-    return processTransaction(requestDto);
-  }
+        requestDto.setAccountPassword(getPassword(requestDto.getAccountNo()));
+        return processTransaction(requestDto);
+    }
 
 
-  /**
-   * 머니박스 이체(환전)
-   */
-  @Transactional
-  public List<TransactionResponseDto> processMoneyBoxTransfer(TransferMBRequestDto requestDto) {
+    /**
+     * 머니박스 이체(환전)
+     */
+    @Transactional
+    public List<TransactionResponseDto> processMoneyBoxTransfer(TransferMBRequestDto requestDto) {
 
-    double beforeAmount = requestDto.getTransactionBalance();//해당 머니박스의 통화단위임
-    String summary = "";
-    ExchangeAmountRequestDto exchangeAmountRequestDto = switch (requestDto.getSourceCurrencyCode()) {
-      case USD -> {
-        summary = "재환전";
-        yield exchangeService.calculateAmountFromForeignCurrencyToKRW(
-            requestDto.getSourceCurrencyCode(),
-            beforeAmount); // 외화 -> 원화
-      }
-      default -> {
-        summary = "환전";
-        // 원화 -> 외화일 때만 10원 단위로 조정
-        if (beforeAmount % 10 != 0) {
-          beforeAmount -= (beforeAmount % 10);
+        double beforeAmount = requestDto.getTransactionBalance();//해당 머니박스의 통화단위임
+        String summary = "";
+        ExchangeAmountRequestDto exchangeAmountRequestDto = switch (requestDto.getSourceCurrencyCode()) {
+            case USD -> {
+                summary = "재환전";
+                yield exchangeService.calculateAmountFromForeignCurrencyToKRW(
+                    requestDto.getSourceCurrencyCode(),
+                    beforeAmount); // 외화 -> 원화
+            }
+            default -> {
+                summary = "환전";
+                // 원화 -> 외화일 때만 10원 단위로 조정
+                if (beforeAmount % 10 != 0) {
+                    beforeAmount -= (beforeAmount % 10);
+                }
+                yield exchangeService.calculateAmountFromKRWToForeignCurrency(
+                    requestDto.getTargetCurrencyCode(), beforeAmount); // 원화 -> 외화
+            }
+        };
+
+        double calculatedAmount = exchangeAmountRequestDto.getAmount();
+        double exchangeRate = exchangeAmountRequestDto.getExchangeRate();
+        summary += (", 적용 환율: " + exchangeRate);
+
+        // 출금 머니박스
+        MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountNo(),
+            requestDto.getSourceCurrencyCode());
+
+        //거래 권한 확인
+        User user = userService.findUserByHeader();
+        validateUserAccess(user, withdrawalBox);
+
+        //비밀번호 검증
+        validatePassword(requestDto.getAccountPassword(), requestDto.getAccountNo());
+
+        // 입금 머니박스
+        MoneyBox depositBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountNo(),
+            requestDto.getTargetCurrencyCode());
+
+        TransferDetailDto transferDetailDto = TransferDetailDto.builder()
+            .transferType(requestDto.getTransferType()).withdrawalBox(withdrawalBox)
+            .withdrawalAmount(beforeAmount)//신청 금액
+            .withdrawalSummary(summary).depositBox(depositBox).depositAmount(calculatedAmount)//환전된 금액
+            .depositSummary(summary)
+            .transmissionDateTime(requestDto.getHeader().getTransmissionDateTime()).build();
+
+        return processTransferLogic(transferDetailDto);
+    }
+
+    /**
+     * 이체 공통 로직
+     */
+    private List<TransactionResponseDto> processTransferLogic(TransferDetailDto dto) {
+
+        // 출금 처리
+        double withdrawalAfterBalance = processWithdrawal(dto.getWithdrawalBox(),
+            dto.getWithdrawalAmount());
+
+        // 입금 처리
+        double depositAfterBalance = processDeposit(dto.getDepositBox(), dto.getDepositAmount());
+
+        Long nextId = getNextTransactionId();
+
+        // 출금 기록 저장
+        TransactionType type =
+            dto.getTransferType() == TransferType.G ? TransactionType.TW : TransactionType.EW;
+        TransactionHistory withdrawalTransactionHistory = TransactionHistory.createTransactionHistory(
+            nextId, type, dto.getWithdrawalBox(), dto.getDepositBox().getAccount().getAccountNo(),
+            dto.getTransmissionDateTime(), dto.getWithdrawalAmount(), withdrawalAfterBalance,
+            dto.getWithdrawalSummary());
+
+        TransactionHistory withdrawalTh = transactionHistoryRepository.save(
+            withdrawalTransactionHistory);
+
+        // 입금 기록 저장
+        type = dto.getTransferType() == TransferType.G ? TransactionType.TD : TransactionType.ED;
+        TransactionHistory depositTransactionHistory = TransactionHistory.createTransactionHistory(
+            nextId, type, dto.getDepositBox(), dto.getWithdrawalBox().getAccount().getAccountNo(),
+            dto.getTransmissionDateTime(), dto.getDepositAmount(), depositAfterBalance,
+            dto.getDepositSummary());
+
+        TransactionHistory depositTh = transactionHistoryRepository.save(depositTransactionHistory);
+
+        // response 변환
+        return transactionMapper.convertTransactionHistoriesToResponseDtos(
+            List.of(withdrawalTh, depositTh));
+    }
+
+    /**
+     * 거래 내역 조회
+     */
+    @Transactional(readOnly = true)
+    public List<TransactionResponseDto> getTransactionHistory(
+        TransactionHistoryRequestDto requestDto) {
+
+        List<TransactionHistory> transactionHistories = transactionHistoryRepository.findByCustomOrder(
+            requestDto).orElseThrow(TransactionHistoryNotFoundException::new);
+
+        return transactionMapper.convertTransactionHistoriesToResponseDtos(transactionHistories);
+    }
+
+    /**
+     * 다음 거래 기록 id 조회
+     */
+    @Transactional(readOnly = true)
+    public Long getNextTransactionId() {
+        Long nextId = transactionHistoryRepository.findMaxAccountId();
+        return (nextId == null) ? 1L : nextId + 1;
+    }
+
+    /**
+     * 머니박스 조회
+     */
+    @Transactional(readOnly = true)
+    public MoneyBox findMoneyBoxByAccountAndCurrencyCode(String accountNo, CurrencyType
+        currencyCode) {
+        return moneyBoxRepository.findMoneyBoxByAccountNoAndCurrency(accountNo, currencyCode)
+            .orElseThrow(() -> new MoneyBoxNotFoundException(accountNo, currencyCode));
+    }
+
+    /**
+     * 거래 권한 검증
+     *
+     * @param user     : 거래 요청 user
+     * @param moneyBox : 거래 요청 머니박스
+     */
+    private void validateUserAccess(User user, MoneyBox moneyBox) {
+        long userId = user.getUserId();
+        long accountId = moneyBox.getAccount().getId();
+
+        if (userId != moneyBox.getAccount().getUser().getUserId()) {
+            throw new UnauthorizedTransactionException(userId, accountId);
         }
-        yield exchangeService.calculateAmountFromKRWToForeignCurrency(
-            requestDto.getTargetCurrencyCode(), beforeAmount); // 원화 -> 외화
-      }
-    };
-
-    double calculatedAmount = exchangeAmountRequestDto.getAmount();
-    double exchangeRate = exchangeAmountRequestDto.getExchangeRate();
-    summary += (", 적용 환율: " + exchangeRate);
-
-    // 출금 머니박스
-    MoneyBox withdrawalBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountNo(),
-        requestDto.getSourceCurrencyCode());
-
-    //거래 권한 확인
-    User user = userService.findUserByHeader();
-    validateUserAccess(user, withdrawalBox);
-
-    //비밀번호 검증
-    validatePassword(requestDto.getAccountPassword(), requestDto.getAccountNo());
-
-    // 입금 머니박스
-    MoneyBox depositBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountNo(),
-        requestDto.getTargetCurrencyCode());
-
-    TransferDetailDto transferDetailDto = TransferDetailDto.builder()
-        .transferType(requestDto.getTransferType()).withdrawalBox(withdrawalBox)
-        .withdrawalAmount(beforeAmount)//신청 금액
-        .withdrawalSummary(summary).depositBox(depositBox).depositAmount(calculatedAmount)//환전된 금액
-        .depositSummary(summary)
-        .transmissionDateTime(requestDto.getHeader().getTransmissionDateTime()).build();
-
-    return processTransferLogic(transferDetailDto);
-  }
-
-  /**
-   * 이체 공통 로직
-   */
-  private List<TransactionResponseDto> processTransferLogic(TransferDetailDto dto) {
-
-    // 출금 처리
-    double withdrawalAfterBalance = processWithdrawal(dto.getWithdrawalBox(),
-        dto.getWithdrawalAmount());
-
-    // 입금 처리
-    double depositAfterBalance = processDeposit(dto.getDepositBox(), dto.getDepositAmount());
-
-    Long nextId = getNextTransactionId();
-
-    // 출금 기록 저장
-    TransactionType type =
-        dto.getTransferType() == TransferType.G ? TransactionType.TW : TransactionType.EW;
-    TransactionHistory withdrawalTransactionHistory = TransactionHistory.createTransactionHistory(
-        nextId, type, dto.getWithdrawalBox(), dto.getDepositBox().getAccount().getAccountNo(),
-        dto.getTransmissionDateTime(), dto.getWithdrawalAmount(), withdrawalAfterBalance,
-        dto.getWithdrawalSummary());
-
-    TransactionHistory withdrawalTh = transactionHistoryRepository.save(
-        withdrawalTransactionHistory);
-
-    // 입금 기록 저장
-    type = dto.getTransferType() == TransferType.G ? TransactionType.TD : TransactionType.ED;
-    TransactionHistory depositTransactionHistory = TransactionHistory.createTransactionHistory(
-        nextId, type, dto.getDepositBox(), dto.getWithdrawalBox().getAccount().getAccountNo(),
-        dto.getTransmissionDateTime(), dto.getDepositAmount(), depositAfterBalance,
-        dto.getDepositSummary());
-
-    TransactionHistory depositTh = transactionHistoryRepository.save(depositTransactionHistory);
-
-    // response 변환
-    return transactionMapper.convertTransactionHistoriesToResponseDtos(
-        List.of(withdrawalTh, depositTh));
-  }
-
-  /**
-   * 거래 내역 조회
-   */
-  @Transactional(readOnly = true)
-  public List<TransactionResponseDto> getTransactionHistory(
-      TransactionHistoryRequestDto requestDto) {
-
-    List<TransactionHistory> transactionHistories = transactionHistoryRepository.findByCustomOrder(
-        requestDto).orElseThrow(TransactionHistoryNotFoundException::new);
-
-    return transactionMapper.convertTransactionHistoriesToResponseDtos(transactionHistories);
-  }
-
-  /**
-   * 다음 거래 기록 id 조회
-   */
-  @Transactional(readOnly = true)
-  public Long getNextTransactionId() {
-    Long nextId = transactionHistoryRepository.findMaxAccountId();
-    return (nextId == null) ? 1L : nextId + 1;
-  }
-
-  /**
-   * 머니박스 조회
-   */
-  @Transactional(readOnly = true)
-  public MoneyBox findMoneyBoxByAccountAndCurrencyCode(String accountNo, CurrencyType
-      currencyCode) {
-    return moneyBoxRepository.findMoneyBoxByAccountNoAndCurrency(accountNo, currencyCode)
-        .orElseThrow(() -> new MoneyBoxNotFoundException(accountNo, currencyCode));
-  }
-
-  /**
-   * 거래 권한 검증
-   *
-   * @param user     : 거래 요청 user
-   * @param moneyBox : 거래 요청 머니박스
-   */
-  private void validateUserAccess(User user, MoneyBox moneyBox) {
-    long userId = user.getUserId();
-    long accountId = moneyBox.getAccount().getId();
-
-    if (userId != moneyBox.getAccount().getUser().getUserId()) {
-      throw new UnauthorizedTransactionException(userId, accountId);
-    }
-  }
-
-  /**
-   * 출금시 유효성 검증
-   */
-  private void validateWithdrawal(double currentBalance, double amount) {
-    if (amount <= 0) {
-      throw new InvalidWithdrawalAmountException(amount);
     }
 
-    if (amount > currentBalance) {
-      throw new InsufficientBalanceException(currentBalance, amount);
+    /**
+     * 출금시 유효성 검증
+     */
+    private void validateWithdrawal(double currentBalance, double amount) {
+        if (amount <= 0) {
+            throw new InvalidWithdrawalAmountException(amount);
+        }
+
+        if (amount > currentBalance) {
+            throw new InsufficientBalanceException(currentBalance, amount);
+        }
     }
-  }
 
-  /**
-   * 비밀번호 검증
-   */
-  private boolean validatePassword(String password, String accountNo) {
+    /**
+     * 비밀번호 검증
+     */
+    private boolean validatePassword(String password, String accountNo) {
 
-    String accountPassword = getPassword(accountNo);
+        String accountPassword = getPassword(accountNo);
 
-    if (!password.equals(accountPassword)) {
-      throw new InvalidAccountPasswordException(password);
+        if (!password.equals(accountPassword)) {
+            throw new InvalidAccountPasswordException(password);
+        }
+        return true;
     }
-    return true;
-  }
 
-  private String getPassword(String accountNo) {
+    private String getPassword(String accountNo) {
 
-    return accountRepository.findPasswordByAccountNo(accountNo)
-        .orElseThrow(() -> new InvalidAccountNoException(accountNo));
-  }
+        return accountRepository.findPasswordByAccountNo(accountNo)
+            .orElseThrow(() -> new InvalidAccountNoException(accountNo));
+    }
 }
