@@ -9,6 +9,8 @@ public class ParticipantDto {
 
     private Long userId;
 
+    private String userName;
+
     private boolean isMaster;
 
     private String personalAccountNo;
