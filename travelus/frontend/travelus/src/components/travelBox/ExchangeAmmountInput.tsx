@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 
-const ExchangeAmountInput = () => {
-  const [transferAmount, setTransferAmount] = useState<string>(""); // 금액 상태
+interface Props {
+  exchangeAmount: number;
+  setExchangeAmount: (num: number) => void;
+}
+
+const ExchangeAmountInput = ({ exchangeAmount, setExchangeAmount }: Props) => {
+  // const [transferAmount, setTransferAmount] = useState<string>(""); // 금액 상태
   const [isFullExchange, setIsFullExchange] = useState<boolean>(false); // 전액 환전 체크박스 상태
 
   const handleIncrement = (incrementValue: number) => {
-    const currentAmount = Number(transferAmount) || 0;
+    const currentAmount = Number(exchangeAmount) || 0;
     const newAmount = currentAmount + incrementValue;
-    setTransferAmount(String(newAmount));
+    setExchangeAmount(newAmount);
   };
-
-  useEffect(() => {
-    setTransferAmount("");
-  }, [isFullExchange]);
 
   return (
     <div className="grid gap-3">
@@ -27,8 +28,8 @@ const ExchangeAmountInput = () => {
               isFullExchange ? "text-[#9e9e9e] placeholder:text-[#9e9e9e]" : "placeholder:text-black "
             }`}
             type="number"
-            value={transferAmount}
-            onChange={(e) => setTransferAmount(e.target.value)}
+            value={exchangeAmount}
+            onChange={(e) => setExchangeAmount(Number(e.target.value))}
             placeholder="0"
             disabled={isFullExchange}
           />

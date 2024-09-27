@@ -2,7 +2,19 @@ import { FilledInput, FormControl, FormHelperText, Input, InputAdornment, TextFi
 import React from "react";
 import { BsDot } from "react-icons/bs";
 
-const ExchangeRateInputMui = () => {
+interface Props {
+  exchangeRateFront: number;
+  setExchangeRateFront: (num: number) => void;
+  exchangeRateBack: number;
+  setExchangeRateBack: (num: number) => void;
+}
+
+const ExchangeRateInputMui = ({
+  exchangeRateFront,
+  setExchangeRateFront,
+  exchangeRateBack,
+  setExchangeRateBack,
+}: Props) => {
   return (
     <div className="grid gap-3">
       <div className="flex justify-between">
@@ -18,12 +30,21 @@ const ExchangeRateInputMui = () => {
             className="w-32 text-right border-b-2 border-[#D7D7D7] placeholder:text-black outline-none"
             type="number"
             placeholder="0"
+            value={exchangeRateFront}
+            onChange={(e) => setExchangeRateFront(Number(e.target.value))}
           />
           <BsDot />
           <input
             className="w-16 text-right border-b-2 border-[#D7D7D7] placeholder:text-black outline-none"
             type="number"
             placeholder="0"
+            value={exchangeRateBack}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value.length <= 2) {
+                setExchangeRateBack(Number(value));
+              }
+            }}
           />
         </div>
 
