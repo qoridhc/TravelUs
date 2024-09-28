@@ -6,7 +6,6 @@ import com.goofy.tunabank.v1.domain.Enum.TransferType;
 import com.goofy.tunabank.v1.domain.MoneyBox;
 import com.goofy.tunabank.v1.domain.User;
 import com.goofy.tunabank.v1.domain.history.AbstractHistory;
-import com.goofy.tunabank.v1.domain.history.CardHistory;
 import com.goofy.tunabank.v1.domain.history.HistoryId;
 import com.goofy.tunabank.v1.domain.history.TransactionHistory;
 import com.goofy.tunabank.v1.dto.exchange.ExchangeAmountRequestDto;
@@ -16,6 +15,7 @@ import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDt
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferMBRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferRequestDto;
+import com.goofy.tunabank.v1.dto.transaction.response.HistoryResponseDto;
 import com.goofy.tunabank.v1.dto.transaction.response.TransactionResponseDto;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountPasswordException;
@@ -26,6 +26,8 @@ import com.goofy.tunabank.v1.exception.transaction.MoneyBoxNotFoundException;
 import com.goofy.tunabank.v1.exception.transaction.TransactionHistoryNotFoundException;
 import com.goofy.tunabank.v1.exception.transaction.UnauthorizedTransactionException;
 import com.goofy.tunabank.v1.mapper.HistoryMapper;
+import com.goofy.tunabank.v1.mapper.TransactionMapper;
+import com.goofy.tunabank.v1.repository.AbstractHistoryRepository;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
 import com.goofy.tunabank.v1.repository.account.AccountRepository;
 import com.goofy.tunabank.v1.repository.transaction.TransactionHistoryRepository;
@@ -34,7 +36,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +46,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class TransactionService {
 
     private final TransactionHistoryRepository transactionHistoryRepository;
+    private final AbstractHistoryRepository abstractHistoryRepository;
     private final MoneyBoxRepository moneyBoxRepository;
+    private final TransactionMapper transactionMapper;
     private final HistoryMapper historyMapper;
     private final ExchangeService exchangeService;
     private final UserService userService;
@@ -128,7 +131,7 @@ public class TransactionService {
             afterBalance, requestDto.getTransactionSummary());
 
         TransactionHistory th = transactionHistoryRepository.save(transactionHistory);
-        return historyMapper.toTransactionResponseDto(th);
+        return transactionMapper.toTransactionResponseDto(th);
     }
 
     /**
@@ -273,7 +276,7 @@ public class TransactionService {
         TransactionHistory depositTh = transactionHistoryRepository.save(depositTransactionHistory);
 
         // response 변환
-        return historyMapper.toTransactionResponseDtos(
+        return transactionMapper.toTransactionResponseDtos(
             List.of(withdrawalTh, depositTh));
     }
 
@@ -281,14 +284,17 @@ public class TransactionService {
      * 거래 내역 목록 조회
      */
     @Transactional(readOnly = true)
-    public List<TransactionResponseDto> getTransactionHistory(TransactionHistoryListRequestDto requestDto) {
+    public List<HistoryResponseDto> getTransactionHistory(TransactionHistoryListRequestDto requestDto) {
 
         // 거래 기록 조회
-        List<AbstractHistory> transactionHistories = transactionHistoryRepository.findHistoryByAccountNo(requestDto.getAccountNo())
+        List<AbstractHistory> transactionHistories = transactionHistoryRepository.findHistoryByAccountNo(requestDto)
             .orElseThrow(TransactionHistoryNotFoundException::new);
 
+        for (AbstractHistory history : transactionHistories) {
+            LogUtil.info("history:",history.toString());
+        }
         // 거래 기록 리스트를 Mapper를 통해 Response DTO로 변환
-        return historyMapper.toTransactionResponseDtos(transactionHistories);
+        return historyMapper.toHistoryResponseDtos(transactionHistories);
     }
 
 
@@ -296,14 +302,14 @@ public class TransactionService {
      * 거래 내역 단건 조회
      */
     @Transactional(readOnly = true)
-    public TransactionResponseDto getHistory(
+    public HistoryResponseDto getHistory(
         TransactionHistoryRequestDto requestDto) {
 
         TransactionHistory transactionHistory = transactionHistoryRepository.findById(
             new HistoryId(requestDto.getTransactionHistoryId(),
                 requestDto.getTransactionType())).orElseThrow(TransactionHistoryNotFoundException::new);
 
-        return historyMapper.toTransactionResponseDto(transactionHistory);
+        return historyMapper.toHistoryResponseDto(transactionHistory);
     }
 
     /**
@@ -311,7 +317,7 @@ public class TransactionService {
      */
     @Transactional(readOnly = true)
     public Long getNextTransactionId() {
-        Long nextId = transactionHistoryRepository.findMaxAccountId();
+        Long nextId = abstractHistoryRepository.findMaxHistoryId();
         return (nextId == null) ? 1L : nextId + 1;
     }
 

@@ -9,5 +9,5 @@ public interface TransactionHistoryCustomRepository {
 
 //    Optional<List<AbstractHistory>> findByCustomOrder(TransactionHistoryListRequestDto requestDto);
 
-    Optional<List<AbstractHistory>> findHistoryByAccountNo(String accountNo);
+    Optional<List<AbstractHistory>> findHistoryByAccountNo(TransactionHistoryListRequestDto accountNo);
 }

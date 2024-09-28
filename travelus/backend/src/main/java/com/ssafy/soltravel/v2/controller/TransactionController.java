@@ -5,6 +5,7 @@ import com.ssafy.soltravel.v2.dto.transaction.request.TransactionHistoryListRequ
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionHistoryRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
+import com.ssafy.soltravel.v2.dto.transaction.response.HistoryResponseDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransactionResponseDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
 import com.ssafy.soltravel.v2.service.transaction.TransactionService;
@@ -37,12 +38,10 @@ public class TransactionController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "입금 성공", content = @Content(schema = @Schema(implementation = TransactionResponseDto.class))),
       @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
-      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
-  })
+      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)})
   @PostMapping("/deposit")
   public ResponseEntity<TransactionResponseDto> postAccountDeposit(
-      @RequestBody TransactionRequestDto requestDto
-  ) {
+      @RequestBody TransactionRequestDto requestDto) {
 
     ResponseEntity<TransactionResponseDto> response = transactionService.postAccountDeposit(
         requestDto, -1);
@@ -53,12 +52,10 @@ public class TransactionController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "출금 성공", content = @Content(schema = @Schema(implementation = TransactionResponseDto.class))),
       @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
-      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
-  })
+      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)})
   @PostMapping("/withdrawal")
   public ResponseEntity<TransactionResponseDto> postAccountWithdrawal(
-      @RequestBody TransactionRequestDto requestDto
-  ) {
+      @RequestBody TransactionRequestDto requestDto) {
 
     ResponseEntity<TransactionResponseDto> response = transactionService.postAccountWithdrawal(
         requestDto, -1);
@@ -68,16 +65,12 @@ public class TransactionController {
   @Operation(summary = "일반 이체", description = "원화 계좌에서 다른 원화 계좌로 이체합니다.")
   @ApiResponses(value = {
 
-      @ApiResponse(responseCode = "200", description = "이체 성공",
-          content = @Content(array = @ArraySchema(schema = @Schema(implementation = TransferHistoryResponseDto.class)))
-      ),
+      @ApiResponse(responseCode = "200", description = "이체 성공", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TransferHistoryResponseDto.class)))),
       @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
-      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
-  })
+      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)})
   @PostMapping("/transfer/general")
   public ResponseEntity<List<TransferHistoryResponseDto>> postAccountTransfer(
-      @RequestBody TransferRequestDto requestDto
-  ) {
+      @RequestBody TransferRequestDto requestDto) {
 
     ResponseEntity<List<TransferHistoryResponseDto>> response = transactionService.postGeneralTransfer(
         requestDto);
@@ -87,16 +80,12 @@ public class TransactionController {
   @Operation(summary = "머니 박스 이체", description = "환전 및 재환전을 합니다.")
   @ApiResponses(value = {
 
-      @ApiResponse(responseCode = "200", description = "이체 성공",
-          content = @Content(array = @ArraySchema(schema = @Schema(implementation = TransferHistoryResponseDto.class)))
-      ),
+      @ApiResponse(responseCode = "200", description = "이체 성공", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TransferHistoryResponseDto.class)))),
       @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
-      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
-  })
+      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)})
   @PostMapping("/transfer/moneybox")
   public ResponseEntity<List<TransferHistoryResponseDto>> postMoneyBoxTransfer(
-      @RequestBody MoneyBoxTransferRequestDto requestDto
-  ) {
+      @RequestBody MoneyBoxTransferRequestDto requestDto) {
 
     ResponseEntity<List<TransferHistoryResponseDto>> response = transactionService.postMoneyBoxTransfer(
         requestDto, false, -1);
@@ -107,20 +96,14 @@ public class TransactionController {
   // 거래 내역 목록 조회
   @Operation(summary = "거래 내역 목록 조회", description = "지정된 계좌의 거래 내역을 조회합니다.")
   @ApiResponses(value = {
-      @ApiResponse(
-          responseCode = "200",
-          description = "거래 내역 조회 성공",
-          content = @Content(array = @ArraySchema(schema = @Schema(implementation = TransferHistoryResponseDto.class)))
-      ),
+      @ApiResponse(responseCode = "200", description = "거래 내역 조회 성공", content = @Content(array = @ArraySchema(schema = @Schema(implementation = HistoryResponseDto.class)))),
       @ApiResponse(responseCode = "404", description = "거래 내역 없음", content = @Content),
-      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
-  })
+      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)})
   @GetMapping("/history")
-  public ResponseEntity<List<TransferHistoryResponseDto>> getHistoryListByAccountNo(
-      @ModelAttribute TransactionHistoryListRequestDto requestDto
-  ) {
+  public ResponseEntity<List<HistoryResponseDto>> getHistoryListByAccountNo(
+      @ModelAttribute TransactionHistoryListRequestDto requestDto) {
 
-    ResponseEntity<List<TransferHistoryResponseDto>> response = transactionService.getHistoryList(
+    ResponseEntity<List<HistoryResponseDto>> response = transactionService.getHistoryList(
         requestDto);
     return response;
   }
@@ -128,20 +111,14 @@ public class TransactionController {
   // 거래 내역 단건 조회
   @Operation(summary = "거래 내역 단건 조회", description = "지정된 계좌의 거래 내역을 단건 조회합니다.")
   @ApiResponses(value = {
-      @ApiResponse(
-          responseCode = "200",
-          description = "거래 내역 조회 성공",
-          content = @Content(array = @ArraySchema(schema = @Schema(implementation = TransferHistoryResponseDto.class)))
-      ),
+      @ApiResponse(responseCode = "200", description = "거래 내역 조회 성공", content = @Content(array = @ArraySchema(schema = @Schema(implementation = HistoryResponseDto.class)))),
       @ApiResponse(responseCode = "404", description = "거래 내역 없음", content = @Content),
-      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
-  })
-  @GetMapping("/history/detail/{historyId}")
-  public ResponseEntity<TransferHistoryResponseDto> getHistoryByAccountNo(
-      @ModelAttribute TransactionHistoryRequestDto requestDto
-  ) {
+      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)})
+  @GetMapping("/history/detail")
+  public ResponseEntity<HistoryResponseDto> getHistoryByAccountNo(
+      @ModelAttribute TransactionHistoryRequestDto requestDto) {
 
-    ResponseEntity<TransferHistoryResponseDto> response = transactionService.getHistory(requestDto);
+    ResponseEntity<HistoryResponseDto> response = transactionService.getHistory(requestDto);
     return response;
   }
 }

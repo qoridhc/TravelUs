@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface TransactionHistoryRepository extends
     JpaRepository<TransactionHistory, HistoryId>, TransactionHistoryCustomRepository {
 
-    @Query("SELECT MAX(t.id) FROM TransactionHistory t")
-    Long findMaxAccountId();
+//    @Query("SELECT MAX(t.id) FROM TransactionHistory t")
+//    Long findMaxAccountId();
 }
