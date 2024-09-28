@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.v2.dto.transaction.response;
 
+import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -26,4 +27,7 @@ public class HistoryResponseDto {
 
   //메모
   private String transactionSummary;
+
+  //통화 코드
+  private CurrencyType currencyCode;
 }

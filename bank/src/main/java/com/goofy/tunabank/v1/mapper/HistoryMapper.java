@@ -18,6 +18,7 @@ public interface HistoryMapper {
   @Mapping(target = "transactionAmount", expression = "java(String.format(\"%.2f\", transactionHistory.getAmount()))")
   @Mapping(target = "transactionBalance", expression = "java(String.format(\"%.2f\", transactionHistory.getBalance()))")
   @Mapping(target = "transactionSummary", source = "summary")
+  @Mapping(target = "currencyCode", source = "moneyBox.currency.currencyCode")
   HistoryResponseDto toHistoryResponseDto(TransactionHistory transactionHistory);
 
   @Mapping(target = "transactionUniqueNo", source = "id")
@@ -26,6 +27,8 @@ public interface HistoryMapper {
   @Mapping(target = "transactionDate", source = "transactionAt")
   @Mapping(target = "transactionAmount", expression = "java(String.format(\"%.2f\", cardHistory.getAmount()))")
   @Mapping(target = "transactionBalance", expression = "java(String.format(\"%.2f\", cardHistory.getBalance()))")
+  @Mapping(target = "transactionSummary", expression = "java(String.format(\"%.2f\", cardHistory.getExchangeRate()))")
+  @Mapping(target = "currencyCode", source = "currency.currencyCode")
   HistoryResponseDto toHistoryResponseDto(CardHistory cardHistory);
 
   // 다형성을 처리하기 위한 기본 매핑

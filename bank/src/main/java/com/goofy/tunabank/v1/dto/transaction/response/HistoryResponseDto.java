@@ -1,6 +1,7 @@
 package com.goofy.tunabank.v1.dto.transaction.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -28,4 +29,7 @@ public class HistoryResponseDto {
 
   //메모
   private String transactionSummary;
+
+  //통화 코드
+  private CurrencyType currencyCode;
 }

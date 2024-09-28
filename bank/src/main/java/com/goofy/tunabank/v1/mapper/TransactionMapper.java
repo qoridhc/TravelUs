@@ -21,6 +21,6 @@ public interface TransactionMapper {
   @Mapping(target = "transactionSummary", source = "summary")
   TransactionResponseDto toTransactionResponseDto(TransactionHistory transactionHistory);
 
-  // AbstractHistory 리스트를 DTO 리스트로 변환
-  List<TransactionResponseDto> toTransactionResponseDtos(List<AbstractHistory> transactionHistories);
+  // TransactionHistory 리스트를 DTO 리스트로 변환
+  List<TransactionResponseDto> toTransactionResponseDtos(List<TransactionHistory> transactionHistories);
 }
