@@ -18,7 +18,7 @@ public interface HistoryMapper {
   @Mapping(target = "transactionAmount", expression = "java(String.format(\"%.2f\", transactionHistory.getAmount()))")
   @Mapping(target = "transactionBalance", expression = "java(String.format(\"%.2f\", transactionHistory.getBalance()))")
   @Mapping(target = "accountNo", source = "moneyBox.account.accountNo")
-  @Mapping(target="ownerName",source = "moneyBox.account.user.username")
+  @Mapping(target="ownerName", source="moneyBox.account.user.name")
   @Mapping(target = "transactionSummary", source = "summary")
   TransactionResponseDto toTransactionResponseDto(TransactionHistory transactionHistory);
 
