@@ -45,6 +45,7 @@ import PasswordOfCreateAccount from "./pages/account/generalAccount/generalAccou
 import CheckPasswordOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/CheckPasswordOfCreateAccount";
 import IDVerificationOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/IDVerificationOfCreateAccount";
 import UserInfoOfCreateMeetingAccount from "./pages/meetingAccount/UserInfoOfCreateMeetingAccount";
+import CompletedOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/CompletedOfCreateAccount";
 import MeetingInfoOfCreateMeetingAccount from "./pages/meetingAccount/MeetingInfoOfCreateMeetingAccount";
 import PasswordOfCreateMeetingAccount from "./pages/meetingAccount/PasswordOfCreateMeetingAccount";
 import CheckPasswordOfCreateMeetingAccount from "./pages/meetingAccount/CheckPasswordOfCreateMeetingAccount";
@@ -115,7 +116,8 @@ function App() {
           <Route path="/account/create/password" element={<PasswordOfCreateAccount />} />
           <Route path="/account/create/password/check" element={<CheckPasswordOfCreateAccount />} />
           <Route path="/account/create/idverification" element={<IDVerificationOfCreateAccount />} />
-
+          <Route path="/account/create/completed" element={<CompletedOfCreateAccount />} />
+          
           {/* 모임통장 생성 */}
           <Route path="/meeting/create/prepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/meeting/create/userinfo" element={<UserInfoOfCreateMeetingAccount />} />

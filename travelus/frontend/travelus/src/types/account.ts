@@ -150,6 +150,13 @@ export interface ParticipantInfo {
   accountNo: string;
 }
 
+// 입출금통장 개설 정보
+export interface GeneralAccountCreate {
+  accountType: string;
+  accountPassword: string;
+  bankId: number;
+}
+
 // 모임통장 개설 정보
 export interface MeetingAccountCreate {
   accountType: string;

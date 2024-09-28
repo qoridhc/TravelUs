@@ -1,15 +1,16 @@
 import React from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
-import { groupApi } from "../../../../api/group";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../redux/store";
 import { setMeetingAccountInfo, setTravelboxInfo } from "../../../../redux/meetingAccountSlice";
+import { accountApi } from "../../../../api/account";
 
 const IDVerificationOfCreateAccount = () => {
   const navigate = useNavigate();
   const params = useParams();
   const dispatch = useDispatch();
   const location = useLocation();
+  const password = location.state.password;
 
   const guideText = [
     "신분증 앞면이 선명하게 보이도록 가로로 촬영해주세요.",
@@ -17,46 +18,27 @@ const IDVerificationOfCreateAccount = () => {
     "빛이 반사되지 않는 곳에서 촬영해주세요.",
     "훼손되지 않은 신분증을 촬영해주세요.",
   ];
-  const meetingName = useSelector((state: RootState) => state.meetingAccount.meetingName);
-  const meetingType = useSelector((state: RootState) => state.meetingAccount.meetingType);
-  const individualAccountNo = useSelector((state: RootState) => state.meetingAccount.individualAccountNo);
 
   const handleNext = async () => {
     const data = {
-      groupAccountPassword: location.state.password,
-      groupName: meetingName,
-      icon: meetingType,
-      travelStartDate: "2024-01-01",
-      travelEndDate: "2024-01-07",
-      personalAccountNo: individualAccountNo,
+      accountType: "I",
+      accountPassword: password,
+      bankId: 1,
     };
 
-    navigate(`/meeting/create/completed/${params.type}`);
-    //   try {
-    //     // const response = await groupApi.createMeetingAccount(data);
-    //     // console.log(response);
-    //     // if (response.status === 201) {
-    //       // dispatch(
-    //       //   setMeetingAccountInfo({
-    //       //     groupAccountPassword: "",
-    //       //     groupName: response.data.groupName,
-    //       //     icon: response.data.icon,
-    //       //     groupId: response.data.groupId,
-    //       //   })
-    //       // );
-    //       // dispatch(
-    //       //   setTravelboxInfo({
-    //       //     accountPassword: "",
-    //       //     accountNo: response.data.groupAccountNo,
-    //       //     currencyCode: "",
-    //       //   })
-    //       // );
-    //       // }
-    //   } catch (error) {
-    //     alert("모임통장 개설에 실패했어요");
-    //     navigate("/");
-    //     console.log(error);
-    //   }
+    console.log("입출금통장생성데이터", data);
+    try {
+      // 입출금통장 생성 통신
+      const response = await accountApi.fetchCreateGeneralAccount(data);
+      console.log(response.data);
+      if (response.status === 201) {
+        navigate(`/account/create/completed`);
+      }
+    } catch (error) {
+      alert("입출금통장 개설에 실패했어요");
+      navigate("/");
+      console.log(error);
+    }
   };
 
   return (
