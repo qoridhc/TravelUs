@@ -162,12 +162,14 @@ const MeetingAccountExchange: React.FC = () => {
       return;
     }
 
+    const cleanedKrwAmount = krwAmount.replace(/,/g, "");
+
     navigate("/exchange/account-password-input", {
       state: {
         accountNo: selectedAccount.groupAccountNo,
         sourceCurrencyCode: "KRW",
         targetCurrencyCode: foreignCurrency.currencyCode,
-        transactionBalance: krwAmount,
+        transactionBalance: cleanedKrwAmount,
       },
     });
     console.log(foreignCurrency);
