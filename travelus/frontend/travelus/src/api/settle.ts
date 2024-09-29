@@ -1,5 +1,5 @@
 import api from "../lib/axios";
-import { SettlementRequest, SettlementResponse } from "../types/settle";
+import { SettlementRequest, SettlementResponse } from "../types/settlement";
 
 export const settlementApi = {
   // 정산하기
