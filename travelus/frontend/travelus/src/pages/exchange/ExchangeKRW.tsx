@@ -158,7 +158,7 @@ const MeetingAccountExchange: React.FC = () => {
   return (
     <div className="flex flex-col h-full p-5 pb-8">
       <div>
-        <button onClick={() => navigate(-1)} className="mb-4">
+        <button onClick={() => navigate(-1)} className="mb-7">
           <ChevronLeft className="w-6 h-6" />
         </button>
         <h1 className="text-xl font-bold mb-2">원화 채우기</h1>
@@ -195,7 +195,7 @@ const MeetingAccountExchange: React.FC = () => {
         </div>
         {selectedAccount && (
           <div className="relative">
-            <div className="bg-gray-100 rounded-lg p-4">
+            <div className="bg-gray-300 rounded-lg p-4">
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center">
                   <img src={getFlagImagePath("KRW")} alt="KRW Flag" className="w-6 h-4 mr-2" />
@@ -228,7 +228,7 @@ const MeetingAccountExchange: React.FC = () => {
 
             <div className="h-5 " />
             {getForeignCurrency() && (
-              <div className="bg-gray-100 rounded-lg p-4">
+              <div className="bg-gray-300 rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <div className="flex items-center">
                     <img
@@ -272,7 +272,7 @@ const MeetingAccountExchange: React.FC = () => {
         )}
       </div>
 
-      <div className="p-4 mt-auto">
+      <div className="mt-auto">
         <div className="flex items-center justify-center mb-4 text-gray-600">
           <FcMoneyTransfer className="mr-2 text-xl" />
           <p className="text-[#1429A0]">수수료는 튜나뱅크가 낼게요</p>
