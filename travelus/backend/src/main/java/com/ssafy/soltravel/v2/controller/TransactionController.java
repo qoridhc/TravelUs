@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -100,10 +101,10 @@ public class TransactionController {
       @ApiResponse(responseCode = "404", description = "거래 내역 없음", content = @Content),
       @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)})
   @GetMapping("/history")
-  public ResponseEntity<List<HistoryResponseDto>> getHistoryListByAccountNo(
+  public ResponseEntity<Page<HistoryResponseDto>> getHistoryListByAccountNo(
       @ModelAttribute TransactionHistoryListRequestDto requestDto) {
 
-    ResponseEntity<List<HistoryResponseDto>> response = transactionService.getHistoryList(
+    ResponseEntity<Page<HistoryResponseDto>> response = transactionService.getHistoryList(
         requestDto);
     return response;
   }

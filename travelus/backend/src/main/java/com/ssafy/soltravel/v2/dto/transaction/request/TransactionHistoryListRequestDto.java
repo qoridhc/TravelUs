@@ -33,4 +33,12 @@ public class TransactionHistoryListRequestDto {
 
     @Schema(description = "정렬 기준 (ASC: 오름차순(이전거래), DESC: 내림차순(최근거래))", example = "DESC")
     private OrderByType orderByType;
+
+    /**
+     * 페이징용 변수
+     */
+    @Schema(description = "몇 페이지인지(0이 첫번째 페이지)",example = "0")
+    private Integer page;
+    @Schema(description = "몇 개 가져올건지",example = "2")
+    private Integer size;
 }

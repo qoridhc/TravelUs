@@ -11,6 +11,7 @@ import com.goofy.tunabank.v1.dto.transaction.response.TransactionResponseDto;
 import com.goofy.tunabank.v1.service.TransactionService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,10 +62,10 @@ public class TransactionController {
    * 거래 내역 목록 조회
    */
   @PostMapping("/history")
-  public ResponseEntity<RecWrapper<List<HistoryResponseDto>>> getTransactionHistoryList(
+  public ResponseEntity<RecWrapper<Page<HistoryResponseDto>>> getTransactionHistoryList(
       @RequestBody TransactionHistoryListRequestDto requestDto) {
 
-    List<HistoryResponseDto> response = transactionService.getTransactionHistory(requestDto);
+    Page<HistoryResponseDto> response = transactionService.getTransactionHistory(requestDto);
     return ResponseEntity.ok(new RecWrapper<>(response));
   }
 
