@@ -1,8 +1,15 @@
 import api from "../lib/axios";
+import { NotificationData } from "../types/notification";
 
 export const notificationApi = {
   // fcm 토큰 저장
   fetchFcmToken: (fcmToken: string) => {
     return api.post(`/notification/register`, { fcmToken });
   },
+
+  // 푸시 알림 보내기 (포그라운드 메시지 수신 테스트용)
+  pushNotification: (notificationData: NotificationData) => {
+    return api.post(`/notification/push`, notificationData);
+  },
+
 };
