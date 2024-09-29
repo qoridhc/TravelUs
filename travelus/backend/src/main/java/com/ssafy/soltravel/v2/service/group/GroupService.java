@@ -32,8 +32,10 @@ import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -170,9 +172,11 @@ public class GroupService {
         // 2. 그룹 조회
         TravelGroup group = groupRepository.findById(requestDto.getGroupId()).orElseThrow(InvalidGroupIdException::new);
 
-        // 이미 가입한 참여자인경우 예외 처리
-        boolean existParticipant = group.getParticipants().stream()
-            .anyMatch((participant) -> participant.getUser().getUserId().equals(user.getUserId()));
+        // 이미 가입한 참여자인 경우 예외 처리
+        boolean existParticipant = Optional.ofNullable(group.getParticipants())
+            .orElse(Collections.emptyList()) // Participants가 null인 경우 빈 리스트로 처리
+            .stream()
+            .anyMatch(participant -> participant.getUser().getUserId().equals(user.getUserId()));
 
         if (existParticipant) {
             throw new DuplicateParticipantException(requestDto.getGroupId(), user.getUserId());
