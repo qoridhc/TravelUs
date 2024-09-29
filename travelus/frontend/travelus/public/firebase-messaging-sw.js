@@ -8,7 +8,7 @@ self.addEventListener("activate", function (e) {
 });
 
 self.addEventListener("push", function (e) {
-  // console.log("push: ", e.data.json());
+
   if (!e.data.json()) return;
 
   const resultData = e.data.json().notification;
@@ -19,7 +19,8 @@ self.addEventListener("push", function (e) {
     tag: resultData.tag,
     ...resultData,
   };
-  console.log("push: ", { resultData, notificationTitle, notificationOptions });
+  console.log("service-worker 백그라운드 수신: ", { resultData, notificationTitle, notificationOptions });
+
 
   self.registration.showNotification(notificationTitle, notificationOptions);
 });

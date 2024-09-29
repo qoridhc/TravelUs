@@ -7,6 +7,8 @@ import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
 import { store } from "./redux/store";
 import { Provider } from "react-redux";
+import { setupFirebaseMessaging } from "./utils/notificationUtils";
+
 
 window.Kakao.init(process.env.REACT_APP_JAVASCRIPT_KEY);
 window.Kakao.isInitialized();
@@ -19,5 +21,8 @@ root.render(
 );
 
 serviceWorkerRegistration.register();
+
+// 포그라운드 fcm 알림 수신 
+setupFirebaseMessaging();
 
 // reportWebVitals();
