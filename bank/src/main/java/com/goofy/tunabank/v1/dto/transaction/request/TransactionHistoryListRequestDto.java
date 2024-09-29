@@ -20,4 +20,10 @@ public class TransactionHistoryListRequestDto {
   private TransactionType transactionType;
 
   private OrderByType orderByType;
+
+  /**
+   * 페이징용 변수
+   */
+  private Integer page;
+  private Integer size;
 }

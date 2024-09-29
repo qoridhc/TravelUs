@@ -13,6 +13,7 @@ import com.ssafy.soltravel.v2.dto.transaction.response.TransactionResponseDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.repository.UserRepository;
+import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import com.ssafy.soltravel.v2.util.WebClientUtil;
 import java.util.HashMap;
@@ -21,6 +22,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -213,7 +218,7 @@ public class TransactionService {
   /**
    * 거래 내역 목록 조회
    */
-  public ResponseEntity<List<HistoryResponseDto>> getHistoryList(
+  public ResponseEntity<Page<HistoryResponseDto>> getHistoryList(
       TransactionHistoryListRequestDto requestDto) {
 
     User user = securityUtil.getUserByToken();
@@ -235,16 +240,45 @@ public class TransactionService {
     body.put("startDate", requestDto.getStartDate());
     body.put("endDate", requestDto.getEndDate());
     body.put("orderByType", requestDto.getOrderByType());
+    body.put("page", requestDto.getPage());
+    body.put("size", requestDto.getSize());
 
     ResponseEntity<Map<String, Object>> response = webClientUtil.request(API_URL, body, Map.class);
 
-    List<Object> recObject = (List<Object>) response.getBody().get("REC");
+    Map<String, Object> recMap = (Map<String, Object>) response.getBody().get("REC");
+    List<Map<String, Object>> content = (List<Map<String, Object>>) recMap.get("content");
+    List<HistoryResponseDto> responseDto = content.stream()
+        .map(value -> {
+          HistoryResponseDto dto = modelMapper.map(value, HistoryResponseDto.class);
 
-    List<HistoryResponseDto> responseDto = recObject.stream()
-        .map(value -> modelMapper.map(value, HistoryResponseDto.class))
+          if (value.get("transactionUniqueNo") instanceof Integer) {
+            dto.setTransactionUniqueNo(((Integer) value.get("transactionUniqueNo")).longValue());
+          }
+          return dto;
+        })
         .collect(Collectors.toList());
 
-    return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    // pageable 정보 추출
+    Map<String, Object> pageable = (Map<String, Object>) recMap.get("pageable");
+    int page = (int) pageable.get("pageNumber");
+    int size = (int) pageable.get("pageSize");
+
+    Object totalElementsObj = recMap.get("totalElements");
+    long totalElements = 0L; // 기본값을 0으로 설정
+
+    if (totalElementsObj != null) {
+      if (totalElementsObj instanceof Integer) {
+        totalElements = ((Integer) totalElementsObj).longValue();
+      } else if (totalElementsObj instanceof Long) {
+        totalElements = (Long) totalElementsObj;
+      }
+    }
+
+    Pageable pageableObj = PageRequest.of(page, size);
+    Page<HistoryResponseDto> pagedResponseDto = new PageImpl<>(responseDto, pageableObj,
+        totalElements);
+
+    return ResponseEntity.status(HttpStatus.OK).body(pagedResponseDto);
   }
 
   /**

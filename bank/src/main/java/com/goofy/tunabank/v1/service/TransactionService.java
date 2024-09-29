@@ -36,6 +36,9 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -283,17 +286,21 @@ public class TransactionService {
    * 거래 내역 목록 조회
    */
   @Transactional(readOnly = true)
-  public List<HistoryResponseDto> getTransactionHistory(
-      TransactionHistoryListRequestDto requestDto) {
+  public Page<HistoryResponseDto> getTransactionHistory(TransactionHistoryListRequestDto requestDto) {
+
+    // page와 size가 null일 경우 Pageable을 null로 설정
+    Pageable pageable = (requestDto.getPage() != null && requestDto.getSize() != null)
+        ? PageRequest.of(requestDto.getPage(), requestDto.getSize())
+        : null;
 
     // 거래 기록 조회
-    List<AbstractHistory> transactionHistories = transactionHistoryRepository.findHistoryByAccountNo(
-            requestDto)
+    Page<AbstractHistory> transactionHistories = transactionHistoryRepository.findHistoryByAccountNo(
+            requestDto, pageable) // pageable이 null일 경우 전체 데이터를 조회
         .orElseThrow(TransactionHistoryNotFoundException::new);
 
-    // 거래 기록 리스트를 Mapper를 통해 Response DTO로 변환
-    return historyMapper.toHistoryResponseDtos(transactionHistories);
+    return transactionHistories.map(historyMapper::toHistoryResponseDto);
   }
+
 
 
   /**

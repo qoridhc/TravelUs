@@ -10,6 +10,7 @@ import com.goofy.tunabank.v1.domain.history.QTransactionHistory;
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryListRequestDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,6 +18,10 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -25,8 +30,8 @@ public class TransactionHistoryCustomRepositoryImpl implements TransactionHistor
 
   private final JPAQueryFactory queryFactory;
 
-  public Optional<List<AbstractHistory>> findHistoryByAccountNo(
-      TransactionHistoryListRequestDto requestDto) {
+  public Optional<Page<AbstractHistory>> findHistoryByAccountNo(
+      TransactionHistoryListRequestDto requestDto, Pageable pageable) {
     QAbstractHistory abstractHistory = QAbstractHistory.abstractHistory;
     QTransactionHistory transactionHistory = QTransactionHistory.transactionHistory;
     QCardHistory cardHistory = QCardHistory.cardHistory;
@@ -36,20 +41,20 @@ public class TransactionHistoryCustomRepositoryImpl implements TransactionHistor
     BooleanBuilder cardCurrencyCodeCondition = createCardCurrencyCodeCondition(cardHistory,
         requestDto.getCurrencyCode());
 
-    List<AbstractHistory> result = queryFactory
+    JPAQuery<AbstractHistory> query = queryFactory
         .select(abstractHistory)
         .from(abstractHistory)
         .leftJoin(transactionHistory).on(
             abstractHistory.id.eq(transactionHistory.id)
                 .and(abstractHistory.transactionType.eq(transactionHistory.transactionType))
                 .and(transactionHistory.moneyBox.account.accountNo.eq(requestDto.getAccountNo()))
-                .and(transactionCurrencyCodeCondition) // 타입에 따른 통화 코드 조건
+                .and(transactionCurrencyCodeCondition)
         )
         .leftJoin(cardHistory).on(
             abstractHistory.id.eq(cardHistory.id)
                 .and(abstractHistory.transactionType.eq(cardHistory.transactionType))
                 .and(cardHistory.card.account.accountNo.eq(requestDto.getAccountNo()))
-                .and(cardCurrencyCodeCondition) // 타입에 따른 통화 코드 조건
+                .and(cardCurrencyCodeCondition)
         )
         .where(
             transactionHistory.moneyBox.account.accountNo.eq(requestDto.getAccountNo())
@@ -58,11 +63,27 @@ public class TransactionHistoryCustomRepositoryImpl implements TransactionHistor
             transactionDateRangeEq(abstractHistory, requestDto.getStartDate(),
                 requestDto.getEndDate())
         )
-        .orderBy(getOrderByExpression(abstractHistory, requestDto.getOrderByType()))
-        .fetch();
+        .orderBy(getOrderByExpression(abstractHistory, requestDto.getOrderByType()));
 
-    return Optional.ofNullable(result.isEmpty() ? null : result);
+    // Pageable이 있는 경우 페이징 적용
+    if (pageable != null) {
+      query.offset(pageable.getOffset())
+          .limit(pageable.getPageSize());
+    }
+
+    List<AbstractHistory> result = query.fetch();
+    long total = result.size();
+
+// pageable이 null인 경우 result 크기에 맞는 Pageable 생성
+    Pageable effectivePageable = pageable != null
+        ? pageable
+        : PageRequest.of(0, total > 0 ? (int) total : 1); // 기본적으로 페이지 번호는 0, 사이즈는 result 크기
+
+    return Optional.ofNullable(new PageImpl<>(result, effectivePageable, total));
+
   }
+
+
 
   private BooleanBuilder transactionTypeEq(QAbstractHistory qAbstractHistory,
       TransactionType transactionType) {
