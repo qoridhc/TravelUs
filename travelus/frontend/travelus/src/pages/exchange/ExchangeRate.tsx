@@ -78,8 +78,8 @@ const ExchangeRateList: React.FC = () => {
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-100">
-      <div className="p-5">
+    <div className="flex flex-col bg-gray-100 h-full p-5 pb-8">
+      <div>
         <Link to="/" className="inline-block mb-4">
           <GoHome className="w-6 h-6 text-gray-600" />
         </Link>
@@ -90,7 +90,7 @@ const ExchangeRateList: React.FC = () => {
           ))}
         </div>
       </div>
-      <div className="mt-auto p-5">
+      <div className="mt-auto">
         <div className="bg-gray-100 rounded-lg p-4 text-sm text-gray-600">
           <h3 className="font-bold mb-2">튜나뱅크 환율 안내</h3>
           <ul className="list-disc pl-5 space-y-1">

@@ -201,7 +201,6 @@ const ExchangeDetail: React.FC = () => {
     <div className="container mx-auto max-w-md h-full p-5 pb-8">
       <button onClick={() => navigate(-1)} className="flex items-center text-blue-600 mb-4">
         <ChevronLeft className="w-5 h-5 mr-1" />
-        Back
       </button>
       <div className="flex items-center mb-4">
         <img src={getFlagImagePath(currencyCode)} alt={`${currencyCode} Flag`} className="w-8 h-6 mr-2" />
