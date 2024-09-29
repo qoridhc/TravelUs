@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { accountApi } from "../../api/account";
 import { exchangeRateApi } from "../../api/exchange";
 import { MeetingAccountInfo } from "../../types/account";
@@ -99,17 +99,18 @@ const MeetingAccountExchange: React.FC = () => {
   };
 
   const handleKrwChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, "");
+    const rawValue = e.target.value.replace(/[^0-9]/g, "");
+    const value = Number(rawValue).toLocaleString();
     setKrwAmount(value);
-    if (value && getForeignCurrency()) {
+    if (rawValue && getForeignCurrency()) {
       const foreignCurrency = getForeignCurrency()!;
       const rateInfo = exchangeRates.find((rate) => rate.currencyCode === foreignCurrency.currencyCode);
       if (rateInfo) {
         let calculatedForeign: number;
         if (foreignCurrency.currencyCode === "JPY") {
-          calculatedForeign = (parseInt(value) / rateInfo.exchangeRate) * 100;
+          calculatedForeign = (parseInt(rawValue) / rateInfo.exchangeRate) * 100;
         } else {
-          calculatedForeign = parseInt(value) / rateInfo.exchangeRate;
+          calculatedForeign = parseInt(rawValue) / rateInfo.exchangeRate;
         }
         setForeignAmount(calculatedForeign.toFixed(2));
       }
@@ -119,25 +120,23 @@ const MeetingAccountExchange: React.FC = () => {
   };
 
   const handleForeignChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+    const rawValue = e.target.value.replace(/[^0-9.]/g, "");
+    const value = rawValue.includes(".") ? rawValue : Number(rawValue).toLocaleString();
     setForeignAmount(value);
-    if (value && getForeignCurrency()) {
+    if (rawValue && getForeignCurrency()) {
       const foreignCurrency = getForeignCurrency()!;
       const rateInfo = exchangeRates.find((rate) => rate.currencyCode === foreignCurrency.currencyCode);
       if (rateInfo) {
         let calculatedKRW: number;
         if (foreignCurrency.currencyCode === "JPY") {
-          calculatedKRW = parseFloat(value) * (rateInfo.exchangeRate / 100);
+          calculatedKRW = parseFloat(rawValue) * (rateInfo.exchangeRate / 100);
         } else {
-          calculatedKRW = parseFloat(value) * rateInfo.exchangeRate;
+          calculatedKRW = parseFloat(rawValue) * rateInfo.exchangeRate;
         }
-        setKrwAmount(calculatedKRW.toFixed(0));
+        setKrwAmount(Math.round(calculatedKRW).toLocaleString());
       }
-      validateAmount(value, foreignCurrency.currencyCode);
     } else {
       setKrwAmount("");
-      setIsAmountValid(true);
-      setErrorMessage("");
     }
   };
 
@@ -178,10 +177,13 @@ const MeetingAccountExchange: React.FC = () => {
     }
   };
 
+  // 머니박스가 연결된 그룹통장이 없을 때
+  const noAccount = accounts.length === 0;
+
   return (
     <div className="flex flex-col h-full p-5 pb-8">
       <div>
-        <button onClick={() => navigate("/exchangerate")} className="mb-4">
+        <button onClick={() => navigate(-1)} className="mb-4">
           <ChevronLeft className="w-6 h-6" />
         </button>
         <h1 className="text-xl font-bold mb-2">외화 채우기</h1>
@@ -191,11 +193,18 @@ const MeetingAccountExchange: React.FC = () => {
         <div className="relative mb-4">
           <button
             className="w-full text-left bg-gray-100 p-3 rounded-lg flex justify-between items-center"
-            onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}>
-            <span>{selectedAccount ? selectedAccount.groupName : "모임을 선택하세요"}</span>
-            <ChevronDown className="w-5 h-5" />
+            onClick={() => !noAccount && setIsAccountMenuOpen(!isAccountMenuOpen)}
+            disabled={noAccount}>
+            <span>
+              {noAccount
+                ? "모임통장에 연결된 머니박스가 없어요..."
+                : selectedAccount
+                ? selectedAccount.groupName
+                : "모임을 선택하세요"}
+            </span>
+            {!noAccount && <ChevronDown className="w-5 h-5" />}
           </button>
-          {isAccountMenuOpen && (
+          {isAccountMenuOpen && !noAccount && (
             <div className="absolute w-full mt-1 bg-white border rounded-lg shadow-lg z-10">
               {accounts.map((account) => (
                 <button
@@ -221,7 +230,7 @@ const MeetingAccountExchange: React.FC = () => {
                 </div>
                 <div className="flex items-center">
                   <input
-                    type="tel"
+                    type="text"
                     inputMode="numeric"
                     pattern="[0-9]*"
                     value={krwAmount}
@@ -257,8 +266,8 @@ const MeetingAccountExchange: React.FC = () => {
                   </div>
                   <div className="flex items-center">
                     <input
-                      type="tel"
-                      inputMode="numeric"
+                      type="text"
+                      inputMode="decimal"
                       pattern="[0-9]*"
                       value={foreignAmount}
                       onChange={handleForeignChange}
@@ -294,11 +303,24 @@ const MeetingAccountExchange: React.FC = () => {
           <p className="text-[#1429A0]">수수료는 튜나뱅크가 낼게요</p>
         </div>
         <button
-          className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
+          className={`w-full h-14 text-lg rounded-xl tracking-wide text-white ${
+            noAccount || !selectedAccount || !getForeignCurrency() || !krwAmount || parseFloat(krwAmount) <= 0
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-[#1429A0]"
+          }`}
           onClick={handleConfirm}
-          disabled={!selectedAccount || !getForeignCurrency() || !krwAmount || parseFloat(krwAmount) <= 0}>
-          확인
+          disabled={noAccount || !selectedAccount || !getForeignCurrency() || !krwAmount || parseFloat(krwAmount) <= 0}>
+          외화 채우기
         </button>
+
+        {/* 머니박스 연결된 모임통장 없을시 보이게 */}
+        {noAccount && (
+          <Link
+            to="/meeting/create/prepare" // 모임통장 생성 페이지의 경로를 여기에 입력하세요
+            className="block text-center mt-4 text-[#1429A0] underline">
+            머니박스 개설하러 가기
+          </Link>
+        )}
       </div>
     </div>
   );

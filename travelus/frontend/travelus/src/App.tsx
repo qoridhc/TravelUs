@@ -119,7 +119,7 @@ function App() {
           <Route path="/account/create/password/check" element={<CheckPasswordOfCreateAccount />} />
           <Route path="/account/create/idverification" element={<IDVerificationOfCreateAccount />} />
           <Route path="/account/create/completed" element={<CompletedOfCreateAccount />} />
-          
+
           {/* 모임통장 생성 */}
           <Route path="/meeting/create/prepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/meeting/create/userinfo" element={<UserInfoOfCreateMeetingAccount />} />
@@ -158,11 +158,11 @@ function App() {
           <Route path="/transfer/success" element={<TransferSuccess />} />
 
           {/* 환전 */}
-          <Route path="/exchange" element={<Exchange />}></Route>
-          <Route path="/exchangekrw" element={<ExchangeKRWFlow />} />
+          <Route path="/exchange/foreign-currency" element={<Exchange />}></Route>
+          <Route path="/exchange/korean-currency" element={<ExchangeKRWFlow />} />
           <Route path="/exchange/account-password-input" element={<AccountPasswordInput />} />
           <Route path="/exchange/exchange-completion" element={<ExchangeCompletion />} />
-          <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
+          {/* <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route> */}
           <Route path="/transaction" element={<Transaction />}></Route>
 
           {/* 환율 */}

@@ -222,7 +222,7 @@ const MainPage = () => {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                navigate("/exchange");
+                navigate("/exchange/foreign-currency");
               }}
               className="h-10 rounded-md bg-[#EAEAEA] font-semibold text-sm">
               환전신청
