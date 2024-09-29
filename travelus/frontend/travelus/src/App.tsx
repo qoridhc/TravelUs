@@ -119,7 +119,7 @@ function App() {
           <Route path="/account/create/password/check" element={<CheckPasswordOfCreateAccount />} />
           <Route path="/account/create/idverification" element={<IDVerificationOfCreateAccount />} />
           <Route path="/account/create/completed" element={<CompletedOfCreateAccount />} />
-          
+
           {/* 모임통장 생성 */}
           <Route path="/meeting/create/prepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/meeting/create/userinfo" element={<UserInfoOfCreateMeetingAccount />} />
@@ -170,7 +170,7 @@ function App() {
           <Route path="/exchangerate/:currencyCode" element={<ExchangeDetail />} />
 
           {/* 잔액정산 */}
-          <Route path="/selectsettlementamount" element={<SelectSettlementAmount />}></Route>
+          <Route path="/selectsettlementamount/:id" element={<SelectSettlementAmount />}></Route>
           <Route path="/settlementforeigncurrencyexchange" element={<ForeignCurrencyExchange />}></Route>
           <Route path="/settlement" element={<SettlementInfo />}></Route>
           <Route path="/editmembers/:type" element={<EditMembers />}></Route>
