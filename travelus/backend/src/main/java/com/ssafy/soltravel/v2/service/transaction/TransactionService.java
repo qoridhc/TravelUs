@@ -13,7 +13,6 @@ import com.ssafy.soltravel.v2.dto.transaction.response.TransactionResponseDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.repository.UserRepository;
-import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import com.ssafy.soltravel.v2.util.WebClientUtil;
 import java.util.HashMap;
@@ -240,16 +239,10 @@ public class TransactionService {
     ResponseEntity<Map<String, Object>> response = webClientUtil.request(API_URL, body, Map.class);
 
     List<Object> recObject = (List<Object>) response.getBody().get("REC");
-    LogUtil.info("rec:",recObject);
 
     List<HistoryResponseDto> responseDto = recObject.stream()
         .map(value -> modelMapper.map(value, HistoryResponseDto.class))
         .collect(Collectors.toList());
-
-
-    for (HistoryResponseDto history : responseDto) {
-      LogUtil.info("history:",history.toString());
-    }
 
     return ResponseEntity.status(HttpStatus.OK).body(responseDto);
   }
