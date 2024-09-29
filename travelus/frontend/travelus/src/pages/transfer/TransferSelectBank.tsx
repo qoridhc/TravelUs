@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { IoIosArrowBack } from "react-icons/io";
 import AccountNumberInput from "../../components/transfer/inputFields/AccountNumberInput";
+import { accountApi } from "../../api/account";
+import { AxiosError } from "axios";
+import { AxiosErrorResponseData } from "../../types/axiosError";
 
 interface TransferSelectBankProps {
   // Define the props for your component here
@@ -24,6 +27,30 @@ const TransferSelectBank = () => {
       setIsValidation(false);
     }
   }, [accountNo]);
+
+  const formatAccountNumber = (accountNo: string) => {
+    if (accountNo.length !== 14) {
+      return accountNo;
+    }
+    // 계좌번호를 3-8-2 형식으로 변환
+    return `${accountNo.slice(0, 3)}-${accountNo.slice(3, 11)}-${accountNo.slice(11)}`;
+  };
+
+  const handleNext = async () => {
+    try {
+      const response = await accountApi.fetchSpecificAccountInfo(formatAccountNumber(accountNo));
+      navigate("/transfer/setmoney", { state: { accountNo } });
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response && axiosError.response.data) {
+        const responseData = axiosError.response.data as AxiosErrorResponseData;
+        if (responseData.message === "ACCOUNT_NO_INVALID") {
+          alert("계좌번호가 존재하지 않습니다. 다시 입력해주세요.");
+          setAccountNo("");
+        }
+      }
+    }
+  };
 
   return (
     <div className="h-full p-5 pb-8">
@@ -59,9 +86,7 @@ const TransferSelectBank = () => {
 
         <div>
           <button
-            onClick={() => {
-              navigate("/transfer/setmoney", { state: { accountNo } });
-            }}
+            onClick={handleNext}
             className={`w-full h-14 text-lg font-semibold rounded-xl tracking-wide ${
               isValidation ? "text-white bg-[#1429A0]" : "text-[#565656] bg-[#E3E4E4]"
             }`}
