@@ -20,20 +20,32 @@ const currencyNameMapping: { [key: string]: string } = {
   EUR: "유로",
 };
 
+// 숫자 포맷팅 함수
+const formatNumber = (value: string, currencyCode: string): string => {
+  const num = parseFloat(value);
+  if (isNaN(num)) return value;
+
+  if (currencyCode === "KRW") {
+    // 원화의 경우 소수점 이하 숫자 제거 및 천 단위 쉼표 추가
+    return Math.round(num).toLocaleString("ko-KR");
+  } else {
+    // 다른 통화의 경우 소수점 둘째 자리까지 표시 및 천 단위 쉼표 추가
+    return num.toLocaleString("ko-KR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+};
+
 const ExchangeCompletion: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as LocationState;
 
   if (!state) {
-    // state가 없으면 홈으로 리다이렉트
     navigate("/");
     return null;
   }
 
   const { sourceCurrencyCode, targetCurrencyCode, sourceAmount, targetAmount, transactionSummary } = state;
 
-  // transactionSummary에서 적용 환율 숫자만 받아오기
   const extractExchangeRate = (summary: string): string => {
     const match = summary.match(/(\d+(\.\d+)?)/);
     return match ? match[1] : "N/A";
@@ -41,7 +53,6 @@ const ExchangeCompletion: React.FC = () => {
 
   const extractRate = extractExchangeRate(transactionSummary);
 
-  // 통화 이름 가져오기
   const getLocalCurrencyName = (currencyCode: string): string => {
     return currencyNameMapping[currencyCode] || currencyCode;
   };
@@ -56,7 +67,7 @@ const ExchangeCompletion: React.FC = () => {
         <img className="w-20 aspect-1" src="/assets/confirmIcon.png" alt="확인아이콘" />
         <div className="text-2xl font-semibold text-center">
           <p>
-            {targetAmount} {getLocalCurrencyName(targetCurrencyCode)}
+            {formatNumber(targetAmount, targetCurrencyCode)} {getLocalCurrencyName(targetCurrencyCode)}
           </p>
           <p className="font-normal">채우기 완료</p>
         </div>
@@ -66,8 +77,8 @@ const ExchangeCompletion: React.FC = () => {
         <div className="mb-4 flex justify-between">
           <p className="text-gray-500 text-sm">환전 금액</p>
           <p className="text-lg">
-            {sourceAmount} {getLocalCurrencyName(sourceCurrencyCode)} → {targetAmount}{" "}
-            {getLocalCurrencyName(targetCurrencyCode)}
+            {formatNumber(sourceAmount, sourceCurrencyCode)} {getLocalCurrencyName(sourceCurrencyCode)} →{" "}
+            {formatNumber(targetAmount, targetCurrencyCode)} {getLocalCurrencyName(targetCurrencyCode)}
           </p>
         </div>
 

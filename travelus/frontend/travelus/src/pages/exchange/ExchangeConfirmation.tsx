@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { useDispatch } from "react-redux";
 import { useNavigate, useLocation } from "react-router";
 import SecurityNumberKeyboard from "../../components/common/SecurityNumberKeyboard";
 import { setAccountPassword } from "../../redux/accountSlice";
 import { exchangeRateApi } from "../../api/exchange";
 import { ExchangeRequest, ExchangeResponse } from "../../types/exchange";
-import { ChevronLeft } from "lucide-react";
 
 interface LocationState {
   accountNo: string;
@@ -68,8 +66,21 @@ const AccountPasswordInput = () => {
           transactionSummary: exchangeSummary,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.log("Exchange failed:", error);
+      if (error.response && error.response.data) {
+        const { errorMessage } = error.response.data;
+        if (errorMessage === `AccountPassword Does Not Match: ${password}`) {
+          alert("계좌 비밀번호가 일치하지 않습니다.");
+        } else if (errorMessage === "amount is below the minimum allowable amount") {
+          alert("최소 환전 금액이 아닙니다.");
+        } else {
+          alert(errorMessage || "알 수 없는 오류가 발생했습니다.");
+        }
+      } else {
+        alert("알 수 없는 오류가 발생했습니다.");
+      }
+      setPassword(""); // 오류 발생 시 비밀번호 초기화
     } finally {
       dispatch(setAccountPassword(""));
     }
@@ -77,18 +88,12 @@ const AccountPasswordInput = () => {
 
   return (
     <div className="h-full grid grid-rows-[2fr_1fr]">
-      <div className="p-4">
-        {/* <button onClick={() => navigate(-1)} className="mb-4">
-          <ChevronLeft className="w-6 h-6" />
-        </button> */}
-      </div>
       <div className="flex-grow flex flex-col justify-center items-center space-y-10">
         <p className="text-xl text-center font-medium leading-tight">
-          환전을 위한
+          채우기를 위한
           <br />
           계좌 비밀번호를 입력해주세요
         </p>
-
         <div className="flex space-x-3">
           {[...Array(4)].map((_, index) => (
             <div
@@ -97,7 +102,9 @@ const AccountPasswordInput = () => {
           ))}
         </div>
       </div>
-      <SecurityNumberKeyboard password={password} setPassword={setPassword} />
+      <div>
+        <SecurityNumberKeyboard password={password} setPassword={setPassword} />
+      </div>
     </div>
   );
 };

@@ -1,180 +1,304 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { accountApi } from "../../api/account";
+import { exchangeRateApi } from "../../api/exchange";
+import { MeetingAccountInfo } from "../../types/account";
+import { ExchangeRateInfo } from "../../types/exchange";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { FcMoneyTransfer } from "react-icons/fc";
+import { TiArrowUnsorted } from "react-icons/ti";
 
-interface Account {
-  id: string;
-  name: string;
-  krwBalance: number;
-  usdBalance: number;
-}
+const koreanCountryNameMapping: { [key: string]: string } = {
+  EUR: "유럽",
+  JPY: "일본",
+  USD: "미국",
+  CNY: "중국",
+  KRW: "대한민국",
+};
 
-const accounts: Account[] = [
-  { id: '1', name: '사랑스러운 박씨네', krwBalance: 0, usdBalance: 1000 },
-  { id: '2', name: '우리 가족 모임', krwBalance: 0, usdBalance: 500 },
-  { id: '3', name: '회사 동료 모임', krwBalance: 0, usdBalance: 200 },
-];
+const currencyNameMapping: { [key: string]: string } = {
+  EUR: "유로",
+  JPY: "엔화",
+  USD: "달러",
+  CNY: "위안",
+  KRW: "원",
+};
 
-const ExchangeKRWFlow: React.FC = () => {
+const getFlagImagePath = (currencyCode: string) => {
+  const countryName =
+    {
+      EUR: "Europe",
+      JPY: "Japan",
+      USD: "TheUnitedStates",
+      CNY: "China",
+      KRW: "Korea",
+    }[currencyCode] || currencyCode;
+  return `/assets/flag/flagOf${countryName}.png`;
+};
+
+const MeetingAccountExchange: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedAccount, setSelectedAccount] = useState<Account>(accounts[0]);
-  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
-  const [inputAmount, setInputAmount] = useState('');
-  const [calculatedKRW, setCalculatedKRW] = useState('0');
-  const [isExchangeComplete, setIsExchangeComplete] = useState(false);
-  const exchangeRate = 1343.98;
+  const [accounts, setAccounts] = useState<MeetingAccountInfo[]>([]);
+  const [selectedAccount, setSelectedAccount] = useState<MeetingAccountInfo | null>(null);
+  const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[]>([]);
+  const [krwAmount, setKrwAmount] = useState<string>("");
+  const [foreignAmount, setForeignAmount] = useState<string>("");
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    const numericAmount = parseFloat(inputAmount);
-    if (inputAmount === '' || isNaN(numericAmount) || numericAmount === 0) {
-      setCalculatedKRW('0');
-    } else {
-      const calculated = (numericAmount * exchangeRate).toFixed(2);
-      setCalculatedKRW(calculated);
-    }
-  }, [inputAmount, exchangeRate]);
+    const fetchData = async () => {
+      try {
+        const [joined, created, rates] = await Promise.all([
+          accountApi.fetchJoinedMeetingAccount(),
+          accountApi.fetchCreatedMeetingAccount(),
+          exchangeRateApi.getExchangeRates(),
+        ]);
+        const allAccounts = [...joined, ...created].filter((account) =>
+          account.moneyBoxDtoList.some((box) => box.currencyCode !== "KRW")
+        );
+        setAccounts(allAccounts);
+        setExchangeRates(rates);
+        if (allAccounts.length > 0) {
+          setSelectedAccount(allAccounts[0]);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9.]/g, '');
-    setInputAmount(value);
-  };
-
-  const handleConfirm = () => {
-    const numericAmount = parseFloat(inputAmount);
-    if (inputAmount && !isNaN(numericAmount) && numericAmount > 0) {
-      setIsExchangeComplete(true);
-    }
-  };
-
-  const handleAccountSelect = (account: Account) => {
+  const handleAccountSelect = (account: MeetingAccountInfo) => {
     setSelectedAccount(account);
     setIsAccountMenuOpen(false);
+    setKrwAmount("");
+    setForeignAmount("");
   };
 
-  const handleClose = () => {
-    navigate('/');
+  const getExchangeRateDisplay = (currencyCode: string) => {
+    const rateInfo = exchangeRates.find((rate) => rate.currencyCode === currencyCode);
+    if (!rateInfo) return "";
+    if (currencyCode === "JPY") {
+      return `100 ${currencyCode} = ${rateInfo.exchangeRate.toFixed(2)}원`;
+    }
+    return `1 ${currencyCode} = ${rateInfo.exchangeRate.toFixed(2)}원`;
   };
 
-  if (isExchangeComplete) {
-    return (
-      <div className="h-full p-5 pb-8 flex flex-col">
-        <div className="flex-grow flex flex-col items-center justify-center space-y-5">
-          <img className="w-20 aspect-1" src="/assets/confirmIcon.png" alt="확인아이콘" />
-          <div className="text-2xl font-semibold text-center">
-            <p>
-              <span className="font-normal">원화 </span>
-              {calculatedKRW} KRW
-            </p>
-            <p className="font-normal">채우기 완료</p>
-          </div>
-        </div>
-        
-        <div className="mb-6">
-          <div className="mb-4 flex justify-between">
-            <p className="text-gray-500 text-sm">환전 금액</p>
-            <p className="text-lg">{inputAmount} USD → {calculatedKRW} KRW</p>
-          </div>
-          <div className="flex justify-between">
-            <p className="text-gray-500 text-sm">적용 환율</p>
-            <p className="text-lg">{exchangeRate.toFixed(2)} 원</p>
-          </div>
-        </div>
-        
-        <button
-          onClick={handleClose}
-          className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
-        >
-          닫기
-        </button>
-      </div>
-    );
-  }
+  const handleKrwChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value.replace(/[^0-9]/g, "");
+    const value = Number(rawValue).toLocaleString();
+    setKrwAmount(value);
+    if (rawValue && getForeignCurrency()) {
+      const foreignCurrency = getForeignCurrency()!;
+      const rateInfo = exchangeRates.find((rate) => rate.currencyCode === foreignCurrency.currencyCode);
+      if (rateInfo) {
+        let calculatedForeign: number;
+        if (foreignCurrency.currencyCode === "JPY") {
+          calculatedForeign = (parseInt(rawValue) / rateInfo.exchangeRate) * 100;
+        } else {
+          calculatedForeign = parseInt(rawValue) / rateInfo.exchangeRate;
+        }
+        setForeignAmount(calculatedForeign.toFixed(2));
+      }
+    } else {
+      setForeignAmount("");
+    }
+  };
+
+  const handleForeignChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value.replace(/[^0-9.]/g, "");
+    const value = rawValue.includes(".") ? rawValue : Number(rawValue).toLocaleString();
+    setForeignAmount(value);
+    if (rawValue && getForeignCurrency()) {
+      const foreignCurrency = getForeignCurrency()!;
+      const rateInfo = exchangeRates.find((rate) => rate.currencyCode === foreignCurrency.currencyCode);
+      if (rateInfo) {
+        let calculatedKRW: number;
+        if (foreignCurrency.currencyCode === "JPY") {
+          calculatedKRW = parseFloat(rawValue) * (rateInfo.exchangeRate / 100);
+        } else {
+          calculatedKRW = parseFloat(rawValue) * rateInfo.exchangeRate;
+        }
+        setKrwAmount(Math.round(calculatedKRW).toLocaleString());
+      }
+    } else {
+      setKrwAmount("");
+    }
+  };
+
+  const getBalance = (currencyCode: string) => {
+    if (!selectedAccount) return 0;
+    const moneyBox = selectedAccount.moneyBoxDtoList.find((box) => box.currencyCode === currencyCode);
+    return moneyBox ? moneyBox.balance : 0;
+  };
+
+  const getForeignCurrency = () => {
+    if (!selectedAccount) return null;
+    return selectedAccount.moneyBoxDtoList.find((box) => box.currencyCode !== "KRW");
+  };
+
+  const handleConfirm = async () => {
+    if (!selectedAccount || !getForeignCurrency() || !krwAmount) return;
+
+    const foreignCurrency = getForeignCurrency()!;
+
+    navigate("/exchange/account-password-input", {
+      state: {
+        accountNo: selectedAccount.groupAccountNo,
+        sourceCurrencyCode: foreignCurrency.currencyCode,
+        targetCurrencyCode: "KRW",
+        transactionBalance: foreignAmount,
+      },
+    });
+  };
+
+  // 머니박스가 연결된 그룹통장이 없을 때
+  const noAccount = accounts.length === 0;
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="p-4 flex-grow overflow-auto">
-        <button className="mb-4" onClick={() => navigate(-1)}>
+    <div className="flex flex-col h-full p-5 pb-8">
+      <div>
+        <button onClick={() => navigate(-1)} className="mb-7">
           <ChevronLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-xl font-bold mb-2">원화로 바꾸기</h1>
-        <p className="text-sm text-gray-500 mb-6">1 USD = {exchangeRate.toFixed(2)}원</p>
-        
+        <h1 className="text-xl font-bold mb-2">원화 채우기</h1>
+        {getForeignCurrency() && (
+          <p className="text-sm text-gray-500 mb-6">{getExchangeRateDisplay(getForeignCurrency()!.currencyCode)}</p>
+        )}
         <div className="relative mb-4">
-          <button 
+          <button
             className="w-full text-left bg-gray-100 p-3 rounded-lg flex justify-between items-center"
-            onClick={() => setIsAccountMenuOpen(!isAccountMenuOpen)}
-          >
-            <span>{selectedAccount.name}</span>
-            <ChevronDown className="w-5 h-5" />
+            onClick={() => !noAccount && setIsAccountMenuOpen(!isAccountMenuOpen)}
+            disabled={noAccount}>
+            <span>
+              {noAccount
+                ? "모임통장에 연결된 머니박스가 없어요..."
+                : selectedAccount
+                ? selectedAccount.groupName
+                : "모임을 선택하세요"}
+            </span>
+            {!noAccount && <ChevronDown className="w-5 h-5" />}
           </button>
-          {isAccountMenuOpen && (
+          {isAccountMenuOpen && !noAccount && (
             <div className="absolute w-full mt-1 bg-white border rounded-lg shadow-lg z-10">
-              {accounts.map(account => (
+              {accounts.map((account) => (
                 <button
-                  key={account.id}
+                  key={account.groupId}
                   className="w-full text-left p-3 hover:bg-gray-100"
-                  onClick={() => handleAccountSelect(account)}
-                >
-                  {account.name}
+                  onClick={() => handleAccountSelect(account)}>
+                  <div>{account.groupName}</div>
+                  <div className="text-sm text-gray-500">계좌번호: {account.groupAccountNo}</div>
                 </button>
               ))}
             </div>
           )}
         </div>
+        {selectedAccount && (
+          <div className="relative">
+            <div className="bg-gray-300 rounded-lg p-4">
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center">
+                  <img src={getFlagImagePath("KRW")} alt="KRW Flag" className="w-6 h-4 mr-2" />
+                  <span>
+                    {koreanCountryNameMapping["KRW"]} {currencyNameMapping["KRW"]}
+                  </span>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={krwAmount}
+                    onChange={handleKrwChange}
+                    className="text-right bg-transparent w-20 mr-1"
+                    placeholder="0"
+                  />
+                  <span>KRW</span>
+                </div>
+              </div>
+              <p className="text-sm text-gray-500">
+                잔액: {getBalance("KRW").toLocaleString()} {currencyNameMapping["KRW"]}
+              </p>
+            </div>
 
-        <div className="bg-gray-100 rounded-lg p-4 mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <div className="flex items-center">
-              <img src="/assets/flag/flagOfKorea.png" alt="KRW Flag" className="w-6 h-4 mr-2" />
-              <span>대한민국 원</span>
+            {/* 양방향 화살표 아이콘 */}
+            <div className="w-8 h-8 bg-white shadow-md border-[0.5px] border-[#cccccc] rounded-full flex justify-center items-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <TiArrowUnsorted className="text-sm text-[#999999]" />
             </div>
-            <div>{parseFloat(calculatedKRW).toLocaleString()} KRW</div>
-          </div>
-          <p className="text-sm text-gray-500">
-            현재 잔액: {selectedAccount.krwBalance.toLocaleString()} KRW
-          </p>
-        </div>
 
-        <div className="bg-gray-100 rounded-lg p-4">
-          <div className="flex justify-between items-center mb-2">
-            <div className="flex items-center">
-              <img src="/assets/flag/flagOfTheUnitedStates.png" alt="USD Flag" className="w-6 h-4 mr-2" />
-              <span>미국 달러</span>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="text"
-                inputMode="decimal"
-                value={inputAmount}
-                onChange={handleInputChange}
-                className="text-right bg-transparent w-20 mr-1"
-                placeholder="0"
-              />
-              <span>USD</span>
-            </div>
+            <div className="h-5 " />
+            {getForeignCurrency() && (
+              <div className="bg-gray-300 rounded-lg p-4">
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex items-center">
+                    <img
+                      src={getFlagImagePath(getForeignCurrency()!.currencyCode)}
+                      alt={`${getForeignCurrency()!.currencyCode} Flag`}
+                      className="w-6 h-4 mr-2"
+                    />
+                    <span>
+                      {koreanCountryNameMapping[getForeignCurrency()!.currencyCode]}{" "}
+                      {currencyNameMapping[getForeignCurrency()!.currencyCode]}
+                    </span>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      pattern="[0-9]*"
+                      value={foreignAmount}
+                      onChange={handleForeignChange}
+                      className="text-right bg-transparent w-20 mr-1"
+                      placeholder="0"
+                    />
+                    <span>{getForeignCurrency()!.currencyCode}</span>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-500">
+                  잔액: {getBalance(getForeignCurrency()!.currencyCode).toLocaleString()}{" "}
+                  {currencyNameMapping[getForeignCurrency()!.currencyCode]}
+                </p>
+              </div>
+            )}
+
+            {getForeignCurrency() && (
+              <p className="float-right text-gray-500 mt-2 mr-2">
+                최소 환전 가능 금액:{" "}
+                {exchangeRates.find((rate) => rate.currencyCode === getForeignCurrency()!.currencyCode)?.exchangeMin}{" "}
+                {getForeignCurrency()!.currencyCode}
+              </p>
+            )}
           </div>
-          <p className="text-sm text-gray-500">
-            현재 잔액: {selectedAccount.usdBalance.toLocaleString()} USD
-          </p>
-        </div>
+        )}
       </div>
 
-      <div className="p-4 mt-auto">
+      <div className="mt-auto">
         <div className="flex items-center justify-center mb-4 text-gray-600">
-          <FcMoneyTransfer className="mr-2 text-xl text-[#1429A0]" />
-          <p>수수료는 튜나뱅크가 낼게요</p>
+          <FcMoneyTransfer className="mr-2 text-xl" />
+          <p className="text-[#1429A0]">수수료는 튜나뱅크가 낼게요</p>
         </div>
-        <button 
-          className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
+        <button
+          className={`w-full h-14 text-lg rounded-xl tracking-wide text-white ${
+            noAccount || !selectedAccount || !getForeignCurrency() || !krwAmount || parseFloat(krwAmount) <= 0
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-[#1429A0]"
+          }`}
           onClick={handleConfirm}
-          disabled={!inputAmount || parseFloat(inputAmount) <= 0}
-        >
-          확인
+          disabled={noAccount || !selectedAccount || !getForeignCurrency() || !krwAmount || parseFloat(krwAmount) <= 0}>
+          원화 채우기
         </button>
+
+        {/* 머니박스 연결된 모임통장 없을시 보이게 */}
+        {noAccount && (
+          <Link
+            to="/meeting/create/prepare" // 모임통장 생성 페이지의 경로를 여기에 입력하세요
+            className="block text-center mt-4 text-[#1429A0] underline">
+            머니박스 개설하러 가기
+          </Link>
+        )}
       </div>
     </div>
   );
 };
 
-export default ExchangeKRWFlow;
+export default MeetingAccountExchange;
