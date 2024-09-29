@@ -28,4 +28,17 @@ export interface ParticipantInfo {
   createdAt: string;
   updatedAt: string;
   master: boolean;
+  userName: string;
+}
+
+export interface GroupInfo {
+  groupId: number;
+  groupAccountNo: string;
+  travelStartDate: string;
+  travelEndDate: string;
+  groupName: string;
+  icon: string;
+  participants: Array<ParticipantInfo>;
+  createdAt: string;
+  updatedAt: string;
 }
