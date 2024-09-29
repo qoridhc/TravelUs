@@ -1,5 +1,6 @@
 package com.goofy.tunabank.v1.repository.transaction;
 
+import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
 import com.goofy.tunabank.v1.domain.Enum.OrderByType;
 import com.goofy.tunabank.v1.domain.Enum.TransactionType;
 import com.goofy.tunabank.v1.domain.history.AbstractHistory;
@@ -22,91 +23,88 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class TransactionHistoryCustomRepositoryImpl implements TransactionHistoryCustomRepository {
 
-    private final JPAQueryFactory queryFactory;
+  private final JPAQueryFactory queryFactory;
 
-    public Optional<List<AbstractHistory>> findHistoryByAccountNo(TransactionHistoryListRequestDto requestDto) {
-        QAbstractHistory abstractHistory = QAbstractHistory.abstractHistory;
-        QTransactionHistory transactionHistory = QTransactionHistory.transactionHistory;
-        QCardHistory cardHistory = QCardHistory.cardHistory;
+  public Optional<List<AbstractHistory>> findHistoryByAccountNo(
+      TransactionHistoryListRequestDto requestDto) {
+    QAbstractHistory abstractHistory = QAbstractHistory.abstractHistory;
+    QTransactionHistory transactionHistory = QTransactionHistory.transactionHistory;
+    QCardHistory cardHistory = QCardHistory.cardHistory;
 
-        List<AbstractHistory> result = queryFactory
-            .select(abstractHistory)
-            .from(abstractHistory)
-            .leftJoin(transactionHistory).on(
-                abstractHistory.id.eq(transactionHistory.id)
-                    .and(abstractHistory.transactionType.eq(transactionHistory.transactionType))
-                    .and(transactionHistory.moneyBox.account.accountNo.eq(requestDto.getAccountNo()))
-            )
-            .leftJoin(cardHistory).on(
-                abstractHistory.id.eq(cardHistory.id)
-                    .and(abstractHistory.transactionType.eq(cardHistory.transactionType))
-                    .and(cardHistory.card.account.accountNo.eq(requestDto.getAccountNo()))
-            )
-            .where(
-                transactionHistory.moneyBox.account.accountNo.eq(requestDto.getAccountNo())
-                    .or(cardHistory.card.account.accountNo.eq(requestDto.getAccountNo())),
-                transactionTypeEq(abstractHistory, requestDto.getTransactionType()),
-                transactionDateRangeEq(abstractHistory, requestDto.getStartDate(), requestDto.getEndDate())
-//                accountNoAndCurrencyCodeEq(abstractHistory, requestDto.getAccountNo(), requestDto.getCurrencyCode())
-            )
-            .orderBy(getOrderByExpression(abstractHistory, requestDto.getOrderByType()))
-            .fetch();
+    BooleanBuilder transactionCurrencyCodeCondition = createTransactionCurrencyCodeCondition(
+        transactionHistory, requestDto.getCurrencyCode());
+    BooleanBuilder cardCurrencyCodeCondition = createCardCurrencyCodeCondition(cardHistory,
+        requestDto.getCurrencyCode());
 
-        return Optional.ofNullable(result.isEmpty() ? null : result);
+    List<AbstractHistory> result = queryFactory
+        .select(abstractHistory)
+        .from(abstractHistory)
+        .leftJoin(transactionHistory).on(
+            abstractHistory.id.eq(transactionHistory.id)
+                .and(abstractHistory.transactionType.eq(transactionHistory.transactionType))
+                .and(transactionHistory.moneyBox.account.accountNo.eq(requestDto.getAccountNo()))
+                .and(transactionCurrencyCodeCondition) // 타입에 따른 통화 코드 조건
+        )
+        .leftJoin(cardHistory).on(
+            abstractHistory.id.eq(cardHistory.id)
+                .and(abstractHistory.transactionType.eq(cardHistory.transactionType))
+                .and(cardHistory.card.account.accountNo.eq(requestDto.getAccountNo()))
+                .and(cardCurrencyCodeCondition) // 타입에 따른 통화 코드 조건
+        )
+        .where(
+            transactionHistory.moneyBox.account.accountNo.eq(requestDto.getAccountNo())
+                .or(cardHistory.card.account.accountNo.eq(requestDto.getAccountNo())),
+            transactionTypeEq(abstractHistory, requestDto.getTransactionType()),
+            transactionDateRangeEq(abstractHistory, requestDto.getStartDate(),
+                requestDto.getEndDate())
+        )
+        .orderBy(getOrderByExpression(abstractHistory, requestDto.getOrderByType()))
+        .fetch();
+
+    return Optional.ofNullable(result.isEmpty() ? null : result);
+  }
+
+  private BooleanBuilder transactionTypeEq(QAbstractHistory qAbstractHistory,
+      TransactionType transactionType) {
+    return transactionType != null ? new BooleanBuilder(
+        qAbstractHistory.transactionType.eq(transactionType)) : new BooleanBuilder();
+  }
+
+  private BooleanBuilder transactionDateRangeEq(QAbstractHistory qAbstractHistory,
+      LocalDate startDate, LocalDate endDate) {
+    if (startDate != null && endDate != null) {
+      LocalDateTime startDateTime = startDate.atStartOfDay();
+      LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+      return new BooleanBuilder(qAbstractHistory.transactionAt.between(startDateTime, endDateTime));
     }
-//
-//    private BooleanBuilder accountNoAndCurrencyCodeEq(QAbstractHistory qAbstractHistory, String accountNo, CurrencyType currencyCode) {
-//        BooleanBuilder builder = new BooleanBuilder();
-//
-//        if (accountNo != null) {
-//            // TransactionHistory인 경우
-//            builder.or(
-//                new CaseBuilder()
-//                    .when(qAbstractHistory.instanceOf(QTransactionHistory.class))
-//                    .then(QTransactionHistory.transactionHistory.moneyBox.account.accountNo.eq(accountNo))
-//                    .otherwise(false)
-//            );
-//
-//            // CardHistory인 경우
-//            builder.or(
-//                new CaseBuilder()
-//                    .when(qAbstractHistory.instanceOf(QCardHistory.class))
-//                    .then(QCardHistory.cardHistory.card.account.accountNo.eq(accountNo))
-//                    .otherwise(false)
-//            );
-//        }
-//
-//        if (currencyCode != null) {
-//            // TransactionHistory에서만 currencyCode 필터 적용
-//            builder.and(
-//                new CaseBuilder()
-//                    .when(qAbstractHistory.instanceOf(QTransactionHistory.class))
-//                    .then(QTransactionHistory.transactionHistory.moneyBox.currency.currencyCode.eq(currencyCode))
-//                    .otherwise(false)
-//            );
-//        }
-//
-//        return builder;
-//    }
+    return new BooleanBuilder();
+  }
 
+  private OrderSpecifier<LocalDateTime> getOrderByExpression(QAbstractHistory qAbstractHistory,
+      OrderByType orderByType) {
+    return orderByType == OrderByType.ASC ? qAbstractHistory.transactionAt.asc()
+        : qAbstractHistory.transactionAt.desc();
+  }
 
+  private BooleanBuilder createTransactionCurrencyCodeCondition(
+      QTransactionHistory transactionHistory, CurrencyType currencyCode) {
+    BooleanBuilder builder = new BooleanBuilder();
 
-
-
-    private BooleanBuilder transactionTypeEq(QAbstractHistory qAbstractHistory, TransactionType transactionType) {
-        return transactionType != null ? new BooleanBuilder(qAbstractHistory.transactionType.eq(transactionType)) : new BooleanBuilder();
+    if (currencyCode != null) {
+      builder.and(transactionHistory.moneyBox.currency.currencyCode.eq(currencyCode));
     }
 
-    private BooleanBuilder transactionDateRangeEq(QAbstractHistory qAbstractHistory, LocalDate startDate, LocalDate endDate) {
-        if (startDate != null && endDate != null) {
-            LocalDateTime startDateTime = startDate.atStartOfDay();
-            LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
-            return new BooleanBuilder(qAbstractHistory.transactionAt.between(startDateTime, endDateTime));
-        }
-        return new BooleanBuilder();
+    return builder;
+  }
+
+  private BooleanBuilder createCardCurrencyCodeCondition(QCardHistory cardHistory,
+      CurrencyType currencyCode) {
+    BooleanBuilder builder = new BooleanBuilder();
+
+    if (currencyCode != null) {
+      builder.and(cardHistory.currency.currencyCode.eq(currencyCode));
     }
 
-    private OrderSpecifier<LocalDateTime> getOrderByExpression(QAbstractHistory qAbstractHistory, OrderByType orderByType) {
-        return orderByType == OrderByType.ASC ? qAbstractHistory.transactionAt.asc() : qAbstractHistory.transactionAt.desc();
-    }
+    return builder;
+  }
 }
