@@ -20,9 +20,7 @@ const AccountPasswordInput = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const [stateData, setStateData] = useState<LocationState | null>(null);
-  const [transactionList, setTransactionList] = useState<ExchangeResponse[]>([]);
-
-  const password = useSelector((state: RootState) => state.account.accountPassword);
+  const [password, setPassword] = useState<string>("");
 
   useEffect(() => {
     if (location.state) {
@@ -57,23 +55,17 @@ const AccountPasswordInput = () => {
 
     try {
       const response: ExchangeResponse[] = await exchangeRateApi.requestExchange(exchangeRequest);
-      setTransactionList(response);
 
-      const sourceTransaction = response.find((t) => t.transactionType === "EW");
-      const targetTransaction = response.find((t) => t.transactionType === "ED");
-
-      if (!sourceTransaction || !targetTransaction) {
-        throw new Error("Missing transaction information");
-      }
+      const targetTransactionAmount = response[1].transactionAmount;
+      const exchangeSummary = response[1].transactionSummary;
 
       navigate("/exchange/exchange-completion", {
         state: {
           sourceCurrencyCode: stateData.sourceCurrencyCode,
           targetCurrencyCode: stateData.targetCurrencyCode,
           sourceAmount: stateData.transactionBalance,
-          targetAmount: targetTransaction.transactionAmount,
-          transactionSummary: sourceTransaction.transactionSummary,
-          fullTransactionList: response,
+          targetAmount: targetTransactionAmount,
+          transactionSummary: exchangeSummary,
         },
       });
     } catch (error) {
@@ -105,7 +97,7 @@ const AccountPasswordInput = () => {
           ))}
         </div>
       </div>
-      <SecurityNumberKeyboard />
+      <SecurityNumberKeyboard password={password} setPassword={setPassword} />
     </div>
   );
 };

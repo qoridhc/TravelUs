@@ -9,14 +9,21 @@ interface LocationState {
   sourceAmount: string;
   targetAmount: string;
   exchangeRate?: number;
-  fullTransactionList: ExchangeResponse[];
+  transactionSummary: string;
 }
+
+const currencyNameMapping: { [key: string]: string } = {
+  KRW: "원",
+  USD: "달러",
+  JPY: "엔",
+  CNY: "위안",
+  EUR: "유로",
+};
 
 const ExchangeCompletion: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as LocationState;
-  console.log(state);
 
   if (!state) {
     // state가 없으면 홈으로 리다이렉트
@@ -24,8 +31,20 @@ const ExchangeCompletion: React.FC = () => {
     return null;
   }
 
-  const { sourceCurrencyCode, targetCurrencyCode, sourceAmount, targetAmount, exchangeRate, fullTransactionList } =
-    state;
+  const { sourceCurrencyCode, targetCurrencyCode, sourceAmount, targetAmount, transactionSummary } = state;
+
+  // transactionSummary에서 적용 환율 숫자만 받아오기
+  const extractExchangeRate = (summary: string): string => {
+    const match = summary.match(/(\d+(\.\d+)?)/);
+    return match ? match[1] : "N/A";
+  };
+
+  const extractRate = extractExchangeRate(transactionSummary);
+
+  // 통화 이름 가져오기
+  const getLocalCurrencyName = (currencyCode: string): string => {
+    return currencyNameMapping[currencyCode] || currencyCode;
+  };
 
   const handleClose = () => {
     navigate("/");
@@ -37,7 +56,7 @@ const ExchangeCompletion: React.FC = () => {
         <img className="w-20 aspect-1" src="/assets/confirmIcon.png" alt="확인아이콘" />
         <div className="text-2xl font-semibold text-center">
           <p>
-            {targetAmount} {targetCurrencyCode}
+            {targetAmount} {getLocalCurrencyName(targetCurrencyCode)}
           </p>
           <p className="font-normal">채우기 완료</p>
         </div>
@@ -47,14 +66,15 @@ const ExchangeCompletion: React.FC = () => {
         <div className="mb-4 flex justify-between">
           <p className="text-gray-500 text-sm">환전 금액</p>
           <p className="text-lg">
-            {sourceAmount} 원 → {targetAmount} {targetCurrencyCode}
+            {sourceAmount} {getLocalCurrencyName(sourceCurrencyCode)} → {targetAmount}{" "}
+            {getLocalCurrencyName(targetCurrencyCode)}
           </p>
         </div>
 
         <div className="flex justify-between">
           <p className="text-gray-500 text-sm mb-1">적용 환율</p>
           <p className="text-lg">
-            1 {targetCurrencyCode} = {sourceCurrencyCode}
+            {extractRate} {getLocalCurrencyName(targetCurrencyCode)}
           </p>
         </div>
       </div>
