@@ -4,7 +4,7 @@ team:
     baseUrl: ${SERVER_BASE_URL}
 
   fcm:
-    key: ${TEAM_FCM_KEY}
+    key: fcm-key.json
 
 spring:
   application:
