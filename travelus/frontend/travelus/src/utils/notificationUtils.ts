@@ -1,4 +1,4 @@
-import { getToken, onMessage } from "firebase/messaging";
+import { getToken, onMessage, getMessaging } from "firebase/messaging";
 import { messaging } from "../firebase";
 import { notificationApi } from "../api/notification";
 
@@ -63,4 +63,30 @@ export const initializeFcmAndRegisterToken = async () => {
   }
 };
 
+// 포그라운드 수신 함수
+export const setupFirebaseMessaging = async () => {
+  const messaging = getMessaging();
 
+  // 브라우저가 열려 있을 때 푸시 메시지 수신
+  onMessage(messaging, (payload) => {
+    console.log('푸시 메시지 수신:', payload);
+
+    if (Notification.permission === "granted") {
+      const title = payload.notification?.title || '기본 제목';
+      const body = payload.notification?.body || '기본 메시지 내용';
+
+      // 알림을 표시할 수 있는 조건을 확인한 후 알림 생성
+      if (title && body) {
+        new Notification(title, {
+          body: body,
+          icon: '/icons/icon-192x192.png',
+          badge: '/icons/badge-72x72.png',
+        });
+      } else {
+        console.warn('푸시 메시지에 알림 정보가 없습니다.');
+      }
+    } else {
+      console.warn("Notification 권한이 없습니다.");
+    }
+  });
+};
