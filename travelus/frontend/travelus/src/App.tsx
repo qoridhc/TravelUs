@@ -170,11 +170,11 @@ function App() {
           <Route path="/exchangerate/:currencyCode" element={<ExchangeDetail />} />
 
           {/* 잔액정산 */}
-          <Route path="/selectsettlementamount/:id" element={<SelectSettlementAmount />}></Route>
-          <Route path="/settlementforeigncurrencyexchange" element={<ForeignCurrencyExchange />}></Route>
-          <Route path="/settlement" element={<SettlementInfo />}></Route>
-          <Route path="/editmembers/:type" element={<EditMembers />}></Route>
-          <Route path="/balancesettlementcompleted" element={<BalanceSettlementCompleted />}></Route>
+          <Route path="/settlement/balance/amount/:id" element={<SelectSettlementAmount />}></Route>
+          <Route path="/settlement/balance/foreigncurrency/exchange" element={<ForeignCurrencyExchange />}></Route>
+          <Route path="/settlement/balance/participants" element={<SettlementInfo />}></Route>
+          <Route path="/settlement/editmembers/:type" element={<EditMembers />}></Route>
+          <Route path="/settlement/balance/completed" element={<BalanceSettlementCompleted />}></Route>
 
           {/* 지출정산 */}
           <Route
