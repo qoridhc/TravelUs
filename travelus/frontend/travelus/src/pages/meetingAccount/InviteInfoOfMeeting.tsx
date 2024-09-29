@@ -78,7 +78,8 @@ const InviteInfoOfMeeting = () => {
         groupId: groupId,
         personalAccountNo: accountNo,
       };
-      const response = await accountApi.fetchCreateParticipant(data);
+      console.log(data);
+      const response = await accountApi.fetchCreateParticipant(groupId, data);
       if (response.status === 201) {
         navigate("/meetingaccountlist");
       }
