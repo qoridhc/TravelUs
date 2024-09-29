@@ -17,7 +17,6 @@ const SettlementInfo = () => {
 
   const [totalAmount, setTotalAmount] = useState(0);
   const [members, setMembers] = useState<Member[]>([]);
-  const [accountInfo, setAccountInfo] = useState<MeetingAccountDetailInfo | null>(null);
   const [groupInfo, setGroupInfo] = useState<GroupInfo | null>(null);
 
   const handleSettlement = () => {
@@ -25,7 +24,9 @@ const SettlementInfo = () => {
   };
 
   const handleMembers = () => {
-    navigate("/settlement/editmembers/balance", { state: { selectedMemberList: members } });
+    navigate(`/settlement/editmembers/balance/${id}`, {
+      state: { members: members, foreignAmmount: location.state.foreignAmmount },
+    });
   };
 
   // 금액을 한국 통화 형식으로 포맷(콤마가 포함된 형태)
@@ -51,7 +52,6 @@ const SettlementInfo = () => {
   const fetchSpecificAccountInfo = async (groupAccountNo: string) => {
     try {
       const response = await accountApi.fetchSpecificAccountInfo(groupAccountNo);
-      setAccountInfo(response.data);
       setTotalAmount(response.data?.moneyBoxDtos[0].balance + location.state.foreignAmmount);
     } catch (error) {
       console.error("모임 통장 조회 에러", error);
@@ -63,18 +63,32 @@ const SettlementInfo = () => {
   }, []);
 
   useEffect(() => {
-    const memberList = groupInfo?.participants;
-    const memberCount = groupInfo?.participants.length;
+    if (location.state.members) {
+      const memberList = location.state.members;
+      const memberCount = memberList.length;
+      if (memberList && memberCount > 0) {
+        const amountPerMember = Math.floor(totalAmount / memberCount);
+        const remainder = totalAmount % memberCount;
 
-    if (memberList && memberCount && memberCount > 0) {
-      const amountPerMember = Math.floor(totalAmount / memberCount);
-      const remainder = totalAmount % memberCount;
+        const updatedMembers = memberList.map((member: { name: string; amount: number }, index: number) => ({
+          name: member.name,
+          amount: index === 0 ? amountPerMember + remainder : amountPerMember,
+        }));
+        setMembers(updatedMembers);
+      }
+    } else {
+      const memberList = groupInfo?.participants;
+      const memberCount = groupInfo?.participants.length;
+      if (memberList && memberCount && memberCount > 0) {
+        const amountPerMember = Math.floor(totalAmount / memberCount);
+        const remainder = totalAmount % memberCount;
 
-      const updatedMembers = memberList.map((member, index) => ({
-        name: member.userName,
-        amount: index === 0 ? amountPerMember + remainder : amountPerMember,
-      }));
-      setMembers(updatedMembers);
+        const updatedMembers = memberList.map((member, index) => ({
+          name: member.userName,
+          amount: index === 0 ? amountPerMember + remainder : amountPerMember,
+        }));
+        setMembers(updatedMembers);
+      }
     }
   }, [totalAmount]);
 

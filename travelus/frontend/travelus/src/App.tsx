@@ -173,7 +173,7 @@ function App() {
           <Route path="/settlement/balance/amount/:id" element={<SelectSettlementAmount />}></Route>
           <Route path="/settlement/balance/foreigncurrency/exchange/:id" element={<ForeignCurrencyExchange />}></Route>
           <Route path="/settlement/balance/participants/:id" element={<SettlementInfo />}></Route>
-          <Route path="/settlement/editmembers/:type" element={<EditMembers />}></Route>
+          <Route path="/settlement/editmembers/:type/:id" element={<EditMembers />}></Route>
           <Route path="/settlement/balance/completed" element={<BalanceSettlementCompleted />}></Route>
 
           {/* 지출정산 */}
