@@ -6,24 +6,11 @@ import { GoHome } from "react-icons/go";
 import { exchangeRateApi } from "../../api/exchange";
 import { ExchangeRateInfo, currencyNames } from "../../types/exchange";
 
-const countryNameMapping: { [key: string]: string } = {
-  EUR: "Europe",
-  JPY: "Japan",
-  USD: "TheUnitedStates",
-  CNY: "China",
-};
-
-const getFlagImagePath = (currencyCode: string) => {
-  const countryName = countryNameMapping[currencyCode] || currencyCode;
-  return `/assets/flag/flagOf${countryName}.png`;
-};
-
 const ExchangeRateItem: React.FC<ExchangeRateInfo> = ({ currencyCode, exchangeRate }) => {
   const navigate = useNavigate();
   const currencyName = currencyNames[currencyCode] || "알 수 없는 통화";
-  const country = countryNameMapping[currencyCode] || "알 수 없는 국가";
 
-  const flagImagePath = getFlagImagePath(currencyCode);
+  const flagImagePath = `/assets/flag/flagOf${currencyCode}.png`;
 
   const handleClick = () => {
     navigate(`/exchangerate/${currencyCode}`);
@@ -34,7 +21,7 @@ const ExchangeRateItem: React.FC<ExchangeRateInfo> = ({ currencyCode, exchangeRa
       className="m-3 flex items-center justify-between p-4 border-b cursor-pointer hover:bg-gray-100"
       onClick={handleClick}>
       <div className="flex items-center">
-        <img src={flagImagePath} alt={`${country} flag`} className="w-8 h-6 mr-2 object-cover rounded" />
+        <img src={flagImagePath} alt={`${currencyCode} flag`} className="w-8 h-5 mr-2 object-cover rounded" />
         <div className="m-3">
           <p className="font-bold">{currencyName}</p>
         </div>
