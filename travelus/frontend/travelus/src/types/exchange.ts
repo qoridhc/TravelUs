@@ -2,7 +2,7 @@
 export interface ExchangeRateInfo {
   currencyCode: string;
   exchangeRate: number;
-  exchangeMin: number;
+  exchangeMin: string;
   created: string;
 }
 

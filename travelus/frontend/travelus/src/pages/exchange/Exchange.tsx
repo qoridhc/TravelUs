@@ -3,11 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { accountApi } from "../../api/account";
 import { exchangeRateApi } from "../../api/exchange";
 import { MeetingAccountInfo } from "../../types/account";
-import { ExchangeRateInfo, ExchangeRequest, ExchangeResponse } from "../../types/exchange";
+import { ExchangeRateInfo } from "../../types/exchange";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { FcMoneyTransfer } from "react-icons/fc";
 import { TiArrowUnsorted } from "react-icons/ti";
-import ExchangeRateList from "./ExchangeRate";
 
 const koreanCountryNameMapping: { [key: string]: string } = {
   EUR: "유럽",
@@ -41,10 +40,24 @@ const MeetingAccountExchange: React.FC = () => {
   const navigate = useNavigate();
   const [accounts, setAccounts] = useState<MeetingAccountInfo[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<MeetingAccountInfo | null>(null);
-  const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({});
+  const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[]>([]);
   const [krwAmount, setKrwAmount] = useState<string>("");
   const [foreignAmount, setForeignAmount] = useState<string>("");
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState<boolean>(false);
+
+  const [isAmountValid, setIsAmountValid] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const validateAmount = (amount: string, currencyCode: string) => {
+    const rateInfo = exchangeRates.find((rate) => rate.currencyCode === currencyCode);
+    if (rateInfo && parseFloat(amount) < parseFloat(rateInfo.exchangeMin)) {
+      setIsAmountValid(false);
+      setErrorMessage(`최소 환전 금액은 ${rateInfo.exchangeMin} ${currencyCode}입니다.`);
+    } else {
+      setIsAmountValid(true);
+      setErrorMessage("");
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,7 +71,7 @@ const MeetingAccountExchange: React.FC = () => {
           account.moneyBoxDtoList.some((box) => box.currencyCode !== "KRW")
         );
         setAccounts(allAccounts);
-        setExchangeRates(rates.reduce((acc, rate) => ({ ...acc, [rate.currencyCode]: rate.exchangeRate }), {}));
+        setExchangeRates(rates);
         if (allAccounts.length > 0) {
           setSelectedAccount(allAccounts[0]);
         }
@@ -77,10 +90,12 @@ const MeetingAccountExchange: React.FC = () => {
   };
 
   const getExchangeRateDisplay = (currencyCode: string) => {
+    const rateInfo = exchangeRates.find((rate) => rate.currencyCode === currencyCode);
+    if (!rateInfo) return "";
     if (currencyCode === "JPY") {
-      return `100 ${currencyCode} = ${exchangeRates[currencyCode].toFixed(2)}원`;
+      return `100 ${currencyCode} = ${rateInfo.exchangeRate.toFixed(2)}원`;
     }
-    return `1 ${currencyCode} = ${exchangeRates[currencyCode].toFixed(2)}원`;
+    return `1 ${currencyCode} = ${rateInfo.exchangeRate.toFixed(2)}원`;
   };
 
   const handleKrwChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,13 +103,16 @@ const MeetingAccountExchange: React.FC = () => {
     setKrwAmount(value);
     if (value && getForeignCurrency()) {
       const foreignCurrency = getForeignCurrency()!;
-      let calculatedForeign: number;
-      if (foreignCurrency.currencyCode === "JPY") {
-        calculatedForeign = (parseInt(value) / exchangeRates[foreignCurrency.currencyCode]) * 100;
-      } else {
-        calculatedForeign = parseInt(value) / exchangeRates[foreignCurrency.currencyCode];
+      const rateInfo = exchangeRates.find((rate) => rate.currencyCode === foreignCurrency.currencyCode);
+      if (rateInfo) {
+        let calculatedForeign: number;
+        if (foreignCurrency.currencyCode === "JPY") {
+          calculatedForeign = (parseInt(value) / rateInfo.exchangeRate) * 100;
+        } else {
+          calculatedForeign = parseInt(value) / rateInfo.exchangeRate;
+        }
+        setForeignAmount(calculatedForeign.toFixed(2));
       }
-      setForeignAmount(calculatedForeign.toFixed(2));
     } else {
       setForeignAmount("");
     }
@@ -105,15 +123,21 @@ const MeetingAccountExchange: React.FC = () => {
     setForeignAmount(value);
     if (value && getForeignCurrency()) {
       const foreignCurrency = getForeignCurrency()!;
-      let calculatedKRW: number;
-      if (foreignCurrency.currencyCode === "JPY") {
-        calculatedKRW = parseFloat(value) * (exchangeRates[foreignCurrency.currencyCode] / 100);
-      } else {
-        calculatedKRW = parseFloat(value) * exchangeRates[foreignCurrency.currencyCode];
+      const rateInfo = exchangeRates.find((rate) => rate.currencyCode === foreignCurrency.currencyCode);
+      if (rateInfo) {
+        let calculatedKRW: number;
+        if (foreignCurrency.currencyCode === "JPY") {
+          calculatedKRW = parseFloat(value) * (rateInfo.exchangeRate / 100);
+        } else {
+          calculatedKRW = parseFloat(value) * rateInfo.exchangeRate;
+        }
+        setKrwAmount(calculatedKRW.toFixed(0));
       }
-      setKrwAmount(calculatedKRW.toFixed(0));
+      validateAmount(value, foreignCurrency.currencyCode);
     } else {
       setKrwAmount("");
+      setIsAmountValid(true);
+      setErrorMessage("");
     }
   };
 
@@ -132,6 +156,13 @@ const MeetingAccountExchange: React.FC = () => {
     if (!selectedAccount || !getForeignCurrency() || !krwAmount) return;
 
     const foreignCurrency = getForeignCurrency()!;
+    const rateInfo = exchangeRates.find((rate) => rate.currencyCode === foreignCurrency.currencyCode);
+
+    if (rateInfo && parseFloat(foreignAmount) < parseFloat(rateInfo.exchangeMin)) {
+      alert(`최소 환전 금액은 ${rateInfo.exchangeMin} ${foreignCurrency.currencyCode}입니다.`);
+      return;
+    }
+
     navigate("/exchange/account-password-input", {
       state: {
         accountNo: selectedAccount.groupAccountNo,
@@ -150,7 +181,7 @@ const MeetingAccountExchange: React.FC = () => {
   return (
     <div className="flex flex-col h-full p-5 pb-8">
       <div>
-        <button onClick={() => navigate(-1)} className="mb-4">
+        <button onClick={() => navigate("/exchangerate")} className="mb-4">
           <ChevronLeft className="w-6 h-6" />
         </button>
         <h1 className="text-xl font-bold mb-2">외화 채우기</h1>
@@ -231,7 +262,9 @@ const MeetingAccountExchange: React.FC = () => {
                       pattern="[0-9]*"
                       value={foreignAmount}
                       onChange={handleForeignChange}
-                      className="text-right bg-transparent w-20 mr-1"
+                      className={`text-right bg-transparent w-20 mr-1 ${
+                        !isAmountValid ? "border-red-500 border-2" : ""
+                      }`}
                       placeholder="0"
                     />
                     <span>{getForeignCurrency()!.currencyCode}</span>
@@ -242,6 +275,14 @@ const MeetingAccountExchange: React.FC = () => {
                   {currencyNameMapping[getForeignCurrency()!.currencyCode]}
                 </p>
               </div>
+            )}
+            {/* {!isAmountValid && <p className="text-red-500 text-sm mt-1">{errorMessage}</p>} */}
+            {getForeignCurrency() && (
+              <p className="float-right text-gray-500 mt-2 mr-2">
+                최소 환전 가능 금액:{" "}
+                {exchangeRates.find((rate) => rate.currencyCode === getForeignCurrency()!.currencyCode)?.exchangeMin}{" "}
+                {getForeignCurrency()!.currencyCode}
+              </p>
             )}
           </div>
         )}

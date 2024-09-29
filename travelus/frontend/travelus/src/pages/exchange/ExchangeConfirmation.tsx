@@ -15,13 +15,34 @@ interface LocationState {
   transactionBalance: string;
 }
 
+interface ErrorModalProps {
+  message: string;
+  onClose: () => void;
+}
+
+// 비밀번호 오류 시 모달로 알림
+const ErrorModal: React.FC<ErrorModalProps> = ({ message, onClose }) => {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="bg-white p-4 rounded-lg shadow-lg">
+        <p>{message}</p>
+        <button className="mt-4 px-4 py-2 bg-[#1429A0] text-white rounded hover:bg-[#1429A0]" onClick={onClose}>
+          확인
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const AccountPasswordInput = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
   const [stateData, setStateData] = useState<LocationState | null>(null);
   const [password, setPassword] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
+  // state 데이터 받아오기
   useEffect(() => {
     if (location.state) {
       setStateData(location.state as LocationState);
@@ -35,6 +56,7 @@ const AccountPasswordInput = () => {
     };
   }, [location, dispatch, navigate]);
 
+  // 비밀번호 입력
   useEffect(() => {
     if (password.length === 4 && stateData) {
       handleExchange();
@@ -68,27 +90,39 @@ const AccountPasswordInput = () => {
           transactionSummary: exchangeSummary,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.log("Exchange failed:", error);
+      if (error.response && error.response.data) {
+        const { errorMessage } = error.response.data;
+        if (errorMessage.startsWith("AccountPassword Does not Match")) {
+          setErrorMessage("계좌 비밀번호가 일치하지 않습니다.");
+        } else if (errorMessage === "amount is below the minimum allowable amount") {
+          setErrorMessage("최소 환전 금액이 아닙니다.");
+        } else {
+          setErrorMessage(errorMessage || "알 수 없는 오류가 발생했습니다.");
+        }
+      } else {
+        setErrorMessage("알 수 없는 오류가 발생했습니다.");
+      }
+      setPassword(""); // 오류 발생 시 비밀번호 초기화
     } finally {
       dispatch(setAccountPassword(""));
     }
   };
 
+  const closeErrorModal = () => {
+    setErrorMessage("");
+    setPassword(""); // 모달 닫을 때도 비밀번호 초기화
+  };
+
   return (
     <div className="h-full grid grid-rows-[2fr_1fr]">
-      <div className="p-4">
-        {/* <button onClick={() => navigate(-1)} className="mb-4">
-          <ChevronLeft className="w-6 h-6" />
-        </button> */}
-      </div>
       <div className="flex-grow flex flex-col justify-center items-center space-y-10">
         <p className="text-xl text-center font-medium leading-tight">
           환전을 위한
           <br />
           계좌 비밀번호를 입력해주세요
         </p>
-
         <div className="flex space-x-3">
           {[...Array(4)].map((_, index) => (
             <div
@@ -97,7 +131,10 @@ const AccountPasswordInput = () => {
           ))}
         </div>
       </div>
-      <SecurityNumberKeyboard password={password} setPassword={setPassword} />
+      <div>
+        <SecurityNumberKeyboard password={password} setPassword={setPassword} />
+        {errorMessage && <ErrorModal message={errorMessage} onClose={closeErrorModal} />}
+      </div>
     </div>
   );
 };
