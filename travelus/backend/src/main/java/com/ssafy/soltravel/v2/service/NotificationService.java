@@ -1,17 +1,30 @@
 package com.ssafy.soltravel.v2.service;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.WebpushConfig;
+import com.google.firebase.messaging.WebpushNotification;
+import com.ssafy.soltravel.v2.domain.User;
+import com.ssafy.soltravel.v2.domain.redis.RedisFcm;
+import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeResponseDto;
-import com.ssafy.soltravel.v2.dto.notification.ExchangeNotificationDto;
+import com.ssafy.soltravel.v2.dto.notification.PushNotificationRequestDto;
+import com.ssafy.soltravel.v2.dto.notification.RegisterNotificationRequestDto;
 import com.ssafy.soltravel.v2.dto.notification.TransactionNotificationDto;
 import com.ssafy.soltravel.v2.dto.settlement.response.SettlementResponseDto;
-import com.ssafy.soltravel.v2.service.account.AccountService;
+import com.ssafy.soltravel.v2.exception.notification.FcmTokenNotFound;
+import com.ssafy.soltravel.v2.repository.redis.FcmTokenRepository;
 import com.ssafy.soltravel.v2.util.LogUtil;
+import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.io.IOException;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -20,49 +33,49 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RequiredArgsConstructor
 public class NotificationService {
 
-  private final AccountService accountService;
-  private final RedisTemplate<String, SseEmitter> redisTemplate; // RedisTemplate을 사용하여 Redis에 접근
+    // Redis에서 구독 정보의 키에 사용할 접두사
+    private static final String EMITTER_PREFIX = "EMITTER_";
+    private final FcmTokenRepository fcmTokenRepository;
+    private final RedisTemplate<String, SseEmitter> redisTemplate; // RedisTemplate을 사용하여 Redis에 접근
+    private final SecurityUtil securityUtil;
 
-  // Redis에서 구독 정보의 키에 사용할 접두사
-  private static final String EMITTER_PREFIX = "EMITTER_";
+    /**
+     * 메시지 알림 구독
+     */
+    public SseEmitter subscribe(long userId) {
 
-  /**
-   * 메시지 알림 구독
-   */
-  public SseEmitter subscribe(long userId) {
+        LogUtil.info("알림구독요청", userId);
+        //sseEmitter 객체 생성
+        SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
 
-    LogUtil.info("알림구독요청",userId);
-    //sseEmitter 객체 생성
-    SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
+        //연결
+        try {
+            sseEmitter.send(SseEmitter.event().name("connect"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-    //연결
-    try {
-      sseEmitter.send(SseEmitter.event().name("connect"));
-    } catch (IOException e) {
-      e.printStackTrace();
+        // Redis에 저장
+        redisTemplate.opsForValue().set(EMITTER_PREFIX + userId, sseEmitter, 2400, TimeUnit.HOURS); // 24시간 동안 유효
+
+        sseEmitter.onCompletion(() -> redisTemplate.delete(EMITTER_PREFIX + userId));  // sseEmitter 연결 완료 시 제거
+        sseEmitter.onTimeout(() -> redisTemplate.delete(EMITTER_PREFIX + userId));    // sseEmitter 연결 타임아웃 시 제거
+        sseEmitter.onError((e) -> redisTemplate.delete(EMITTER_PREFIX + userId));    // sseEmitter 연결 오류 시 제거
+
+        return sseEmitter;
     }
 
-    // Redis에 저장
-    redisTemplate.opsForValue().set(EMITTER_PREFIX + userId, sseEmitter, 2400, TimeUnit.HOURS); // 24시간 동안 유효
+    /**
+     * Redis에서 SseEmitter 가져오기
+     */
+    private SseEmitter getEmitter(long userId) {
+        return redisTemplate.opsForValue().get(EMITTER_PREFIX + userId);
+    }
 
-    sseEmitter.onCompletion(() -> redisTemplate.delete(EMITTER_PREFIX + userId));  // sseEmitter 연결 완료 시 제거
-    sseEmitter.onTimeout(() -> redisTemplate.delete(EMITTER_PREFIX + userId));    // sseEmitter 연결 타임아웃 시 제거
-    sseEmitter.onError((e) -> redisTemplate.delete(EMITTER_PREFIX + userId));    // sseEmitter 연결 오류 시 제거
-
-    return sseEmitter;
-  }
-
-  /**
-   * Redis에서 SseEmitter 가져오기
-   */
-  private SseEmitter getEmitter(long userId) {
-    return redisTemplate.opsForValue().get(EMITTER_PREFIX + userId);
-  }
-
-  /**
-   * 환전 알림
-   */
-  public void notifyExchangeMessage(ExchangeResponseDto exchangeResponseDto) {
+    /**
+     * 환전 알림
+     */
+    public void notifyExchangeMessage(ExchangeResponseDto exchangeResponseDto) {
 //
 //    String accountNo=exchangeResponseDto.getAccountInfoDto().getAccountNo();
 //
@@ -89,67 +102,110 @@ public class NotificationService {
 //        }
 //      }
 //    }
-  }
-
-  /**
-   * 정산 알림
-   */
-  public void notifySettlementMessage(SettlementResponseDto settlementResponseDto) {
-
-    long userId = settlementResponseDto.getUserId();
-
-    SseEmitter sseEmitterReceiver = getEmitter(userId);
-
-    if (sseEmitterReceiver != null) {
-      //알림 전송
-      try {
-        sseEmitterReceiver.send(SseEmitter.event().name("Settlement").data(settlementResponseDto));
-      } catch (Exception e) {
-        redisTemplate.delete(EMITTER_PREFIX + userId);
-      }
     }
-  }
 
-  /**
-   * 입금 알림
-   */
-  public void notifyTransactionMessage(TransactionNotificationDto transactionNotificationDto) {
+    /**
+     * 정산 알림
+     */
+    public void notifySettlementMessage(SettlementResponseDto settlementResponseDto) {
 
-    long userId = transactionNotificationDto.getUserId();
+        long userId = settlementResponseDto.getUserId();
 
-    SseEmitter sseEmitterReceiver = getEmitter(userId);
+        SseEmitter sseEmitterReceiver = getEmitter(userId);
 
-    if (sseEmitterReceiver != null) {
-      //알림 전송
-      try {
-        sseEmitterReceiver.send(SseEmitter.event().name("Transaction").data(transactionNotificationDto));
-      } catch (Exception e) {
-        redisTemplate.delete(EMITTER_PREFIX + userId);
-      }
+        if (sseEmitterReceiver != null) {
+            //알림 전송
+            try {
+                sseEmitterReceiver.send(SseEmitter.event().name("Settlement").data(settlementResponseDto));
+            } catch (Exception e) {
+                redisTemplate.delete(EMITTER_PREFIX + userId);
+            }
+        }
     }
-  }
+
+    /**
+     * 입금 알림
+     */
+    public void notifyTransactionMessage(TransactionNotificationDto transactionNotificationDto) {
+
+        long userId = transactionNotificationDto.getUserId();
+
+        SseEmitter sseEmitterReceiver = getEmitter(userId);
+
+        if (sseEmitterReceiver != null) {
+            //알림 전송
+            try {
+                sseEmitterReceiver.send(SseEmitter.event().name("Transaction").data(transactionNotificationDto));
+            } catch (Exception e) {
+                redisTemplate.delete(EMITTER_PREFIX + userId);
+            }
+        }
+    }
 
 
-  public void notifyAllUser(){
+    public void notifyAllUser() {
 
+        for (String uId : redisTemplate.keys(EMITTER_PREFIX + "*")) {
+            Long userId = Long.valueOf(uId.substring(8, uId.length()));
+            LogUtil.info("for userId", userId);
 
-    for(String uId: redisTemplate.keys(EMITTER_PREFIX + "*")) {
-      Long userId = Long.valueOf(uId.substring(8, uId.length()));
-      LogUtil.info("for userId", userId);
+            SseEmitter sseEmitterReceiver = getEmitter(userId);
 
-      SseEmitter sseEmitterReceiver = getEmitter(userId);
+            if (sseEmitterReceiver != null) {
+                LogUtil.info("for SseEmitter", sseEmitterReceiver.toString());
 
+                try {
+                    sseEmitterReceiver.send(SseEmitter.event().name("all").data("notify!!!!!!"));
+                } catch (Exception e) {
+                    redisTemplate.delete(EMITTER_PREFIX + userId);
+                }
+            }
+        }
+    }
 
-      if (sseEmitterReceiver != null) {
-        LogUtil.info("for SseEmitter", sseEmitterReceiver.toString());
+    // 토큰 레디스 저장
+    public ResponseDto saveFcmToken(RegisterNotificationRequestDto requestDto) {
+
+        LogUtil.info("requestDto", requestDto);
+
+        User user = securityUtil.getUserByToken();
+
+        fcmTokenRepository.save(new RedisFcm(user.getUserId(), requestDto.getFcmToken()));
+
+        return new ResponseDto();
+    }
+
+    // 사용자에게 push 알림
+    public ResponseEntity<?> pushNotification(PushNotificationRequestDto requestDto) {
+        Map<String, Object> resultMap = new HashMap<>();
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         try {
-          sseEmitterReceiver.send(SseEmitter.event().name("all").data("notify!!!!!!"));
+
+            // FCM 토큰 조회
+            RedisFcm redisFcm = fcmTokenRepository.findById(requestDto.getTargetUserId())
+                .orElseThrow(() -> new FcmTokenNotFound(requestDto.getTargetUserId()));
+
+            // FCM 메시지 생성
+            Message message = Message.builder()
+                .setToken(redisFcm.getFcmToken())
+                .setWebpushConfig(WebpushConfig.builder()
+                    .putHeader("ttl", "300")
+                    .setNotification(new WebpushNotification(requestDto.getTitle(), requestDto.getMessage()))
+                    .build())
+                .build();
+
+            String response = FirebaseMessaging.getInstance().sendAsync(message).get();
+            status = HttpStatus.OK;
+            resultMap.put("response", response);
         } catch (Exception e) {
-          redisTemplate.delete(EMITTER_PREFIX + userId);
+            resultMap.put("message", "요청 실패");
+            resultMap.put("exception", e.getMessage());
         }
-      }
+
+        return new ResponseEntity<>(resultMap, status);
     }
 
-  }
 }
+
+

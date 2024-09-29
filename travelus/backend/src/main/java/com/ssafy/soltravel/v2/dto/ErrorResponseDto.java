@@ -23,6 +23,10 @@ public class ErrorResponseDto {
     @Schema(example = "601")
     private String code;
 
+    @Schema(example = "601")
+    private String errorMessage;
+
+
     public ErrorResponseDto() {
         this.status = "SUCCESS";
         this.message = "요청 처리 완료";
@@ -30,6 +34,12 @@ public class ErrorResponseDto {
 
     public ErrorResponseDto(String message, String code) {
         this.status = "FAIL";
+        this.message = message;
+        this.code = code;
+    }
+
+    public ErrorResponseDto(String message, String code, HttpStatus status) {
+        this.status = status.toString();
         this.message = message;
         this.code = code;
     }
