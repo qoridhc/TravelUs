@@ -7,15 +7,19 @@ import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
-import com.ssafy.soltravel.v2.dto.group.request.GroupCodeGenerateRequestDto;
-import com.ssafy.soltravel.v2.dto.group.response.GroupCodeGenerateResponseDto;
 import com.ssafy.soltravel.v2.dto.group.GroupDto;
 import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateGroupRequestDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateParticipantRequestDto;
+import com.ssafy.soltravel.v2.dto.group.request.GroupCodeGenerateRequestDto;
+import com.ssafy.soltravel.v2.dto.group.response.GroupCodeGenerateResponseDto;
 import com.ssafy.soltravel.v2.dto.group.response.GroupSummaryDto;
 import com.ssafy.soltravel.v2.exception.account.InvalidPersonalAccountException;
+import com.ssafy.soltravel.v2.exception.group.DuplicateParticipantException;
+import com.ssafy.soltravel.v2.exception.group.GroupBalanceRemainingException;
 import com.ssafy.soltravel.v2.exception.group.InvalidGroupIdException;
+import com.ssafy.soltravel.v2.exception.group.NotGroupMasterException;
+import com.ssafy.soltravel.v2.exception.participant.ParticipantNotFoundException;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.GroupMapper;
 import com.ssafy.soltravel.v2.repository.GroupRepository;
@@ -57,6 +61,10 @@ public class GroupService {
     private final SecurityUtil securityUtil;
 
     private final String BASE_URL = "/accounts/";
+
+    /*
+     * 모임 관련 메서드
+     */
 
     // 신규 모임 개설
     public GroupDto createNewGroup(CreateGroupRequestDto requestDto) {
@@ -115,6 +123,44 @@ public class GroupService {
 
     }
 
+    // 모임 탈퇴
+    public ResponseDto deleteGroup(Long groupId) {
+
+        User user = securityUtil.getUserByToken();
+
+        GroupDto groupDto = getGroupInfo(groupId);
+
+        // 현재 유저가 그룹장인지 여부 판단
+        boolean isUserMaster = groupDto.getParticipants()
+            .stream()
+            .anyMatch(participant -> participant.getUserId().equals(user.getUserId()) && participant.isMaster());
+
+        // 그룹장이 아닌경우 모임 삭제 불가
+        if (!isUserMaster) {
+            throw new NotGroupMasterException(groupId);
+        }
+
+        // 현재 그룹 모임 계좌 잔액 여부
+        AccountDto accountDto = accountService.getByAccountNo(groupDto.getGroupAccountNo());
+
+        boolean existBalance = accountDto.getMoneyBoxDtos()
+            .stream()
+            .anyMatch(moneyBoxDto -> moneyBoxDto.getBalance() != 0);
+
+        // 모임 계좌에 잔액이 남아있는경우 모임 삭제 불가
+        if (existBalance) {
+            throw new GroupBalanceRemainingException(groupId);
+        }
+
+        groupRepository.deleteById(groupId);
+
+        return new ResponseDto();
+    }
+
+    /*
+     * 참여자 관련 메서드
+     */
+
     // 신규 참여자 생성
     public ParticipantDto createNewParticipant(CreateParticipantRequestDto requestDto, boolean isMaster) {
 
@@ -124,10 +170,17 @@ public class GroupService {
         // 2. 그룹 조회
         TravelGroup group = groupRepository.findById(requestDto.getGroupId()).orElseThrow(InvalidGroupIdException::new);
 
+        // 이미 가입한 참여자인경우 예외 처리
+        boolean existParticipant = group.getParticipants().stream()
+            .anyMatch((participant) -> participant.getUser().getUserId().equals(user.getUserId()));
+
+        if (existParticipant) {
+            throw new DuplicateParticipantException(requestDto.getGroupId(), user.getUserId());
+        }
+
         AccountDto accountDto = accountService.getByAccountNo(requestDto.getPersonalAccountNo());
 
         // 3. 참여자 생성
-
         Participant participant = Participant.createParticipant(
             user,
             group,
@@ -160,16 +213,28 @@ public class GroupService {
             .toList();
     }
 
-    
+    // 특정 참여자 모임 탈퇴
+    public ResponseDto deleteParticipant(Long participantId) {
+        if (!participantRepository.existsById(participantId)) {
+            throw new ParticipantNotFoundException(participantId);
+        }
+
+        // 모임주가 탈퇴할 경우 로직 추후 추가 예정
+
+        participantRepository.deleteById(participantId);
+
+        return new ResponseDto();
+    }
+
     /*
-    * 모임 코드 생성
-    */
+     * 모임 코드 생성
+     */
     public GroupCodeGenerateResponseDto generateGroupCode(GroupCodeGenerateRequestDto request) {
         User user = userRepository.findGroupMasterByGroupIdAndUserId(
             request.getGroupId(),
             securityUtil.getCurrentUserId()
         ).orElseThrow(
-            ()-> new UserNotFoundException(securityUtil.getCurrentUserId())
+            () -> new UserNotFoundException(securityUtil.getCurrentUserId())
         );
 
         String code = generateGroupCode(request.getGroupId());
@@ -182,14 +247,14 @@ public class GroupService {
 
     public GroupDto findGroupByCode(String code) {
         String groupId = redisTemplate.opsForValue().get(code);
-        if(groupId == null) {
+        if (groupId == null) {
             throw new InvalidGroupIdException("유효하지 않은 초대 코드입니다.");
         }
         return getGroupInfo(Long.valueOf(groupId));
     }
 
     public ResponseDto validGroupCode(String code) {
-        if(redisTemplate.hasKey(code)) {
+        if (redisTemplate.hasKey(code)) {
             Long expireTime = redisTemplate.getExpire(code);
             return new ResponseDto(String.valueOf(expireTime));
         }
@@ -199,7 +264,7 @@ public class GroupService {
     }
 
 
-    private String generateGroupCode(Long groupId){
+    private String generateGroupCode(Long groupId) {
         UUID uuid = UUID.randomUUID();
 
         byte[] uuidBytes = ByteBuffer.wrap(new byte[16])

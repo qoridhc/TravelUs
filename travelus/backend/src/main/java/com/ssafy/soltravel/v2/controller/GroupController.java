@@ -1,12 +1,12 @@
 package com.ssafy.soltravel.v2.controller;
 
 import com.ssafy.soltravel.v2.dto.ResponseDto;
-import com.ssafy.soltravel.v2.dto.group.request.GroupCodeGenerateRequestDto;
-import com.ssafy.soltravel.v2.dto.group.response.GroupCodeGenerateResponseDto;
 import com.ssafy.soltravel.v2.dto.group.GroupDto;
 import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateGroupRequestDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateParticipantRequestDto;
+import com.ssafy.soltravel.v2.dto.group.request.GroupCodeGenerateRequestDto;
+import com.ssafy.soltravel.v2.dto.group.response.GroupCodeGenerateResponseDto;
 import com.ssafy.soltravel.v2.dto.group.response.GroupSummaryDto;
 import com.ssafy.soltravel.v2.service.group.GroupService;
 import com.ssafy.soltravel.v2.util.LogUtil;
@@ -20,6 +20,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -96,6 +97,23 @@ public class GroupController {
         return ResponseEntity.status(HttpStatus.OK).body(groupSummaryDtoList);
     }
 
+    // 모임 탈퇴
+    @Operation(summary = "모임 삭제", description = "특정 모임의 삭제하는 API.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "모임 삭제 성공", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+        @ApiResponse(responseCode = "404", description = "모임을 찾을 수 없음", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @DeleteMapping("/{groupId}")
+    public ResponseEntity<ResponseDto> deleteGroup(
+        @PathVariable Long groupId
+    ) {
+
+        ResponseDto responseDto = groupService.deleteGroup(groupId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
     // === 참여자 관련 메서드 ===
     @Operation(summary = "새로운 참여자 생성", description = "새로운 참여자를 모임에 추가하는 API.")
     @ApiResponses(value = {
@@ -103,7 +121,7 @@ public class GroupController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @PostMapping("/createParticipant")
+    @PostMapping("/participants/{groupId}")
     public ResponseEntity<ParticipantDto> createNewParticipant(
         @RequestBody CreateParticipantRequestDto requestDto
     ) {
@@ -113,6 +131,21 @@ public class GroupController {
         return ResponseEntity.status(HttpStatus.CREATED).body(participantDto);
     }
 
+    @Operation(summary = "참여자 모임 탈퇴", description = "기존 모임 참여자를 모임에서 탈퇴시키는 API.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "참여자 탈퇴 성공", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @DeleteMapping("/participants/{participantId}")
+    public ResponseEntity<ResponseDto> deleteParticipant(
+        @PathVariable Long participantId
+    ) {
+
+        ResponseDto responseDto = groupService.deleteParticipant(participantId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
 
 
     // === 초대 url 생성 ===
