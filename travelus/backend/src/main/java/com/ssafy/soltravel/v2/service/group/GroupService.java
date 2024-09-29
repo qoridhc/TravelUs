@@ -15,7 +15,9 @@ import com.ssafy.soltravel.v2.dto.group.request.GroupCodeGenerateRequestDto;
 import com.ssafy.soltravel.v2.dto.group.response.GroupCodeGenerateResponseDto;
 import com.ssafy.soltravel.v2.dto.group.response.GroupSummaryDto;
 import com.ssafy.soltravel.v2.exception.account.InvalidPersonalAccountException;
+import com.ssafy.soltravel.v2.exception.group.GroupBalanceRemainingException;
 import com.ssafy.soltravel.v2.exception.group.InvalidGroupIdException;
+import com.ssafy.soltravel.v2.exception.group.NotGroupMasterException;
 import com.ssafy.soltravel.v2.exception.participant.ParticipantNotFoundException;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.GroupMapper;
@@ -118,6 +120,40 @@ public class GroupService {
 
         return groupMapper.toDto(travelGroup);
 
+    }
+
+    // 모임 탈퇴
+    public ResponseDto deleteGroup(Long groupId) {
+
+        User user = securityUtil.getUserByToken();
+
+        GroupDto groupDto = getGroupInfo(groupId);
+
+        // 현재 유저가 그룹장인지 여부 판단
+        boolean isUserMaster = groupDto.getParticipants()
+            .stream()
+            .anyMatch(participant -> participant.getUserId().equals(user.getUserId()) && participant.isMaster());
+
+        // 그룹장이 아닌경우 모임 삭제 불가
+        if (!isUserMaster) {
+            throw new NotGroupMasterException(groupId);
+        }
+
+        // 현재 그룹 모임 계좌 잔액 여부
+        AccountDto accountDto = accountService.getByAccountNo(groupDto.getGroupAccountNo());
+
+        boolean existBalance = accountDto.getMoneyBoxDtos()
+            .stream()
+            .anyMatch(moneyBoxDto -> moneyBoxDto.getBalance() != 0);
+
+        // 모임 계좌에 잔액이 남아있는경우 모임 삭제 불가
+        if (existBalance) {
+            throw new GroupBalanceRemainingException(groupId);
+        }
+
+        groupRepository.deleteById(groupId);
+
+        return new ResponseDto();
     }
 
     /*
