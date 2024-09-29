@@ -27,6 +27,9 @@ public class User implements UserDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long userId;
 
+  @Column(name = "name")
+  private String name;
+
   @Column(nullable = false, name = "credentialId")
   private String credentialId;
 
@@ -55,9 +58,10 @@ public class User implements UserDetails {
   /*
    * 생성 메서드
    */
-  public static User createUser(String credentialId, Role role) {
+  public static User createUser(String credentialId, String name, Role role) {
     User user = new User();
     user.credentialId = credentialId;
+    user.name = name;
     user.role = role;
     user.isExit = false;
     user.createdAt = LocalDateTime.now();

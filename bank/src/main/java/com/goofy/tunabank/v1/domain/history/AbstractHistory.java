@@ -13,6 +13,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.Getter;
+import lombok.ToString;
 
 @IdClass(HistoryId.class)
 @Entity
@@ -20,6 +21,7 @@ import lombok.Getter;
 @DiscriminatorColumn(name = "TTYPE")
 @Table(name = "history")
 @Getter
+@ToString
 public abstract class AbstractHistory {
 
     // 거래 기록 id
@@ -42,6 +44,4 @@ public abstract class AbstractHistory {
 
     @Column(name = "balance")
     protected Double balance;
-
-    // 기타 공통 필드 및 메서드
 }

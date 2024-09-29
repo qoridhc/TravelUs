@@ -6,6 +6,7 @@ import com.goofy.tunabank.v1.dto.transaction.request.TransactionHistoryRequestDt
 import com.goofy.tunabank.v1.dto.transaction.request.TransactionRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferMBRequestDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferRequestDto;
+import com.goofy.tunabank.v1.dto.transaction.response.HistoryResponseDto;
 import com.goofy.tunabank.v1.dto.transaction.response.TransactionResponseDto;
 import com.goofy.tunabank.v1.service.TransactionService;
 import java.util.List;
@@ -60,10 +61,10 @@ public class TransactionController {
    * 거래 내역 목록 조회
    */
   @PostMapping("/history")
-  public ResponseEntity<RecWrapper<List<TransactionResponseDto>>> getTransactionHistoryList(
+  public ResponseEntity<RecWrapper<List<HistoryResponseDto>>> getTransactionHistoryList(
       @RequestBody TransactionHistoryListRequestDto requestDto) {
 
-    List<TransactionResponseDto> response = transactionService.getTransactionHistory(requestDto);
+    List<HistoryResponseDto> response = transactionService.getTransactionHistory(requestDto);
     return ResponseEntity.ok(new RecWrapper<>(response));
   }
 
@@ -71,11 +72,11 @@ public class TransactionController {
    * 거래 내역 단건 조회
    */
   @PostMapping("/history/detail")
-  public ResponseEntity<RecWrapper<TransactionResponseDto>> getTransactionHistory(
+  public ResponseEntity<RecWrapper<HistoryResponseDto>> getTransactionHistory(
       @RequestBody TransactionHistoryRequestDto requestDto
   ) {
 
-    TransactionResponseDto response = transactionService.getHistory(requestDto);
+    HistoryResponseDto response = transactionService.getHistory(requestDto);
     return ResponseEntity.ok(new RecWrapper<>(response));
   }
 

@@ -15,6 +15,7 @@ public class UserCreateRequestBody {
   @JsonProperty("Header")
   private Header header;
   private String userId;
+  private String userName;
 
   @Data
   @Builder

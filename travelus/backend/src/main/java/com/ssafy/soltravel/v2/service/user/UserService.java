@@ -116,6 +116,7 @@ public class UserService implements UserDetailsService {
                     .build()
             )
             .userId(createDto.getId())
+            .userName(createDto.getName())
             .build();
 
         // 외부 API 요청(로그인)

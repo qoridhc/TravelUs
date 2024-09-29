@@ -8,6 +8,7 @@ import com.ssafy.soltravel.v2.dto.transaction.request.TransactionHistoryListRequ
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionHistoryRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
+import com.ssafy.soltravel.v2.dto.transaction.response.HistoryResponseDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransactionResponseDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
@@ -212,7 +213,7 @@ public class TransactionService {
   /**
    * 거래 내역 목록 조회
    */
-  public ResponseEntity<List<TransferHistoryResponseDto>> getHistoryList(
+  public ResponseEntity<List<HistoryResponseDto>> getHistoryList(
       TransactionHistoryListRequestDto requestDto) {
 
     User user = securityUtil.getUserByToken();
@@ -239,8 +240,8 @@ public class TransactionService {
 
     List<Object> recObject = (List<Object>) response.getBody().get("REC");
 
-    List<TransferHistoryResponseDto> responseDto = recObject.stream()
-        .map(value -> modelMapper.map(value, TransferHistoryResponseDto.class))
+    List<HistoryResponseDto> responseDto = recObject.stream()
+        .map(value -> modelMapper.map(value, HistoryResponseDto.class))
         .collect(Collectors.toList());
 
     return ResponseEntity.status(HttpStatus.OK).body(responseDto);
@@ -249,7 +250,7 @@ public class TransactionService {
   /**
    * 거래 내역 단건 조회
    */
-  public ResponseEntity<TransferHistoryResponseDto> getHistory(
+  public ResponseEntity<HistoryResponseDto> getHistory(
       TransactionHistoryRequestDto requestDto) {
 
     User user = securityUtil.getUserByToken();
@@ -267,8 +268,8 @@ public class TransactionService {
     ResponseEntity<Map<String, Object>> response = webClientUtil.request(API_URL, body, Map.class);
     Object recObject = response.getBody().get("REC");
 
-    TransferHistoryResponseDto responseDto = modelMapper.map(recObject,
-        TransferHistoryResponseDto.class);
+    HistoryResponseDto responseDto = modelMapper.map(recObject,
+        HistoryResponseDto.class);
 
     return ResponseEntity.status(HttpStatus.OK).body(responseDto);
   }

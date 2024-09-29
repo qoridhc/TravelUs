@@ -15,6 +15,9 @@ public class TransferHistoryResponseDto {
   @Schema(description = "거래 상대방 계좌 번호", example = "002-92374323-209")
   String accountNo;
 
+  @Schema(description = "거래 상대방 이름", example = "홍길동")
+  String ownerName;
+
   @Schema(description = "거래 날짜", example = "2024-04-01T10:25:00")
   String transactionDate;
 
