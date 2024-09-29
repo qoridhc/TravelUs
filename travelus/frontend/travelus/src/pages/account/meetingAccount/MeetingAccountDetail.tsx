@@ -271,7 +271,7 @@ const MeetingAccountDetail = () => {
             <div className="p-5 pb-8 flex flex-col items-center justify-center space-y-5">
               <button
                 onClick={() => {
-                  navigate(`/selectsettlementamount/${id}`);
+                  navigate(`/settlement/balance/amount/${id}`);
                 }}
                 className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]">
                 정산하기

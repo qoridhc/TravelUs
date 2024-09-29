@@ -1,15 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { TiArrowUnsorted } from "react-icons/ti";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import { currencyNames, ExchangeRateInfo } from "../../../types/exchange";
+import { exchangeRateApi } from "../../../api/exchange";
 
 const ForeignCurrencyExchange = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [usdAmount, setUsdAmount] = useState(0);
 
   const handleExchange = () => {
     navigate("/settlement");
+  };
+
+  // 금액을 한국 통화 형식으로 포맷(콤마가 포함된 형태)
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("ko-KR").format(amount);
   };
 
   return (
@@ -30,9 +38,9 @@ const ForeignCurrencyExchange = () => {
           </p>
 
           <div className="grid gap-3">
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <p className="text-lg font-semibold">원화로 바꾸기</p>
-              <p className="text-sm text-[#515151]">1 USD = 1343.98 원</p>
+              <p className="text-sm text-[#515151]">1 {location.state.foriegnInfo.currencyCode} = 1343.98 원</p>
             </div>
 
             <div className="flex flex-col items-center">
@@ -40,11 +48,17 @@ const ForeignCurrencyExchange = () => {
               <div className="p-5 bg-[#F3F4F6] rounded-xl grid grid-cols-2">
                 <div className="grid gap-1">
                   <div className="flex items-center space-x-2">
-                    <img className="w-6 h-4 border" src="/assets/flag/flagOfTheUnitedStates.png" alt="" />
-                    <p>미국 달러</p>
+                    <img
+                      className="w-6 h-4 border"
+                      src={`/assets/flag/flagOf${location.state.foriegnInfo.currencyCode}.png`}
+                      alt=""
+                    />
+                    <p>{currencyNames[location.state.foriegnInfo.currencyCode]}</p>
                   </div>
 
-                  <p className="text-sm text-[#555555]">잔액 119.67 USD</p>
+                  <p className="text-sm text-[#555555]">
+                    잔액 {formatCurrency(location.state.foriegnInfo.balance)} {location.state.foriegnInfo.currencyCode}
+                  </p>
                 </div>
 
                 <div className="flex justify-end items-center space-x-2">
@@ -54,7 +68,7 @@ const ForeignCurrencyExchange = () => {
                     placeholder="0"
                     onChange={(e) => setUsdAmount(parseFloat(e.target.value))}
                   />
-                  <p>USD</p>
+                  <p>{location.state.foriegnInfo.currencyCode}</p>
                 </div>
               </div>
 
@@ -66,7 +80,7 @@ const ForeignCurrencyExchange = () => {
               {/* 원화정보 */}
               <div className="p-5 bg-[#F3F4F6] rounded-xl grid grid-cols-2">
                 <div className="flex items-center space-x-2">
-                  <img className="w-6 h-4 border" src="/assets/flag/flagOfKorea.jpg" alt="" />
+                  <img className="w-6 h-4 border" src="/assets/flag/flagOfKRW.png" alt="" />
                   <p>대한민국 원</p>
                 </div>
 

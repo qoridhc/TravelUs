@@ -18,7 +18,12 @@ const SelectSettlementAmount = () => {
   ];
 
   const handleSettlement = () => {
-    navigate("/settlementforeigncurrencyexchange", { state: { isChecked: isChecked } });
+    // 남은 원화, 남은 외화 모두 정산
+    if (accountInfo && isChecked[0] && isChecked[1]) {
+      navigate("/settlement/balance/foreigncurrency/exchange", {
+        state: { foriegnInfo: accountInfo.moneyBoxDtos[1] },
+      });
+    }
   };
 
   const handleCheck = (index: number, checked: boolean) => {
