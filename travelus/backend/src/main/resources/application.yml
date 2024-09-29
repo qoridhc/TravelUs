@@ -15,9 +15,9 @@ spring:
       - classpath:/yml/application-v1.yml
       - classpath:/yml/application-v2.yml
       - classpath:/yml/application-feature.yml
-      - classpath:/yml/application-dev.yml
+  #      - classpath:/yml/application-dev.yml
   profiles:
-    active: v2, feature, dev
+    active: v2, feature
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
