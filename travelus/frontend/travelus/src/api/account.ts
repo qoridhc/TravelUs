@@ -1,6 +1,6 @@
 
 import api from "../lib/axios";
-import { AccountInfo, AccountInfoNew, MeetingAccountInfo, AccountParticipants, MeetingAccountCreate, meetingInvitationCode } from "../types/account";
+import { AccountInfo, AccountInfoNew, MeetingAccountInfo, AccountParticipants, GeneralAccountCreate, MeetingAccountCreate, meetingInvitationCode } from "../types/account";
 import { NewParticipant, TravelboxInfo } from "../types/meetingAccount";
 
 export const accountApi = {
@@ -30,6 +30,11 @@ export const accountApi = {
   fetchParticipantInfo: async (accountId: number): Promise<AccountParticipants> => {
     const response = await api.get(`/account/${accountId}/participants`)
     return response.data
+  },
+
+  // 입출금통장 생성
+  fetchCreateGeneralAccount: (data: GeneralAccountCreate) => {
+    return api.post(`/accounts/createAccount`, data);
   },
 
   // 모임통장 생성

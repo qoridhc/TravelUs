@@ -40,8 +40,12 @@ import Transaction from "./pages/transaction/Transaction";
 import PrivateRoute from "./pages/user/PrivateRoute";
 import { Sign } from "crypto";
 import EditMembers from "./pages/settlement/EditMembers";
-import UserInfoOfCreateAccount from "./pages/account/UserInfoOfCreateAccount";
+import UserInfoOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/UserInfoOfCreateAccount";
+import PasswordOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/PasswordOfCreateAccount";
+import CheckPasswordOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/CheckPasswordOfCreateAccount";
+import IDVerificationOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/IDVerificationOfCreateAccount";
 import UserInfoOfCreateMeetingAccount from "./pages/meetingAccount/UserInfoOfCreateMeetingAccount";
+import CompletedOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/CompletedOfCreateAccount";
 import MeetingInfoOfCreateMeetingAccount from "./pages/meetingAccount/MeetingInfoOfCreateMeetingAccount";
 import PasswordOfCreateMeetingAccount from "./pages/meetingAccount/PasswordOfCreateMeetingAccount";
 import CheckPasswordOfCreateMeetingAccount from "./pages/meetingAccount/CheckPasswordOfCreateMeetingAccount";
@@ -108,8 +112,12 @@ function App() {
           <Route path="/userupdate/password" element={<UserPasswordUpdate />} />
 
           {/* 입출금통장 생성 */}
-          <Route path="/userinfoofcreateaccount" element={<UserInfoOfCreateAccount />} />
-
+          <Route path="/account/create/userinfo" element={<UserInfoOfCreateAccount />} />
+          <Route path="/account/create/password" element={<PasswordOfCreateAccount />} />
+          <Route path="/account/create/password/check" element={<CheckPasswordOfCreateAccount />} />
+          <Route path="/account/create/idverification" element={<IDVerificationOfCreateAccount />} />
+          <Route path="/account/create/completed" element={<CompletedOfCreateAccount />} />
+          
           {/* 모임통장 생성 */}
           <Route path="/meeting/create/prepare" element={<MeetingAccountCreatePrepare />} />
           <Route path="/meeting/create/userinfo" element={<UserInfoOfCreateMeetingAccount />} />
