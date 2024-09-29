@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { TiArrowUnsorted } from "react-icons/ti";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { currencyNames, ExchangeRateInfo } from "../../../types/exchange";
 import { exchangeRateApi } from "../../../api/exchange";
 
 const ForeignCurrencyExchange = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams();
 
-  const [usdAmount, setUsdAmount] = useState(0);
+  const [foreignAmmount, setForeignAmmount] = useState(0);
 
   const handleExchange = () => {
-    navigate("/settlement");
+    navigate(`/settlement/balance/participants/${id}`, {
+      state: {
+        foreignAmmount: Math.floor(1343.98 * foreignAmmount),
+        currencyCode: location.state.foriegnInfo.currencyCode,
+      },
+    });
   };
 
   // 금액을 한국 통화 형식으로 포맷(콤마가 포함된 형태)
@@ -66,7 +72,7 @@ const ForeignCurrencyExchange = () => {
                     type="number"
                     className="w-2/3 text-right bg-[#F3F4F6] outline-none placeholder:text-black"
                     placeholder="0"
-                    onChange={(e) => setUsdAmount(parseFloat(e.target.value))}
+                    onChange={(e) => setForeignAmmount(parseFloat(e.target.value))}
                   />
                   <p>{location.state.foriegnInfo.currencyCode}</p>
                 </div>
@@ -88,7 +94,7 @@ const ForeignCurrencyExchange = () => {
                   <input
                     type="number"
                     className="w-2/3 text-right bg-[#F3F4F6] outline-none"
-                    value={Math.floor(1343.98 * usdAmount)}
+                    value={Math.floor(1343.98 * foreignAmmount)}
                   />
                   <p>KRW</p>
                 </div>

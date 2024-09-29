@@ -20,7 +20,7 @@ const SelectSettlementAmount = () => {
   const handleSettlement = () => {
     // 남은 원화, 남은 외화 모두 정산
     if (accountInfo && isChecked[0] && isChecked[1]) {
-      navigate("/settlement/balance/foreigncurrency/exchange", {
+      navigate(`/settlement/balance/foreigncurrency/exchange/${id}`, {
         state: { foriegnInfo: accountInfo.moneyBoxDtos[1] },
       });
     }
@@ -48,7 +48,6 @@ const SelectSettlementAmount = () => {
   // 특정 모임 통장 조회 API 호출
   const fetchSpecificAccountInfo = async (groupAccountNo: string) => {
     try {
-      console.log("Fetching account info for groupAccountNo:", groupAccountNo);
       const response = await accountApi.fetchSpecificAccountInfo(groupAccountNo);
       setAccountInfo(response.data);
     } catch (error) {
