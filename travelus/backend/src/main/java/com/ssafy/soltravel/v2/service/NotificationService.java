@@ -191,7 +191,8 @@ public class NotificationService {
                 .setToken(redisFcm.getFcmToken())
                 .setWebpushConfig(WebpushConfig.builder()
                     .putHeader("ttl", "300")
-                    .setNotification(new WebpushNotification(requestDto.getTitle(), requestDto.getMessage()))
+                    .setNotification(
+                        new WebpushNotification(requestDto.getTitle(), requestDto.getMessage(), requestDto.getIcon()))
                     .build())
                 .build();
 
