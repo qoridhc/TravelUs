@@ -9,7 +9,6 @@ import com.ssafy.soltravel.v2.dto.auth.AuthSMSSendRequestDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthSMSSendResponseDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthSMSVerificationRequestDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthSMSVerificationResponseDto;
-import com.ssafy.soltravel.v2.dto.notification.PushNotificationRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserLoginRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserLoginResponseDto;
 import com.ssafy.soltravel.v2.exception.auth.InvalidAuthCodeException;
@@ -31,7 +30,6 @@ import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import net.nurigo.sdk.message.service.DefaultMessageService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,9 +74,6 @@ public class AuthService {
         // 응답 설정
         UserLoginResponseDto response = tokenService.saveRefreshToken(user.getUserId());
         response.setName(user.getName());
-
-        ResponseEntity<?> response1 = notificationService.pushNotification(
-            new PushNotificationRequestDto(user.getUserId(), "테스트 타이틀", "테스트 메시지"));
 
         return response;
     }
