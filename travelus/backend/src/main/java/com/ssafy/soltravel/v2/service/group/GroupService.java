@@ -15,6 +15,7 @@ import com.ssafy.soltravel.v2.dto.group.request.GroupCodeGenerateRequestDto;
 import com.ssafy.soltravel.v2.dto.group.response.GroupCodeGenerateResponseDto;
 import com.ssafy.soltravel.v2.dto.group.response.GroupSummaryDto;
 import com.ssafy.soltravel.v2.exception.account.InvalidPersonalAccountException;
+import com.ssafy.soltravel.v2.exception.group.DuplicateParticipantException;
 import com.ssafy.soltravel.v2.exception.group.GroupBalanceRemainingException;
 import com.ssafy.soltravel.v2.exception.group.InvalidGroupIdException;
 import com.ssafy.soltravel.v2.exception.group.NotGroupMasterException;
@@ -169,10 +170,17 @@ public class GroupService {
         // 2. 그룹 조회
         TravelGroup group = groupRepository.findById(requestDto.getGroupId()).orElseThrow(InvalidGroupIdException::new);
 
+        // 이미 가입한 참여자인경우 예외 처리
+        boolean existParticipant = group.getParticipants().stream()
+            .anyMatch((participant) -> participant.getUser().getUserId().equals(user.getUserId()));
+
+        if (existParticipant) {
+            throw new DuplicateParticipantException(requestDto.getGroupId(), user.getUserId());
+        }
+
         AccountDto accountDto = accountService.getByAccountNo(requestDto.getPersonalAccountNo());
 
         // 3. 참여자 생성
-
         Participant participant = Participant.createParticipant(
             user,
             group,
