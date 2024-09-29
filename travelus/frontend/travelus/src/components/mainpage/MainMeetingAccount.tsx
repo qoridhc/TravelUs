@@ -72,7 +72,7 @@ const MainMeetingAccount = ({ index, account }: Props) => {
       {account && (
         <div
           onClick={() => {
-            navigate(`/meetingaccount/${index}`);
+            navigate(`/meetingaccount/${account.groupId}`);
           }}
           className="w-full p-5 flex flex-col rounded-xl bg-white shadow-md">
           <div className="flex flex-col space-y-4">

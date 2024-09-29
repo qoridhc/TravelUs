@@ -17,7 +17,7 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
   const [isValidation, setIsValidation] = useState<boolean>(false);
   const [withdrawalAccountNo, setWithdrawalAccountNo] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
-  const { accountNo, transferAmount, password, depositAccount } = location.state as {
+  const { accountNo, transferAmount, depositAccount } = location.state as {
     accountNo: string;
     transferAmount: string;
     password: string;
@@ -53,25 +53,6 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
     fetchData();
   }, []);
 
-  const handleTransfer = async () => {
-    const data = {
-      transferType: "G",
-      withdrawalAccountNo: formatAccountNumber(withdrawalAccountNo),
-      accountPassword: password,
-      depositAccountNo: formatAccountNumber(accountNo),
-      transactionBalance: parseInt(transferAmount),
-      withdrawalTransactionSummary: userName,
-      depositTransactionSummary: userName,
-    };
-
-    try {
-      const response = await transactionApi.Transfer(data);
-      console.log("이체 성공");
-      navigate("/transfer/success", { state: { transferAmount, depositAccount } });
-    } catch (error) {
-      console.error("이체 에러", error);
-    }
-  };
 
   return (
     <div className="h-full p-5 pb-8">
@@ -109,7 +90,9 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
           </div>
           <div className="flex flex-col space-y-3">
             <button
-              onClick={handleTransfer}
+              onClick={() => {
+                navigate("/transfer/password", { state: { accountNo, transferAmount, depositAccount, userName, withdrawalAccountNo } });
+              }}
               className="w-full h-14 text-lg font-semibold rounded-xl tracking-wide text-white bg-[#1429A0]">
               보내기
             </button>
