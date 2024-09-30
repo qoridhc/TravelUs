@@ -278,15 +278,21 @@ public class TransactionService {
     TransactionHistory depositTh = transactionHistoryRepository.save(depositTransactionHistory);
 
     // response 변환
-    return transactionMapper.toTransactionResponseDtos(
+    List<TransactionResponseDto> transactionResponseDtos = transactionMapper.toTransactionResponseDtos(
         List.of(withdrawalTh, depositTh));
+    transactionResponseDtos.get(0)
+        .setOwnerName(dto.getDepositBox().getAccount().getUser().getName());//출금
+    transactionResponseDtos.get(1)
+        .setOwnerName(dto.getWithdrawalBox().getAccount().getUser().getName());//입금
+    return transactionResponseDtos;
   }
 
   /**
    * 거래 내역 목록 조회
    */
   @Transactional(readOnly = true)
-  public Page<HistoryResponseDto> getTransactionHistory(TransactionHistoryListRequestDto requestDto) {
+  public Page<HistoryResponseDto> getTransactionHistory(
+      TransactionHistoryListRequestDto requestDto) {
 
     // page와 size가 null일 경우 Pageable을 null로 설정
     Pageable pageable = (requestDto.getPage() != null && requestDto.getSize() != null)
@@ -300,7 +306,6 @@ public class TransactionService {
 
     return transactionHistories.map(historyMapper::toHistoryResponseDto);
   }
-
 
 
   /**
