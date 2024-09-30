@@ -11,11 +11,10 @@ import com.goofy.tunabank.v1.repository.CurrencyRepository;
 import com.goofy.tunabank.v1.util.LogUtil;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import jakarta.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -38,8 +37,8 @@ public class ExchangeService {
   private List<String> desiredCurrencies = List.of("USD", "JPY", "EUR", "CNY");
 
 
-  //  @Scheduled(cron = "30 0 * * * ?")
 //  @PostConstruct
+  @Scheduled(cron = "30 0 * * * ?")
   public List<ExchangeRateCacheDTO> updateExchangeRates() {
     String url = "/latest/KRW";
 
@@ -53,10 +52,10 @@ public class ExchangeService {
     String timeLastUpdateUtcRaw = jsonObject.get("time_last_update_utc").getAsString();
     DateTimeFormatter inputFormatter = DateTimeFormatter.RFC_1123_DATE_TIME;
     ZonedDateTime utcZonedDateTime = ZonedDateTime.parse(timeLastUpdateUtcRaw, inputFormatter);
-    LocalDateTime localDateTime = utcZonedDateTime.withZoneSameInstant(ZoneOffset.UTC)
-        .toLocalDateTime();
+    ZonedDateTime seoulZonedDateTime = utcZonedDateTime.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+    LocalDateTime localDateTime = seoulZonedDateTime.toLocalDateTime();
     DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    String timeLastUpdateUtc = localDateTime.format(outputFormatter);
+    String timeLastUpdateKst = localDateTime.format(outputFormatter);
 
     JsonObject conversionRates = jsonObject.getAsJsonObject("conversion_rates");
 
@@ -76,16 +75,16 @@ public class ExchangeService {
 
         int exchangeMin=getMinimumAmount(getCurrencyType(currencyCode));
         // DTO 객체 생성 후 리스트에 추가
-        ExchangeRateCacheDTO dto = new ExchangeRateCacheDTO(currencyCode, rate, timeLastUpdateUtc,
+        ExchangeRateCacheDTO dto = new ExchangeRateCacheDTO(currencyCode, rate, timeLastUpdateKst,
             exchangeMin);
         cacheDTOList.add(dto);
 
         // 환율 업데이트
-        saveOrUpdateCurrency(getCurrencyType(currencyCode), rate, timeLastUpdateUtc);
+        saveOrUpdateCurrency(getCurrencyType(currencyCode), rate, timeLastUpdateKst);
 
         // RabbitMQ로 메시지 전송
         String message = String.format("Currency: %s, Rate: %f, Time: %s, ExchangeMin: %d",
-            currencyCode, rate, timeLastUpdateUtc, exchangeMin);
+            currencyCode, rate, timeLastUpdateKst, exchangeMin);
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_RATE_QUEUE, message);
         LogUtil.info("Sent message to TravelUs: {}", message);
       }
