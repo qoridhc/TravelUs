@@ -196,12 +196,7 @@ export interface meetingInvitationCode {
 
 // 거래 내역 조회 (New ver.)
 export interface TransactionNew {
-  
-}
-
-// 모임통장 거래 내역 조회 (New ver.)
-export interface MeetingTransactionNew {
-  transactionUniqueNo: string;
+    transactionUniqueNo: string;
   transactionType: string;
   accountNo: string;
   transactionDate: string;

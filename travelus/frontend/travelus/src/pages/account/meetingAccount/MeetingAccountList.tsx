@@ -39,12 +39,12 @@ const MeetingAccountListNew = () => {
           <p className="text-xl font-bold">내 모임통장 계좌</p>
         </div>
 
-        <div className="w-full flex flex-col space-y-5">
+        <div className="w-full flex flex-col space-y-6">
           <div className="p-6 bg-white rounded-xl">
             <p className="mb-7 text-lg font-bold">내가 개설한 모임통장</p>
             {/* 내가 개설한 모임 통장 있을 시 표시 */}
             {createdAccountList.length > 0 ? (
-              <div className="flex flex-col space-y-5">
+              <div className="flex flex-col space-y-6">
                 {createdAccountList.map((account, index) => (
                   <MeetingAccount key={index} account={account} />
                 ))}
@@ -82,7 +82,7 @@ const MeetingAccountListNew = () => {
           {joinedAccountList.length > 0 ? (
             <div className="p-6 bg-white rounded-xl">
               <p className="mb-7 text-lg font-bold">참여중인 모임통장</p>
-              <div className="flex flex-col space-y-5">
+              <div className="flex flex-col space-y-6">
                 {joinedAccountList.map((account, index) => (
                   <JoinedMeetingAccount key={index} accountId={account.groupId} index={index} account={account} />
                 ))}

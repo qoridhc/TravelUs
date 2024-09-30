@@ -147,7 +147,7 @@ const MainPage = () => {
             <div
               className="flex flex-col space-y-3"
               onClick={() => {
-                navigate(`/accounttransaction/1`);
+                navigate(`/transaction/${account.accountNo}`);
               }}>
               <div className="flex justify-between items-center">
                 <div className="flex flex-col">
@@ -173,7 +173,7 @@ const MainPage = () => {
 
         <div className="w-full flex flex-col items-center space-y-2">
           {/* 모임 통장 있을 시 표시 */}
-          {meetingAccountList.length > 1 && (
+          {meetingAccountList.length > 0 && (
             <Swiper
               pagination={{
                 dynamicBullets: true,
