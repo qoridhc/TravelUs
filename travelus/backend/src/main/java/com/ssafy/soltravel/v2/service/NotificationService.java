@@ -4,14 +4,18 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushNotification;
+import com.ssafy.soltravel.v1.dto.user.UserDetailDto;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.domain.redis.RedisFcm;
 import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.notification.PushNotificationRequestDto;
 import com.ssafy.soltravel.v2.dto.notification.RegisterNotificationRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
+import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
 import com.ssafy.soltravel.v2.exception.notification.FcmTokenNotFound;
 import com.ssafy.soltravel.v2.repository.redis.FcmTokenRepository;
+import com.ssafy.soltravel.v2.service.account.AccountService;
+import com.ssafy.soltravel.v2.service.user.UserService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.util.HashMap;
@@ -34,6 +38,8 @@ public class NotificationService {
     private final FcmTokenRepository fcmTokenRepository;
     private final RedisTemplate<String, SseEmitter> redisTemplate; // RedisTemplate을 사용하여 Redis에 접근
     private final SecurityUtil securityUtil;
+    private final UserService userService;
+    private final AccountService accountService;
 
     // 토큰 레디스 저장
     public ResponseDto saveFcmToken(RegisterNotificationRequestDto requestDto) {
@@ -87,11 +93,12 @@ public class NotificationService {
         return new ResponseEntity<>(resultMap, status);
     }
 
-    // 입출금 알림 전송
+    /*
+     * 입금 & 출금 알림
+     */
     public ResponseEntity<?> sendDepositNotification(Long userId, TransactionRequestDto requestDto) {
         String title;
         String message;
-        String icon = "/icons/favicon.ico"; // 아이콘은 동일하게 사용
 
         // 트랜잭션 타입에 따라 switch-case로 알림 제목 및 메시지 설정
         switch (requestDto.getTransactionType()) {
@@ -109,8 +116,48 @@ public class NotificationService {
         }
 
         // 알림 전송을 위한 Dto 생성 및 전송
-        PushNotificationRequestDto notificationRequestDto = new PushNotificationRequestDto(userId, title, message, icon);
+        PushNotificationRequestDto notificationRequestDto = new PushNotificationRequestDto(userId, title, message,
+            DEFAULT_ICON_URL);
         return pushNotification(notificationRequestDto);
+    }
+
+    /*
+     * 이체 알림
+     */
+    public ResponseEntity<?> sendTransferNotification(User user, TransferRequestDto requestDto) {
+
+        // 돈을 받는 사람 유저 정보
+        UserDetailDto depositUser = accountService.getUserByAccountNo(requestDto.getDepositAccountNo());
+
+        String title = "이체 완료";
+        String message = depositUser.getName() + "님에게 : " + requestDto.getTransactionBalance() + "원을 보냈어요.";
+
+        // 돈을 보내는 사람
+        PushNotificationRequestDto notificationRequestDto = new PushNotificationRequestDto(
+            user.getUserId(),
+            title,
+            message,
+            DEFAULT_ICON_URL
+        );
+
+        // 알림 전송
+        pushNotification(notificationRequestDto);
+
+        // 돈 받는 사람
+        title = user.getName() + "님이 돈을 보냈어요";
+        message = requestDto.getTransactionBalance() + "원이 튜나은행 계좌로 입금되었어요";
+
+        PushNotificationRequestDto depositNotificationRequestDto = new PushNotificationRequestDto(
+            depositUser.getId(),
+            title,
+            message,
+            DEFAULT_ICON_URL
+        );
+
+        // 알림 전송
+        pushNotification(depositNotificationRequestDto);
+
+        return ResponseEntity.ok().body(new ResponseDto());
     }
 
     //    // 사용자에게 push 알림

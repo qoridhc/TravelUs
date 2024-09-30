@@ -14,6 +14,7 @@ import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDt
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.service.NotificationService;
+import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import com.ssafy.soltravel.v2.util.WebClientUtil;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ public class TransactionService {
 
     private final String BASE_URL = "/transaction/";
     private final NotificationService notificationService;
+    private final AccountService accountService;
 
     /**
      * 입금
@@ -138,7 +140,7 @@ public class TransactionService {
 
         return ResponseEntity.status(HttpStatus.OK).body(transactionResponseDto);
     }
-    
+
     /**
      * 이체 요청 처리 메서드
      */
@@ -170,6 +172,8 @@ public class TransactionService {
         List<TransferHistoryResponseDto> responseDto = recObject.stream()
             .map(value -> modelMapper.map(value, TransferHistoryResponseDto.class))
             .collect(Collectors.toList());
+
+        notificationService.sendTransferNotification(user, requestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
