@@ -34,7 +34,7 @@ public class ExchangeService {
   private final WebClient ExchangewebClient;
   private final CurrencyRepository currencyRepository;
   private final RabbitTemplate rabbitTemplate;
-  private List<String> desiredCurrencies = List.of("USD", "JPY", "EUR", "CNY");
+  private List<String> desiredCurrencies = List.of("USD", "JPY", "EUR", "TWD");
 
 
 //  @PostConstruct
@@ -151,8 +151,8 @@ public class ExchangeService {
         return 100;
       case EUR:
         return 100;
-      case CNY:
-        return 800;
+      case TWD:
+        return 4000;
       default:
         throw new UnsupportedCurrencyException(CurrencyCode);
     }
@@ -201,7 +201,7 @@ public class ExchangeService {
       case "USD" -> CurrencyType.USD;
       case "JPY" -> CurrencyType.JPY;
       case "EUR" -> CurrencyType.EUR;
-      case "CNY" -> CurrencyType.CNY;
+      case "TWD" -> CurrencyType.TWD;
       default -> CurrencyType.KRW;
     };
   }

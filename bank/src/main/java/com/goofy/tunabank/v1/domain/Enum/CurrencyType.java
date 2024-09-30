@@ -4,5 +4,5 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum CurrencyType {
-    KRW, USD, JPY, EUR, CNY
+    KRW, USD, JPY, EUR, TWD
 }
