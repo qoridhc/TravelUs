@@ -190,7 +190,7 @@ public class ExchangeService {
       case "USD" -> CurrencyType.USD;
       case "JPY" -> CurrencyType.JPY;
       case "EUR" -> CurrencyType.EUR;
-      case "CNY" -> CurrencyType.CNY;
+      case "TWD" -> CurrencyType.TWD;
       default -> CurrencyType.KRW;
     };
   }
@@ -220,18 +220,11 @@ public class ExchangeService {
           new ExchangeRateCacheDto(currencyCode, exchangeRate, timeLastUpdateUtc,
               String.valueOf(exchangeMin)));
 
-      //TODO: 주석 풀 것
-      //자동환전
-//      processCurrencyConversions(currencyCode, exchangeRate);
+      processCurrencyConversions(currencyCode, exchangeRate);
     } else {
       LogUtil.info("환율 변동 없음. 통화 코드: {}, 기존 환율: {}, 새로운 환율: {}", currencyCode,
           cachedDto.getExchangeRate(), exchangeRate);
     }
-    /**
-     * 코컬 테스트용
-     */
-//    LogUtil.info("자동환전시작");
-    processCurrencyConversions(currencyCode, exchangeRate);
   }
 
   /**

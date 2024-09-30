@@ -5,7 +5,7 @@ public enum CurrencyType {
     EUR("EUR", "유로"),
     KRW("KRW", "원화"),
     JPY("JPY", "엔화"),
-    CNY("CNY", "위안");
+    TWD("TWD", "달러");
 
     private final String currencyCode;
     private final String currencyName;
