@@ -141,7 +141,7 @@ function App() {
           <Route path="/meeting/invite/participated" element={<AlreadyInviteOfMeeting />} />
 
           {/* 통장 내역 */}
-          <Route path="/accounttransaction/:id" element={<AccountTransaction />} />
+          <Route path="/transaction/:accountNo" element={<AccountTransaction />} />
           <Route path="/meetingtransaction/:id" element={<MeetingTransaction />} />
           <Route path="/transaction/detail/travelbox/:id" element={<TravelBoxTransaction />} />
 

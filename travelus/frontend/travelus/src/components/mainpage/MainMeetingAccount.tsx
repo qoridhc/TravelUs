@@ -39,7 +39,7 @@ const MainMeetingAccount = ({ index, account }: Props) => {
     const backgroundClass = iconBackgrounds[iconName] || iconBackgrounds.default;
 
     const containerClasses = `w-6 h-6 ${backgroundClass} rounded-full flex justify-center items-center text-white`;
-    const iconClasses = "w-4 h-4"; // 아이콘 자체 크기를 줄이기 위한 클래스
+    const iconClasses = "w-[0.9rem] h-[0.9rem]"; // 아이콘 자체 크기를 줄이기 위한 클래스
 
     let IconComponent;
 

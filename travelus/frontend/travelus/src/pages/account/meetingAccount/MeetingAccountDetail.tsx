@@ -45,7 +45,6 @@ const MeetingAccountDetail = () => {
   // 특정 모임 통장 조회 API 호출
   const fetchSpecificAccountInfo = async (groupAccountNo: string) => {
     try {
-      console.log("Fetching account info for groupAccountNo:", groupAccountNo); // 통장 조회 로그 추가
       const response = await accountApi.fetchSpecificAccountInfo(groupAccountNo);
       setAccount(response.data);
     } catch (error) {
