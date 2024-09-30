@@ -31,9 +31,9 @@ public class SettlementController {
       @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = String.class))),
       @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = String.class)))})
   @PostMapping
-  public ResponseEntity<?> executeSettlement(
+  public ResponseEntity<String> executeSettlement(
       @RequestBody SettlementRequestDto settlementRequestDto) {
-    settlementService.executeSettlement(settlementRequestDto);
-    return ResponseEntity.ok().body("success");
+    String response = settlementService.executeSettlement(settlementRequestDto);
+    return ResponseEntity.ok().body(response);
   }
 }
