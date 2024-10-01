@@ -164,20 +164,32 @@ public class ExchangeService {
    * @param CurrencyCode: 바꿀 통화
    * @param amount:       원화의 얼마를 외화로 바꿀 것인지
    */
-  public ExchangeAmountRequestDto calculateAmountFromKRWToForeignCurrency(CurrencyType CurrencyCode,
-      double amount) {
+  public ExchangeAmountRequestDto calculateAmountFromKRWToForeignCurrency(CurrencyType CurrencyCode, double amount) {
 
+    ExchangeAmountRequestDto responseDto=new ExchangeAmountRequestDto();
     BigDecimal krw = BigDecimal.valueOf(amount);
     BigDecimal rate = BigDecimal.valueOf(getExchangeRateByCurrencyCode(CurrencyCode));
-    BigDecimal calculatedAmount = krw.divide(rate, 2, RoundingMode.DOWN);
+    responseDto.setExchangeRate(rate.doubleValue());
 
-    //최소 환전 금액 유효성 검사
+    BigDecimal calculatedAmount;
+
+    if (CurrencyCode == CurrencyType.JPY) {
+      // JPY는 100엔 단위로 환율을 계산
+      rate = rate.divide(BigDecimal.valueOf(100), 2, RoundingMode.DOWN);
+      calculatedAmount = krw.divide(rate, 0, RoundingMode.UP); // JPY는 소수점 없이 처리
+    } else {
+      calculatedAmount = krw.divide(rate, 2, RoundingMode.UP); // 다른 통화는 소수점 2자리까지 처리
+    }
+
     double DcalculatedAmount = calculatedAmount.doubleValue();
+    // 최소 환전 금액 유효성 검사
     if (DcalculatedAmount < getMinimumAmount(CurrencyCode)) {
       throw new MinimumAmountNotSatisfiedException(CurrencyCode, DcalculatedAmount);
     }
-    return new ExchangeAmountRequestDto(DcalculatedAmount, rate.doubleValue());
+    responseDto.setAmount(DcalculatedAmount);
+    return responseDto;
   }
+
 
   /**
    * 환전 금액 계산 로직 2. 외화 -> 원화

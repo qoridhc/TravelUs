@@ -19,6 +19,7 @@ import com.goofy.tunabank.v1.dto.transaction.response.HistoryResponseDto;
 import com.goofy.tunabank.v1.dto.transaction.response.TransactionResponseDto;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountPasswordException;
+import com.goofy.tunabank.v1.exception.exchange.UnsupportedCurrencyException;
 import com.goofy.tunabank.v1.exception.transaction.InsufficientBalanceException;
 import com.goofy.tunabank.v1.exception.transaction.InvalidTransactionTypeException;
 import com.goofy.tunabank.v1.exception.transaction.InvalidWithdrawalAmountException;
@@ -209,8 +210,19 @@ public class TransactionService {
         if (beforeAmount % 10 != 0) {
           beforeAmount -= (beforeAmount % 10);
         }
-        yield exchangeService.calculateAmountFromKRWToForeignCurrency(
-            requestDto.getTargetCurrencyCode(), beforeAmount); // 원화 -> 외화
+        switch (requestDto.getTargetCurrencyCode()) {
+          case JPY -> {
+            // JPY는 100엔 단위로 조정
+            double adjustedAmount = Math.round(beforeAmount / 100.0) * 100;
+            yield exchangeService.calculateAmountFromKRWToForeignCurrency(
+                requestDto.getTargetCurrencyCode(), adjustedAmount); // 원화 -> JPY
+          }
+          case USD, EUR, TWD -> {
+            yield exchangeService.calculateAmountFromKRWToForeignCurrency(
+                requestDto.getTargetCurrencyCode(), beforeAmount); // 원화 -> 다른 외화
+          }
+          default -> throw new UnsupportedCurrencyException(requestDto.getTargetCurrencyCode());
+        }
       }
     };
 
