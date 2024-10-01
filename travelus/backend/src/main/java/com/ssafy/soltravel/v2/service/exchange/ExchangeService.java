@@ -55,7 +55,7 @@ public class ExchangeService {
   private final GroupRepository groupRepository;
   private final ExchangeRateForecastRepository exchangeRateForecastRepository;
 
-  private List<String> Currencies = List.of("USD", "JPY", "EUR", "CNY");
+  private List<String> Currencies = List.of("USD", "JPY", "EUR", "TWD");
 
   /**
    * 현재 환율 전체 조회
