@@ -69,6 +69,9 @@ import InvitationOfMeeting from "./pages/meetingAccount/InvitationOfMeeting";
 import InviteInfoOfMeeting from "./pages/meetingAccount/InviteInfoOfMeeting";
 import AlreadyInviteOfMeeting from "./pages/meetingAccount/AlreadyInviteOfMeeting";
 import SelectAccountOfMeeting from "./pages/meetingAccount/SelectAccountOfMeeting";
+import EnglishNameOfCreateCard from "./pages/card/cardCreate/EnglishNameOfCreateCard";
+import PasswordOfCreateCard from "./pages/card/cardCreate/PasswordOfCreateCard";
+import CheckPasswordOfCreateCard from "./pages/card/cardCreate/CheckPasswordOfCreateCard";
 
 function App() {
   return (
@@ -150,6 +153,11 @@ function App() {
           <Route path="/currencyinfoofcreatetravelbox" element={<CurrencyInfoOfCreateTravelBox />} />
           <Route path="/autocurrencyexchangeofcreatetravelbox" element={<AutoCurrencyExchangeOfCreateTravelBox />} />
 
+          {/* 카드 개설 */}
+          <Route path="/card/:groupId/create/englishname" element={<EnglishNameOfCreateCard />} />
+          <Route path="/card/:groupId/create/password/:type" element={<PasswordOfCreateCard />} />
+          <Route path="/card/:groupId/create/password/check" element={<CheckPasswordOfCreateCard />} />
+          
           {/* 이체 */}
           <Route path="/transfer/selectbank" element={<TransferSelectBank />} />
           <Route path="/transfer/setmoney" element={<TransferSetMoney />} />
