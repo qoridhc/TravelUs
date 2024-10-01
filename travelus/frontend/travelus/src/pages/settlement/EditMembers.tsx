@@ -6,6 +6,7 @@ import { accountApi } from "../../api/account";
 import { GroupInfo } from "../../types/meetingAccount";
 
 interface Member {
+  participantId: number;
   name: string;
   amount: number;
 }
@@ -21,25 +22,25 @@ const EditMembers = () => {
   const handleSelected = () => {
     if (type === "balance") {
       navigate(`/settlement/balance/participants/${id}`, {
-        state: { members: selectedMembers, foreignAmmount: location.state.foreignAmmount },
+        state: { members: selectedMembers, foreignAmount: location.state.foreignAmount },
       });
     } else {
       navigate("/settlement/expenditure/info", { state: { members: selectedMembers } });
     }
   };
 
-  const toggleMemberSelection = (name: string) => {
+  const toggleMemberSelection = (participantId: number, name: string) => {
     // 모임원 체크 해제
     if (selectedMembers.some((member) => member.name === name)) {
       setSelectedMembers(selectedMembers.filter((member) => member.name !== name));
     } else {
       // 모임원 체크
-      setSelectedMembers([...selectedMembers, { name: name, amount: 0 }]);
+      setSelectedMembers([...selectedMembers, { participantId: participantId, name: name, amount: 0 }]);
     }
   };
 
-  const removeFromSelected = (name: string) => {
-    setSelectedMembers(selectedMembers.filter((member) => member.name !== name));
+  const removeFromSelected = (participantId: number) => {
+    setSelectedMembers(selectedMembers.filter((member) => member.participantId !== participantId));
   };
 
   // 특정 모임 조회 API 호출
@@ -75,7 +76,7 @@ const EditMembers = () => {
           {/* 선택된 멤버 리스트 */}
           <div className="flex space-x-5">
             {selectedMembers.map((item, index) => (
-              <div className="relative" key={index} onClick={() => removeFromSelected(item.name)}>
+              <div className="relative" key={index} onClick={() => removeFromSelected(item.participantId)}>
                 <div className="flex flex-col justify-center space-y-2">
                   <img className="w-10 aspect-1" src="/assets/user/userIconSample.png" alt="" />
                   <p>{item.name}</p>
@@ -105,7 +106,7 @@ const EditMembers = () => {
                     type="checkbox"
                     className="w-6 aspect-1 appearance-none bg-[url('./assets/check/nochecked.png')] checked:bg-[url('./assets/check/checked.png')] bg-cover rounded-full"
                     checked={selectedMembers.some((member) => member.name === item.userName)}
-                    onChange={() => toggleMemberSelection(item.userName)}
+                    onChange={() => toggleMemberSelection(item.participantId, item.userName)}
                   />
                 </label>
               ))}

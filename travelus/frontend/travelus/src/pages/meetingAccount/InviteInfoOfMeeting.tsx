@@ -39,7 +39,6 @@ const InviteInfoOfMeeting = () => {
       try {
         const response = await accountApi.fetchGroupIdByInvitationCode(params.code);
         setGroupId(response.data.groupId);
-        console.log(response);
 
         // 이미 모임에 가입한 사용자인지 확인
         const isParticipate = response.data.participants.some((info: ParticipantInfo) => info.userId === userId);
@@ -78,7 +77,6 @@ const InviteInfoOfMeeting = () => {
         groupId: groupId,
         personalAccountNo: accountNo,
       };
-      console.log(data);
       const response = await accountApi.fetchCreateParticipant(groupId, data);
       if (response.status === 201) {
         navigate("/meetingaccountlist");
