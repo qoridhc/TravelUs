@@ -1,14 +1,13 @@
-// 정산 요청
-export interface SettlementRequest {
-  accountId: number;
-  accountNo: string;
+export interface SettlementParticipant {
+  participantId: number;
+  amount: number;
 }
 
-// 정산
-export interface SettlementResponse {
-  accountId: number;
-  accounNo: string;
-  userId: number;
-  amountPerPerson: number;
-  message: string;
+export interface SettlementRequest {
+  groupId: number;
+  accountNo: string;
+  accountPassword: string;
+  settlementType: string;
+  amounts: [ number, number ];
+  participants: Array<SettlementParticipant>;
 }
