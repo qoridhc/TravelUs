@@ -37,7 +37,7 @@ public class ExchangeService {
   private List<String> desiredCurrencies = List.of("USD", "JPY", "EUR", "TWD");
 
 
-//  @PostConstruct
+  //  @PostConstruct
   @Scheduled(cron = "30 0 * * * ?")
   public List<ExchangeRateCacheDTO> updateExchangeRates() {
     String url = "/latest/KRW";
@@ -73,7 +73,7 @@ public class ExchangeService {
           rate = Math.round((1 / rate) * 100.0) / 100.0;    // 다른 통화는 소수점 둘째 자리까지 반올림
         }
 
-        int exchangeMin=getMinimumAmount(getCurrencyType(currencyCode));
+        int exchangeMin = getMinimumAmount(getCurrencyType(currencyCode));
         // DTO 객체 생성 후 리스트에 추가
         ExchangeRateCacheDTO dto = new ExchangeRateCacheDTO(currencyCode, rate, timeLastUpdateKst,
             exchangeMin);
@@ -166,7 +166,7 @@ public class ExchangeService {
    */
   public ExchangeAmountRequestDto calculateAmountFromKRWToForeignCurrency(CurrencyType CurrencyCode, double amount) {
 
-    ExchangeAmountRequestDto responseDto=new ExchangeAmountRequestDto();
+    ExchangeAmountRequestDto responseDto = new ExchangeAmountRequestDto();
     BigDecimal krw = BigDecimal.valueOf(amount);
     BigDecimal rate = BigDecimal.valueOf(getExchangeRateByCurrencyCode(CurrencyCode));
     responseDto.setExchangeRate(rate.doubleValue());
@@ -200,7 +200,7 @@ public class ExchangeService {
     double exchangeRate = getExchangeRateByCurrencyCode(CurrencyCode);
     double krwAmount = amount * exchangeRate;
 
-    return new ExchangeAmountRequestDto(Math.floor(krwAmount), exchangeRate);
+    return new ExchangeAmountRequestDto(Math.ceil(krwAmount), exchangeRate);
   }
 
 
