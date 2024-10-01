@@ -1,10 +1,9 @@
 import api from "../lib/axios";
-import { SettlementRequest, SettlementResponse } from "../types/settlement";
+import { SettlementRequest } from "../types/settlement";
 
 export const settlementApi = {
-  // 정산하기
-  SettleInfo: async (data: SettlementRequest): Promise<SettlementResponse> => {
-    const response = await api.post<SettlementResponse>(`/settlement`, data)
-    return response.data
-  },
+  // 정산 수행
+  fetchSettlement: (data: SettlementRequest) => {
+    return api.post(`/settlement`, data);
+  }
 };
