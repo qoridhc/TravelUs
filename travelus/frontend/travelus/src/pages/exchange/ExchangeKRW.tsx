@@ -12,7 +12,7 @@ const koreanCountryNameMapping: { [key: string]: string } = {
   EUR: "유럽",
   JPY: "일본",
   USD: "미국",
-  CNY: "중국",
+  TWD: "대만",
   KRW: "대한민국",
 };
 
@@ -20,7 +20,7 @@ const currencyNameMapping: { [key: string]: string } = {
   EUR: "유로",
   JPY: "엔화",
   USD: "달러",
-  CNY: "위안",
+  TWD: "달러",
   KRW: "원",
 };
 
@@ -30,7 +30,7 @@ const getFlagImagePath = (currencyCode: string) => {
       EUR: "Europe",
       JPY: "Japan",
       USD: "TheUnitedStates",
-      CNY: "China",
+      TWD: "Taiwan",
       KRW: "Korea",
     }[currencyCode] || currencyCode;
   return `/assets/flag/flagOf${countryName}.png`;

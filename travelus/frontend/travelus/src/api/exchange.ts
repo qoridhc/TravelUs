@@ -27,7 +27,7 @@ interface PredictionResponse {
   USD: CurrencyPrediction;
   JPY: CurrencyPrediction;
   EUR: { recent_rates: RecentRates };
-  CNY: { recent_rates: RecentRates };
+  TWD: { recent_rates: RecentRates };
   last_updated: string;
 }
 

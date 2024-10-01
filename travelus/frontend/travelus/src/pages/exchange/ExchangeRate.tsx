@@ -10,7 +10,7 @@ const countryNameMapping: { [key: string]: string } = {
   EUR: "Europe",
   JPY: "Japan",
   USD: "TheUnitedStates",
-  CNY: "China",
+  TWD: "Taiwan",
 };
 
 const getFlagImagePath = (currencyCode: string) => {
@@ -56,7 +56,7 @@ const ExchangeRateList: React.FC = () => {
     const fetchExchangeRates = async () => {
       try {
         const data = await exchangeRateApi.getExchangeRates();
-        const filteredRates = data.filter((rate) => ["USD", "JPY", "EUR", "CNY"].includes(rate.currencyCode));
+        const filteredRates = data.filter((rate) => ["USD", "JPY", "EUR", "TWD"].includes(rate.currencyCode));
         setExchangeRates(filteredRates);
         setIsLoading(false);
       } catch (err) {

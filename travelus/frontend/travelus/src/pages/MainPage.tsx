@@ -224,8 +224,8 @@ const MainPage = () => {
                 e.stopPropagation();
                 navigate("/exchange/foreign-currency");
               }}
-              className="h-10 rounded-md bg-[#EAEAEA] font-semibold text-sm">
-              환전신청
+              className="h-10 rounded-md bg-[#1429A0] text-white font-semibold text-sm">
+              환전하기
             </button>
           </div>
         </div>

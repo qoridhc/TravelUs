@@ -12,7 +12,7 @@ const koreanCountryNameMapping: { [key: string]: string } = {
   EUR: "유럽",
   JPY: "일본",
   USD: "미국",
-  CNY: "중국",
+  TWD: "대만",
   KRW: "대한민국",
 };
 
@@ -20,7 +20,7 @@ const currencyNameMapping: { [key: string]: string } = {
   EUR: "유로",
   JPY: "엔화",
   USD: "달러",
-  CNY: "위안",
+  TWD: "달러",
   KRW: "원",
 };
 
@@ -30,7 +30,7 @@ const getFlagImagePath = (currencyCode: string) => {
       EUR: "Europe",
       JPY: "Japan",
       USD: "TheUnitedStates",
-      CNY: "China",
+      TWD: "Taiwan",
       KRW: "Korea",
     }[currencyCode] || currencyCode;
   return `/assets/flag/flagOf${countryName}.png`;
@@ -45,19 +45,21 @@ const MeetingAccountExchange: React.FC = () => {
   const [foreignAmount, setForeignAmount] = useState<string>("");
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState<boolean>(false);
 
+  const [adjustedKrwAmount, setAdjustedKrwAmount] = useState<string>("");
+
   const [isAmountValid, setIsAmountValid] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const validateAmount = (amount: string, currencyCode: string) => {
-    const rateInfo = exchangeRates.find((rate) => rate.currencyCode === currencyCode);
-    if (rateInfo && parseFloat(amount) < parseFloat(rateInfo.exchangeMin)) {
-      setIsAmountValid(false);
-      setErrorMessage(`최소 환전 금액은 ${rateInfo.exchangeMin} ${currencyCode}입니다.`);
-    } else {
-      setIsAmountValid(true);
-      setErrorMessage("");
-    }
-  };
+  // const validateAmount = (amount: string, currencyCode: string) => {
+  //   const rateInfo = exchangeRates.find((rate) => rate.currencyCode === currencyCode);
+  //   if (rateInfo && parseFloat(amount) < parseFloat(rateInfo.exchangeMin)) {
+  //     setIsAmountValid(false);
+  //     setErrorMessage(`최소 환전 금액은 ${rateInfo.exchangeMin} ${currencyCode}입니다.`);
+  //   } else {
+  //     setIsAmountValid(true);
+  //     setErrorMessage("");
+  //   }
+  // };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,18 +101,24 @@ const MeetingAccountExchange: React.FC = () => {
   };
 
   const handleKrwChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // 사용자가 입력하는 input 값
     const rawValue = e.target.value.replace(/[^0-9]/g, "");
     const value = Number(rawValue).toLocaleString();
     setKrwAmount(value);
+
+    // 실제로 계산기 되는 값
+    const adjustedValue = Math.floor(parseInt(rawValue) / 10) * 10;
+    setAdjustedKrwAmount(adjustedValue.toLocaleString());
+
     if (rawValue && getForeignCurrency()) {
       const foreignCurrency = getForeignCurrency()!;
       const rateInfo = exchangeRates.find((rate) => rate.currencyCode === foreignCurrency.currencyCode);
       if (rateInfo) {
         let calculatedForeign: number;
         if (foreignCurrency.currencyCode === "JPY") {
-          calculatedForeign = (parseInt(rawValue) / rateInfo.exchangeRate) * 100;
+          calculatedForeign = (adjustedValue / rateInfo.exchangeRate) * 100;
         } else {
-          calculatedForeign = parseInt(rawValue) / rateInfo.exchangeRate;
+          calculatedForeign = adjustedValue / rateInfo.exchangeRate;
         }
         setForeignAmount(calculatedForeign.toFixed(2));
       }
@@ -123,6 +131,7 @@ const MeetingAccountExchange: React.FC = () => {
     const rawValue = e.target.value.replace(/[^0-9.]/g, "");
     const value = rawValue.includes(".") ? rawValue : Number(rawValue).toLocaleString();
     setForeignAmount(value);
+
     if (rawValue && getForeignCurrency()) {
       const foreignCurrency = getForeignCurrency()!;
       const rateInfo = exchangeRates.find((rate) => rate.currencyCode === foreignCurrency.currencyCode);
@@ -162,7 +171,7 @@ const MeetingAccountExchange: React.FC = () => {
       return;
     }
 
-    const cleanedKrwAmount = krwAmount.replace(/,/g, "");
+    const cleanedKrwAmount = adjustedKrwAmount.replace(/,/g, "");
 
     navigate("/exchange/account-password-input", {
       state: {
@@ -316,12 +325,16 @@ const MeetingAccountExchange: React.FC = () => {
         </button>
 
         {/* 머니박스 연결된 모임통장 없을시 보이게 */}
-        {noAccount && (
+        {noAccount ? (
           <Link
-            to="/meeting/create/prepare" // 모임통장 생성 페이지의 경로를 여기에 입력하세요
+            to="/meeting/create/prepare"
             className="block text-center mt-4 text-[#1429A0] underline">
             머니박스 개설하러 가기
           </Link>
+        ) : (
+          <p className="text-sm text-gray-500 text-center mt-4">
+            환전 금액은 10원 단위로 자동 조정됩니다.
+          </p>
         )}
       </div>
     </div>

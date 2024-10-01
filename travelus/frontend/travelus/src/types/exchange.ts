@@ -49,7 +49,7 @@ export const currencyNames: { [key: string]: string } = {
   USD: '미국 달러',
   JPY: '일본 엔',
   EUR: '유럽 유로',
-  CNY: '중국 위안',
+  TWD: '대만 달러',
 };
 
 // 통화 종류 목록

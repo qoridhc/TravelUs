@@ -26,7 +26,7 @@ const countryNameMapping: { [key: string]: string } = {
   EUR: "Europe",
   JPY: "Japan",
   USD: "TheUnitedStates",
-  CNY: "China",
+  TWD: "Taiwan",
 };
 
 const getFlagImagePath = (currencyCode: string): string => {

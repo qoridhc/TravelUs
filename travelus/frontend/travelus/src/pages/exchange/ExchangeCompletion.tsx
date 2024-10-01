@@ -16,7 +16,7 @@ const currencyNameMapping: { [key: string]: string } = {
   KRW: "원",
   USD: "달러",
   JPY: "엔",
-  CNY: "위안",
+  TWD: "대만 달러",
   EUR: "유로",
 };
 
