@@ -32,6 +32,11 @@ const SelectSettlementAmount = () => {
     setIsChecked(updatedChecked);
   };
 
+  // 금액을 한국 통화 형식으로 포맷(콤마가 포함된 형태)
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("ko-KR").format(amount);
+  };
+
   // 특정 모임 조회 API 호출
   const fetchSpecificMeetingAccount = async () => {
     try {
@@ -93,7 +98,7 @@ const SelectSettlementAmount = () => {
                     </div>
 
                     <p>
-                      {moneyBox.balance}&nbsp;
+                      {formatCurrency(moneyBox.balance)}&nbsp;
                       {moneyBox.currencyCode === "KRW" ? (
                         "원"
                       ) : (
