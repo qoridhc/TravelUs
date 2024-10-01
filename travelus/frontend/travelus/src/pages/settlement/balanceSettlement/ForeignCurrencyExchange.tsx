@@ -27,19 +27,28 @@ const ForeignCurrencyExchange = () => {
     return new Intl.NumberFormat("ko-KR").format(amount);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // 환율 정보 가져오기
-        const data = await exchangeRateApi.getExchangeRate("USD");
-        setExchangeRate(data);
-        console.log(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
 
-    fetchData();
+    return `${month}월 ${day}일 ${hours}:${minutes}시 기준`;
+  };
+
+  // 환율 정보 가져오기
+  const fetchExchangeRate = async () => {
+    try {
+      const data = await exchangeRateApi.getExchangeRate("USD");
+      setExchangeRate(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchExchangeRate();
   }, []);
 
   return (
@@ -60,11 +69,16 @@ const ForeignCurrencyExchange = () => {
           </p>
 
           <div className="grid gap-3">
-            <div className="flex justify-between items-center">
-              <p className="text-lg font-semibold">원화로 바꾸기</p>
-              <p className="text-sm text-[#515151]">
-                1 {location.state.foriegnInfo.currencyCode} = {exchangeRate?.exchangeRate} 원
+            <div>
+              <p className="text-xs text-right text-[#9e9e9e]">
+                {formatDate(exchangeRate?.created ? exchangeRate?.created : "")}
               </p>
+              <div className="flex justify-between items-center">
+                <p className="text-lg font-semibold">원화로 바꾸기</p>
+                <p className="text-sm text-[#515151]">
+                  1 {location.state.foriegnInfo.currencyCode} = {exchangeRate?.exchangeRate} 원
+                </p>
+              </div>
             </div>
 
             <div className="flex flex-col items-center">
@@ -123,8 +137,13 @@ const ForeignCurrencyExchange = () => {
       </div>
 
       <button
-        className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
-        onClick={() => handleExchange()}>
+        className={`w-full h-14 text-lg rounded-xl tracking-wide ${
+          exchangeRate?.exchangeMin && foreignAmount < exchangeRate?.exchangeMin
+            ? "text-[#565656] bg-[#E3E4E4]"
+            : "text-white bg-[#1429A0]"
+        }`}
+        onClick={() => handleExchange()}
+        disabled={exchangeRate?.exchangeMin !== undefined && foreignAmount < exchangeRate?.exchangeMin}>
         재환전
       </button>
     </div>
