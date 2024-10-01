@@ -10,12 +10,13 @@ const ForeignCurrencyExchange = () => {
   const location = useLocation();
   const { id } = useParams();
 
-  const [foreignAmmount, setForeignAmmount] = useState(0);
+  const [foreignAmount, setForeignAmount] = useState(0);
+  const [exchangeRate, setExchangeRate] = useState<ExchangeRateInfo>();
 
   const handleExchange = () => {
     navigate(`/settlement/balance/participants/${id}`, {
       state: {
-        foreignAmmount: Math.floor(1343.98 * foreignAmmount),
+        foreignAmount: foreignAmount,
         currencyCode: location.state.foriegnInfo.currencyCode,
       },
     });
@@ -25,6 +26,21 @@ const ForeignCurrencyExchange = () => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("ko-KR").format(amount);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // 환율 정보 가져오기
+        const data = await exchangeRateApi.getExchangeRate("USD");
+        setExchangeRate(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="h-full p-5 pb-8 flex flex-col justify-between">
@@ -46,7 +62,9 @@ const ForeignCurrencyExchange = () => {
           <div className="grid gap-3">
             <div className="flex justify-between items-center">
               <p className="text-lg font-semibold">원화로 바꾸기</p>
-              <p className="text-sm text-[#515151]">1 {location.state.foriegnInfo.currencyCode} = 1343.98 원</p>
+              <p className="text-sm text-[#515151]">
+                1 {location.state.foriegnInfo.currencyCode} = {exchangeRate?.exchangeRate} 원
+              </p>
             </div>
 
             <div className="flex flex-col items-center">
@@ -72,7 +90,7 @@ const ForeignCurrencyExchange = () => {
                     type="number"
                     className="w-2/3 text-right bg-[#F3F4F6] outline-none placeholder:text-black"
                     placeholder="0"
-                    onChange={(e) => setForeignAmmount(parseFloat(e.target.value))}
+                    onChange={(e) => setForeignAmount(parseFloat(e.target.value))}
                   />
                   <p>{location.state.foriegnInfo.currencyCode}</p>
                 </div>
@@ -94,7 +112,7 @@ const ForeignCurrencyExchange = () => {
                   <input
                     type="number"
                     className="w-2/3 text-right bg-[#F3F4F6] outline-none"
-                    value={Math.floor(1343.98 * foreignAmmount)}
+                    value={exchangeRate ? Math.ceil(exchangeRate.exchangeRate * foreignAmount) : 0}
                   />
                   <p>KRW</p>
                 </div>
