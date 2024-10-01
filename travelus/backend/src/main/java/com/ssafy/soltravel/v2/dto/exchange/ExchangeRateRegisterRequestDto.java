@@ -14,7 +14,7 @@ public class ExchangeRateRegisterRequestDto {
   private CurrencyType currencyCode;
 
   @Schema(description = "환전할 금액", example = "130000")
-  private double transactionBalance;
+  private Double transactionBalance;
 
   @Schema(description = "목표 환율", example = "1333.40")
   private float targetRate;

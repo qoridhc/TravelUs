@@ -9,7 +9,9 @@ import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateCacheDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateRegisterRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.targetAccountDto;
+import com.ssafy.soltravel.v2.dto.moneyBox.BalanceResponseDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
+import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
 import com.ssafy.soltravel.v2.mapper.ExchangeRateMapper;
 import com.ssafy.soltravel.v2.repository.ExchangeRateForecastRepository;
 import com.ssafy.soltravel.v2.repository.GroupRepository;
@@ -92,14 +94,12 @@ public class ExchangeService {
     CurrencyType currencyCode = dto.getCurrencyCode();
     double targetRate = BigDecimal.valueOf(dto.getTargetRate()).setScale(2, RoundingMode.HALF_UP)
         .doubleValue();
-    double amount = dto.getTransactionBalance();
 
+    // amount가 null이면 잔액 전체 환전으로 -1로 처리
+    Double amount = dto.getTransactionBalance() != null ? dto.getTransactionBalance() : -1.0;
     long userId = groupRepository.findMasterUserIdByAccountNo(dto.getAccountNo());
 
-    // Redis ZSET 키 생성: 예를 들어 "USD:targets"
     String key = currencyCode + ":targets";
-
-    // 계좌 번호, 사용자 ID, 금액, 환율을 결합한 문자열 생성
     String value = userId + ":" + accountNo + ":" + amount + ":" + targetRate;
 
     // ZSET에 (사용자 ID:계좌 번호:금액:환율)을 저장하고, score로 목표 환율을 설정
@@ -107,7 +107,6 @@ public class ExchangeService {
 
     // 필요한 경우 TTL 설정 (아래는 1일임)
     redisTemplate.expire(key, Duration.ofDays(1));
-//    LogUtil.info("자동환전 계좌 목록 조회::", getAccountsForRateHigherThan("USD", 1331));
   }
 
   /**
@@ -116,9 +115,6 @@ public class ExchangeService {
   private void processCurrencyConversions(String currencyCode, Double exchangeRate) {
 
     Set<targetAccountDto> list = getAccountsForRateHigherThan(currencyCode, exchangeRate);
-    LogUtil.info("자동환전 계좌 목록 조회::", getAccountsForRateHigherThan(currencyCode, exchangeRate));
-    //[[targetAccountDto(accountNo=002-45579486-209, userId=1, amount=130000.0, targetRate=1335.91)]]
-
     for (targetAccountDto dto : list) {
 
       MoneyBoxTransferRequestDto requestDto = MoneyBoxTransferRequestDto.create(TransferType.M,
@@ -127,7 +123,9 @@ public class ExchangeService {
 
       try {
         // 환전 로직 호출
-        transactionService.postMoneyBoxTransfer(requestDto, true, dto.getUserId());
+        List<TransferHistoryResponseDto> transferHistoryResponseDtos = transactionService.postMoneyBoxTransfer(requestDto, true,
+            dto.getUserId()).getBody();
+        LogUtil.info("자동환전 성공. 환전된 금액:", transferHistoryResponseDtos.get(1).getTransactionAmount());
       } catch (WebClientResponseException e) {
         //잔액부족시
         if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
@@ -168,6 +166,11 @@ public class ExchangeService {
         long userId = Long.parseLong(parts[0]);
         String accountNo = parts[1];
         double amount = Double.parseDouble(parts[2]);
+        if (amount == -1) {
+
+          amount = getKRWBalanceByAccountNo(accountNo);
+        }
+
         double targetRate = Double.parseDouble(parts[3]);
 
         // AccountWithAmount 객체 생성 후 리스트에 추가
@@ -221,6 +224,10 @@ public class ExchangeService {
       LogUtil.info("환율 변동 없음. 통화 코드: {}, 기존 환율: {}, 새로운 환율: {}", currencyCode,
           cachedDto.getExchangeRate(), exchangeRate);
     }
+//    /**
+//     * 코컬 테스트용
+//     */
+//    processCurrencyConversions(currencyCode, exchangeRate);
   }
 
   /**
@@ -266,5 +273,28 @@ public class ExchangeService {
       return rateDto; // 환율 반환
     }
     return null;
+  }
+
+  /**
+   * 계좌 잔액 조회 메서드
+   */
+  public double getKRWBalanceByAccountNo(String accountNo) {
+    Header header = Header.builder()
+        .apiKey(apiKeys.get("API_KEY")).build();
+
+    Map<String, Object> body = new HashMap<>();
+    body.put("Header", header);
+    body.put("accountNo", accountNo);
+    body.put("currencyCode", "KRW");
+
+    ResponseEntity<Map<String, Object>> response = webClientUtil.request(
+        "/accounts/balance", body, Map.class);
+    Object recObject = response.getBody().get("REC");
+
+    BalanceResponseDto responseDto = modelMapper.map(recObject,
+        BalanceResponseDto.class);
+
+    LogUtil.info("계좌 잔액 responseDto.balance", responseDto.getBalance());
+    return Double.parseDouble(responseDto.getBalance());
   }
 }
