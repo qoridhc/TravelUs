@@ -10,6 +10,7 @@ import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateRegisterRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.targetAccountDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
+import com.ssafy.soltravel.v2.mapper.ExchangeRateMapper;
 import com.ssafy.soltravel.v2.repository.ExchangeRateForecastRepository;
 import com.ssafy.soltravel.v2.repository.GroupRepository;
 import com.ssafy.soltravel.v2.service.transaction.TransactionService;
@@ -48,6 +49,7 @@ public class ExchangeService {
   private final Map<String, String> apiKeys;
   private final WebClientUtil webClientUtil;
   private final ModelMapper modelMapper;
+  private final ExchangeRateMapper exchangeRateMapper;
 
   private final CacheManager cacheManager;
   private final RedisTemplate<String, String> redisTemplate;
@@ -76,15 +78,9 @@ public class ExchangeService {
    */
   public ExchangeRateResponseDto getExchangeRate(String currency) {
 
-    //TODO: 매퍼 생성할 것
-    ExchangeRateResponseDto responseDto = new ExchangeRateResponseDto();
-    responseDto.setCurrencyCode(currency);
-
-    ExchangeRateCacheDto dto = getExchangeRateFromCache(currency);
-    responseDto.setExchangeRate(dto.getExchangeRate());
-    responseDto.setCreated(dto.getCreated());
-    responseDto.setExchangeMin(dto.getExchangeMin());
-    return responseDto;
+    ExchangeRateResponseDto exchangeRateResponseDto = exchangeRateMapper.toExchangeRateResponseDto(
+        getExchangeRateFromCache(currency));
+    return exchangeRateResponseDto;
   }
 
   /**
