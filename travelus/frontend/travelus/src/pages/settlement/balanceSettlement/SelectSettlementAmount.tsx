@@ -4,13 +4,18 @@ import { LuDot } from "react-icons/lu";
 import { useNavigate, useParams } from "react-router";
 import { accountApi } from "../../../api/account";
 import { MeetingAccountDetailInfo } from "../../../types/account";
-import { currencyTypeList } from "../../../types/exchange";
+import { currencyTypeList, ExchangeRateInfo } from "../../../types/exchange";
+import { exchangeRateApi } from "../../../api/exchange";
 
 const SelectSettlementAmount = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [isChecked, setIsChecked] = useState<boolean[]>([]);
   const [accountInfo, setAccountInfo] = useState<MeetingAccountDetailInfo | null>(null);
+  const [exchangeRate, setExchangeRate] = useState<ExchangeRateInfo>();
+  const [koreanAmount, setKoreanAmount] = useState<number>(0);
+  const [foreignAmount, setForeignAmount] = useState<number>(0);
+
   const guideTextList = [
     "남은 원화는 일반 모임통장의 잔액이에요.",
     "남은 외화는 외화 모임통장의 잔액이에요.",
@@ -21,7 +26,7 @@ const SelectSettlementAmount = () => {
     // 남은 원화, 남은 외화 모두 정산
     if (accountInfo && isChecked[0] && isChecked[1]) {
       navigate(`/settlement/balance/foreigncurrency/exchange/${id}`, {
-        state: { foriegnInfo: accountInfo.moneyBoxDtos[1] },
+        state: { foriegnInfo: accountInfo.moneyBoxDtos[1], settlementType: "BOTH" },
       });
     }
   };
@@ -60,8 +65,19 @@ const SelectSettlementAmount = () => {
     }
   };
 
+  // 환율 정보 가져오기
+  const fetchExchangeRate = async () => {
+    try {
+      const data = await exchangeRateApi.getExchangeRate("USD");
+      setExchangeRate(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   useEffect(() => {
     fetchSpecificMeetingAccount();
+    fetchExchangeRate();
   }, []);
 
   return (
@@ -76,43 +92,110 @@ const SelectSettlementAmount = () => {
               <p className="text-lg text-center">정산하기</p>
             </div>
 
-            <div className="grid gap-8">
+            <div className="grid gap-10">
               <p className="text-2xl font-semibold tracking-wide">
                 정산할 금액을
                 <br />
-                선택해주세요
+                입력해주세요
               </p>
 
-              <div className="grid gap-3">
+              <div className="grid gap-8">
                 {accountInfo.moneyBoxDtos.map((moneyBox, index) => (
-                  <label className="font-semibold flex justify-between items-center" key={index}>
-                    <div className="flex  space-x-2">
+                  <div className="grid grid-cols-[1fr_9fr] gap-y-3">
+                    <div className="flex items-center">
                       <input
+                        id={moneyBox.currencyCode}
                         type="checkbox"
-                        className="w-6 aspect-1 appearance-none bg-[url('./assets/check/nochecked.png')] checked:bg-[url('./assets/check/checked.png')] bg-cover rounded-full"
+                        className="w-6 h-6 appearance-none bg-[url('./assets/check/nochecked.png')] checked:bg-[url('./assets/check/checked.png')] bg-cover rounded-full"
                         onChange={(e) => handleCheck(index, e.target.checked)}
                       />
-                      <p>
-                        남은 {moneyBox.currencyCode === "KRW" ? "원화" : "외화"} / {moneyBox.currencyCode}
-                      </p>
                     </div>
 
-                    <p>
-                      {formatCurrency(moneyBox.balance)}&nbsp;
+                    <label className="text-xl font-semibold" htmlFor={moneyBox.currencyCode} key={index}>
+                      {moneyBox.currencyCode === "KRW" ? "모임통장" : "트래블박스"}
+                    </label>
+
+                    <div className={`grid gap-3 col-start-2 ${isChecked[index] ? "" : "opacity-65"}`}>
+                      <div className="px-3 py-2 border rounded-md flex justify-end">
+                        <input
+                          className="text-right outline-none placeholder:text-black"
+                          type="text"
+                          value={moneyBox.currencyCode === "KRW" ? koreanAmount : foreignAmount}
+                          onChange={(e) =>
+                            moneyBox.currencyCode === "KRW"
+                              ? setKoreanAmount(Number(e.target.value))
+                              : setForeignAmount(Number(e.target.value))
+                          }
+                          placeholder="0"
+                          disabled={!isChecked[index]}
+                        />
+                        &nbsp;
+                        {moneyBox.currencyCode === "KRW" ? (
+                          "원"
+                        ) : (
+                          <>
+                            {currencyTypeList.find((item) => item.value === moneyBox.currencyCode)?.text.slice(-2, -1)}
+                          </>
+                        )}
+                      </div>
+
+                      <p className="px-3 text-[#565656] font-semibold text-right">
+                        잔액&nbsp;
+                        {formatCurrency(moneyBox.balance)}&nbsp;
+                        {moneyBox.currencyCode === "KRW" ? (
+                          "원"
+                        ) : (
+                          <>
+                            {currencyTypeList.find((item) => item.value === moneyBox.currencyCode)?.text.slice(-2, -1)}
+                          </>
+                        )}
+                      </p>
+
                       {moneyBox.currencyCode === "KRW" ? (
-                        "원"
+                        <></>
                       ) : (
-                        <>{currencyTypeList.find((item) => item.value === moneyBox.currencyCode)?.text.slice(-2, -1)}</>
+                        <div className="px-3 text-[#565656]">
+                          <div className="text-sm grid grid-cols-[1fr_2fr]">
+                            <p className="">환율 적용 시</p>
+
+                            <div className="flex justify-end">
+                              <p className="text-right">
+                                {exchangeRate?.exchangeRate &&
+                                  formatCurrency(foreignAmount * exchangeRate?.exchangeRate)}
+                              </p>
+                              <p className="">&nbsp; 원</p>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-between items-center">
+                            <p className="text-xs text-right">
+                              {/* {formatDate(exchangeRate?.created ? exchangeRate?.created : "")} */}
+                              10월 1일 16:00 기준
+                            </p>
+                            <p className="text-sm text-right">
+                              1 {moneyBox.currencyCode} = {exchangeRate?.exchangeRate} 원
+                            </p>
+                          </div>
+                        </div>
                       )}
-                    </p>
-                  </label>
+                    </div>
+                  </div>
                 ))}
+
+                <hr />
+
+                <p className="text-lg text-right font-semibold">
+                  총액{" "}
+                  {exchangeRate?.exchangeRate &&
+                    formatCurrency(koreanAmount + foreignAmount * exchangeRate?.exchangeRate)}
+                  원
+                </p>
               </div>
             </div>
           </div>
 
           <div className="grid gap-5">
-            <div className="grid gap-3">
+            {/* <div className="grid gap-3">
               <p className="text-[#333D4B] font-semibold">정산 안내</p>
 
               {guideTextList.map((text, index) => (
@@ -121,7 +204,7 @@ const SelectSettlementAmount = () => {
                   <p className="w-[90%] text-sm text-[#4E5968] break-keep">{text}</p>
                 </div>
               ))}
-            </div>
+            </div> */}
 
             <button
               className={`w-full h-14 text-lg rounded-xl tracking-wide ${
