@@ -205,13 +205,7 @@ const MainPage = () => {
                   {index > 0 && <div className="w-[0.8px] h-14 bg-gray-300"></div>}
                   <div className="w-24 p-1 flex flex-col justify-center items-center space-y-2">
                     <div className="flex justify-center items-center space-x-1">
-                      <img
-                        className="w-6 h-5 rounded-sm"
-                        src={`/assets/flag/flagOf${
-                          code === "USD" ? "TheUnitedStates" : code === "JPY" ? "Japan" : "Europe"
-                        }.png`}
-                        alt={code}
-                      />
+                      <img className="w-6 h-4 rounded-sm" src={`/assets/flag/flagOf${code}.png`} alt={code} />
                       <p>{code}</p>
                     </div>
                     <p className="text-lg font-semibold">{getExchangeRate(code)}</p>

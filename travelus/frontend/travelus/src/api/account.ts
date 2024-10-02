@@ -72,8 +72,8 @@ export const accountApi = {
   },
 
   // 모임원 추가
-  fetchCreateParticipant: (data: NewParticipant) => {
-    return api.post(`/groups/createParticipant`, data);
+  fetchCreateParticipant: (groupId: number, data: NewParticipant) => {
+    return api.post(`/groups/participants/${groupId}`, data);
   },
 
   // 초대코드로 모임 정보 조회

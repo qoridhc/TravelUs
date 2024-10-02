@@ -11,6 +11,8 @@ public class ParticipantDto {
 
     private String userName;
 
+    private String profile;
+
     private boolean isMaster;
 
     private String personalAccountNo;
