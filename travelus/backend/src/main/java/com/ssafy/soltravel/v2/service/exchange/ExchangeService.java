@@ -139,7 +139,14 @@ public class ExchangeService {
         // 환전 로직 호출
         List<TransferHistoryResponseDto> transferHistoryResponseDtos = transactionService.postMoneyBoxTransfer(requestDto, true,
             dto.getUserId()).getBody();
-        LogUtil.info("자동환전 성공. 환전된 금액:", transferHistoryResponseDtos.get(1).getTransactionAmount());
+
+        double amount = dto.isAll() ? -1 : dto.getAmount();
+
+        removePreferenceRateFromRedis(currencyCode, dto.getUserId(), dto.getAccountNo(), amount, dto.getTargetRate());
+        LogUtil.info("자동환전 성공. 환전 신청 원화: %s, 적용 환율: %s, 환전된 금액: %s ", transferHistoryResponseDtos.get(0).getTransactionAmount(),
+            transferHistoryResponseDtos.get(1).getTransactionSummary(),
+            transferHistoryResponseDtos.get(1).getTransactionAmount());
+
       } catch (WebClientResponseException e) {
         //잔액부족시
         if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
@@ -165,6 +172,7 @@ public class ExchangeService {
    */
   public Set<targetAccountDto> getAccountsForRateHigherThan(String currencyCode,
       double realTimeRate) {
+    boolean isAll = false;
     String key = currencyCode + ":targets";
 
     // 실시간 환율보다 높은 모든 계좌 ID와 금액을 조회 (ZSET에서 score가 실시간 환율보다 큰 요소들을 가져옴)
@@ -183,16 +191,27 @@ public class ExchangeService {
         if (amount == -1) {
 
           amount = getKRWBalanceByAccountNo(accountNo);
+          isAll = true;
         }
 
         double targetRate = Double.parseDouble(parts[3]);
-
-        // AccountWithAmount 객체 생성 후 리스트에 추가
-        accounts.add(new targetAccountDto(accountNo, userId, amount, targetRate));
+        accounts.add(new targetAccountDto(accountNo, userId, amount, targetRate, isAll));
       }
     }
     return accounts;
   }
+
+  /**
+   * Redis에서 값 삭제하는 메서드
+   */
+  public void removePreferenceRateFromRedis(String currencyCode, long userId, String accountNo, double amount,
+      double targetRate) {
+    String key = currencyCode + ":targets";
+    String value = userId + ":" + accountNo + ":" + amount + ":" + targetRate;
+
+    redisTemplate.opsForZSet().remove(key, value);
+  }
+
 
   /**
    * String의 currencyCode를 CurreucyType으로 변환
@@ -235,12 +254,12 @@ public class ExchangeService {
 
       processCurrencyConversions(currencyCode, exchangeRate);
     } else {
-      LogUtil.info("환율 변동 없음. 통화 코드: {}, 기존 환율: {}, 새로운 환율: {}", currencyCode,
+      LogUtil.info(String.format("환율 변동 없음. 통화 코드: {}, 기존 환율: {}, 새로운 환율: {}"), currencyCode,
           cachedDto.getExchangeRate(), exchangeRate);
     }
-//    /**
-//     * 코컬 테스트용
-//     */
+    /**
+     * 코컬 테스트용
+     */
 //    processCurrencyConversions(currencyCode, exchangeRate);
   }
 
