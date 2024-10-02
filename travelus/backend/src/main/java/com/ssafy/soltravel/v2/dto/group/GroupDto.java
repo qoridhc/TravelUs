@@ -22,6 +22,9 @@ public class GroupDto {
     @Schema(description = "모임 계좌 번호", example = "001-93381440-209")
     private String groupAccountNo;
 
+    @Schema(description = "카드 번호", example = "4000001679635483")
+    private String cardNumber;
+
     @Schema(description = "여행 시작 날짜", example = "2024-01-01")
     private LocalDate travelStartDate;
 

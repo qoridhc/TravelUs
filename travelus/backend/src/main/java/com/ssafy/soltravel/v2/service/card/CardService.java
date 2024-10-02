@@ -7,6 +7,7 @@ import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.card.CardIssueRequestDto;
 import com.ssafy.soltravel.v2.dto.card.CardListRequestDto;
+import com.ssafy.soltravel.v2.dto.card.CardNoRequestDto;
 import com.ssafy.soltravel.v2.dto.card.CardPaymentRequestDto;
 import com.ssafy.soltravel.v2.dto.card.CardPaymentResponseDto;
 import com.ssafy.soltravel.v2.dto.card.CardRequestDto;
@@ -146,7 +147,6 @@ public class CardService {
         return toPaymentDto(recObject);
     }
 
-
     /*
      * 특정 통화 코드 통잔 잔액 조회
      */
@@ -160,7 +160,6 @@ public class CardService {
 
         return moneyBox.getBalance();
     }
-
 
     /*
      * 카드 단건 조회
@@ -182,6 +181,37 @@ public class CardService {
 
         Map<String, Object> recObject = (Map<String, Object>) response.getBody().get("REC");
         return toDto(recObject);
+    }
+
+    /*
+     * 계좌 기반 카드 조회
+     */
+    public String getCardNoByAccountNo(String accountNo) {
+
+        // 유저 조회
+        User user = securityUtil.getUserByToken();
+
+        // body 셋팅
+
+        CardNoRequestDto requestDto = CardNoRequestDto.builder().accountNo(accountNo)
+            .header(BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey())).build();
+
+        try {
+            // 요청
+            ResponseEntity<Map<String, Object>> response = webClientUtil.request(
+                DEFAULT_REQUEST_URI + "/inquireCard", requestDto, CardNoRequestDto.class
+            );
+
+            Map<String, Object> recObject = (Map<String, Object>) response.getBody().get("REC");
+
+            String cardNo = (String) recObject.get("cardNo");
+
+            return cardNo;
+
+        } catch (Exception e) {
+            return null;
+        }
+
     }
 
 
