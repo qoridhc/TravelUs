@@ -11,6 +11,8 @@ import com.goofy.tunabank.v1.domain.history.CardHistory;
 import com.goofy.tunabank.v1.dto.card.CardIssueRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardIssueResponseDto;
 import com.goofy.tunabank.v1.dto.card.CardListRequestDto;
+import com.goofy.tunabank.v1.dto.card.CardNoRequestDto;
+import com.goofy.tunabank.v1.dto.card.CardNoResponseDto;
 import com.goofy.tunabank.v1.dto.card.CardPaymentRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardPaymentResponseDto;
 import com.goofy.tunabank.v1.dto.card.CardRequestDto;
@@ -32,7 +34,6 @@ import com.goofy.tunabank.v1.repository.CardProductRepository;
 import com.goofy.tunabank.v1.repository.CardRepository;
 import com.goofy.tunabank.v1.repository.MerchantRepository;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
-import com.goofy.tunabank.v1.repository.UserRepository;
 import com.goofy.tunabank.v1.repository.account.AccountRepository;
 import com.goofy.tunabank.v1.util.CurrencyConverter;
 import java.security.SecureRandom;
@@ -41,6 +42,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,231 +51,239 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CardService {
 
-    private final UserService userService;
-    private final UserRepository userRepository;
+  private static final String DEFAULT_ISSUER_NAME = "Tuna Bank";
+  private static final SecureRandom random = new SecureRandom();
+  private final PasswordEncoder passwordEncoder;
 
-    private final CardRepository cardRepository;
-    private final AccountRepository accountRepository;
-    private final CardProductRepository cardProductRepository;
+  private final UserService userService;
+  private final TransactionService transactionService;
 
-    private static final String DEFAULT_ISSUER_NAME = "Tuna Bank";
-    private static final SecureRandom random = new SecureRandom();
-    private final CardHistoryRepository cardHistoryRepository;
-    private final MoneyBoxRepository moneyBoxRepository;
-    private final MerchantRepository merchantRepository;
-    private final TransactionService transactionService;
+  private final CardRepository cardRepository;
+  private final AccountRepository accountRepository;
+  private final CardProductRepository cardProductRepository;
+  private final CardHistoryRepository cardHistoryRepository;
+  private final MoneyBoxRepository moneyBoxRepository;
+  private final MerchantRepository merchantRepository;
 
-    /*
-     * 카드 신규 발급
-     */
-    public CardIssueResponseDto createNewCard(CardIssueRequestDto request) {
+  /*
+   * 카드 신규 발급
+   */
+  public CardIssueResponseDto createNewCard(CardIssueRequestDto request) {
 
-        // 연결 계좌 검증
-        String accountNo = request.getWithdrawalAccountNo();
-        Account account = accountRepository.findByAccountNo(accountNo).orElseThrow(
-            () -> new InvalidAccountNoException(accountNo)
-        );
+    // 연결 계좌 검증
+    String accountNo = request.getWithdrawalAccountNo();
+    Account account = accountRepository.findByAccountNo(accountNo).orElseThrow(() -> new InvalidAccountNoException(accountNo));
 
-        // 카드 상품 선택
-        String uniqueNo = request.getCardUniqueNo();
-        CardProduct cardProduct = cardProductRepository.findByUniqueNo(uniqueNo).orElseThrow(
-            () -> new CardProductNotFoundException(uniqueNo)
-        );
+    // 카드 상품 선택
+    String uniqueNo = request.getCardUniqueNo();
+    CardProduct cardProduct = cardProductRepository.findByUniqueNo(uniqueNo)
+        .orElseThrow(() -> new CardProductNotFoundException(uniqueNo));
 
-        // 카드 생성(카드 번호, cvc 번호 생성) 및 저장
-        Card card = Card.createCard(account, cardProduct, generateCardNumber(), generateCvc());
-        cardRepository.save(card);
+    //비밀번호 암호화
+    String encrypted = encryptPassword(request.getPassword());
 
-        return CardMapper.INSTANCE.cardToCardIssueResponseDto(
-            card,
-            cardProduct,
-            accountNo,
-            DEFAULT_ISSUER_NAME
-        );
+    // 카드 생성(카드 번호, cvc 번호 생성) 및 저장
+    Card card = Card.createCard(account, cardProduct, generateCardNumber(), generateCvc(), encrypted);
+    cardRepository.save(card);
+
+    return CardMapper.INSTANCE.cardToCardIssueResponseDto(card, cardProduct, accountNo, DEFAULT_ISSUER_NAME);
+  }
+
+
+  /*
+   * 카드 목록 조회
+   */
+  @Transactional(readOnly = true)
+  public List<CardResponseDto> findAllCards(CardListRequestDto request) {
+
+    // 유저 조회
+    User user = userService.findUserByHeader();
+
+    // 유저에 해당하는 통장/ 카드를 조인해서 조회
+    List<Card> cards = cardRepository.findByUser(user);
+
+    // DTO로 변환해서 return
+    return cards.stream().map(card -> CardMapper.INSTANCE.cardToCardResponseDto(card, DEFAULT_ISSUER_NAME))
+        .collect(Collectors.toList());
+  }
+
+  /*
+   * 카드 단건 조회
+   */
+  @Transactional(readOnly = true)
+  public CardResponseDto findCard(CardRequestDto request) {
+
+    // 유저 조회
+    User user = userService.findUserByHeader();
+
+    // 카드 조회
+    Card card = cardRepository.findByCardNo(request.getCardNo())
+        .orElseThrow(() -> new CardNotFoundException(request.getCardNo()));
+
+    // 유저 카드 일치 조회
+    if (card.getAccount().getUser() != user) {
+      throw new CardOwnershipException(request.getCardNo());
     }
 
+    return CardMapper.INSTANCE.cardToCardResponseDto(card, DEFAULT_ISSUER_NAME);
+  }
 
-    /*
-     * 카드 목록 조회
-     */
-    public List<CardResponseDto> findAllCards(CardListRequestDto request) {
+  /**
+   * 계좌와 연결된 카드번호 단건 조회
+   */
+  @Transactional(readOnly = true)
+  public CardNoResponseDto inquireCardNoByAccountNo(CardNoRequestDto request) {
+    String accountNo = request.getAccountNo();
+    Card card = cardRepository.findByAccountNo(accountNo).orElseThrow(() -> new CardNotFoundException(accountNo));
 
-        // 유저 조회
-        User user = userService.findUserByHeader();
+    return new CardNoResponseDto(card.getCardNo());
+  }
 
-        // 유저에 해당하는 통장/ 카드를 조인해서 조회
-        List<Card> cards = cardRepository.findByUser(user);
+  /*
+   * 결제
+   */
+  public CardPaymentResponseDto makeCardPayment(CardPaymentRequestDto request) {
 
-        // DTO로 변환해서 return
-        return cards.stream()
-            .map(card -> CardMapper.INSTANCE.cardToCardResponseDto(card, DEFAULT_ISSUER_NAME))
-            .collect(Collectors.toList());
-    }
+    // 카드 소유 검증
+    Card card = validateCard(request.getCardNo());
 
-    /*
-     * 카드 단건 조회
-     */
-    public CardResponseDto findCard(CardRequestDto request) {
+    // 카드 유효 검증
+    validateCardDetails(card, request.getCvc());
 
-        // 유저 조회
-        User user = userService.findUserByHeader();
+    // 결제 유효성 검증
+    validateTransaction(request.getTransactionId());
 
-        // 카드 조회
-        Card card = cardRepository.findByCardNo(request.getCardNo()).orElseThrow(
-            () -> new CardNotFoundException(request.getCardNo())
-        );
+    // 카드 잔액 확인 및 결제
+    CardHistory cardHistory = processPayment(card, request);
 
-        // 유저 카드 일치 조회
-        if (card.getAccount().getUser() != user) {
-            throw new CardOwnershipException(request.getCardNo());
+    // 응답
+    return CardHistoryMapper.INSTANCE.toCardPaymentResponseDto(cardHistory);
+  }
+
+
+  /*
+   * 카드 번호 생성
+   */
+  private String generateCardNumber() {
+    String bin = "400000";  // 예: Visa의 경우 일반적으로 4로 시작
+    String accountNumber = String.format("%09d", random.nextInt(1000000000));
+    String cardNumberWithoutCheckDigit = bin + accountNumber;
+    String checkDigit = calculateLuhnCheckDigit(cardNumberWithoutCheckDigit);
+    return cardNumberWithoutCheckDigit + checkDigit;
+  }
+
+  /*
+   * 카드번호 가장 뒷자리, 룬 체크 알고리즘
+   */
+  private String calculateLuhnCheckDigit(String number) {
+    int sum = 0;
+    boolean alternate = false;
+    for (int i = number.length() - 1; i >= 0; i--) {
+      int n = Integer.parseInt(number.substring(i, i + 1));
+      if (alternate) {
+        n *= 2;
+        if (n > 9) {
+          n = (n % 10) + 1;
         }
+      }
+      sum += n;
+      alternate = !alternate;
+    }
+    return Integer.toString((10 - (sum % 10)) % 10);
+  }
 
-        return CardMapper.INSTANCE.cardToCardResponseDto(card, DEFAULT_ISSUER_NAME);
+  /*
+   * CVC 생성
+   */
+  private String generateCvc() {
+    return String.format("%03d", random.nextInt(1000));
+  }
+
+  /*
+   * 카드 소유권 검증
+   */
+  private Card validateCard(String cardNo) {
+    Card card = cardRepository.findByCardNo(cardNo).orElseThrow(() -> new CardNotFoundException(cardNo));
+
+    User user = userService.findUserByHeader();
+    User cardUser = card.getAccount().getUser();
+    if (user != cardUser) {
+      throw new CardOwnershipException(cardNo);
     }
 
-    /*
-     * 결제
-     */
-    public CardPaymentResponseDto makeCardPayment(CardPaymentRequestDto request) {
+    return card;
+  }
 
-        // 카드 소유 검증
-        Card card = validateCard(request.getCardNo());
+  /*
+   * 카드 유효 정보 검증
+   */
+  private void validateCardDetails(Card card, String cvc) {
+    if (!card.getCvc().equals(cvc)) {
+      throw new InvalidCvcException(cvc);
+    }
+    if (card.getExpireAt().isBefore(LocalDateTime.now())) {
+      throw new CardExpiredException(card.getCardNo());
+    }
+  }
 
-        // 카드 유효 검증
-        validateCardDetails(card, request.getCvc());
+  /*
+   * 결제 유효성 검증
+   */
+  private void validateTransaction(String transactionId) {
+    List<CardHistory> history = cardHistoryRepository.findByTransactionId(transactionId).orElse(Collections.emptyList());
+    if (!history.isEmpty()) {
+      throw new DuplicateTransactionIdException(transactionId);
+    }
+  }
 
-        // 결제 유효성 검증
-        validateTransaction(request.getTransactionId());
+  /*
+   * 결제 진행
+   */
+  private CardHistory processPayment(Card card, CardPaymentRequestDto request) {
+    MoneyBox moneyBox = moneyBoxRepository.findMoneyBoxByAccountNoAndCurrency(card.getAccount().getAccountNo(),
+            CurrencyType.valueOf(request.getCurrencyCode()))
+        .orElseThrow(() -> new MoneyBoxNotFoundException(request.getCurrencyCode()));
 
-        // 카드 잔액 확인 및 결제
-        CardHistory cardHistory = processPayment(card, request);
-
-        // 응답
-        return CardHistoryMapper.INSTANCE.toCardPaymentResponseDto(cardHistory);
+    // 금액 확인
+    Double balance = moneyBox.getBalance();
+    if (balance < request.getPaymentBalance()) {
+      throw new CardInsufficientBalanceException(card.getCardNo(), request.getPaymentBalance(), balance);
     }
 
+    // 가맹점 확인
+    Merchant merchant = merchantRepository.findById(request.getMerchantId())
+        .orElseThrow(() -> new MerchantNotFoundException(String.valueOf(request.getMerchantId())));
 
-    /*
-     * 카드 번호 생성
-     */
-    private String generateCardNumber() {
-        String bin = "400000";  // 예: Visa의 경우 일반적으로 4로 시작
-        String accountNumber = String.format("%09d", random.nextInt(1000000000));
-        String cardNumberWithoutCheckDigit = bin + accountNumber;
-        String checkDigit = calculateLuhnCheckDigit(cardNumberWithoutCheckDigit);
-        return cardNumberWithoutCheckDigit + checkDigit;
-    }
+    // 결제 수행 및 결과 저장
+    moneyBox.payment(request.getPaymentBalance());
+    return saveCardHistory(card, moneyBox, merchant, request);
+  }
 
-    /*
-     * 카드번호 가장 뒷자리, 룬 체크 알고리즘
-     */
-    private String calculateLuhnCheckDigit(String number) {
-        int sum = 0;
-        boolean alternate = false;
-        for (int i = number.length() - 1; i >= 0; i--) {
-            int n = Integer.parseInt(number.substring(i, i + 1));
-            if (alternate) {
-                n *= 2;
-                if (n > 9) {
-                    n = (n % 10) + 1;
-                }
-            }
-            sum += n;
-            alternate = !alternate;
-        }
-        return Integer.toString((10 - (sum % 10)) % 10);
-    }
+  /*
+   * 결제 기록 저장
+   */
+  private CardHistory saveCardHistory(Card card, MoneyBox moneyBox, Merchant merchant, CardPaymentRequestDto request) {
 
-    /*
-     * CVC 생성
-     */
-    private String generateCvc() {
-        return String.format("%03d", random.nextInt(1000));
-    }
+    Double wonAmount = CurrencyConverter.convertToKRW(request.getPaymentBalance(), moneyBox.getCurrency().getExchangeRate())
+        .doubleValue();
 
-    /*
-     * 카드 소유권 검증
-     */
-    private Card validateCard(String cardNo) {
-        Card card = cardRepository.findByCardNo(cardNo).orElseThrow(
-            () -> new CardNotFoundException(cardNo)
-        );
+    Long nextId = transactionService.getNextTransactionId();
 
-        User user = userService.findUserByHeader();
-        User cardUser = card.getAccount().getUser();
-        if (user != cardUser) {
-            throw new CardOwnershipException(cardNo);
-        }
+    CardHistory cardHistory = CardHistory.createCardHistory(nextId, card, moneyBox, merchant, request, wonAmount);
 
-        return card;
-    }
+    cardHistoryRepository.save(cardHistory);
+    return cardHistory;
+  }
 
-    /*
-     * 카드 유효 정보 검증
-     */
-    private void validateCardDetails(Card card, String cvc) {
-        if (!card.getCvc().equals(cvc)) {
-            throw new InvalidCvcException(cvc);
-        }
-        if (card.getExpireAt().isBefore(LocalDateTime.now())) {
-            throw new CardExpiredException(card.getCardNo());
-        }
-    }
 
-    /*
-     * 결제 유효성 검증
-     */
-    private void validateTransaction(String transactionId) {
-        List<CardHistory> history =
-            cardHistoryRepository.findByTransactionId(transactionId).orElse(Collections.emptyList());
-        if (!history.isEmpty()) {
-            throw new DuplicateTransactionIdException(transactionId);
-        }
-    }
+  // 비밀번호 암호화
+  public String encryptPassword(String plainPassword) {
+    return passwordEncoder.encode(plainPassword);
+  }
 
-    /*
-     * 결제 진행
-     */
-    private CardHistory processPayment(Card card, CardPaymentRequestDto request) {
-        MoneyBox moneyBox = moneyBoxRepository.findMoneyBoxByAccountNoAndCurrency(
-            card.getAccount().getAccountNo(),
-            CurrencyType.valueOf(request.getCurrencyCode())
-        ).orElseThrow(() -> new MoneyBoxNotFoundException(request.getCurrencyCode()));
-
-        // 금액 확인
-        Double balance = moneyBox.getBalance();
-        if (balance < request.getPaymentBalance()) {
-            throw new CardInsufficientBalanceException(card.getCardNo(), request.getPaymentBalance(), balance);
-        }
-
-        // 가맹점 확인
-        Merchant merchant = merchantRepository.findById(request.getMerchantId()).orElseThrow(
-            () -> new MerchantNotFoundException(String.valueOf(request.getMerchantId()))
-        );
-
-        // 결제 수행 및 결과 저장
-        moneyBox.payment(request.getPaymentBalance());
-        return saveCardHistory(card, moneyBox, merchant, request);
-    }
-
-    /*
-     * 결제 기록 저장
-     */
-    private CardHistory saveCardHistory(Card card, MoneyBox moneyBox, Merchant merchant,
-        CardPaymentRequestDto request) {
-
-        Double wonAmount = CurrencyConverter.convertToKRW(request.getPaymentBalance(),
-                moneyBox.getCurrency().getExchangeRate())
-            .doubleValue();
-
-        Long nextId = transactionService.getNextTransactionId();
-
-        CardHistory cardHistory = CardHistory.createCardHistory(
-            nextId, card, moneyBox, merchant, request, wonAmount
-        );
-
-        cardHistoryRepository.save(cardHistory);
-        return cardHistory;
-    }
+  // 비밀번호 검증
+  public boolean verifyPassword(String plainPassword, String encryptedPassword) {
+    return passwordEncoder.matches(plainPassword, encryptedPassword);
+  }
 
 }

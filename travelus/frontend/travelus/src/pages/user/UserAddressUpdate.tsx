@@ -3,22 +3,20 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/store";
-import { editSignUpUserInformation } from "../../redux/userInformationSlice";
-import { userApi } from "../../api/user";
+import { editUserInformation } from "../../redux/userInformationSlice";
 import AddressInput from "../../components/user/inputField/AddressInput";
 import AddressDetailInput from "../../components/user/inputField/AddressDetailInput";
 import { IoIosArrowBack } from "react-icons/io";
 
-interface UserAddressUpdateProps {
-  // Define your props here
-}
-
 const UserAddressUpdate = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [address, setAddress] = useState<string>("");
   const [addressDetail, setAddressDetail] = useState<string>("");
+  const [fullAddress, setFullAddress] = useState<string>("");
   const [step, setStep] = useState<number>(0);
   const [isFormValid, setIsFormValid] = useState(false);
+  const userInfo = useSelector((state: RootState) => state.userInformation.UserInfo);
 
   useEffect(() => {
     if (step === 0 && address !== "") {
@@ -28,11 +26,9 @@ const UserAddressUpdate = () => {
 
   useEffect(() => {
     // 모든 필드가 유효한지 확인
-    // const allFieldsValid = Object.values(errors).every((error) => !error);
-    // const allFieldsFilled = Object.values(inputs).every((value) => value !== "");
-
     const allFieldsFilled = address !== "" && addressDetail !== "";
 
+    setFullAddress(`${address} ${addressDetail}`);
     setIsFormValid(allFieldsFilled);
   }, [address, addressDetail]);
 
@@ -47,18 +43,21 @@ const UserAddressUpdate = () => {
     }
   };
 
+  const handleUpdate = async () => {
+    dispatch(editUserInformation({ ...userInfo, address: fullAddress }));
+    navigate("/userupdate");
+  };
+
   return (
     <div className="w-full min-h-screen p-5 pb-8 bg-white flex flex-col justify-between">
       <div className="flex flex-col space-y-16">
-        <div className="flex items-center mt-[0.14rem]">
-          <IoIosArrowBack
-            onClick={() => {
-              navigate(-1);
-            }}
-            className="text-2xl"
-          />
-        </div>
-        <div className="text-2xl font-semibold">
+        <IoIosArrowBack
+          onClick={() => {
+            navigate("/userupdate");
+          }}
+          className="text-2xl"
+        />
+        <div className="mt-10 text-2xl font-semibold">
           <p>주소를 입력해주세요</p>
         </div>
 
@@ -80,10 +79,10 @@ const UserAddressUpdate = () => {
         </div>
       </div>
       <button
-        onClick={() => {
-          navigate("/userupdate");
-        }}
-        className={`w-full mb-5 py-3 text-white rounded-lg ${isFormValid ? "bg-[#1429A0]" : "bg-gray-300"}`}
+        onClick={handleUpdate}
+        className={`w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold ${
+          isFormValid ? "bg-[#1429A0]" : "bg-gray-300"
+        }`}
         disabled={!isFormValid}>
         확인
       </button>

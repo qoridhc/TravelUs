@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import MainPage from "../src/pages/MainPage";
 import Login from "./pages/user/Login";
-import SignUp from "./pages/user/SignUp";
 import SignUpBasicInformation from "./pages/user/SignUpBasicInformation";
 import SignUpAddress from "./pages/user/SignUpAddress";
 import MyPage from "./pages/user/MyPage";
@@ -32,13 +31,11 @@ import ExchangeKRWFlow from "./pages/exchange/ExchangeKRW";
 import ExchangeCompletion from "./pages/exchange/ExchangeCompletion";
 import AccountPasswordInput from "./pages/exchange/ExchangeConfirmation";
 import SelectAccount from "./pages/exchange/SelectAccount";
-import Settlement from "./pages/ver1/Settlement";
 import AccountCreateComplete from "./pages/ver1/AccountCreateComplete";
 import GeneralMeetingAccountCreate from "./pages/ver1/GeneralMeetingAccountCreate";
 import MeetingAccountCreatePrepare from "./pages/ver1/MeetingAccountCreatePrepare";
 import MeetingAccountCreateComplete from "./pages/ver1/MeetingAccountCreateComplete";
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
-import Transaction from "./pages/transaction/Transaction";
 import PrivateRoute from "./pages/user/PrivateRoute";
 import { Sign } from "crypto";
 import EditMembers from "./pages/settlement/EditMembers";
@@ -69,6 +66,11 @@ import InvitationOfMeeting from "./pages/meetingAccount/InvitationOfMeeting";
 import InviteInfoOfMeeting from "./pages/meetingAccount/InviteInfoOfMeeting";
 import AlreadyInviteOfMeeting from "./pages/meetingAccount/AlreadyInviteOfMeeting";
 import SelectAccountOfMeeting from "./pages/meetingAccount/SelectAccountOfMeeting";
+import EnglishNameOfCreateCard from "./pages/card/cardCreate/EnglishNameOfCreateCard";
+import PasswordOfCreateCard from "./pages/card/cardCreate/PasswordOfCreateCard";
+import CheckPasswordOfCreateCard from "./pages/card/cardCreate/CheckPasswordOfCreateCard";
+import AddressOfCreateCard from "./pages/card/cardCreate/AddressOfCreateCard";
+import CompletedOfCreateCard from "./pages/card/cardCreate/CompletedOfCreateCard";
 
 function App() {
   return (
@@ -142,13 +144,20 @@ function App() {
 
           {/* 통장 내역 */}
           <Route path="/transaction/:accountNo" element={<AccountTransaction />} />
-          <Route path="/meetingtransaction/:id" element={<MeetingTransaction />} />
+          <Route path="/meetingtransaction/:accountNo" element={<MeetingTransaction />} />
           <Route path="/transaction/detail/travelbox/:id" element={<TravelBoxTransaction />} />
 
           {/* 트래블박스 생성 */}
           <Route path="/travelbox/create/prepare" element={<TravelBoxCreatePrepare />} />
           <Route path="/currencyinfoofcreatetravelbox" element={<CurrencyInfoOfCreateTravelBox />} />
           <Route path="/autocurrencyexchangeofcreatetravelbox" element={<AutoCurrencyExchangeOfCreateTravelBox />} />
+
+          {/* 카드 개설 */}
+          <Route path="/card/:groupId/create/englishname" element={<EnglishNameOfCreateCard />} />
+          <Route path="/card/:groupId/create/password/:type" element={<PasswordOfCreateCard />} />
+          <Route path="/card/:groupId/create/password/check" element={<CheckPasswordOfCreateCard />} />
+          <Route path="/card/:groupId/create/address" element={<AddressOfCreateCard />} />
+          <Route path="/card/:groupId/create/completed" element={<CompletedOfCreateCard />} />
 
           {/* 이체 */}
           <Route path="/transfer/selectbank" element={<TransferSelectBank />} />
@@ -163,18 +172,17 @@ function App() {
           <Route path="/exchange/account-password-input" element={<AccountPasswordInput />} />
           <Route path="/exchange/exchange-completion" element={<ExchangeCompletion />} />
           {/* <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route> */}
-          <Route path="/transaction" element={<Transaction />}></Route>
 
           {/* 환율 */}
           <Route path="/exchangerate" element={<ExchangeRate />} />
           <Route path="/exchangerate/:currencyCode" element={<ExchangeDetail />} />
 
           {/* 잔액정산 */}
-          <Route path="/selectsettlementamount" element={<SelectSettlementAmount />}></Route>
-          <Route path="/settlementforeigncurrencyexchange" element={<ForeignCurrencyExchange />}></Route>
-          <Route path="/settlement" element={<SettlementInfo />}></Route>
-          <Route path="/editmembers/:type" element={<EditMembers />}></Route>
-          <Route path="/balancesettlementcompleted" element={<BalanceSettlementCompleted />}></Route>
+          <Route path="/settlement/balance/amount/:id" element={<SelectSettlementAmount />}></Route>
+          <Route path="/settlement/balance/foreigncurrency/exchange/:id" element={<ForeignCurrencyExchange />}></Route>
+          <Route path="/settlement/balance/participants/:id" element={<SettlementInfo />}></Route>
+          <Route path="/settlement/editmembers/:type/:id" element={<EditMembers />}></Route>
+          <Route path="/settlement/balance/completed" element={<BalanceSettlementCompleted />}></Route>
 
           {/* 지출정산 */}
           <Route

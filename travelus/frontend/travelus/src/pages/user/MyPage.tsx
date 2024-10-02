@@ -27,6 +27,7 @@ const MyPage = () => {
       userApi
         .fetchUser()
         .then((response) => {
+          setProfileImage(response.data.profileImg); // 프로필 이미지 설정
           setUserData(response.data); // API 응답 데이터를 상태로 설정
           dispatch(editUserInformation(response.data)); // Redux 스토어에 유저 정보 저장
         })
@@ -36,7 +37,7 @@ const MyPage = () => {
     }
   }, []);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -44,13 +45,18 @@ const MyPage = () => {
         setProfileImage(reader.result as string); // 미리보기 이미지 설정
       };
       reader.readAsDataURL(file);
-      // // 파일 업로드 로직 (백엔드로 이미지 전송)
-      // const formData = new FormData();
-      // formData.append("profileImage", file);
-      // // 업로드 API 호출
-      // userApi.uploadProfileImage(formData).then((response) => {
-      //   console.log("Image uploaded successfully:", response);
-      // });
+
+      // 프로필 이미지 업로드 API 호출
+      const formData = new FormData();
+      formData.append("profileImg", file);
+      try {
+        const response = await userApi.uploadProfileImage(formData);
+        if (response.status === 200) {
+          console.log("프로필 이미지 업로드 성공");
+        }
+      } catch (error) {
+        console.error("프로필 이미지 업로드 실패: ", error);
+      }
     }
   };
 
@@ -80,9 +86,9 @@ const MyPage = () => {
         <div className="flex flex-col justify-center items-center space-y-3">
           <div className="relative w-20 h-20">
             <img
-              className="w-full h-full rounded-full border object-cover"
+              className={profileImage ? `w-full h-full rounded-full border object-cover` : `w-full h-full rounded-full`}
               onClick={handleImageClick}
-              src={profileImage ? profileImage : "/assets/user/userIconSample.png"}
+              src={profileImage ? profileImage : "/assets/loadingIcon.png"}
               alt="유저아이콘"
             />
             <div className="w-[1.8rem] h-[1.8rem] rounded-full bg-white border border-zinc-500 absolute -right-[0.3rem] bottom-0 flex justify-center items-center">
@@ -115,10 +121,6 @@ const MyPage = () => {
             <p>휴대폰번호</p>
             <p>{userData ? formatPhoneNumber(userData.phone) : "Loading..."}</p>
           </div>
-          {/* <div className="flex justify-between">
-            <p>아이디</p>
-            <p>{userData ? userData.email : "Loading..."}</p>
-          </div> */}
         </div>
       </div>
       <hr className="border-2 border-[#F3F4F6]" />

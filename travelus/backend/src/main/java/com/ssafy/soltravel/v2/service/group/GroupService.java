@@ -26,6 +26,7 @@ import com.ssafy.soltravel.v2.repository.GroupRepository;
 import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.service.account.AccountService;
+import com.ssafy.soltravel.v2.service.card.CardService;
 import com.ssafy.soltravel.v2.service.user.UserService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
@@ -63,6 +64,7 @@ public class GroupService {
     private final SecurityUtil securityUtil;
 
     private final String BASE_URL = "/accounts/";
+    private final CardService cardService;
 
     /*
      * 모임 관련 메서드
@@ -121,8 +123,13 @@ public class GroupService {
 
         TravelGroup travelGroup = groupRepository.findById(groupId).orElseThrow(InvalidGroupIdException::new);
 
-        return groupMapper.toDto(travelGroup);
+        String cardNoByAccountNo = cardService.getCardNoByAccountNo(travelGroup.getGroupAccountNo());
 
+        GroupDto dto = groupMapper.toDto(travelGroup);
+
+        dto.setCardNumber(cardNoByAccountNo);
+
+        return dto;
     }
 
     // 모임 탈퇴

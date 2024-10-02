@@ -1,12 +1,29 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { IoIosArrowForward } from "react-icons/io";
+import { userApi } from "../../api/user";
 
 const Header = () => {
   const navigate = useNavigate();
+  const [userName, setUserName] = useState("");
 
-  const userName = localStorage.getItem("userName");
+  useEffect(() => {
+    // 유정 정보 가져오는 API 호출
+    const fetchUser = async () => {
+      try {
+        const response = await userApi.fetchUser();
+        if (response.status === 200) {
+          setUserName(response.data.name);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchUser();
+  }, []);
+
 
   return (
     <div className="h-16 p-5 bg-[#F3F4F6] sticky top-0 flex justify-between items-center z-50">

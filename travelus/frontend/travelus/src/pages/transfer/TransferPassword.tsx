@@ -44,7 +44,7 @@ const TransferPassword: React.FC<TransferPasswordProps> = (props) => {
       accountPassword: password,
       depositAccountNo: formatAccountNumber(accountNo),
       transactionBalance: parseInt(transferAmount),
-      withdrawalTransactionSummary: userName,
+      withdrawalTransactionSummary: depositAccount.userName,
       depositTransactionSummary: userName,
     };
 

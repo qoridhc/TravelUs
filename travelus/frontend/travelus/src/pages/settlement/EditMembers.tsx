@@ -1,42 +1,64 @@
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack, IoIosCloseCircle } from "react-icons/io";
+import { CiSearch } from "react-icons/ci";
 import { useLocation, useNavigate, useParams } from "react-router";
+import { accountApi } from "../../api/account";
+import { GroupInfo } from "../../types/meetingAccount";
+
+interface Member {
+  participantId: number;
+  name: string;
+  amount: number;
+}
 
 const EditMembers = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const params = useParams();
+  const { type, id } = useParams();
 
-  const allMemberList = [{ name: "박민규" }, { name: "박예진" }, { name: "이예림" }, { name: "허동원" }];
-  const [selectedMemberList, setSelectedMemberList] = useState([
-    { name: "박민규" },
-    { name: "박예진" },
-    { name: "이예림" },
-  ]);
+  const [groupInfo, setGroupInfo] = useState<GroupInfo | null>(null);
+  const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
 
   const handleSelected = () => {
-    if (params.type === "balance") {
-      navigate("/settlement", { state: { members: selectedMemberList } });
+    if (type === "balance") {
+      navigate(`/settlement/balance/participants/${id}`, {
+        state: { members: selectedMembers, foreignAmount: location.state.foreignAmount },
+      });
     } else {
-      navigate("/settlement/expenditure/info", { state: { members: selectedMemberList } });
+      navigate("/settlement/expenditure/info", { state: { members: selectedMembers } });
     }
   };
 
-  const toggleMemberSelection = (name: string) => {
-    if (selectedMemberList.some((member) => member.name === name)) {
-      setSelectedMemberList(selectedMemberList.filter((member) => member.name !== name));
+  const toggleMemberSelection = (participantId: number, name: string) => {
+    // 모임원 체크 해제
+    if (selectedMembers.some((member) => member.name === name)) {
+      setSelectedMembers(selectedMembers.filter((member) => member.name !== name));
     } else {
-      setSelectedMemberList([...selectedMemberList, { name }]);
+      // 모임원 체크
+      setSelectedMembers([...selectedMembers, { participantId: participantId, name: name, amount: 0 }]);
     }
   };
 
-  const removeFromSelected = (name: string) => {
-    setSelectedMemberList(selectedMemberList.filter((member) => member.name !== name));
+  const removeFromSelected = (participantId: number) => {
+    setSelectedMembers(selectedMembers.filter((member) => member.participantId !== participantId));
+  };
+
+  // 특정 모임 조회 API 호출
+  const fetchSpecificMeetingAccount = async () => {
+    try {
+      const response = await accountApi.fetchSpecificMeetingAccount(Number(id));
+      if (response.status === 200) {
+        setGroupInfo(response.data);
+      }
+    } catch (error) {
+      console.error("accountApi의 fetchSpecificMeetingAccount : ", error);
+    }
   };
 
   useEffect(() => {
-    if (location.state?.selectedMemberList) {
-      setSelectedMemberList(location.state.selectedMemberList);
+    fetchSpecificMeetingAccount();
+    if (location.state?.members) {
+      setSelectedMembers(location.state.members);
     }
   }, []);
 
@@ -50,37 +72,45 @@ const EditMembers = () => {
           <p className="text-lg text-center">모임원 선택</p>
         </div>
 
-        {/* 선택된 멤버 리스트 */}
-        <div className="flex space-x-5">
-          {selectedMemberList.map((item, index) => (
-            <div className="relative" key={index}>
-              <div className="flex flex-col justify-center space-y-2">
-                <img className="w-10 aspect-1" src="/assets/user/userIconSample.png" alt="" />
-                <p>{item.name}</p>
-              </div>
-              <button onClick={() => removeFromSelected(item.name)}>
-                <IoIosCloseCircle className="opacity-50 absolute top-0 right-0" />
-              </button>
-            </div>
-          ))}
-        </div>
-
-        {/* 전체 멤버 리스트 */}
         <div className="grid gap-5">
-          {allMemberList.map((item, index) => (
-            <label className="flex justify-between items-center" key={index}>
-              <div className="flex items-center space-x-3">
-                <img className="w-10 aspect-1" src="/assets/user/userIconSample.png" alt="" />
-                <p>{item.name}</p>
+          {/* 선택된 멤버 리스트 */}
+          <div className="flex space-x-5">
+            {selectedMembers.map((item, index) => (
+              <div className="relative" key={index} onClick={() => removeFromSelected(item.participantId)}>
+                <div className="flex flex-col justify-center space-y-2">
+                  <img className="w-10 aspect-1" src="/assets/user/userIconSample.png" alt="" />
+                  <p>{item.name}</p>
+                </div>
+                <button>
+                  <IoIosCloseCircle className="opacity-50 absolute top-0 right-0" />
+                </button>
               </div>
-              <input
-                type="checkbox"
-                className="w-6 aspect-1 appearance-none bg-[url('./assets/check/nochecked.png')] checked:bg-[url('./assets/check/checked.png')] bg-cover rounded-full"
-                checked={selectedMemberList.some((member) => member.name === item.name)}
-                onChange={() => toggleMemberSelection(item.name)}
-              />
-            </label>
-          ))}
+            ))}
+          </div>
+
+          <div className="p-3 bg-[#F3F4F6] rounded-md flex items-center space-x-2">
+            <CiSearch className="text-lg" />
+            <input type="text" className="w-full text-[#565656] bg-[#F3F4F6] outline-none" placeholder="이름 검색" />
+          </div>
+
+          {/* 전체 멤버 리스트 */}
+          <div className="grid gap-5">
+            {groupInfo &&
+              groupInfo.participants.map((item, index) => (
+                <label className="flex justify-between items-center" key={index}>
+                  <div className="flex items-center space-x-3">
+                    <img className="w-10 aspect-1" src="/assets/user/userIconSample.png" alt="" />
+                    <p>{item.userName}</p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    className="w-6 aspect-1 appearance-none bg-[url('./assets/check/nochecked.png')] checked:bg-[url('./assets/check/checked.png')] bg-cover rounded-full"
+                    checked={selectedMembers.some((member) => member.name === item.userName)}
+                    onChange={() => toggleMemberSelection(item.participantId, item.userName)}
+                  />
+                </label>
+              ))}
+          </div>
         </div>
       </div>
 
@@ -88,7 +118,7 @@ const EditMembers = () => {
       <button
         className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
         onClick={() => handleSelected()}>
-        {selectedMemberList.length}명 선택
+        {selectedMembers.length}명 선택
       </button>
     </div>
   );

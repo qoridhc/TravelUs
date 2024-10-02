@@ -11,43 +11,13 @@ import { exchangeRateApi } from "../../../../api/exchange";
 const PasswordOfCreateAccount = () => {
   const navigate = useNavigate();
   const params = useParams();
-
   const [password, setPassword] = useState("");
-  const [isTravelboxCreated, setIsTravelboxCreated] = useState(false);
-  const [isTargetRateCreated, setIsTargetRateCreated] = useState(false);
-  const travelboxInfo = useSelector((state: RootState) => state.meetingAccount.travelboxInfo);
-  const exchangeTargetInfo = useSelector((state: RootState) => state.meetingAccount.exchangeTargetInfo);
-
-  // const createTravelbox = async () => {
-  //   try {
-  //     const response = await accountApi.fetchCreateTravelBox(travelboxData);
-  //     if (response.status === 201) {
-  //       setIsTravelboxCreated(true);
-  //     }
-  //   } catch (error) {
-  //     const axiosError = error as AxiosError;
-  //     if (axiosError.response && axiosError.response.data && axiosError.response.data) {
-  //       const responseData = axiosError.response.data as AxiosErrorResponseData;
-  //       if (responseData.message === "ACCOUNT_PASSWORD_INVALID") {
-  //         setPassword("");
-  //         alert("비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
-  //       }
-  //     }
-  //     console.log("accountApi의 fetchCreateTravelBox : ", error);
-  //   }
-  // };
 
   useEffect(() => {
     if (password.length === 4) {
       navigate("/account/create/password/check", { state: { originalPassword: password } });
     }
   }, [password]);
-
-  useEffect(() => {
-    if (isTravelboxCreated && isTargetRateCreated) {
-      navigate("/meeting/create/completed/travelbox");
-    }
-  }, [isTravelboxCreated, isTargetRateCreated]);
 
   return (
     <div className="h-full grid grid-rows-[2fr_1fr]">

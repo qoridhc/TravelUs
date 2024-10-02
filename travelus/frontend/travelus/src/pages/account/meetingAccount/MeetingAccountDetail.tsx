@@ -11,8 +11,8 @@ import "swiper/css/pagination";
 import { IoHome } from "react-icons/io5";
 import { PiAirplaneTiltFill } from "react-icons/pi";
 import { FaUserFriends, FaBriefcase, FaHeart } from "react-icons/fa";
-
 import { GoHome } from "react-icons/go";
+import { FiPlus } from "react-icons/fi";
 import { MeetingAccountInfo, MeetingAccountDetailInfo } from "../../../types/account";
 
 const MeetingAccountDetail = () => {
@@ -126,30 +126,6 @@ const MeetingAccountDetail = () => {
     return <span className={containerClasses}>{IconComponent}</span>;
   };
 
-  useEffect(() => {
-    // const getParticipants = async () => {
-    //   try {
-    //     if (selectedAccount === null) return;
-
-    //     setLoading(true); // 데이터 로딩 시작
-    //     const response = await accountApi.fetchParticipantInfo(selectedAccount.id);
-    //     const participantNames = response.participants.map((participant: any) => participant.userInfo.username);
-    //     setMemberList(participantNames);
-    //   } catch (error) {
-    //     console.error("Error fetching data:", error);
-    //     alert("참여자 정보 조회에 실패했습니다.");
-    //   } finally {
-    //     setLoading(false); // 데이터 로딩 완료
-    //   }
-    // };
-
-    // getParticipants();
-
-    // 참여자 정보 조회 더미데이터
-    const participants = ["John Doe", "Jane Doe", "Alice", "Bob", "Charlie"];
-    setLoading(false); // 데이터 로딩 완료
-  }, []);
-
   if (account === null) {
     return <p>계좌 정보를 불러오는 중입니다...</p>;
   }
@@ -190,12 +166,28 @@ const MeetingAccountDetail = () => {
           <div>
             <div
               onClick={() => {
-                navigate(`/meetingtransaction/${meeting.groupId}`);
+                navigate(`/meetingtransaction/${meeting.groupAccountNo}`, { state: { groupId: meeting.groupId } });
               }}
               className="mt-6 p-5 flex flex-col space-y-5">
-              <div className="flex flex-col space-y-1">
-                <p>모임통장</p>
-                <p className="text-2xl font-bold">{formatCurrency(account.moneyBoxDtos[0].balance)}원</p>
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col space-y-1">
+                  <p>모임통장</p>
+                  <p className="text-2xl font-bold">{formatCurrency(account.moneyBoxDtos[0].balance)}원</p>
+                </div>
+                {
+                  // 카드가 없는 경우에만 버튼 표시
+                  !meeting.cardNumber && (
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/card/${meeting.groupId}/create/englishname`);
+                      }}
+                      className="w-[4.5rem] h-[2.3rem] bg-[#f0f0f0] rounded-3xl flex justify-center items-center">
+                      <FiPlus className="text-lg text-blue-500 mr-[0.1rem]" />
+                      <button className="text-sm">카드</button>
+                    </div>
+                  )
+                }
               </div>
               {account.moneyBoxDtos.length > 1 ? (
                 <div className="flex justify-between">
@@ -270,7 +262,7 @@ const MeetingAccountDetail = () => {
             <div className="p-5 pb-8 flex flex-col items-center justify-center space-y-5">
               <button
                 onClick={() => {
-                  navigate("/selectsettlementamount");
+                  navigate(`/settlement/balance/amount/${id}`);
                 }}
                 className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]">
                 정산하기

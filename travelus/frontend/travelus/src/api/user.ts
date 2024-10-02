@@ -41,4 +41,18 @@ export const userApi = {
   fetchUser: () => {
     return api.get(`/user/search`);
   },
+
+  // 유저 프로필 이미지 수정
+  uploadProfileImage: (formData: FormData) => {
+    return api.post(`/user`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+
+  // 유저 정보 수정
+  editUserInformation: (formData: FormData) => {
+    return api.post(`/user/update`, formData);
+  },
 };

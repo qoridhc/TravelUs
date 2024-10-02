@@ -25,15 +25,7 @@ const currencyNameMapping: { [key: string]: string } = {
 };
 
 const getFlagImagePath = (currencyCode: string) => {
-  const countryName =
-    {
-      EUR: "Europe",
-      JPY: "Japan",
-      USD: "TheUnitedStates",
-      TWD: "Taiwan",
-      KRW: "Korea",
-    }[currencyCode] || currencyCode;
-  return `/assets/flag/flagOf${countryName}.png`;
+  return `/assets/flag/flagOf${currencyCode}.png`;
 };
 
 const MeetingAccountExchange: React.FC = () => {

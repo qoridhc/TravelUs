@@ -70,16 +70,16 @@ const SignUpAddress = () => {
     formData.append("gender", signUpInformation.gender);
 
     console.log("풀주소", fullAddress);
-    // try {
-    //   const response = await userApi.fetchSignUp(formData);
+    try {
+      const response = await userApi.fetchSignUp(formData);
 
-    //   if (response.status === 200) {
-    //     console.log("회원가입 성공");
-    //     navigate("/login");
-    //   }
-    // } catch (error) {
-    //   console.error("회원가입 에러:", error);
-    // }
+      if (response.status === 200) {
+        console.log("회원가입 성공");
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("회원가입 에러:", error);
+    }
   };
     
 

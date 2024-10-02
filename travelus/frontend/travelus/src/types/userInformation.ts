@@ -16,10 +16,11 @@ export interface UserInfo {
   name: string;
   birth: string;
   phone: string;
-  email: string;
+  id: string;
   address: string;
   registerAt: string;
   isExit: boolean;
   userId: number;
-  userKey: string | null;
+  gender: string;
+  profileImg: string;
 }

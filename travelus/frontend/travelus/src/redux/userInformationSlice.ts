@@ -23,12 +23,13 @@ const initialState: UserInformationState = {
     name: "",
     birth: "",
     phone: "",
-    email: "",
+    id: "",
     address: "",
     registerAt: "",
     isExit: false,
     userId: 0,
-    userKey: null,
+    gender: "",
+    profileImg: "",
   },
 };
     
