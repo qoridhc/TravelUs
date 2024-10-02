@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { accountApi } from "../../../api/account";
-import { MeetingAccountDetailInfo } from "../../../types/account";
 import { GroupInfo } from "../../../types/meetingAccount";
-import { settlementApi } from "../../../api/settle";
 import { exchangeRateApi } from "../../../api/exchange";
 import { ExchangeRateInfo } from "../../../types/exchange";
 
@@ -20,41 +18,34 @@ const SettlementInfo = () => {
   const { id } = useParams();
 
   const [totalAmount, setTotalAmount] = useState(0);
-  const [wonAmount, setWonAmount] = useState(0);
   const [members, setMembers] = useState<Member[]>([]);
   const [groupInfo, setGroupInfo] = useState<GroupInfo | null>(null);
   const [exchangeRate, setExchangeRate] = useState<ExchangeRateInfo>();
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleSettlement = async () => {
+  const handleSettlement = () => {
     const updatedMembers = members.map((member) => {
       const { name, ...rest } = member;
       return rest;
     });
 
-    if (groupInfo?.groupAccountNo) {
-      const data = {
+    navigate("/settlement/password", {
+      state: {
         groupId: Number(id),
         accountNo: groupInfo?.groupAccountNo,
-        accountPassword: "1215",
-        settlementType: "BOTH",
-        amounts: [wonAmount, location.state.foreignAmount] as [number, number],
+        amounts: [location.state.koreanAmount, location.state.foreignAmount] as [number, number],
         participants: updatedMembers,
-      };
-
-      try {
-        console.log(data);
-        const response = await settlementApi.fetchSettlement(data);
-        console.log(response.data);
-      } catch (error) {
-        console.log("", error);
-      }
-    }
-    // navigate("/settlement/balance/completed");
+      },
+    });
   };
 
   const handleMembers = () => {
     navigate(`/settlement/editmembers/balance/${id}`, {
-      state: { members: members, foreignAmount: location.state.foreignAmount },
+      state: {
+        members: members,
+        koreanAmount: location.state.koreanAmount,
+        foreignAmount: location.state.foreignAmount,
+      },
     });
   };
 
@@ -81,16 +72,15 @@ const SettlementInfo = () => {
   const fetchSpecificAccountInfo = async (groupAccountNo: string) => {
     try {
       const response = await accountApi.fetchSpecificAccountInfo(groupAccountNo);
-      setWonAmount(response.data?.moneyBoxDtos[0].balance);
-      // setWonAmount(0);
       if (exchangeRate?.exchangeRate) {
         setTotalAmount(
-          response.data?.moneyBoxDtos[0].balance + exchangeRate?.exchangeRate * location.state.foreignAmount
+          location.state.koreanAmount + Math.ceil(exchangeRate?.exchangeRate * location.state.foreignAmount)
         );
-        // setTotalAmount(exchangeRate?.exchangeRate * location.state.foreignAmount);
       }
     } catch (error) {
       console.error("모임 통장 조회 에러", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -146,6 +136,14 @@ const SettlementInfo = () => {
     }
   }, [totalAmount]);
 
+  if (isLoading || totalAmount === 0) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <p className="text-xl">로딩중...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full py-5 pb-8 flex flex-col justify-between">
       <div className="grid gap-14">
@@ -159,22 +157,8 @@ const SettlementInfo = () => {
         <div className="grid gap-8">
           <div className="px-5 text-2xl font-semibold tracking-wide">
             <div className="flex">
-              <p className="text-[#1429A0]">
-                {exchangeRate?.exchangeRate &&
-                  formatCurrency(exchangeRate?.exchangeRate * location.state.foreignAmount)}
-                원
-              </p>
-              <p>을</p>
-            </div>
-            <p>일반모임통장에 넣을게요</p>
-          </div>
-
-          <div className="w-full h-5 bg-[#F6F6F8]"></div>
-
-          <div className="px-5 text-2xl font-semibold tracking-wide">
-            <div className="flex">
               <p>총&nbsp;</p>
-              <p className="text-[#1429A0]">{formatCurrency(totalAmount)}원</p>
+              <p className="text-[#1429A0]">{exchangeRate?.exchangeRate && formatCurrency(totalAmount)}원</p>
               <p>을</p>
             </div>
 

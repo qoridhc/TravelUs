@@ -71,6 +71,7 @@ import SelectAccountOfMeeting from "./pages/meetingAccount/SelectAccountOfMeetin
 import EnglishNameOfCreateCard from "./pages/card/cardCreate/EnglishNameOfCreateCard";
 import PasswordOfCreateCard from "./pages/card/cardCreate/PasswordOfCreateCard";
 import CheckPasswordOfCreateCard from "./pages/card/cardCreate/CheckPasswordOfCreateCard";
+import PasswordOfBalanceSettlement from "./pages/settlement/balanceSettlement/PasswordOfBalanceSettlement";
 
 function App() {
   return (
@@ -156,7 +157,7 @@ function App() {
           <Route path="/card/:groupId/create/englishname" element={<EnglishNameOfCreateCard />} />
           <Route path="/card/:groupId/create/password/:type" element={<PasswordOfCreateCard />} />
           <Route path="/card/:groupId/create/password/check" element={<CheckPasswordOfCreateCard />} />
-          
+
           {/* 이체 */}
           <Route path="/transfer/selectbank" element={<TransferSelectBank />} />
           <Route path="/transfer/setmoney" element={<TransferSetMoney />} />
@@ -181,6 +182,7 @@ function App() {
           <Route path="/settlement/balance/foreigncurrency/exchange/:id" element={<ForeignCurrencyExchange />}></Route>
           <Route path="/settlement/balance/participants/:id" element={<SettlementInfo />}></Route>
           <Route path="/settlement/editmembers/:type/:id" element={<EditMembers />}></Route>
+          <Route path="/settlement/password" element={<PasswordOfBalanceSettlement />}></Route>
           <Route path="/settlement/balance/completed" element={<BalanceSettlementCompleted />}></Route>
 
           {/* 지출정산 */}

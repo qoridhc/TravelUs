@@ -22,7 +22,11 @@ const EditMembers = () => {
   const handleSelected = () => {
     if (type === "balance") {
       navigate(`/settlement/balance/participants/${id}`, {
-        state: { members: selectedMembers, foreignAmount: location.state.foreignAmount },
+        state: {
+          members: selectedMembers,
+          koreanAmount: location.state.koreanAmount,
+          foreignAmount: location.state.foreignAmount,
+        },
       });
     } else {
       navigate("/settlement/expenditure/info", { state: { members: selectedMembers } });
