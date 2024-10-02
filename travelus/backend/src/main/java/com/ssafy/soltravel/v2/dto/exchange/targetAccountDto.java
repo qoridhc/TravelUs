@@ -11,4 +11,5 @@ public class targetAccountDto {
   Long userId;//모임주 id
   double amount;
   double targetRate;
+  boolean isAll;//전액환전인지
 }
