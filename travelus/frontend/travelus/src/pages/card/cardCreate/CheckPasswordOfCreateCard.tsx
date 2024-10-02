@@ -12,7 +12,7 @@ const CheckPasswordOfCreateCard = () => {
   useEffect(() => {
     if (password.length === 4) {
       if (location.state.originalPassword === password) {
-        navigate(`/`, { state: { password: password } });
+        navigate(`/card/${groupId}/create/address`, { state: { password: password } });
       } else {
         alert("비밀번호가 일치하지 않습니다.");
         navigate(`/card/${groupId}/create/password/card`);

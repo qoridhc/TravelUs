@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import MainPage from "../src/pages/MainPage";
 import Login from "./pages/user/Login";
-import SignUp from "./pages/user/SignUp";
 import SignUpBasicInformation from "./pages/user/SignUpBasicInformation";
 import SignUpAddress from "./pages/user/SignUpAddress";
 import MyPage from "./pages/user/MyPage";
@@ -71,6 +70,8 @@ import EnglishNameOfCreateCard from "./pages/card/cardCreate/EnglishNameOfCreate
 import PasswordOfCreateCard from "./pages/card/cardCreate/PasswordOfCreateCard";
 import CheckPasswordOfCreateCard from "./pages/card/cardCreate/CheckPasswordOfCreateCard";
 import PasswordOfBalanceSettlement from "./pages/settlement/balanceSettlement/PasswordOfBalanceSettlement";
+import AddressOfCreateCard from "./pages/card/cardCreate/AddressOfCreateCard";
+import CompletedOfCreateCard from "./pages/card/cardCreate/CompletedOfCreateCard";
 
 function App() {
   return (
@@ -156,6 +157,8 @@ function App() {
           <Route path="/card/:groupId/create/englishname" element={<EnglishNameOfCreateCard />} />
           <Route path="/card/:groupId/create/password/:type" element={<PasswordOfCreateCard />} />
           <Route path="/card/:groupId/create/password/check" element={<CheckPasswordOfCreateCard />} />
+          <Route path="/card/:groupId/create/address" element={<AddressOfCreateCard />} />
+          <Route path="/card/:groupId/create/completed" element={<CompletedOfCreateCard />} />
 
           {/* 이체 */}
           <Route path="/transfer/selectbank" element={<TransferSelectBank />} />

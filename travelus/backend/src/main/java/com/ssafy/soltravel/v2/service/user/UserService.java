@@ -6,10 +6,13 @@ import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.user.ProfileUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserCreateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserDetailDto;
+import com.ssafy.soltravel.v2.dto.user.UserPwdUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchResponseDto;
+import com.ssafy.soltravel.v2.dto.user.UserUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.api.UserCreateRequestBody;
 import com.ssafy.soltravel.v2.dto.user.api.UserCreateRequestBody.Header;
+import com.ssafy.soltravel.v2.exception.user.UserPwdInvalidException;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.UserMapper;
 import com.ssafy.soltravel.v2.repository.UserRepository;
@@ -232,15 +235,31 @@ public class UserService implements UserDetailsService {
 
 
     public void updateUserProfile(ProfileUpdateRequestDto request) throws IOException {
-
-        Long userId = securityUtil.getCurrentUserId();
-        User user = userRepository.findByUserId(userId).orElseThrow(
-            () -> new UserNotFoundException(userId)
-        );
+        User user = securityUtil.getUserByToken();
 
         // 프로필 이미지 저장
         LogUtil.info("이미지", request.getProfileImg().getName());
         String profileImageUrl = fileService.saveProfileImage(request.getProfileImg());
         user.updateProfile(profileImageUrl);
+    }
+
+    public String updateUser(UserUpdateRequestDto request) {
+        User user = securityUtil.getUserByToken();
+        user.update(request);
+       return user.getEmail();
+    }
+
+    public String updatePwdrequest(UserPwdUpdateRequestDto request) {
+        User user = securityUtil.getUserByToken();
+
+        // 비밀번호 검증
+        String encryptedBefore = PasswordEncoder.encrypt(user.getEmail(), request.getBefore());
+        if(!encryptedBefore.equals(user.getPassword())){
+            throw new UserPwdInvalidException(request.getBefore());
+        }
+        
+        // 비밀번호 변경
+        user.updatePwd(PasswordEncoder.encrypt(user.getEmail(), request.getAfter()));
+        return user.getEmail();
     }
 }
