@@ -129,5 +129,9 @@ public class User {
         this.birth = update.getBirth() != null ? update.getBirth() : this.birth;
     }
 
+    public void updatePwd(String pwd) {
+        this.password = pwd;
+    }
+
 
 }
