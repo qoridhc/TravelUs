@@ -138,12 +138,12 @@ const ForeignCurrencyExchange = () => {
 
       <button
         className={`w-full h-14 text-lg rounded-xl tracking-wide ${
-          exchangeRate?.exchangeMin && foreignAmount < exchangeRate?.exchangeMin
+          exchangeRate?.exchangeMin && foreignAmount < Number(exchangeRate?.exchangeMin)
             ? "text-[#565656] bg-[#E3E4E4]"
             : "text-white bg-[#1429A0]"
         }`}
         onClick={() => handleExchange()}
-        disabled={exchangeRate?.exchangeMin !== undefined && foreignAmount < exchangeRate?.exchangeMin}>
+        disabled={exchangeRate?.exchangeMin !== undefined && foreignAmount < Number(exchangeRate?.exchangeMin)}>
         재환전
       </button>
     </div>
