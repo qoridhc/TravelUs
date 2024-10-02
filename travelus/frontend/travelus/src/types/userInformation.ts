@@ -16,7 +16,7 @@ export interface UserInfo {
   name: string;
   birth: string;
   phone: string;
-  email: string;
+  id: string;
   address: string;
   registerAt: string;
   isExit: boolean;

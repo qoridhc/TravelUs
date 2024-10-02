@@ -24,7 +24,7 @@ const UpdateUserForm = () => {
   const navigate = useNavigate();
 
   const [inputs, setInputs] = useState<InputState>({
-    id: userData.email,
+    id: userData.id,
     password: "",
     confirmPassword: "",
     name: userData.name,

@@ -10,6 +10,7 @@ import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateRegisterRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.targetAccountDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
+import com.ssafy.soltravel.v2.mapper.ExchangeRateMapper;
 import com.ssafy.soltravel.v2.repository.ExchangeRateForecastRepository;
 import com.ssafy.soltravel.v2.repository.GroupRepository;
 import com.ssafy.soltravel.v2.service.transaction.TransactionService;
@@ -48,6 +49,7 @@ public class ExchangeService {
   private final Map<String, String> apiKeys;
   private final WebClientUtil webClientUtil;
   private final ModelMapper modelMapper;
+  private final ExchangeRateMapper exchangeRateMapper;
 
   private final CacheManager cacheManager;
   private final RedisTemplate<String, String> redisTemplate;
@@ -55,7 +57,7 @@ public class ExchangeService {
   private final GroupRepository groupRepository;
   private final ExchangeRateForecastRepository exchangeRateForecastRepository;
 
-  private List<String> Currencies = List.of("USD", "JPY", "EUR", "CNY");
+  private List<String> Currencies = List.of("USD", "JPY", "EUR", "TWD");
 
   /**
    * 현재 환율 전체 조회
@@ -76,15 +78,9 @@ public class ExchangeService {
    */
   public ExchangeRateResponseDto getExchangeRate(String currency) {
 
-    //TODO: 매퍼 생성할 것
-    ExchangeRateResponseDto responseDto = new ExchangeRateResponseDto();
-    responseDto.setCurrencyCode(currency);
-
-    ExchangeRateCacheDto dto = getExchangeRateFromCache(currency);
-    responseDto.setExchangeRate(dto.getExchangeRate());
-    responseDto.setCreated(dto.getCreated());
-    responseDto.setExchangeMin(dto.getExchangeMin());
-    return responseDto;
+    ExchangeRateResponseDto exchangeRateResponseDto = exchangeRateMapper.toExchangeRateResponseDto(
+        getExchangeRateFromCache(currency));
+    return exchangeRateResponseDto;
   }
 
   /**
@@ -190,7 +186,7 @@ public class ExchangeService {
       case "USD" -> CurrencyType.USD;
       case "JPY" -> CurrencyType.JPY;
       case "EUR" -> CurrencyType.EUR;
-      case "CNY" -> CurrencyType.CNY;
+      case "TWD" -> CurrencyType.TWD;
       default -> CurrencyType.KRW;
     };
   }
@@ -220,18 +216,11 @@ public class ExchangeService {
           new ExchangeRateCacheDto(currencyCode, exchangeRate, timeLastUpdateUtc,
               String.valueOf(exchangeMin)));
 
-      //TODO: 주석 풀 것
-      //자동환전
-//      processCurrencyConversions(currencyCode, exchangeRate);
+      processCurrencyConversions(currencyCode, exchangeRate);
     } else {
       LogUtil.info("환율 변동 없음. 통화 코드: {}, 기존 환율: {}, 새로운 환율: {}", currencyCode,
           cachedDto.getExchangeRate(), exchangeRate);
     }
-    /**
-     * 코컬 테스트용
-     */
-//    LogUtil.info("자동환전시작");
-    processCurrencyConversions(currencyCode, exchangeRate);
   }
 
   /**

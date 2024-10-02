@@ -11,8 +11,8 @@ import "swiper/css/pagination";
 import { IoHome } from "react-icons/io5";
 import { PiAirplaneTiltFill } from "react-icons/pi";
 import { FaUserFriends, FaBriefcase, FaHeart } from "react-icons/fa";
-
 import { GoHome } from "react-icons/go";
+import { FiPlus } from "react-icons/fi";
 import { MeetingAccountInfo, MeetingAccountDetailInfo } from "../../../types/account";
 
 const MeetingAccountDetail = () => {
@@ -20,6 +20,7 @@ const MeetingAccountDetail = () => {
   const { id } = useParams();
   const [meeting, setMeeting] = useState<MeetingAccountInfo | null>(null);
   const [account, setAccount] = useState<MeetingAccountDetailInfo | null>(null);
+  const card = false;
 
   // 특정 모임 조회 API 호출
   const fetchSpecificMeetingAccount = async () => {
@@ -45,7 +46,6 @@ const MeetingAccountDetail = () => {
   // 특정 모임 통장 조회 API 호출
   const fetchSpecificAccountInfo = async (groupAccountNo: string) => {
     try {
-      console.log("Fetching account info for groupAccountNo:", groupAccountNo); // 통장 조회 로그 추가
       const response = await accountApi.fetchSpecificAccountInfo(groupAccountNo);
       setAccount(response.data);
     } catch (error) {
@@ -194,9 +194,25 @@ const MeetingAccountDetail = () => {
                 navigate(`/meetingtransaction/${meeting.groupId}`);
               }}
               className="mt-6 p-5 flex flex-col space-y-5">
-              <div className="flex flex-col space-y-1">
-                <p>모임통장</p>
-                <p className="text-2xl font-bold">{formatCurrency(account.moneyBoxDtos[0].balance)}원</p>
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col space-y-1">
+                  <p>모임통장</p>
+                  <p className="text-2xl font-bold">{formatCurrency(account.moneyBoxDtos[0].balance)}원</p>
+                </div>
+                {
+                  // 카드가 없는 경우에만 버튼 표시
+                  !card && (
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/card/${meeting.groupId}/create/englishname`);
+                      }}
+                      className="w-[4.5rem] h-[2.3rem] bg-[#f0f0f0] rounded-3xl flex justify-center items-center">
+                      <FiPlus className="text-lg text-blue-500 mr-[0.1rem]" />
+                      <button className="text-sm">카드</button>
+                    </div>
+                  )
+                }
               </div>
               {account.moneyBoxDtos.length > 1 ? (
                 <div className="flex justify-between">

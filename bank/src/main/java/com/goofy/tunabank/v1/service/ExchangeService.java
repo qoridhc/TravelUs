@@ -11,11 +11,10 @@ import com.goofy.tunabank.v1.repository.CurrencyRepository;
 import com.goofy.tunabank.v1.util.LogUtil;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import jakarta.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -35,11 +34,11 @@ public class ExchangeService {
   private final WebClient ExchangewebClient;
   private final CurrencyRepository currencyRepository;
   private final RabbitTemplate rabbitTemplate;
-  private List<String> desiredCurrencies = List.of("USD", "JPY", "EUR", "CNY");
+  private List<String> desiredCurrencies = List.of("USD", "JPY", "EUR", "TWD");
 
 
-  //  @Scheduled(cron = "30 0 * * * ?")
-//  @PostConstruct
+  //  @PostConstruct
+  @Scheduled(cron = "30 0 * * * ?")
   public List<ExchangeRateCacheDTO> updateExchangeRates() {
     String url = "/latest/KRW";
 
@@ -53,10 +52,10 @@ public class ExchangeService {
     String timeLastUpdateUtcRaw = jsonObject.get("time_last_update_utc").getAsString();
     DateTimeFormatter inputFormatter = DateTimeFormatter.RFC_1123_DATE_TIME;
     ZonedDateTime utcZonedDateTime = ZonedDateTime.parse(timeLastUpdateUtcRaw, inputFormatter);
-    LocalDateTime localDateTime = utcZonedDateTime.withZoneSameInstant(ZoneOffset.UTC)
-        .toLocalDateTime();
+    ZonedDateTime seoulZonedDateTime = utcZonedDateTime.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+    LocalDateTime localDateTime = seoulZonedDateTime.toLocalDateTime();
     DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    String timeLastUpdateUtc = localDateTime.format(outputFormatter);
+    String timeLastUpdateKst = localDateTime.format(outputFormatter);
 
     JsonObject conversionRates = jsonObject.getAsJsonObject("conversion_rates");
 
@@ -74,18 +73,18 @@ public class ExchangeService {
           rate = Math.round((1 / rate) * 100.0) / 100.0;    // 다른 통화는 소수점 둘째 자리까지 반올림
         }
 
-        int exchangeMin=getMinimumAmount(getCurrencyType(currencyCode));
+        int exchangeMin = getMinimumAmount(getCurrencyType(currencyCode));
         // DTO 객체 생성 후 리스트에 추가
-        ExchangeRateCacheDTO dto = new ExchangeRateCacheDTO(currencyCode, rate, timeLastUpdateUtc,
+        ExchangeRateCacheDTO dto = new ExchangeRateCacheDTO(currencyCode, rate, timeLastUpdateKst,
             exchangeMin);
         cacheDTOList.add(dto);
 
         // 환율 업데이트
-        saveOrUpdateCurrency(getCurrencyType(currencyCode), rate, timeLastUpdateUtc);
+        saveOrUpdateCurrency(getCurrencyType(currencyCode), rate, timeLastUpdateKst);
 
         // RabbitMQ로 메시지 전송
         String message = String.format("Currency: %s, Rate: %f, Time: %s, ExchangeMin: %d",
-            currencyCode, rate, timeLastUpdateUtc, exchangeMin);
+            currencyCode, rate, timeLastUpdateKst, exchangeMin);
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_RATE_QUEUE, message);
         LogUtil.info("Sent message to TravelUs: {}", message);
       }
@@ -152,8 +151,8 @@ public class ExchangeService {
         return 100;
       case EUR:
         return 100;
-      case CNY:
-        return 800;
+      case TWD:
+        return 4000;
       default:
         throw new UnsupportedCurrencyException(CurrencyCode);
     }
@@ -165,20 +164,32 @@ public class ExchangeService {
    * @param CurrencyCode: 바꿀 통화
    * @param amount:       원화의 얼마를 외화로 바꿀 것인지
    */
-  public ExchangeAmountRequestDto calculateAmountFromKRWToForeignCurrency(CurrencyType CurrencyCode,
-      double amount) {
+  public ExchangeAmountRequestDto calculateAmountFromKRWToForeignCurrency(CurrencyType CurrencyCode, double amount) {
 
+    ExchangeAmountRequestDto responseDto = new ExchangeAmountRequestDto();
     BigDecimal krw = BigDecimal.valueOf(amount);
     BigDecimal rate = BigDecimal.valueOf(getExchangeRateByCurrencyCode(CurrencyCode));
-    BigDecimal calculatedAmount = krw.divide(rate, 2, RoundingMode.DOWN);
+    responseDto.setExchangeRate(rate.doubleValue());
 
-    //최소 환전 금액 유효성 검사
+    BigDecimal calculatedAmount;
+
+    if (CurrencyCode == CurrencyType.JPY) {
+      // JPY는 100엔 단위로 환율을 계산
+      rate = rate.divide(BigDecimal.valueOf(100), 2, RoundingMode.DOWN);
+      calculatedAmount = krw.divide(rate, 0, RoundingMode.UP); // JPY는 소수점 없이 처리
+    } else {
+      calculatedAmount = krw.divide(rate, 2, RoundingMode.UP); // 다른 통화는 소수점 2자리까지 처리
+    }
+
     double DcalculatedAmount = calculatedAmount.doubleValue();
+    // 최소 환전 금액 유효성 검사
     if (DcalculatedAmount < getMinimumAmount(CurrencyCode)) {
       throw new MinimumAmountNotSatisfiedException(CurrencyCode, DcalculatedAmount);
     }
-    return new ExchangeAmountRequestDto(DcalculatedAmount, rate.doubleValue());
+    responseDto.setAmount(DcalculatedAmount);
+    return responseDto;
   }
+
 
   /**
    * 환전 금액 계산 로직 2. 외화 -> 원화
@@ -189,7 +200,7 @@ public class ExchangeService {
     double exchangeRate = getExchangeRateByCurrencyCode(CurrencyCode);
     double krwAmount = amount * exchangeRate;
 
-    return new ExchangeAmountRequestDto(Math.floor(krwAmount), exchangeRate);
+    return new ExchangeAmountRequestDto(Math.ceil(krwAmount), exchangeRate);
   }
 
 
@@ -202,7 +213,7 @@ public class ExchangeService {
       case "USD" -> CurrencyType.USD;
       case "JPY" -> CurrencyType.JPY;
       case "EUR" -> CurrencyType.EUR;
-      case "CNY" -> CurrencyType.CNY;
+      case "TWD" -> CurrencyType.TWD;
       default -> CurrencyType.KRW;
     };
   }

@@ -43,7 +43,7 @@ export const accountApi = {
     return response.data;
   },
 
-  // 생성한 모임통장 정보 가져오기 (모임원인 경우)
+  // 생성한 모임통장 정보 가져오기 (모임장인 경우)
   fetchJoinedMeetingAccount: async (): Promise<MeetingAccountInfo[]> => {
     const response = await api.get(`/groups/joined`);
     return response.data;
@@ -82,7 +82,7 @@ export const accountApi = {
   },
 
   // 거래 내역 조회
-  fetchTracsactionHistory: (accountNo: string, currencyCode: string , orderByType: string ) => {
+  fetchTracsactionHistory: (accountNo: string, currencyCode: string , orderByType: string, page?: number, size?: number ) => {
     return api.get(`/transaction/history?accountNo=${accountNo}&currencyCode=${currencyCode}&orderByType=${orderByType}`);
   },
 

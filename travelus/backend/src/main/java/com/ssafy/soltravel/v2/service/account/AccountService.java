@@ -3,6 +3,7 @@ package com.ssafy.soltravel.v2.service.account;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.soltravel.v1.dto.user.UserDetailDto;
 import com.ssafy.soltravel.v2.common.BankHeader;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
@@ -45,7 +46,7 @@ public class AccountService {
 
     private final String BASE_URL = "/accounts/";
 
-    // 신규  계좌 생성
+    // 신규 계좌 생성
     public AccountDto createGeneralAccount(
         CreateAccountRequestDto requestDto
     ) {
@@ -76,7 +77,6 @@ public class AccountService {
 
     // 계좌 단건 조회 (AccountNo로) - 상세 정보 X
     public AccountDto getByAccountNo(String accountNo) {
-
         User user = securityUtil.getUserByToken();
 
         String API_URL = BASE_URL + "inquireAccount";
@@ -106,6 +106,37 @@ public class AccountService {
         return accountDto;
     }
 
+    // 계좌 소유주 검색 - accountNo 기반
+    public UserDetailDto getUserByAccountNo(String accountNo) {
+
+        User user = securityUtil.getUserByToken();
+
+        String API_URL = BASE_URL + "inquireAccount";
+
+        BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
+
+        Map<String, Object> body = new HashMap<>();
+
+        body.put("Header", header);
+        body.put("accountNo", accountNo);
+
+        // 특정 계좌 조회
+        ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+
+        // REC 부분을 Object 타입으로 받기
+        Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
+
+        // email 로 유저 이름 조회
+        String email = recObject.get("credentialId");
+
+        User accountUser = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
+
+        return UserDetailDto.builder()
+            .id(accountUser.getUserId())
+            .name(accountUser.getName())
+            .build();
+    }
+
     // 계좌 전체 조회 (userId로)
     public List<AccountDto> getAllByUserId(InquireAccountListRequestDto requestDto) {
 
@@ -126,8 +157,9 @@ public class AccountService {
         // REC 부분을 Object 타입으로 받기
         List<Map<String, Object>> recObjectList = (List<Map<String, Object>>) response.getBody().get("REC");
 
-        List<AccountDto> accountDtoList = objectMapper.convertValue(recObjectList, new TypeReference<List<AccountDto>>() {
-        });
+        List<AccountDto> accountDtoList = objectMapper.convertValue(recObjectList,
+            new TypeReference<List<AccountDto>>() {
+            });
 
         return accountDtoList;
     }
@@ -155,8 +187,9 @@ public class AccountService {
         List<Map<String, Object>> recObjectList = (List<Map<String, Object>>) response.getBody().get("REC");
 
         // REC 데이터를 MoneyBoxDto 리스트로 변환
-        List<MoneyBoxDto> moneyBoxDtos = objectMapper.convertValue(recObjectList, new TypeReference<List<MoneyBoxDto>>() {
-        });
+        List<MoneyBoxDto> moneyBoxDtos = objectMapper.convertValue(recObjectList,
+            new TypeReference<List<MoneyBoxDto>>() {
+            });
 
         // 변환된 리스트를 반환하거나, 다른 로직에 사용
         return moneyBoxDtos;

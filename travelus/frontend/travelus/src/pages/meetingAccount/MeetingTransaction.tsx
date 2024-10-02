@@ -3,22 +3,21 @@ import { useLocation } from "react-router";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router";
 import { accountApi } from "../../api/account";
-import { MeetingAccountInfo, MeetingTransactionNew } from "../../types/account";
+import { MeetingAccountInfo, TransactionNew } from "../../types/account";
 
 const MeetingTransaction = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { account } = location.state as { account: MeetingAccountInfo };
-  const [transactionList, setTransactionList] = useState<MeetingTransactionNew[]>([]); 
+  const [transactionList, setTransactionList] = useState<TransactionNew[]>([]);
 
-  console.log(account);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await accountApi.fetchTracsactionHistory(account.groupAccountNo, "KRW", "ASC");
         if (response.status === 200) {
-          setTransactionList(response.data);
-          console.log("모임통장 거래 내역 조회 성공", response.data);
+          setTransactionList(response.data.content);
+          console.log("모임통장 거래 내역 조회 성공", response.data.content);
         }
       } catch (error) {
         console.error("모임통장 거래 내역 조회 실패", error);
@@ -76,8 +75,12 @@ const MeetingTransaction = () => {
 
           <div className="flex justify-between">
             <button
-            onClick={()=>{navigate("/transfer/selectbank")}} 
-            className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">채우기</button>
+              onClick={() => {
+                navigate("/transfer/selectbank");
+              }}
+              className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
+              채우기
+            </button>
             <button
               onClick={() => {
                 navigate("/");
@@ -105,7 +108,13 @@ const MeetingTransaction = () => {
                   <div className="w-full flex justify-between">
                     <p className="text-lg font-semibold">{transaction.transactionSummary}</p>
 
-                    {transaction.transactionType === ("W" || "TW" || "EW" || "SW") ? <p className="text-lg tracking-wider">- {formatCurrency(transaction.transactionAmount)}원</p> : <p className="text-lg text-[#026CE1] tracking-wider">{formatCurrency(transaction.transactionAmount)}원</p>}
+                    {transaction.transactionType === ("W" || "TW" || "EW" || "SW") ? (
+                      <p className="text-lg tracking-wider">- {formatCurrency(transaction.transactionAmount)}원</p>
+                    ) : (
+                      <p className="text-lg text-[#026CE1] tracking-wider">
+                        {formatCurrency(transaction.transactionAmount)}원
+                      </p>
+                    )}
                   </div>
 
                   <div className="w-full flex justify-between">
@@ -118,9 +127,13 @@ const MeetingTransaction = () => {
                     </p>
 
                     {transaction.transactionType === ("D" || "TD" || "ED" || "SD") ? (
-                      <p className="text-sm text-right text-zinc-500 tracking-wider">{formatCurrency(transaction.transactionBalance)}원</p>
+                      <p className="text-sm text-right text-zinc-500 tracking-wider">
+                        {formatCurrency(transaction.transactionBalance)}원
+                      </p>
                     ) : (
-                      <p className="text-sm text-right text-zinc-500 tracking-wider">{formatCurrency(transaction.transactionBalance)}원</p>
+                      <p className="text-sm text-right text-zinc-500 tracking-wider">
+                        {formatCurrency(transaction.transactionBalance)}원
+                      </p>
                     )}
                   </div>
                 </div>

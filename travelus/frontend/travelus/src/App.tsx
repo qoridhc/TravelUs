@@ -68,6 +68,9 @@ import InvitationOfMeeting from "./pages/meetingAccount/InvitationOfMeeting";
 import InviteInfoOfMeeting from "./pages/meetingAccount/InviteInfoOfMeeting";
 import AlreadyInviteOfMeeting from "./pages/meetingAccount/AlreadyInviteOfMeeting";
 import SelectAccountOfMeeting from "./pages/meetingAccount/SelectAccountOfMeeting";
+import EnglishNameOfCreateCard from "./pages/card/cardCreate/EnglishNameOfCreateCard";
+import PasswordOfCreateCard from "./pages/card/cardCreate/PasswordOfCreateCard";
+import CheckPasswordOfCreateCard from "./pages/card/cardCreate/CheckPasswordOfCreateCard";
 
 function App() {
   return (
@@ -140,7 +143,7 @@ function App() {
           <Route path="/meeting/invite/participated" element={<AlreadyInviteOfMeeting />} />
 
           {/* 통장 내역 */}
-          <Route path="/accounttransaction/:id" element={<AccountTransaction />} />
+          <Route path="/transaction/:accountNo" element={<AccountTransaction />} />
           <Route path="/meetingtransaction/:id" element={<MeetingTransaction />} />
           <Route path="/transaction/detail/travelbox/:id" element={<TravelBoxTransaction />} />
 
@@ -149,6 +152,11 @@ function App() {
           <Route path="/currencyinfoofcreatetravelbox" element={<CurrencyInfoOfCreateTravelBox />} />
           <Route path="/autocurrencyexchangeofcreatetravelbox" element={<AutoCurrencyExchangeOfCreateTravelBox />} />
 
+          {/* 카드 개설 */}
+          <Route path="/card/:groupId/create/englishname" element={<EnglishNameOfCreateCard />} />
+          <Route path="/card/:groupId/create/password/:type" element={<PasswordOfCreateCard />} />
+          <Route path="/card/:groupId/create/password/check" element={<CheckPasswordOfCreateCard />} />
+          
           {/* 이체 */}
           <Route path="/transfer/selectbank" element={<TransferSelectBank />} />
           <Route path="/transfer/setmoney" element={<TransferSetMoney />} />
@@ -157,11 +165,11 @@ function App() {
           <Route path="/transfer/success" element={<TransferSuccess />} />
 
           {/* 환전 */}
-          <Route path="/exchange" element={<Exchange />}></Route>
-          <Route path="/exchangekrw" element={<ExchangeKRWFlow />} />
+          <Route path="/exchange/foreign-currency" element={<Exchange />}></Route>
+          <Route path="/exchange/korean-currency" element={<ExchangeKRWFlow />} />
           <Route path="/exchange/account-password-input" element={<AccountPasswordInput />} />
           <Route path="/exchange/exchange-completion" element={<ExchangeCompletion />} />
-          <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route>
+          {/* <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route> */}
           <Route path="/transaction" element={<Transaction />}></Route>
 
           {/* 환율 */}

@@ -73,7 +73,7 @@ const MeetingAccount = ({ account }: Props) => {
       }}
       className="w-full">
       <div className="flex items-center space-x-4">
-        <p>{getIcon(account.iconName)}</p>
+        <p>{getIcon(account.icon)}</p>
         <div className="w-full flex flex-col justify-center">
           <p className="text-zinc-600 font-bold text-[0.75rem]">{account.groupName}</p>
           <div className="w-full flex justify-between items-center">
