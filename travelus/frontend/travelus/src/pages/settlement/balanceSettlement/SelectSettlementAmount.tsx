@@ -119,13 +119,16 @@ const SelectSettlementAmount = () => {
                       <div className="px-3 py-2 border rounded-md flex justify-end">
                         <input
                           className="text-right outline-none placeholder:text-black"
-                          type="text"
+                          type="number"
                           value={moneyBox.currencyCode === "KRW" ? koreanAmount : foreignAmount}
-                          onChange={(e) =>
-                            moneyBox.currencyCode === "KRW"
-                              ? setKoreanAmount(Number(e.target.value))
-                              : setForeignAmount(Number(e.target.value))
-                          }
+                          onChange={(e) => {
+                            const value = Number(e.target.value);
+                            if (moneyBox.currencyCode === "KRW") {
+                              setKoreanAmount(value > moneyBox.balance ? moneyBox.balance : value);
+                            } else {
+                              setForeignAmount(value > moneyBox.balance ? moneyBox.balance : value);
+                            }
+                          }}
                           placeholder="0"
                           disabled={!isChecked[index]}
                         />
@@ -185,7 +188,7 @@ const SelectSettlementAmount = () => {
                 <hr />
 
                 <p className="text-lg text-right font-semibold">
-                  총액{" "}
+                  총액
                   {exchangeRate?.exchangeRate &&
                     formatCurrency(koreanAmount + foreignAmount * exchangeRate?.exchangeRate)}
                   원
