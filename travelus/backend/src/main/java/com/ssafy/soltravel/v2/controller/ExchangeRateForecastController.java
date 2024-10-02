@@ -22,6 +22,15 @@ public class ExchangeRateForecastController {
   @PostMapping("/save")
   public ResponseEntity<?> saveExchangeRatePred(@RequestBody ExchangeRateSaveRequestDto request){
     LogUtil.info("환율 예측값 저장 요청", request);
+//    int response = exchangeRateForecastService.saveExchangeRate(request);
+//    return ResponseEntity.ok(new ResponseDto(String.format("예측값(%d) 저장 완료", response)));
+
+    return ResponseEntity.ok(new ResponseDto(String.format("예측값(%d) 저장 완료", 1)));
+  }
+
+  @PostMapping("/history/save")
+  public ResponseEntity<?> saveExchangeRateHistory(@RequestBody ExchangeRateSaveRequestDto request){
+    LogUtil.info("이전 환율값 저장 요청", request);
     int response = exchangeRateForecastService.saveExchangeRate(request);
     return ResponseEntity.ok(new ResponseDto(String.format("예측값(%d) 저장 완료", response)));
   }
