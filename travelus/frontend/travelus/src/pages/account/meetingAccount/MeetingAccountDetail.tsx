@@ -20,7 +20,6 @@ const MeetingAccountDetail = () => {
   const { id } = useParams();
   const [meeting, setMeeting] = useState<MeetingAccountInfo | null>(null);
   const [account, setAccount] = useState<MeetingAccountDetailInfo | null>(null);
-  const card = false;
 
   // 특정 모임 조회 API 호출
   const fetchSpecificMeetingAccount = async () => {
@@ -127,30 +126,6 @@ const MeetingAccountDetail = () => {
     return <span className={containerClasses}>{IconComponent}</span>;
   };
 
-  useEffect(() => {
-    // const getParticipants = async () => {
-    //   try {
-    //     if (selectedAccount === null) return;
-
-    //     setLoading(true); // 데이터 로딩 시작
-    //     const response = await accountApi.fetchParticipantInfo(selectedAccount.id);
-    //     const participantNames = response.participants.map((participant: any) => participant.userInfo.username);
-    //     setMemberList(participantNames);
-    //   } catch (error) {
-    //     console.error("Error fetching data:", error);
-    //     alert("참여자 정보 조회에 실패했습니다.");
-    //   } finally {
-    //     setLoading(false); // 데이터 로딩 완료
-    //   }
-    // };
-
-    // getParticipants();
-
-    // 참여자 정보 조회 더미데이터
-    const participants = ["John Doe", "Jane Doe", "Alice", "Bob", "Charlie"];
-    setLoading(false); // 데이터 로딩 완료
-  }, []);
-
   if (account === null) {
     return <p>계좌 정보를 불러오는 중입니다...</p>;
   }
@@ -191,7 +166,7 @@ const MeetingAccountDetail = () => {
           <div>
             <div
               onClick={() => {
-                navigate(`/meetingtransaction/${meeting.groupId}`);
+                navigate(`/meetingtransaction/${meeting.groupAccountNo}`, { state: { groupId: meeting.groupId } });
               }}
               className="mt-6 p-5 flex flex-col space-y-5">
               <div className="flex justify-between items-center">
@@ -201,7 +176,7 @@ const MeetingAccountDetail = () => {
                 </div>
                 {
                   // 카드가 없는 경우에만 버튼 표시
-                  !card && (
+                  !meeting.cardNumber && (
                     <div
                       onClick={(e) => {
                         e.stopPropagation();

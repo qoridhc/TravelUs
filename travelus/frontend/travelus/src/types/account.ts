@@ -41,6 +41,7 @@ export interface AccountInfoNew {
 
 // 모임 정보
 export interface MeetingAccountInfo {
+  cardNumber: string;
   groupId: number;
   groupAccountNo: string;
   groupName: string;

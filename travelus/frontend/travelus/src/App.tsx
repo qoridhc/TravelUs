@@ -36,7 +36,6 @@ import GeneralMeetingAccountCreate from "./pages/ver1/GeneralMeetingAccountCreat
 import MeetingAccountCreatePrepare from "./pages/ver1/MeetingAccountCreatePrepare";
 import MeetingAccountCreateComplete from "./pages/ver1/MeetingAccountCreateComplete";
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
-import Transaction from "./pages/transaction/Transaction";
 import PrivateRoute from "./pages/user/PrivateRoute";
 import { Sign } from "crypto";
 import EditMembers from "./pages/settlement/EditMembers";
@@ -145,7 +144,7 @@ function App() {
 
           {/* 통장 내역 */}
           <Route path="/transaction/:accountNo" element={<AccountTransaction />} />
-          <Route path="/meetingtransaction/:id" element={<MeetingTransaction />} />
+          <Route path="/meetingtransaction/:accountNo" element={<MeetingTransaction />} />
           <Route path="/transaction/detail/travelbox/:id" element={<TravelBoxTransaction />} />
 
           {/* 트래블박스 생성 */}
@@ -173,7 +172,6 @@ function App() {
           <Route path="/exchange/account-password-input" element={<AccountPasswordInput />} />
           <Route path="/exchange/exchange-completion" element={<ExchangeCompletion />} />
           {/* <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route> */}
-          <Route path="/transaction" element={<Transaction />}></Route>
 
           {/* 환율 */}
           <Route path="/exchangerate" element={<ExchangeRate />} />
