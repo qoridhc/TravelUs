@@ -52,6 +52,8 @@ const ExchangeRateList: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchExchangeRates = async () => {
       try {
@@ -84,7 +86,6 @@ const ExchangeRateList: React.FC = () => {
           <GoHome className="w-6 h-6 text-gray-600" />
         </Link>
         <div className="bg-white rounded-lg shadow mb-4">
-          <h2 className="p-4 text-lg font-bold">실시간 환율</h2>
           {exchangeRates.map((rate, index) => (
             <ExchangeRateItem key={index} {...rate} />
           ))}

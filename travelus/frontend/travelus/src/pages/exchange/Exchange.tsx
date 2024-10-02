@@ -326,15 +326,11 @@ const MeetingAccountExchange: React.FC = () => {
 
         {/* 머니박스 연결된 모임통장 없을시 보이게 */}
         {noAccount ? (
-          <Link
-            to="/meeting/create/prepare"
-            className="block text-center mt-4 text-[#1429A0] underline">
+          <Link to="/meeting/create/prepare" className="block text-center mt-4 text-[#1429A0] underline">
             머니박스 개설하러 가기
           </Link>
         ) : (
-          <p className="text-sm text-gray-500 text-center mt-4">
-            환전 금액은 10원 단위로 자동 조정됩니다.
-          </p>
+          <p className="text-sm text-gray-500 text-center mt-4">외화 환전 금액은 10원 단위로 자동 조정됩니다.</p>
         )}
       </div>
     </div>

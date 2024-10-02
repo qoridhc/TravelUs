@@ -5,9 +5,9 @@ import axios from "axios";
 
 // API 응답 타입 정의
 interface RecentRates {
-  "1_week": { [date: string]: number };
-  "1_month": { [date: string]: number };
   "3_months": { [date: string]: number };
+  "1_month"?: { [date: string]: number };
+  "1_week"?: { [date: string]: number };
 }
 
 interface ConfidenceInterval {
@@ -48,7 +48,7 @@ export const exchangeApi = {
   // 특정 통화에 대한 최근 환율 데이터만 가져오는 메서드
   getRecentRates: async (currency: string): Promise<RecentRates> => {
     try {
-      const response = await axios.get<{ recent_rates: RecentRates }>(`${API_BASE_URL}/recent-rates/${currency}`);
+      const response = await api.get<{ recent_rates: RecentRates }>(`/recent-rates/${currency}`);
       return response.data.recent_rates;
     } catch (error) {
       console.error(`Failed to fetch recent rates for ${currency}:`, error);
