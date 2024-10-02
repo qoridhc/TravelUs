@@ -18,8 +18,6 @@ api.interceptors.request.use(
     // if (accessToken) {
     //   config.headers.Authorization = `${accessToken}`
 
-    // 로그인 기능이 아직 없으므로 임시로 accessToken 지정 후 사용
-    // const token = process.env.REACT_APP_ACCESS_TOKEN;
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }

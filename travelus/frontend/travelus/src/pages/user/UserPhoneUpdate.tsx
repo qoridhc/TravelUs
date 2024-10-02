@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { userApi } from "../../api/user";
 import PhoneInput from "../../components/user/inputField/PhoneInput";
 import VerificationCodeInput from "../../components/user/inputField/VerificationCodeInput";
 import { IoIosArrowBack } from "react-icons/io";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../redux/store";
+import { editUserInformation } from "../../redux/userInformationSlice";
 
 interface InputState {
   phone: string;
@@ -11,6 +15,7 @@ interface InputState {
 
 const UserPhoneUpdate = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [step, setStep] = useState(0);
   const stepList = ["휴대폰 인증을 진행해주세요", "전송된 인증번호를 입력해주세요"];
   const [isFormValid, setIsFormValid] = useState(false);
@@ -18,6 +23,7 @@ const UserPhoneUpdate = () => {
     phone: "",
     verificationCode: "",
   });
+  const userInfo = useSelector((state: RootState) => state.userInformation.UserInfo);
 
   useEffect(() => {
     const allFieldsFilled = Object.values(inputs).every((value) => value !== "");
@@ -32,24 +38,50 @@ const UserPhoneUpdate = () => {
     setInputs((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: Implement phone update logic
+  const handleConfirm = async () => {
+    const isValid = await fetchVerifySmsCode();
+
+    if (!isValid) {
+      return;
+    }
+
+    dispatch(
+      editUserInformation({
+        ...userInfo,
+        phone: inputs.phone,
+      })
+    );
+
+    navigate("/userupdate");
   };
 
   // 인증번호 전송
   const handleSendVerificationCode = async () => {
-    // try {
-    //   const formattedValue = inputs.phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
-    //   const response = await userApi.fetchSendSmsValidation(formattedValue);
-    //   if (response.status === 200) {
-    //     alert("인증 코드가  발송되었습니다. 확인해주세요.");
-    //   }
-    // } catch (error) {
-    //   console.error("Error sending verification code:", error);
-    //   alert("인증 코드 발송 중 오류가 발생했습니다. 다시 시도해주세요.");
-    // }
+    try {
+      const formattedValue = inputs.phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+      const response = await userApi.fetchSendSmsValidation(formattedValue);
+      if (response.status === 200) {
+        alert("인증 코드가  발송되었습니다. 확인해주세요.");
+      }
+    } catch (error) {
+      console.error("Error sending verification code:", error);
+      alert("인증 코드 발송 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
     setStep(1);
+  };
+
+  const fetchVerifySmsCode = async () => {
+    try {
+      const formattedValue = inputs.phone.replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3");
+      const response = await userApi.fetchVerifySmsCode(formattedValue, inputs.verificationCode!);
+
+      if (response.status === 200) {
+        return true;
+      }
+    } catch (error) {
+      alert("인증번호를 다시 확인해주세요");
+      return false;
+    }
   };
 
   return (
@@ -91,9 +123,11 @@ const UserPhoneUpdate = () => {
         </div>
       </div>
       <button
-        className={`w-full py-3 text-white rounded-lg ${isFormValid ? "bg-[#1429A0]" : "bg-gray-300"}`}
+        className={`w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold ${
+          isFormValid ? "bg-[#1429A0]" : "bg-gray-300"
+        }`}
         onClick={() => {
-          navigate("/userupdate");
+          handleConfirm();
         }}
         disabled={!isFormValid}>
         확인
