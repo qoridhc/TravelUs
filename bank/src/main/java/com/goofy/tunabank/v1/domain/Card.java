@@ -42,6 +42,9 @@ public class Card {
     private String cvc;
 
     @Column
+    private String password;
+
+    @Column
     private LocalDateTime createAt;
 
     @Column
@@ -54,7 +57,7 @@ public class Card {
     /*
      * 생성 메서드
      */
-    public static Card createCard(Account account, CardProduct cardProduct, String cardNo, String cvc) {
+    public static Card createCard(Account account, CardProduct cardProduct, String cardNo, String cvc, String pwd) {
         Card card = new Card();
         card.account = account;
         card.cardProduct = cardProduct;
@@ -62,6 +65,7 @@ public class Card {
         card.cvc = cvc;
         card.createAt = LocalDateTime.now();
         card.expireAt = LocalDateTime.now().plusYears(5);
+        card.password = pwd;
         return card;
     }
 
