@@ -5,6 +5,8 @@ import { accountApi } from "../../../api/account";
 import { GroupInfo } from "../../../types/meetingAccount";
 import { exchangeRateApi } from "../../../api/exchange";
 import { ExchangeRateInfo } from "../../../types/exchange";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../../lottie/loadingAnimation.json";
 
 interface Member {
   participantId: number;
@@ -136,10 +138,10 @@ const SettlementInfo = () => {
     }
   }, [totalAmount]);
 
-  if (isLoading || totalAmount === 0) {
+  if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-full">
-        <p className="text-xl">로딩중...</p>
+      <div className="h-full flex flex-col justify-center items-center">
+        <Lottie animationData={loadingAnimation} />
       </div>
     );
   }
