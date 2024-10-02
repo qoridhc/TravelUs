@@ -28,7 +28,8 @@ const initialState: UserInformationState = {
     registerAt: "",
     isExit: false,
     userId: 0,
-    userKey: null,
+    gender: "",
+    profileImg: "",
   },
 };
     

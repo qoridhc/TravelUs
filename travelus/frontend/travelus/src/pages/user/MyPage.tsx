@@ -27,6 +27,7 @@ const MyPage = () => {
       userApi
         .fetchUser()
         .then((response) => {
+          setProfileImage(response.data.profileImg); // 프로필 이미지 설정
           setUserData(response.data); // API 응답 데이터를 상태로 설정
           dispatch(editUserInformation(response.data)); // Redux 스토어에 유저 정보 저장
         })
@@ -85,9 +86,9 @@ const MyPage = () => {
         <div className="flex flex-col justify-center items-center space-y-3">
           <div className="relative w-20 h-20">
             <img
-              className="w-full h-full rounded-full border object-cover"
+              className={profileImage ? `w-full h-full rounded-full border object-cover` : `w-full h-full rounded-full`}
               onClick={handleImageClick}
-              src={profileImage ? profileImage : "/assets/user/userIconSample.png"}
+              src={profileImage ? profileImage : "/assets/loadingIcon.png"}
               alt="유저아이콘"
             />
             <div className="w-[1.8rem] h-[1.8rem] rounded-full bg-white border border-zinc-500 absolute -right-[0.3rem] bottom-0 flex justify-center items-center">
