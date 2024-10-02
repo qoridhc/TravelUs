@@ -3,7 +3,6 @@ package com.ssafy.soltravel.v2.controller;
 import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.forecast.ExchangeRateSaveRequestDto;
 import com.ssafy.soltravel.v2.service.exchange.ExchangeRateForecastService;
-import com.ssafy.soltravel.v2.service.exchange.ExchangeService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,19 +18,17 @@ public class ExchangeRateForecastController {
 
   private final ExchangeRateForecastService exchangeRateForecastService;
 
-  @PostMapping("/save")
+  @PostMapping("/update")
   public ResponseEntity<?> saveExchangeRatePred(@RequestBody ExchangeRateSaveRequestDto request){
-    LogUtil.info("환율 예측값 저장 요청", request);
-//    int response = exchangeRateForecastService.saveExchangeRate(request);
-//    return ResponseEntity.ok(new ResponseDto(String.format("예측값(%d) 저장 완료", response)));
-
-    return ResponseEntity.ok(new ResponseDto(String.format("예측값(%d) 저장 완료", 1)));
+    LogUtil.info("환율 예측값 저장(수정) 요청", request);
+    int response = exchangeRateForecastService.parsePredExchangeRates(request);
+    return ResponseEntity.ok(new ResponseDto(String.format("예측값(%d) 저장 완료", response)));
   }
 
-  @PostMapping("/history/save")
+  @PostMapping("/save/all")
   public ResponseEntity<?> saveExchangeRateHistory(@RequestBody ExchangeRateSaveRequestDto request){
-    LogUtil.info("이전 환율값 저장 요청", request);
-    int response = exchangeRateForecastService.saveExchangeRate(request);
+    LogUtil.info("전체 환율값 저장 요청", request);
+    int response = exchangeRateForecastService.parseExchangeRates(request);
     return ResponseEntity.ok(new ResponseDto(String.format("예측값(%d) 저장 완료", response)));
   }
 }

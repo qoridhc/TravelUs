@@ -46,4 +46,8 @@ public class ExchangeRateForecast {
     forecast.rate = rate;
     return forecast;
   }
+
+  public void updateRate(Double newRate) {
+    this.rate = newRate;
+  }
 }
