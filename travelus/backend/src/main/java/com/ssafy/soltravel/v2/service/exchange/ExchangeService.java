@@ -21,12 +21,16 @@ import com.ssafy.soltravel.v2.util.WebClientUtil;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -90,7 +94,7 @@ public class ExchangeService {
    */
   public void setPreferenceRate(ExchangeRateRegisterRequestDto dto) {
 
-    String accountNo = dto.getAccountNo();//계좌번호
+    String accountNo = dto.getAccountNo();
     CurrencyType currencyCode = dto.getCurrencyCode();
     double targetRate = BigDecimal.valueOf(dto.getTargetRate()).setScale(2, RoundingMode.HALF_UP)
         .doubleValue();
@@ -102,11 +106,21 @@ public class ExchangeService {
     String key = currencyCode + ":targets";
     String value = userId + ":" + accountNo + ":" + amount + ":" + targetRate;
 
-    // ZSET에 (사용자 ID:계좌 번호:금액:환율)을 저장하고, score로 목표 환율을 설정
     redisTemplate.opsForZSet().add(key, value, targetRate);
 
-    // 필요한 경우 TTL 설정 (아래는 1일임)
-    redisTemplate.expire(key, Duration.ofDays(1));
+    if (dto.getDueDate() != null) {
+      LocalDate dueDate = dto.getDueDate();
+      LocalDateTime endOfDay = dueDate.atTime(LocalTime.of(23, 59, 59));
+      LocalDateTime now = LocalDateTime.now();
+
+      if (endOfDay.isAfter(now)) {
+        Duration duration = Duration.between(now, endOfDay);
+        long ttlInSeconds = duration.getSeconds();
+        redisTemplate.expire(key, ttlInSeconds, TimeUnit.SECONDS);
+      } else {
+        redisTemplate.expire(key, 0, TimeUnit.SECONDS);
+      }
+    }
   }
 
   /**
