@@ -34,6 +34,7 @@ public class SettlementService {
   private final AccountService accountService;
   private final GroupService groupService;
 
+  @Transactional
   public String executeSettlement(SettlementRequestDto settlementRequestDto) {
 
     SettlementType type = settlementRequestDto.getSettlementType();
@@ -66,6 +67,7 @@ public class SettlementService {
   /**
    * 1. 원화만 정산
    */
+  @Transactional
   public void settleOnlyKRW(SettlementRequestDto settlementRequestDto, long masterUserId) {
 
     /**
@@ -81,6 +83,7 @@ public class SettlementService {
   /**
    * 2. 외화만 정산
    */
+  @Transactional
   public void settleOnlyForeign(SettlementRequestDto settlementRequestDto,
       CurrencyType currencyCode, long masterUserId) {
 
@@ -97,6 +100,7 @@ public class SettlementService {
   /**
    * 모두 정산
    */
+  @Transactional
   public String settleBoth(SettlementRequestDto settlementRequestDto, CurrencyType currencyCode,
       long masterUserId) {
 
@@ -131,7 +135,8 @@ public class SettlementService {
   /**
    * 개인 정산금 지급
    */
-  private void paySettlementToMembers(String groupName, List<ParticipantDto> participants,
+  @Transactional
+  public void paySettlementToMembers(String groupName, List<ParticipantDto> participants,
       List<SettlementParticipantRequestDto> requestDtos) {
 
     for (SettlementParticipantRequestDto requestDto : requestDtos) {

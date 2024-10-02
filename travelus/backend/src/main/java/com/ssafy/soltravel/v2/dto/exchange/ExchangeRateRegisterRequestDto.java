@@ -2,6 +2,7 @@ package com.ssafy.soltravel.v2.dto.exchange;
 
 import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import lombok.Data;
 
 @Data
@@ -14,8 +15,11 @@ public class ExchangeRateRegisterRequestDto {
   private CurrencyType currencyCode;
 
   @Schema(description = "환전할 금액", example = "130000")
-  private double transactionBalance;
+  private Double transactionBalance;
 
   @Schema(description = "목표 환율", example = "1333.40")
   private float targetRate;
+
+  @Schema(description = "만료일",example="2024-10-10")
+  private LocalDate dueDate;
 }

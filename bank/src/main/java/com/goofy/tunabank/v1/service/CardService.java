@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,19 +50,19 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CardService {
 
+    private static final String DEFAULT_ISSUER_NAME = "Tuna Bank";
+    private static final SecureRandom random = new SecureRandom();
+    private final PasswordEncoder passwordEncoder;
+
     private final UserService userService;
-    private final UserRepository userRepository;
+    private final TransactionService transactionService;
 
     private final CardRepository cardRepository;
     private final AccountRepository accountRepository;
     private final CardProductRepository cardProductRepository;
-
-    private static final String DEFAULT_ISSUER_NAME = "Tuna Bank";
-    private static final SecureRandom random = new SecureRandom();
     private final CardHistoryRepository cardHistoryRepository;
     private final MoneyBoxRepository moneyBoxRepository;
     private final MerchantRepository merchantRepository;
-    private final TransactionService transactionService;
 
     /*
      * 카드 신규 발급
@@ -80,8 +81,11 @@ public class CardService {
             () -> new CardProductNotFoundException(uniqueNo)
         );
 
+        //비밀번호 암호화
+        String encrypted = encryptPassword(request.getPassword());
+
         // 카드 생성(카드 번호, cvc 번호 생성) 및 저장
-        Card card = Card.createCard(account, cardProduct, generateCardNumber(), generateCvc());
+        Card card = Card.createCard(account, cardProduct, generateCardNumber(), generateCvc(), encrypted);
         cardRepository.save(card);
 
         return CardMapper.INSTANCE.cardToCardIssueResponseDto(
@@ -96,6 +100,7 @@ public class CardService {
     /*
      * 카드 목록 조회
      */
+    @Transactional(readOnly = true)
     public List<CardResponseDto> findAllCards(CardListRequestDto request) {
 
         // 유저 조회
@@ -113,6 +118,7 @@ public class CardService {
     /*
      * 카드 단건 조회
      */
+    @Transactional(readOnly = true)
     public CardResponseDto findCard(CardRequestDto request) {
 
         // 유저 조회
@@ -274,6 +280,17 @@ public class CardService {
 
         cardHistoryRepository.save(cardHistory);
         return cardHistory;
+    }
+
+
+    // 비밀번호 암호화
+    public String encryptPassword(String plainPassword) {
+        return passwordEncoder.encode(plainPassword);
+    }
+
+    // 비밀번호 검증
+    public boolean verifyPassword(String plainPassword, String encryptedPassword) {
+        return passwordEncoder.matches(plainPassword, encryptedPassword);
     }
 
 }

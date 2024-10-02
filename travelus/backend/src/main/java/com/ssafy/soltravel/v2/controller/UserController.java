@@ -7,6 +7,7 @@ import com.ssafy.soltravel.v2.dto.user.UserCreateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserDupCheckRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchResponseDto;
+import com.ssafy.soltravel.v2.dto.user.UserUpdateRequestDto;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.service.user.UserService;
 import com.ssafy.soltravel.v2.util.LogUtil;
@@ -130,6 +131,22 @@ public class UserController {
         userService.updateUserProfile(request);
         return ResponseEntity.ok().body(new ResponseDto());
     }
+
+    @Operation(summary = "유저 정보 수정", description = "유저 정보를 수정합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "정보 수정 완료", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @PostMapping(value = "/update", consumes = "multipart/form-data")
+    public ResponseEntity<ResponseDto> updateUser(@ModelAttribute UserUpdateRequestDto request)
+        throws IOException {
+
+        LogUtil.info("requested", request.toString());
+        String message = String.format("갱신이 완료되었습니다: %s", userService.updateUser(request));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto(message));
+    }
+
 
 //
 //    @Operation(summary = "모임원 이메일 유효성 검사", description = "이메일을 통해 회원인지 확인합니다.")

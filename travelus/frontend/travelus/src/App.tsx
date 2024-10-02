@@ -32,7 +32,6 @@ import ExchangeKRWFlow from "./pages/exchange/ExchangeKRW";
 import ExchangeCompletion from "./pages/exchange/ExchangeCompletion";
 import AccountPasswordInput from "./pages/exchange/ExchangeConfirmation";
 import SelectAccount from "./pages/exchange/SelectAccount";
-import Settlement from "./pages/ver1/Settlement";
 import AccountCreateComplete from "./pages/ver1/AccountCreateComplete";
 import GeneralMeetingAccountCreate from "./pages/ver1/GeneralMeetingAccountCreate";
 import MeetingAccountCreatePrepare from "./pages/ver1/MeetingAccountCreatePrepare";
@@ -178,11 +177,11 @@ function App() {
           <Route path="/exchangerate/:currencyCode" element={<ExchangeDetail />} />
 
           {/* 잔액정산 */}
-          <Route path="/selectsettlementamount" element={<SelectSettlementAmount />}></Route>
-          <Route path="/settlementforeigncurrencyexchange" element={<ForeignCurrencyExchange />}></Route>
-          <Route path="/settlement" element={<SettlementInfo />}></Route>
-          <Route path="/editmembers/:type" element={<EditMembers />}></Route>
-          <Route path="/balancesettlementcompleted" element={<BalanceSettlementCompleted />}></Route>
+          <Route path="/settlement/balance/amount/:id" element={<SelectSettlementAmount />}></Route>
+          <Route path="/settlement/balance/foreigncurrency/exchange/:id" element={<ForeignCurrencyExchange />}></Route>
+          <Route path="/settlement/balance/participants/:id" element={<SettlementInfo />}></Route>
+          <Route path="/settlement/editmembers/:type/:id" element={<EditMembers />}></Route>
+          <Route path="/settlement/balance/completed" element={<BalanceSettlementCompleted />}></Route>
 
           {/* 지출정산 */}
           <Route
