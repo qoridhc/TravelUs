@@ -24,11 +24,9 @@ const SelectSettlementAmount = () => {
 
   const handleSettlement = () => {
     // 남은 원화, 남은 외화 모두 정산
-    if (accountInfo && isChecked[0] && isChecked[1]) {
-      navigate(`/settlement/balance/foreigncurrency/exchange/${id}`, {
-        state: { foriegnInfo: accountInfo.moneyBoxDtos[1], settlementType: "BOTH" },
-      });
-    }
+    navigate(`/settlement/balance/participants/${id}`, {
+      state: { koreanAmount: koreanAmount, foreignAmount: foreignAmount },
+    });
   };
 
   const handleCheck = (index: number, checked: boolean) => {
@@ -40,6 +38,16 @@ const SelectSettlementAmount = () => {
   // 금액을 한국 통화 형식으로 포맷(콤마가 포함된 형태)
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("ko-KR").format(amount);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+
+    return `${month}월 ${day}일 ${hours}:${minutes}시 기준`;
   };
 
   // 특정 모임 조회 API 호출
@@ -164,18 +172,15 @@ const SelectSettlementAmount = () => {
                             <div className="flex justify-end">
                               <p className="text-right">
                                 {exchangeRate?.exchangeRate &&
-                                  formatCurrency(foreignAmount * exchangeRate?.exchangeRate)}
+                                  formatCurrency(Math.ceil(foreignAmount * exchangeRate?.exchangeRate))}
                               </p>
                               <p className="">&nbsp; 원</p>
                             </div>
                           </div>
 
-                          <div className="flex justify-between items-center">
-                            <p className="text-xs text-right">
-                              {/* {formatDate(exchangeRate?.created ? exchangeRate?.created : "")} */}
-                              10월 1일 16:00 기준
-                            </p>
-                            <p className="text-sm text-right">
+                          <div className="text-sm flex justify-between items-center">
+                            <p>{formatDate(exchangeRate?.created ? exchangeRate?.created : "")}</p>
+                            <p>
                               1 {moneyBox.currencyCode} = {exchangeRate?.exchangeRate} 원
                             </p>
                           </div>
@@ -187,11 +192,11 @@ const SelectSettlementAmount = () => {
 
                 <hr />
 
-                <p className="text-lg text-right font-semibold">
-                  총액
+                <p className="px-3 text-lg text-right font-semibold">
+                  총액&nbsp;
                   {exchangeRate?.exchangeRate &&
-                    formatCurrency(koreanAmount + foreignAmount * exchangeRate?.exchangeRate)}
-                  원
+                    formatCurrency(koreanAmount + Math.ceil(foreignAmount * exchangeRate?.exchangeRate))}
+                  &nbsp;원
                 </p>
               </div>
             </div>
