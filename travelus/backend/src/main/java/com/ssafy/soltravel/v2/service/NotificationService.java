@@ -8,8 +8,10 @@ import com.ssafy.soltravel.v1.dto.user.UserDetailDto;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.domain.redis.RedisFcm;
 import com.ssafy.soltravel.v2.dto.ResponseDto;
+import com.ssafy.soltravel.v2.dto.exchange.targetAccountDto;
 import com.ssafy.soltravel.v2.dto.notification.PushNotificationRequestDto;
 import com.ssafy.soltravel.v2.dto.notification.RegisterNotificationRequestDto;
+import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
 import com.ssafy.soltravel.v2.exception.notification.FcmTokenNotFound;
@@ -38,6 +40,7 @@ public class NotificationService {
     private final FcmTokenRepository fcmTokenRepository;
     private final RedisTemplate<String, SseEmitter> redisTemplate; // RedisTemplate을 사용하여 Redis에 접근
     private final SecurityUtil securityUtil;
+
     private final UserService userService;
     private final AccountService accountService;
 
@@ -52,7 +55,6 @@ public class NotificationService {
 
         return new ResponseDto();
     }
-
 
     // 공통 푸시 알림 메서드
     private Message createMessage(String token, String title, String body) {
@@ -173,37 +175,57 @@ public class NotificationService {
         return ResponseEntity.ok().body(new ResponseDto());
     }
 
-    //    // 사용자에게 push 알림
-//    public ResponseEntity<?> pushNotification(PushNotificationRequestDto requestDto) {
-//        Map<String, Object> resultMap = new HashMap<>();
-//        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-//
-//        try {
-//
-//            // FCM 토큰 조회
-//            RedisFcm redisFcm = fcmTokenRepository.findById(requestDto.getTargetUserId())
-//                .orElseThrow(() -> new FcmTokenNotFound(requestDto.getTargetUserId()));
-//
-//            // FCM 메시지 생성
-//            Message message = Message.builder()
-//                .setToken(redisFcm.getFcmToken())
-//                .setWebpushConfig(WebpushConfig.builder()
-//                    .putHeader("ttl", "300")
-//                    .setNotification(
-//                        new WebpushNotification(requestDto.getTitle(), requestDto.getMessage(), requestDto.getIcon()))
-//                    .build())
-//                .build();
-//
-//            String response = FirebaseMessaging.getInstance().sendAsync(message).get();
-//            status = HttpStatus.OK;
-//            resultMap.put("response", response);
-//        } catch (Exception e) {
-//            resultMap.put("message", "요청 실패");
-//            resultMap.put("exception", e.getMessage());
-//        }
-//
-//        return new ResponseEntity<>(resultMap, status);
-//    }
+    /*
+     * 자동 환전 알림 전송
+     */
+    public ResponseEntity<?> sendAutoExchangeNotification(
+        targetAccountDto targetAccountDto,
+        MoneyBoxTransferRequestDto requestDto
+    ) {
+
+        String title = "자동 환전 완료";
+        String message = "설정 환율 " + targetAccountDto.getTargetRate() + "에 도달하여 " + requestDto.getTransactionBalance()
+            + requestDto.getSourceCurrencyCode() + " 이 성공적으로 환전되었습니다.";
+
+        PushNotificationRequestDto notificationRequestDto = new PushNotificationRequestDto(
+            targetAccountDto.getUserId(),
+            title,
+            message,
+            DEFAULT_ICON_URL
+        );
+
+        // 알림 전송
+        pushNotification(notificationRequestDto);
+
+        return ResponseEntity.ok().body(new ResponseDto());
+    }
+
+
+    /*
+     *  환전 알림 전송
+     */
+
+    public ResponseEntity<?> sendExchangeNotification(
+        User user,
+        MoneyBoxTransferRequestDto requestDto
+    ) {
+
+        String title = "환전 완료";
+        String message = requestDto.getTransactionBalance() + requestDto.getSourceCurrencyCode() + " 이 성공적으로 환전되었습니다.";
+
+        PushNotificationRequestDto notificationRequestDto = new PushNotificationRequestDto(
+            user.getUserId(),
+            title,
+            message,
+            DEFAULT_ICON_URL
+        );
+
+        // 알림 전송
+        pushNotification(notificationRequestDto);
+
+        return ResponseEntity.ok().body(new ResponseDto());
+    }
+
 
 }
 
