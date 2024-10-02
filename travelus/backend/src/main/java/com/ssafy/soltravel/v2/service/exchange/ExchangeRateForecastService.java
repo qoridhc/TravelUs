@@ -2,10 +2,15 @@ package com.ssafy.soltravel.v2.service.exchange;
 
 import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
 import com.ssafy.soltravel.v2.domain.ExchangeRateForecast;
+import com.ssafy.soltravel.v2.dto.exchange.forecast.ExchangeRateForecastResponseDto;
+import com.ssafy.soltravel.v2.dto.exchange.forecast.ExchangeRateForecastResponseDto.ExchangeRateData;
 import com.ssafy.soltravel.v2.dto.exchange.forecast.ExchangeRateSaveRequestDto;
+import com.ssafy.soltravel.v2.exception.exchange.CurrencyCodeInvalidException;
 import com.ssafy.soltravel.v2.repository.ExchangeRateForecastRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -104,4 +109,67 @@ public class ExchangeRateForecastService {
 
     return length.get();
   }
+
+
+  // -----------------------------환율 기간 조회-----------------------------
+  public Map<String, ExchangeRateData> findRatesByCurrencyCode(String currencyCode) {
+    CurrencyType cType = exchangeService.getCurrencyType(currencyCode);
+
+    // 최근 3개월치 환율 데이터 조회
+    List<ExchangeRateForecast> recentRates_3 = exchangeRateForecastRepository.findByPeriodAndCurrency(
+        LocalDate.now().minusMonths(3),
+        LocalDate.now(),
+        cType
+    ).orElseThrow(
+        () -> new CurrencyCodeInvalidException(currencyCode)
+    );
+
+    // 2주치 예측 환율 데이터 조회
+    List<ExchangeRateForecast> forecast = exchangeRateForecastRepository.findByPeriodAndCurrency(
+        LocalDate.now(),
+        LocalDate.now().plusWeeks(2),
+        cType
+    ).orElseThrow(
+        () -> new CurrencyCodeInvalidException(currencyCode)
+    );
+
+    return toDto(
+        forecast,
+        recentRates_3,
+        currencyCode
+    );
+  }
+
+  //데이터(도메인) -> DTO
+  private Map<String, ExchangeRateData> toDto(
+      List<ExchangeRateForecast> forecast,
+      List<ExchangeRateForecast> recent,
+      String currencyCode
+  ){
+
+    // 초기화
+    ExchangeRateForecastResponseDto responseDto = new ExchangeRateForecastResponseDto();
+    ExchangeRateForecastResponseDto.ExchangeRateData exchangeRateData = new ExchangeRateForecastResponseDto.ExchangeRateData();
+
+    // 예측 데이터를 Map으로 변환
+    Map<String, Double> forecastMap = new LinkedHashMap<>();
+    for (ExchangeRateForecast rate : forecast) {
+      forecastMap.put(rate.getDate().toString(), rate.getRate());
+    }
+
+    // 최근 3개월치 데이터를 Map으로 변환
+    Map<String, Map<String, Double>> recentRatesMap = new HashMap<>();
+    Map<String, Double> recentRatesValues = new LinkedHashMap<>();
+    for (ExchangeRateForecast rate : recent) {
+      recentRatesValues.put(rate.getDate().toString(), rate.getRate());
+    }
+    recentRatesMap.put("3_months", recentRatesValues);
+
+    // DTO에 추가
+    exchangeRateData.setForecast(forecastMap);
+    exchangeRateData.setRecentRates(recentRatesMap);
+    responseDto.getCurrencies().put(currencyCode, exchangeRateData);
+    return responseDto.getCurrencies();
+  }
+
 }

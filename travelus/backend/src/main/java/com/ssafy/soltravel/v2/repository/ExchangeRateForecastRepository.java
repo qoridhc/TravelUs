@@ -37,4 +37,21 @@ public class ExchangeRateForecastRepository {
         .getResultList();
     return result.stream().findFirst();
   }
+
+  public Optional<List<ExchangeRateForecast>> findByPeriodAndCurrency(LocalDate start, LocalDate end, CurrencyType cType) {
+    List<ExchangeRateForecast> result = em.createQuery(
+            "select erf from ExchangeRateForecast erf " +
+                "where erf.date between :startDate and :endDate " +
+                "and erf.currency = :type " +
+                "order by erf.date asc"
+            , ExchangeRateForecast.class
+        )
+        .setParameter("startDate", start)
+        .setParameter("endDate", end)
+        .setParameter("type", cType)
+        .getResultList();
+
+    return Optional.ofNullable(result.isEmpty() ? null : result);
+  }
+
 }
