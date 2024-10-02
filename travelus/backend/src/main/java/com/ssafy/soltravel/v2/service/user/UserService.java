@@ -8,6 +8,7 @@ import com.ssafy.soltravel.v2.dto.user.UserCreateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserDetailDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchResponseDto;
+import com.ssafy.soltravel.v2.dto.user.UserUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.api.UserCreateRequestBody;
 import com.ssafy.soltravel.v2.dto.user.api.UserCreateRequestBody.Header;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
@@ -232,15 +233,17 @@ public class UserService implements UserDetailsService {
 
 
     public void updateUserProfile(ProfileUpdateRequestDto request) throws IOException {
-
-        Long userId = securityUtil.getCurrentUserId();
-        User user = userRepository.findByUserId(userId).orElseThrow(
-            () -> new UserNotFoundException(userId)
-        );
+        User user = securityUtil.getUserByToken();
 
         // 프로필 이미지 저장
         LogUtil.info("이미지", request.getProfileImg().getName());
         String profileImageUrl = fileService.saveProfileImage(request.getProfileImg());
         user.updateProfile(profileImageUrl);
+    }
+
+    public String updateUser(UserUpdateRequestDto request) {
+        User user = securityUtil.getUserByToken();
+        user.update(request);
+       return user.getEmail();
     }
 }

@@ -2,6 +2,7 @@ package com.ssafy.soltravel.v2.domain;
 
 import com.ssafy.soltravel.v2.domain.Enum.Gender;
 import com.ssafy.soltravel.v2.domain.Enum.Role;
+import com.ssafy.soltravel.v2.dto.user.UserUpdateRequestDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -114,7 +115,19 @@ public class User {
         return user;
     }
 
+    /*
+    * 수정 메서드
+    */
     public void updateProfile(String profileImageUrl) {
         this.profile = profileImageUrl;
     }
+
+    public void update(UserUpdateRequestDto update) {
+        this.name = update.getName() != null ? update.getName() : this.name;
+        this.phone = update.getPhone() != null ? update.getPhone() : this.phone;
+        this.address = update.getAddress() != null ? update.getAddress() : this.address;
+        this.birth = update.getBirth() != null ? update.getBirth() : this.birth;
+    }
+
+
 }
