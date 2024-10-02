@@ -26,8 +26,13 @@ public class CardIssueRequestDto {
 
   @NotEmpty
   @Length(min = 17, max = 17)
-  @Schema(description = "출금 계좌 번호, 17자리 문자열", example = "12345678901234567")
+  @Schema(description = "출금 계좌 번호, 17자리 문자열", example = "001-60320746-209")
   private String withdrawalAccountNo;  // 출금 계좌 번호
+
+  @NotEmpty
+  @Length(min = 4, max = 4)
+  @Schema(description = "비밀번호, 4자리 문자열", example = "1234")
+  private String password;
 
   @Null
   @JsonProperty("Header")
