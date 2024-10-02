@@ -42,6 +42,9 @@ public class Card {
     private String cvc;
 
     @Column
+    private String password;
+
+    @Column
     private LocalDateTime createAt;
 
     @Column

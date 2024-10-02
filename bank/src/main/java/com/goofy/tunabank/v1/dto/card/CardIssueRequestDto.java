@@ -25,4 +25,8 @@ public class CardIssueRequestDto {
   @NotEmpty
   @Length(min = 17, max = 17)
   private String withdrawalAccountNo;  // 출금 계좌 번호
+
+  @NotEmpty
+  @Length(min = 4, max = 4)
+  private String password;
 }
