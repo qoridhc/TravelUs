@@ -4,8 +4,12 @@ import { useLocation, useNavigate, useParams } from "react-router";
 import { accountApi } from "../../../api/account";
 import { MeetingAccountDetailInfo } from "../../../types/account";
 import { GroupInfo } from "../../../types/meetingAccount";
+import { settlementApi } from "../../../api/settle";
+import { exchangeRateApi } from "../../../api/exchange";
+import { ExchangeRateInfo } from "../../../types/exchange";
 
 interface Member {
+  participantId: number;
   name: string;
   amount: number;
 }
@@ -16,16 +20,41 @@ const SettlementInfo = () => {
   const { id } = useParams();
 
   const [totalAmount, setTotalAmount] = useState(0);
+  const [wonAmount, setWonAmount] = useState(0);
   const [members, setMembers] = useState<Member[]>([]);
   const [groupInfo, setGroupInfo] = useState<GroupInfo | null>(null);
+  const [exchangeRate, setExchangeRate] = useState<ExchangeRateInfo>();
 
-  const handleSettlement = () => {
-    navigate("/balancesettlementcompleted");
+  const handleSettlement = async () => {
+    const updatedMembers = members.map((member) => {
+      const { name, ...rest } = member;
+      return rest;
+    });
+
+    if (groupInfo?.groupAccountNo) {
+      const data = {
+        groupId: Number(id),
+        accountNo: groupInfo?.groupAccountNo,
+        accountPassword: "1215",
+        settlementType: "BOTH",
+        amounts: [wonAmount, location.state.foreignAmount] as [number, number],
+        participants: updatedMembers,
+      };
+
+      try {
+        console.log(data);
+        const response = await settlementApi.fetchSettlement(data);
+        console.log(response.data);
+      } catch (error) {
+        console.log("", error);
+      }
+    }
+    // navigate("/settlement/balance/completed");
   };
 
   const handleMembers = () => {
     navigate(`/settlement/editmembers/balance/${id}`, {
-      state: { members: members, foreignAmmount: location.state.foreignAmmount },
+      state: { members: members, foreignAmount: location.state.foreignAmount },
     });
   };
 
@@ -52,15 +81,36 @@ const SettlementInfo = () => {
   const fetchSpecificAccountInfo = async (groupAccountNo: string) => {
     try {
       const response = await accountApi.fetchSpecificAccountInfo(groupAccountNo);
-      setTotalAmount(response.data?.moneyBoxDtos[0].balance + location.state.foreignAmmount);
+      setWonAmount(response.data?.moneyBoxDtos[0].balance);
+      // setWonAmount(0);
+      if (exchangeRate?.exchangeRate) {
+        setTotalAmount(
+          response.data?.moneyBoxDtos[0].balance + exchangeRate?.exchangeRate * location.state.foreignAmount
+        );
+        // setTotalAmount(exchangeRate?.exchangeRate * location.state.foreignAmount);
+      }
     } catch (error) {
       console.error("모임 통장 조회 에러", error);
     }
   };
 
+  // 환율 정보 가져오기
+  const fetchExchangeRate = async () => {
+    try {
+      const data = await exchangeRateApi.getExchangeRate("USD");
+      setExchangeRate(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchExchangeRate();
+  }, []);
+
   useEffect(() => {
     fetchSpecificMeetingAccount();
-  }, []);
+  }, [exchangeRate]);
 
   useEffect(() => {
     if (location.state.members) {
@@ -70,10 +120,13 @@ const SettlementInfo = () => {
         const amountPerMember = Math.floor(totalAmount / memberCount);
         const remainder = totalAmount % memberCount;
 
-        const updatedMembers = memberList.map((member: { name: string; amount: number }, index: number) => ({
-          name: member.name,
-          amount: index === 0 ? amountPerMember + remainder : amountPerMember,
-        }));
+        const updatedMembers = memberList.map(
+          (member: { participantId: number; name: string; amount: number }, index: number) => ({
+            participantId: member.participantId,
+            name: member.name,
+            amount: index === 0 ? amountPerMember + remainder : amountPerMember,
+          })
+        );
         setMembers(updatedMembers);
       }
     } else {
@@ -84,6 +137,7 @@ const SettlementInfo = () => {
         const remainder = totalAmount % memberCount;
 
         const updatedMembers = memberList.map((member, index) => ({
+          participantId: member.participantId,
           name: member.userName,
           amount: index === 0 ? amountPerMember + remainder : amountPerMember,
         }));
@@ -106,9 +160,11 @@ const SettlementInfo = () => {
           <div className="px-5 text-2xl font-semibold tracking-wide">
             <div className="flex">
               <p className="text-[#1429A0]">
-                {formatCurrency(location.state.foreignAmmount)} {location.state.currencyCode}
+                {exchangeRate?.exchangeRate &&
+                  formatCurrency(exchangeRate?.exchangeRate * location.state.foreignAmount)}
+                원
               </p>
-              <p>를</p>
+              <p>을</p>
             </div>
             <p>일반모임통장에 넣을게요</p>
           </div>
