@@ -5,6 +5,7 @@ import com.ssafy.soltravel.v2.dto.user.EmailValidationDto;
 import com.ssafy.soltravel.v2.dto.user.ProfileUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserCreateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserDupCheckRequestDto;
+import com.ssafy.soltravel.v2.dto.user.UserPwdUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchRequestDto;
 import com.ssafy.soltravel.v2.dto.user.UserSearchResponseDto;
 import com.ssafy.soltravel.v2.dto.user.UserUpdateRequestDto;
@@ -144,6 +145,21 @@ public class UserController {
 
         LogUtil.info("requested", request.toString());
         String message = String.format("갱신이 완료되었습니다: %s", userService.updateUser(request));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto(message));
+    }
+
+    @Operation(summary = "비밀번호 변경", description = "비밀번호를 변경합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "수정 완료", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @PostMapping(value = "/update/password")
+    public ResponseEntity<ResponseDto> updatePwd(@RequestBody UserPwdUpdateRequestDto request)
+        throws IOException {
+
+        LogUtil.info("requested", request.toString());
+        String message = String.format("비밀번호가 변경되었습니다: %s", userService.updatePwdrequest(request));
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto(message));
     }
 
