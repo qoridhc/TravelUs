@@ -181,15 +181,18 @@ public class TransactionService {
     /**
      * 머니박스 이체 요청 처리 메서드
      */
-    public ResponseEntity<List<TransferHistoryResponseDto>> processMoneyBoxTransfer(String apiName,
-        MoneyBoxTransferRequestDto requestDto, boolean isAuto, long userId) {
+    public ResponseEntity<List<TransferHistoryResponseDto>> processMoneyBoxTransfer(
+        String apiName,
+        MoneyBoxTransferRequestDto requestDto,
+        boolean isAuto,
+        long userId
+    ) {
 
         String API_URL = BASE_URL + "transfer/" + apiName;
         if (isAuto) {//자동환전이라면
 
             API_URL += "/auto";
         } else {
-
             userId = securityUtil.getCurrentUserId();
         }
         long finalUserId = userId;
@@ -217,6 +220,10 @@ public class TransactionService {
         List<TransferHistoryResponseDto> responseDto = recObject.stream()
             .map(value -> modelMapper.map(value, TransferHistoryResponseDto.class))
             .collect(Collectors.toList());
+
+        if (!isAuto) {
+            notificationService.sendExchangeNotification(user, requestDto);
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }

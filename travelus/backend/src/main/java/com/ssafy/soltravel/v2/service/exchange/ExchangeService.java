@@ -9,6 +9,7 @@ import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateCacheDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateRegisterRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.targetAccountDto;
+import com.ssafy.soltravel.v2.service.NotificationService;
 import com.ssafy.soltravel.v2.dto.moneyBox.BalanceResponseDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
@@ -60,6 +61,7 @@ public class ExchangeService {
   private final CacheManager cacheManager;
   private final RedisTemplate<String, String> redisTemplate;
   private final TransactionService transactionService;
+  private final NotificationService notificationService;
   private final GroupRepository groupRepository;
   private final ExchangeRateForecastRepository exchangeRateForecastRepository;
 
@@ -146,6 +148,8 @@ public class ExchangeService {
         LogUtil.info("자동환전 성공. 환전 신청 원화: %s, 적용 환율: %s, 환전된 금액: %s ", transferHistoryResponseDtos.get(0).getTransactionAmount(),
             transferHistoryResponseDtos.get(1).getTransactionSummary(),
             transferHistoryResponseDtos.get(1).getTransactionAmount());
+
+            notificationService.sendAutoExchangeNotification(dto, requestDto);
 
       } catch (WebClientResponseException e) {
         //잔액부족시
