@@ -14,7 +14,6 @@ import {
   ChartOptions,
   TimeScale,
 } from "chart.js";
-// import annotationPlugin from "chartjs-plugin-annotation";
 import { ChevronLeft } from "lucide-react";
 import { exchangeApi } from "../../api/exchange";
 import { ExchangeRateInfo2, CurrencyPrediction, RecentRates } from "../../types/exchange";
@@ -37,7 +36,7 @@ const getFlagImagePath = (currencyCode: string): string => {
 };
 
 // Types
-type PeriodKey = "1주" | "1달" | "3달";
+type PeriodKey = "1주" | "1달" | "3달" | "2주";
 type TabType = "exchange" | "prediction";
 
 // Utility functions
@@ -101,7 +100,7 @@ const useExchangeData = (currencyCode: string) => {
 const ExchangeDetail: React.FC = () => {
   const { currencyCode = "" } = useParams<{ currencyCode: string }>();
   const navigate = useNavigate();
-  const chartRef = useRef<ChartJS<"line">>(null);
+  // const chartRef = useRef<ChartJS<"line">>(null);
 
   const { exchangeData, historicalData, predictionData, isLoading, error } = useExchangeData(currencyCode);
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodKey>("1주");
@@ -221,20 +220,34 @@ const ExchangeDetail: React.FC = () => {
     </div>
   );
 
-  const renderPeriodButtons = () => (
-    <div className="flex justify-center items-center bg-gray-200 rounded-full p-1">
-      {(["1주", "1달", "3달"] as const).map((period) => (
-        <button
-          key={period}
-          onClick={() => handlePeriodChange(period)}
-          className={`px-3 py-1 rounded-full text-center w-full transition-colors duration-300 ${
-            selectedPeriod === period ? "bg-white text-[#353535] font-bold shadow-sm" : "text-gray-600"
-          }`}>
-          {period}
-        </button>
-      ))}
-    </div>
-  );
+  const renderPeriodButtons = () => {
+    if (activeTab === "exchange") {
+      return (
+        <div className="flex justify-center items-center bg-gray-200 rounded-full p-1">
+          {(["1주", "1달", "3달"] as const).map((period) => (
+            <button
+              key={period}
+              onClick={() => setSelectedPeriod(period)}
+              className={`px-3 py-1 rounded-full text-center w-full transition-colors duration-300 ${
+                selectedPeriod === period ? "bg-white text-[#353535] font-bold shadow-sm" : "text-gray-600"
+              }`}>
+              {period}
+            </button>
+          ))}
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex justify-center items-center bg-gray-200 rounded-full p-1">
+          <button
+            onClick={() => setSelectedPeriod("2주")}
+            className="px-3 py-1 rounded-full text-center w-full bg-white text-[#353535] font-bold shadow-sm">
+            금일로부터 2주 예상
+          </button>
+        </div>
+      );
+    }
+  };
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;

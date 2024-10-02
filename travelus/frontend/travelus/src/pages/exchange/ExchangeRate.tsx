@@ -31,11 +31,11 @@ const ExchangeRateItem: React.FC<ExchangeRateInfo> = ({ currencyCode, exchangeRa
 
   return (
     <div
-      className="m-3 flex items-center justify-between p-4 border-b cursor-pointer hover:bg-gray-100"
+      className="p-8 flex items-center justify-between border-b cursor-pointer hover:bg-gray-100"
       onClick={handleClick}>
       <div className="flex items-center">
         <img src={flagImagePath} alt={`${country} flag`} className="w-8 h-6 mr-2 object-cover rounded" />
-        <div className="m-3">
+        <div className="">
           <p className="font-bold">{currencyName}</p>
         </div>
       </div>
