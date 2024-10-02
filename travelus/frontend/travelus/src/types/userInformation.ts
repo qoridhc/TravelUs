@@ -21,5 +21,6 @@ export interface UserInfo {
   registerAt: string;
   isExit: boolean;
   userId: number;
-  userKey: string | null;
+  gender: string;
+  profileImg: string;
 }
