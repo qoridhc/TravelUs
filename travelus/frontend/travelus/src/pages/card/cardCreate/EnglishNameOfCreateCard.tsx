@@ -10,8 +10,18 @@ const EnglishNameOfCreateCard = () => {
   const navigate = useNavigate();
   const { groupId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
+  const [isvalid, setIsValid] = useState(false);
   const [lastname, setLastName] = useState("");
   const [firstname, setFirstName] = useState("");
+
+  useEffect(() => {
+    // 유효성 검사
+    if (lastname && firstname) {
+      setIsValid(true);
+    } else {
+      setIsValid(false);
+    }
+  }, [lastname, firstname]);
 
   const handleNext = () => {
     navigate(`/card/${groupId}/create/password/meeting`);
@@ -31,10 +41,7 @@ const EnglishNameOfCreateCard = () => {
 
         <div className="grid gap-6">
           <div className="grid gap-3">
-            <div className="flex space-x-2">
-              <p className="text-[#0471E9] font-semibold">01</p>
-              <p className="font-medium">모임카드 신청</p>
-            </div>
+            <div className="flex space-x-2"></div>
 
             <div className="text-2xl font-semibold">
               <p>영문 이름을 입력해주세요</p>
@@ -48,7 +55,10 @@ const EnglishNameOfCreateCard = () => {
       </div>
 
       <button
-        className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
+        disabled={!isvalid}
+        className={`w-full h-14 text-lg rounded-xl tracking-wide text-white ${
+          isvalid ? "bg-[#1429A0]" : "bg-zinc-300"
+        }`}
         onClick={() => handleNext()}>
         다음
       </button>
