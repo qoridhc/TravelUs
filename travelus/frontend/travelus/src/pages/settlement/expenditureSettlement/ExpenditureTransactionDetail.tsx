@@ -230,10 +230,10 @@ const ExpenditureTransactionDetail = () => {
           ))}
 
           {/* 무한스크롤에서 인식할 마지막 타겟 */}
-          <div ref={pageEnd} className="h-5 bg-black"></div>
+          <div ref={pageEnd} className="h-14 bg-transparent"></div>
         </div>
 
-        {/* <div className="w-full p-5 pb-8 bg-white fixed bottom-0 z-50">
+        <div className="w-full p-5 pb-8 bg-white fixed bottom-0 z-50">
           <button
             className={`w-full h-14 text-lg rounded-xl tracking-wide ${
               checkedNum === 0 ? "text-[#565656] bg-[#E3E4E4]" : "text-white bg-[#1429A0]"
@@ -242,7 +242,7 @@ const ExpenditureTransactionDetail = () => {
             onClick={() => handleNext()}>
             {checkedNum === 0 ? "정산금을 선택해주세요" : "정산하기"}
           </button>
-        </div> */}
+        </div>
       </div>
     </div>
   );
