@@ -2,7 +2,7 @@ import React from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router";
 
-const TravelBoxTransaction = () => {
+const TravelBoxTransactionDetail = () => {
   const navigate = useNavigate();
   const balance = 350; // 잔액
 
@@ -153,4 +153,4 @@ const TravelBoxTransaction = () => {
   );
 };
 
-export default TravelBoxTransaction;
+export default TravelBoxTransactionDetail;
