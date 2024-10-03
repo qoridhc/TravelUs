@@ -55,7 +55,6 @@ import MeetingTransaction from "./pages/meetingAccount/MeetingTransaction";
 import CurrencyInfoOfCreateTravelBox from "./pages/travelBox/CurrencyInfoOfCreateTravelBox";
 import AutoCurrencyExchangeOfCreateTravelBox from "./pages/travelBox/AutoCurrencyExchangeOfCreateTravelBox";
 import SelectSettlementAmount from "./pages/settlement/balanceSettlement/SelectSettlementAmount";
-import ForeignCurrencyExchange from "./pages/settlement/balanceSettlement/ForeignCurrencyExchange";
 import BalanceSettlementCompleted from "./pages/settlement/balanceSettlement/BalanceSettlementCompleted";
 import SettlementInfo from "./pages/settlement/balanceSettlement/SettlementInfo";
 import ExpenditureTransactionDetail from "./pages/settlement/expenditureSettlement/ExpenditureTransactionDetail";
@@ -69,6 +68,7 @@ import SelectAccountOfMeeting from "./pages/meetingAccount/SelectAccountOfMeetin
 import EnglishNameOfCreateCard from "./pages/card/cardCreate/EnglishNameOfCreateCard";
 import PasswordOfCreateCard from "./pages/card/cardCreate/PasswordOfCreateCard";
 import CheckPasswordOfCreateCard from "./pages/card/cardCreate/CheckPasswordOfCreateCard";
+import PasswordOfBalanceSettlement from "./pages/settlement/balanceSettlement/PasswordOfBalanceSettlement";
 import AddressOfCreateCard from "./pages/card/cardCreate/AddressOfCreateCard";
 import CompletedOfCreateCard from "./pages/card/cardCreate/CompletedOfCreateCard";
 
@@ -179,9 +179,9 @@ function App() {
 
           {/* 잔액정산 */}
           <Route path="/settlement/balance/amount/:id" element={<SelectSettlementAmount />}></Route>
-          <Route path="/settlement/balance/foreigncurrency/exchange/:id" element={<ForeignCurrencyExchange />}></Route>
           <Route path="/settlement/balance/participants/:id" element={<SettlementInfo />}></Route>
           <Route path="/settlement/editmembers/:type/:id" element={<EditMembers />}></Route>
+          <Route path="/settlement/password" element={<PasswordOfBalanceSettlement />}></Route>
           <Route path="/settlement/balance/completed" element={<BalanceSettlementCompleted />}></Route>
 
           {/* 지출정산 */}
