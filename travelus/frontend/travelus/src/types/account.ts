@@ -28,13 +28,11 @@ export interface AccountInfoNew {
   accountPassword: string,
   accountType: string,
   bankCode: number,
-  moneyBoxDtos: [
-    {
-      moneyBoxId: number,
-      balance: number,
-      currencyCode: string
-    }
-  ],
+  moneyBoxDtos: Array<{
+    moneyBoxId: number,
+    balance: number,
+    currencyCode: string
+  }>,
   createdAt: string,
   updatedAt: string
 }
