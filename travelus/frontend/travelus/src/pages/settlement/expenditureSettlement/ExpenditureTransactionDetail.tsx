@@ -181,11 +181,8 @@ const ExpenditureTransactionDetail = () => {
                           e.target.checked,
                           Number(transaction.transactionSummary.slice(-7)) === 0
                             ? Number(transaction.transactionAmount)
-                            : Number(
-                                (
-                                  Number(transaction.transactionAmount) *
-                                  Number(transaction.transactionSummary.slice(-7))
-                                ).toFixed(0)
+                            : Math.ceil(
+                                Number(transaction.transactionAmount) * Number(transaction.transactionSummary.slice(-7))
                               )
                         )
                       }
@@ -217,10 +214,8 @@ const ExpenditureTransactionDetail = () => {
                         <p className="text-sm text-[#565656] text-right tracking-wider">
                           &nbsp;=&nbsp;
                           {formatCurrency(
-                            Number(
-                              (
-                                Number(transaction.transactionAmount) * Number(transaction.transactionSummary.slice(-7))
-                              ).toFixed(0)
+                            Math.ceil(
+                              Number(transaction.transactionAmount) * Number(transaction.transactionSummary.slice(-7))
                             )
                           )}
                           원
@@ -236,10 +231,19 @@ const ExpenditureTransactionDetail = () => {
           ))}
 
           {/* 무한스크롤에서 인식할 마지막 타겟 */}
-          <div ref={pageEnd} className="h-14 bg-transparent"></div>
+          <div ref={pageEnd} className="h-24 bg-transparent"></div>
         </div>
 
-        <div className="w-full p-5 pb-8 bg-white fixed bottom-0 z-50">
+        <div className="w-full p-5 pb-8 bg-white fixed bottom-0 z-50 grid gap-5">
+          {selectAmmount === 0 ? (
+            <></>
+          ) : (
+            <p className="text-xl text-right font-semibold">
+              총액&nbsp;
+              {formatCurrency(selectAmmount)}
+              &nbsp;원
+            </p>
+          )}
           <button
             className={`w-full h-14 text-lg rounded-xl tracking-wide ${
               checkedNum === 0 ? "text-[#565656] bg-[#E3E4E4]" : "text-white bg-[#1429A0]"
