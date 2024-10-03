@@ -159,7 +159,7 @@ const ExpenditureTransactionDetail = () => {
         </div>
 
         <div className="p-5 flex items-center space-x-3">
-          <p className="text-3xl font-bold">9월</p>
+          <p className="text-3xl font-bold">{new Date().getMonth() + 1}월</p>
           <IoIosArrowDown className="text-xl text-[#555555]" />
         </div>
 
@@ -167,25 +167,54 @@ const ExpenditureTransactionDetail = () => {
 
         <div className="p-5 overflow-y-auto">
           {dateList.map((date) => (
-            <div className="grid gap-5" key={date}>
-              <p className="text-[#565656] font-semibold">{date}</p>
+            <div className="grid gap-3" key={date}>
+              <p className="mb-3 text-[#565656] font-semibold">{date}</p>
 
               {transactions[date].map((transaction, index) => (
-                <label key={index} className="flex justify-between items-center">
-                  <div className="flex flex-col justify-between">
-                    <div className="flex items-center">
-                      <p className="text-lg font-bold tracking-wider">
-                        - {formatCurrency(Number(transaction.transactionAmount))}
-                        {transaction.currencyCode === "KRW"
-                          ? "원"
-                          : currencyTypeList
-                              .find((item) => item.value === transaction.currencyCode)
-                              ?.text.slice(-2, -1)}
-                      </p>
-                      {transaction.currencyCode === "KRW" ? (
-                        <></>
-                      ) : (
+                <label key={index} className="grid grid-rows-2 grid-cols-[1fr_9fr]">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="w-6 h-6 appearance-none bg-[url('./assets/check/nochecked.png')] checked:bg-[url('./assets/check/checked.png')] bg-cover rounded-full"
+                      onChange={(e) =>
+                        handleChecked(
+                          e.target.checked,
+                          Number(transaction.transactionSummary.slice(-7)) === 0
+                            ? Number(transaction.transactionAmount)
+                            : Number(
+                                (
+                                  Number(transaction.transactionAmount) *
+                                  Number(transaction.transactionSummary.slice(-7))
+                                ).toFixed(0)
+                              )
+                        )
+                      }
+                    />
+                  </div>
+
+                  <div className="row-span-2 grid grid-rows-2 grid-cols-2">
+                    <p className="text-lg font-semibold tracking-wider">
+                      {transaction.currencyCode === "KRW"
+                        ? transaction.payeeName.slice(0, 10)
+                        : transaction.payeeName.slice(0, 13)}
+                    </p>
+
+                    <p className="text-lg font-semibold text-right tracking-wider">
+                      - {formatCurrency(Number(transaction.transactionAmount))}
+                      {transaction.currencyCode === "KRW"
+                        ? "원"
+                        : currencyTypeList.find((item) => item.value === transaction.currencyCode)?.text.slice(-2, -1)}
+                    </p>
+
+                    {transaction.currencyCode === "KRW" ? (
+                      <></>
+                    ) : (
+                      <>
                         <p className="text-sm text-[#565656] tracking-wider">
+                          환율&nbsp;
+                          {Number(transaction.transactionSummary.slice(-7))}원
+                        </p>
+                        <p className="text-sm text-[#565656] text-right tracking-wider">
                           &nbsp;=&nbsp;
                           {formatCurrency(
                             Number(
@@ -194,30 +223,11 @@ const ExpenditureTransactionDetail = () => {
                               ).toFixed(0)
                             )
                           )}
-                          원 / 환율&nbsp;
-                          {Number(transaction.transactionSummary.slice(-7))}원
+                          원
                         </p>
-                      )}
-                    </div>
-                    <p className="text-sm text-[#565656] tracking-wider">{transaction.payeeName}</p>
+                      </>
+                    )}
                   </div>
-
-                  <input
-                    type="checkbox"
-                    className="w-6 h-6 appearance-none bg-[url('./assets/check/nochecked.png')] checked:bg-[url('./assets/check/checked.png')] bg-cover rounded-full"
-                    onChange={(e) =>
-                      handleChecked(
-                        e.target.checked,
-                        Number(transaction.transactionSummary.slice(-7)) === 0
-                          ? Number(transaction.transactionAmount)
-                          : Number(
-                              (
-                                Number(transaction.transactionAmount) * Number(transaction.transactionSummary.slice(-7))
-                              ).toFixed(0)
-                            )
-                      )
-                    }
-                  />
                 </label>
               ))}
 
