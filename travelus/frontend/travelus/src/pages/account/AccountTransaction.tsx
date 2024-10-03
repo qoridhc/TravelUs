@@ -21,9 +21,14 @@ const AccountTransaction: React.FC<AccountTransactionProps> = (props) => {
       if (!accountNo) return;
 
       try {
+        const data = {
+          accountNo: accountNo,
+          currencyCode: "KRW",
+          orderByType: "DESC",
+        };
         // 두 API를 병렬로 호출
         const [transactionResponse, accountResponse] = await Promise.all([
-          accountApi.fetchTracsactionHistory(accountNo, "KRW", "DESC"),
+          accountApi.fetchTracsactionHistory(data),
           accountApi.fetchSpecificAccountInfo(accountNo),
         ]);
 

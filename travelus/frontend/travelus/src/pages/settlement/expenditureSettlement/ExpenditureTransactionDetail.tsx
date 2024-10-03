@@ -1,109 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IoIosArrowBack, IoIosArrowDown } from "react-icons/io";
 import { LuDot } from "react-icons/lu";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import { accountApi } from "../../../api/account";
+import { GroupInfo } from "../../../types/meetingAccount";
+import { AccountHistoryResponse } from "../../../types/accountHistory";
+import { currencyTypeList } from "../../../types/exchange";
 
 const ExpenditureTransactionDetail = () => {
   const navigate = useNavigate();
-  const [selectAmmount, setSelectAmmount] = useState(0);
-  const [checkedNum, setCheckedNum] = useState(0);
+  const { id } = useParams();
+  const [selectAmmount, setSelectAmmount] = useState(0); // 체크된 총액
+  const [checkedNum, setCheckedNum] = useState(0); // 하나라도 체크 돼있는지 확인
+  const [groupInfo, setGroupInfo] = useState<GroupInfo | null>(null); // 모임정보
+  const [transactions, setTransactions] = useState<{ [date: string]: AccountHistoryResponse[] }>({}); // 거래내역 배열
+  const [dateList, setDateList] = useState<string[]>([]); // 날짜 리스트
 
-  // 날짜별 거래처, 거래 금액, 시간, 지출인지 수입인지를 포함한 거래 내역 더미데이터
-  const transactionList = [
-    {
-      type: "지출",
-      time: "2024-09-14T15:00:00",
-      place: "candyshopinNewYork",
-      amount: 12,
-      exchangeRate: 1328.55,
-      transactionBalance: 26000,
-    },
-    {
-      type: "지출",
-      time: "2024-09-13T16:00:00",
-      place: "인천공항면세점",
-      amount: 24000,
-      exchangeRate: 0,
-      transactionBalance: 29000,
-    },
-    {
-      type: "지출",
-      time: "2024-09-12T16:00:00",
-      place: "투썸플레이스인천공항점",
-      amount: 11300,
-      exchangeRate: 0,
-      transactionBalance: 32000,
-    },
-    {
-      type: "지출",
-      time: "2024-09-12T12:00:00",
-      place: "스타벅스구미인의점",
-      amount: 10000,
-      exchangeRate: 0,
-      transactionBalance: 37000,
-    },
-    {
-      type: "지출",
-      time: "2024-09-12T12:00:00",
-      place: "CU진평점",
-      amount: 5930,
-      exchangeRate: 0,
-      transactionBalance: 47000,
-    },
-    {
-      type: "지출",
-      time: "2024-09-13T16:00:00",
-      place: "CU인동도서관점",
-      amount: 3000,
-      exchangeRate: 0,
-      transactionBalance: 29000,
-    },
-    {
-      type: "지출",
-      time: "2024-09-12T16:00:00",
-      place: "인천공항면세점",
-      amount: 5000,
-      exchangeRate: 0,
-      transactionBalance: 32000,
-    },
-    {
-      type: "지출",
-      time: "2024-09-14T15:00:00",
-      place: "인천공항파리바게트",
-      amount: 34000,
-      exchangeRate: 0,
-      transactionBalance: 26000,
-    },
-    {
-      type: "지출",
-      time: "2024-09-13T16:00:00",
-      place: "CU인천공항점",
-      amount: 7000,
-      exchangeRate: 0,
-      transactionBalance: 29000,
-    },
-  ];
-
-  // 날짜별로 그룹화하여 표시
-  const groupedTransactions = transactionList.reduce((acc, current) => {
-    // 시간 데이터를 한국식 날짜 형식으로 변환
-    const date = new Date(current.time).toLocaleDateString("ko-KR");
-
-    // 누적 객체에 해당 날짜의 거래 내역이 없을 때
-    if (!acc[date]) {
-      acc[date] = [];
-    }
-    acc[date].push(current);
-
-    return acc;
-  }, {} as { [key: string]: typeof transactionList });
-
-  // 모든 날짜(키) 목록을 배열로 반환
-  const dateList = Object.keys(groupedTransactions);
+  // 무한 스크롤 관련 상태변수
+  const [page, setPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const pageEnd = useRef<HTMLDivElement | null>(null); // Intersection Observer가 관찰할 요소
 
   // 금액을 한국 통화 형식으로 포맷(콤마가 포함된 형태)
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("ko-KR").format(amount);
+  };
+
+  // 날짜 형식 변환 함수
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("ko-KR", {
+      month: "long",
+      day: "numeric",
+    });
   };
 
   const handleChecked = (state: boolean, amount: number) => {
@@ -119,6 +48,110 @@ const ExpenditureTransactionDetail = () => {
   const handleNext = () => {
     navigate("/settlement/expenditure/info", { state: { selectAmmount } });
   };
+
+  // 무한스크롤 데이터 요청을 위해 page를 증가시키는 함수
+  const loadMore = () => {
+    setPage((prev) => prev + 1);
+  };
+
+  // 특정 모임 조회 API 호출
+  const fetchSpecificMeetingAccount = async () => {
+    try {
+      const response = await accountApi.fetchSpecificMeetingAccount(Number(id));
+      if (response.status === 200) {
+        setGroupInfo(response.data);
+      }
+    } catch (error) {
+      console.error("accountApi의 fetchSpecificMeetingAccount : ", error);
+    }
+  };
+
+  // 거래 내역 조회
+  const fetchTransactionHistory = async () => {
+    try {
+      if (groupInfo?.groupAccountNo) {
+        const data = {
+          accountNo: groupInfo?.groupAccountNo,
+          orderByType: "DESC",
+          page: page,
+          size: 10,
+        };
+        const response = await accountApi.fetchTracsactionHistory(data);
+        console.log("내역 : ", response);
+        const newTransactions = response.data.content;
+
+        // 거래내역을 날짜별로 그룹화하여 병합
+        const newGroupedTransactions = newTransactions.reduce(
+          (acc: { [date: string]: AccountHistoryResponse[] }, cur: AccountHistoryResponse) => {
+            const dateKey = formatDate(cur.transactionDate);
+            if (acc[dateKey]) {
+              acc[dateKey].push(cur);
+            } else {
+              acc[dateKey] = [cur];
+            }
+            return acc;
+          },
+          {} as { [date: string]: AccountHistoryResponse[] }
+        );
+
+        // 기존 그룹과 새로 불러온 그룹을 병합
+        setTransactions((prev) => {
+          // 날짜가 중복되면 합치고, 새 날짜면 새롭게 추가
+          Object.keys(newGroupedTransactions).forEach((date) => {
+            if (prev[date]) {
+              prev[date] = [...prev[date], ...newGroupedTransactions[date]];
+            } else {
+              prev[date] = newGroupedTransactions[date];
+            }
+          });
+          return { ...prev };
+        });
+
+        // 새로운 날짜들을 기존 dateList에 추가
+        setDateList((prev) => {
+          const newDates = Object.keys(newGroupedTransactions);
+          const uniqueDates = newDates.filter((date) => !prev.includes(date));
+          return [...prev, ...uniqueDates];
+        });
+
+        setIsLoading(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSpecificMeetingAccount();
+  }, []);
+
+  useEffect(() => {
+    fetchTransactionHistory();
+  }, [page, groupInfo]);
+
+  useEffect(() => {
+    if (isLoading && pageEnd.current) {
+      // 로딩되었을 때만 실행
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            loadMore();
+          }
+        },
+        { threshold: 1 }
+      );
+      // 옵저버 탐색 시작
+      observer.observe(pageEnd.current);
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    console.log(transactions);
+  }, [transactions]);
+
+  useEffect(() => {
+    console.log(dateList);
+  }, [dateList]);
 
   return (
     <div className="h-full pb-8">
@@ -143,32 +176,34 @@ const ExpenditureTransactionDetail = () => {
         <div className="p-5 overflow-y-auto">
           {dateList.map((date) => (
             <div className="grid gap-5" key={date}>
-              <p className="text-sm text-zinc-500">
-                {new Date(date).toLocaleDateString("ko-KR", {
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
+              <p className="text-sm text-zinc-500">{date}</p>
 
-              {groupedTransactions[date].map((transaction, index) => (
+              {transactions[date].map((transaction, index) => (
                 <label key={index} className="flex justify-between items-center">
                   <div className="flex flex-col justify-between">
-                    <div className="flex items-center space-x-1">
-                      <p className="text-lg font-bold tracking-wider">
-                        - {formatCurrency(transaction.amount)}
-                        {transaction.exchangeRate === 0 ? "원" : "$"}
+                    <p className="text-lg font-bold tracking-wider">
+                      - {formatCurrency(Number(transaction.transactionAmount))}
+                      {transaction.currencyCode === "KRW"
+                        ? "원"
+                        : currencyTypeList.find((item) => item.value === transaction.currencyCode)?.text.slice(-2, -1)}
+                    </p>
+                    {transaction.currencyCode === "KRW" ? (
+                      <></>
+                    ) : (
+                      <p className="text-sm text-[#565656] tracking-wider">
+                        =
+                        {formatCurrency(
+                          Number(
+                            (
+                              Number(transaction.transactionAmount) * Number(transaction.transactionSummary.slice(-7))
+                            ).toFixed(0)
+                          )
+                        )}
+                        원 (당시 환율
+                        {Number(transaction.transactionSummary.slice(-7))}원)
                       </p>
-                      {transaction.exchangeRate === 0 ? (
-                        <></>
-                      ) : (
-                        <p className="text-sm text-[#565656] tracking-wider">
-                          = {formatCurrency(Number((transaction.amount * transaction.exchangeRate).toFixed(0)))}원 (당시
-                          환율
-                          {transaction.exchangeRate}원)
-                        </p>
-                      )}
-                    </div>
-                    <p className="text-sm text-[#565656] tracking-wider">{transaction.place}</p>
+                    )}
+                    <p className="tracking-wider">{transaction.payeeName}</p>
                   </div>
 
                   <input
@@ -177,9 +212,13 @@ const ExpenditureTransactionDetail = () => {
                     onChange={(e) =>
                       handleChecked(
                         e.target.checked,
-                        transaction.exchangeRate === 0
-                          ? transaction.amount
-                          : Number((transaction.amount * transaction.exchangeRate).toFixed(0))
+                        Number(transaction.transactionSummary.slice(-7)) === 0
+                          ? Number(transaction.transactionAmount)
+                          : Number(
+                              (
+                                Number(transaction.transactionAmount) * Number(transaction.transactionSummary.slice(-7))
+                              ).toFixed(0)
+                            )
                       )
                     }
                   />
@@ -189,6 +228,9 @@ const ExpenditureTransactionDetail = () => {
               <hr className="mb-5" />
             </div>
           ))}
+
+          {/* 무한스크롤에서 인식할 마지막 타겟 */}
+          <div ref={pageEnd} className="h-14 bg-transparent"></div>
         </div>
 
         <div className="w-full p-5 pb-8 bg-white fixed bottom-0 z-50">

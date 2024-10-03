@@ -194,6 +194,7 @@ function App() {
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
           <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
           {/* <Route path="/settlement" element={<Settlement />}></Route> */}
+          {/* <Routes path="/accounthistory/:accountNo" element={<AccountHistory />} /> */}
         </Routes>
       </BrowserRouter>
     </div>
