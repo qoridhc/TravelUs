@@ -129,8 +129,8 @@ public class ExchangeRateForecastService {
         LocalDate.now(),
         LocalDate.now().plusWeeks(2),
         cType
-    ).orElseThrow(
-        () -> new CurrencyCodeInvalidException(currencyCode)
+    ).orElse(
+        null
     );
 
     return toDto(
@@ -139,6 +139,20 @@ public class ExchangeRateForecastService {
         currencyCode
     );
   }
+
+  // -----------------------------전체 환율 기간 조회-----------------------------
+  public Map<String, ExchangeRateData> findAllRates() {
+    Map<String, ExchangeRateData> allExchangeRates = new LinkedHashMap<>();
+    for(CurrencyType ctype: CurrencyType.values()) {
+      if(ctype == CurrencyType.KRW) continue;
+      Map<String, ExchangeRateData> exchangeRate = findRatesByCurrencyCode(String.valueOf(ctype));
+      allExchangeRates.putAll(exchangeRate);
+    }
+
+    return allExchangeRates;
+  }
+
+
 
   //데이터(도메인) -> DTO
   private Map<String, ExchangeRateData> toDto(
@@ -153,8 +167,10 @@ public class ExchangeRateForecastService {
 
     // 예측 데이터를 Map으로 변환
     Map<String, Double> forecastMap = new LinkedHashMap<>();
-    for (ExchangeRateForecast rate : forecast) {
-      forecastMap.put(rate.getDate().toString(), rate.getRate());
+    if(forecast != null) {
+      for (ExchangeRateForecast rate : forecast) {
+        forecastMap.put(rate.getDate().toString(), rate.getRate());
+      }
     }
 
     // 최근 3개월치 데이터를 Map으로 변환

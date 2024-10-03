@@ -20,9 +20,15 @@ const TravelBoxTransaction = () => {
     const fetchData = async () => {
       if (!accountNo) return;
 
+      const data = {
+        accountNo: accountNo,
+        currencyCode: currencyCode,
+        orderByType: "DESC",
+      };
+
       try {
         const [transactionResponse, accountResponse] = await Promise.all([
-          accountApi.fetchTracsactionHistory(accountNo, currencyCode, "DESC"),
+          accountApi.fetchTracsactionHistory(data),
           accountApi.fetchSpecificAccountInfo(accountNo),
         ]);
 
