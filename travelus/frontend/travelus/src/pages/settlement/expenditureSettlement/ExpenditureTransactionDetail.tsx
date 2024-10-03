@@ -72,12 +72,12 @@ const ExpenditureTransactionDetail = () => {
       if (groupInfo?.groupAccountNo) {
         const data = {
           accountNo: groupInfo?.groupAccountNo,
+          transactionType: "CD",
           orderByType: "DESC",
           page: page,
           size: 10,
         };
         const response = await accountApi.fetchTracsactionHistory(data);
-        console.log("내역 : ", response);
         const newTransactions = response.data.content;
 
         // 거래내역을 날짜별로 그룹화하여 병합
@@ -145,14 +145,6 @@ const ExpenditureTransactionDetail = () => {
     }
   }, [isLoading]);
 
-  useEffect(() => {
-    console.log(transactions);
-  }, [transactions]);
-
-  useEffect(() => {
-    console.log(dateList);
-  }, [dateList]);
-
   return (
     <div className="h-full pb-8">
       <div className="flex flex-col">
@@ -176,34 +168,38 @@ const ExpenditureTransactionDetail = () => {
         <div className="p-5 overflow-y-auto">
           {dateList.map((date) => (
             <div className="grid gap-5" key={date}>
-              <p className="text-sm text-zinc-500">{date}</p>
+              <p className="text-[#565656] font-semibold">{date}</p>
 
               {transactions[date].map((transaction, index) => (
                 <label key={index} className="flex justify-between items-center">
                   <div className="flex flex-col justify-between">
-                    <p className="text-lg font-bold tracking-wider">
-                      - {formatCurrency(Number(transaction.transactionAmount))}
-                      {transaction.currencyCode === "KRW"
-                        ? "원"
-                        : currencyTypeList.find((item) => item.value === transaction.currencyCode)?.text.slice(-2, -1)}
-                    </p>
-                    {transaction.currencyCode === "KRW" ? (
-                      <></>
-                    ) : (
-                      <p className="text-sm text-[#565656] tracking-wider">
-                        =
-                        {formatCurrency(
-                          Number(
-                            (
-                              Number(transaction.transactionAmount) * Number(transaction.transactionSummary.slice(-7))
-                            ).toFixed(0)
-                          )
-                        )}
-                        원 (당시 환율
-                        {Number(transaction.transactionSummary.slice(-7))}원)
+                    <div className="flex items-center">
+                      <p className="text-lg font-bold tracking-wider">
+                        - {formatCurrency(Number(transaction.transactionAmount))}
+                        {transaction.currencyCode === "KRW"
+                          ? "원"
+                          : currencyTypeList
+                              .find((item) => item.value === transaction.currencyCode)
+                              ?.text.slice(-2, -1)}
                       </p>
-                    )}
-                    <p className="tracking-wider">{transaction.payeeName}</p>
+                      {transaction.currencyCode === "KRW" ? (
+                        <></>
+                      ) : (
+                        <p className="text-sm text-[#565656] tracking-wider">
+                          &nbsp;=&nbsp;
+                          {formatCurrency(
+                            Number(
+                              (
+                                Number(transaction.transactionAmount) * Number(transaction.transactionSummary.slice(-7))
+                              ).toFixed(0)
+                            )
+                          )}
+                          원 / 환율&nbsp;
+                          {Number(transaction.transactionSummary.slice(-7))}원
+                        </p>
+                      )}
+                    </div>
+                    <p className="text-sm text-[#565656] tracking-wider">{transaction.payeeName}</p>
                   </div>
 
                   <input
