@@ -226,17 +226,19 @@ const MeetingAccountDetail = () => {
 
             <div
               onClick={() => {
-                navigate("/transaction/detail/travelbox/1");
+                navigate(`/travelbox/transaction/${meeting.groupAccountNo}`, { state: { groupId: meeting.groupId, currencyCode: account.moneyBoxDtos[1].currencyCode } });
               }}
               className="p-5 flex flex-col space-y-5">
-              <div className="flex flex-col space-y-1">
+              <div className="flex flex-col space-y-5">
                 {account.moneyBoxDtos.length > 1 ? (
                   <>
-                    <p>트래블박스</p>
-                    <p className="text-2xl font-bold">
-                      {formatCurrency(account.moneyBoxDtos[1].balance)}
-                      <span>{account.moneyBoxDtos[1].currencyCode}</span>
-                    </p>
+                    <div className="flex flex-col space-y-1">
+                      <p>트래블박스</p>
+                      <p className="text-2xl font-bold">
+                        {formatCurrency(account.moneyBoxDtos[1].balance)}
+                        <span>{account.moneyBoxDtos[1].currencyCode}</span>
+                      </p>
+                    </div>
                     <div className="flex justify-between">
                       <button
                         onClick={(e) => {

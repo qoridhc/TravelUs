@@ -15,7 +15,6 @@ import MeetingAccountManagement from "./pages/account/meetingAccount/MeetingAcco
 import MeetingAccountGroupMember from "./pages/account/meetingAccount/MeetingAccountGroupMember";
 import JoinedMeetingAccountDetail from "./pages/account/meetingAccount/JoinedMeetingAccountDetail";
 import AccountTransaction from "./pages/account/AccountTransaction";
-import AccountHistory from "./pages/accountHistory/AccountHistory";
 import TransferSelectBank from "./pages/transfer/TransferSelectBank";
 import TransferSetMoney from "./pages/transfer/TransferSetMoney";
 import TransferPassword from "./pages/transfer/TransferPassword";
@@ -50,7 +49,7 @@ import PasswordOfCreateMeetingAccount from "./pages/meetingAccount/PasswordOfCre
 import CheckPasswordOfCreateMeetingAccount from "./pages/meetingAccount/CheckPasswordOfCreateMeetingAccount";
 import CompletedOfCreateMeetingAccount from "./pages/meetingAccount/CompletedOfCreateMeetingAccount";
 import IDVerificationOfCreateMeetingAccount from "./pages/meetingAccount/IDVerificationOfCreateMeetingAccount";
-import TravelBoxTransaction from "./pages/travelBox/TravelBoxTransactionDetail";
+import TravelBoxTransaction from "./pages/travelBox/TravelBoxTransaction";
 import MeetingTransaction from "./pages/meetingAccount/MeetingTransaction";
 import CurrencyInfoOfCreateTravelBox from "./pages/travelBox/CurrencyInfoOfCreateTravelBox";
 import AutoCurrencyExchangeOfCreateTravelBox from "./pages/travelBox/AutoCurrencyExchangeOfCreateTravelBox";
@@ -106,7 +105,6 @@ function App() {
 
           {/* 회원 */}
           <Route path="/login" element={<Login />} />
-          {/* <Route path="/signup" element={<SignUp />} /> */}
           <Route path="/signup" element={<SignUpBasicInformation />} />
           <Route path="/signup/address" element={<SignUpAddress />} />
           <Route path="/mypage" element={<MyPage />} />
@@ -135,7 +133,6 @@ function App() {
           {/* 모임통장 상세 */}
           <Route path="/meetingaccount/:id" element={<MeetingAccountDetail />} />
           <Route path="/joinedmeetingaccount/:id" element={<JoinedMeetingAccountDetail />} />
-          <Route path="/accounthistory/:accountNo" element={<AccountHistory />} />
           <Route path="/meetingaccount/management/:id" element={<MeetingAccountManagement />} />
           <Route path="/meetingaccount/management/:id/groupmember" element={<MeetingAccountGroupMember />} />
           <Route path="/meeting/invite/:code" element={<InvitationOfMeeting />} />
@@ -145,7 +142,7 @@ function App() {
           {/* 통장 내역 */}
           <Route path="/transaction/:accountNo" element={<AccountTransaction />} />
           <Route path="/meetingtransaction/:accountNo" element={<MeetingTransaction />} />
-          <Route path="/transaction/detail/travelbox/:id" element={<TravelBoxTransaction />} />
+          <Route path="/travelbox/transaction/:accountNo" element={<TravelBoxTransaction />} />
 
           {/* 트래블박스 생성 */}
           <Route path="/travelbox/create/prepare" element={<TravelBoxCreatePrepare />} />
