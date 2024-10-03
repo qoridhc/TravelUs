@@ -20,8 +20,13 @@ const MeetingTransaction = () => {
       if (!accountNo) return;
 
       try {
+        const data = {
+          accountNo: accountNo,
+          currencyCode: "KRW",
+          orderByType: "DESC",
+        };
         const [transactionResponse, accountResponse] = await Promise.all([
-          accountApi.fetchTracsactionHistory(accountNo, "KRW", "DESC"),
+          accountApi.fetchTracsactionHistory(data),
           accountApi.fetchSpecificAccountInfo(accountNo),
         ]);
 

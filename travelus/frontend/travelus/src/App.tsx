@@ -135,7 +135,6 @@ function App() {
           {/* 모임통장 상세 */}
           <Route path="/meetingaccount/:id" element={<MeetingAccountDetail />} />
           <Route path="/joinedmeetingaccount/:id" element={<JoinedMeetingAccountDetail />} />
-          <Route path="/accounthistory/:accountNo" element={<AccountHistory />} />
           <Route path="/meetingaccount/management/:id" element={<MeetingAccountManagement />} />
           <Route path="/meetingaccount/management/:id/groupmember" element={<MeetingAccountGroupMember />} />
           <Route path="/meeting/invite/:code" element={<InvitationOfMeeting />} />
@@ -197,6 +196,7 @@ function App() {
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
           <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
           {/* <Route path="/settlement" element={<Settlement />}></Route> */}
+          {/* <Routes path="/accounthistory/:accountNo" element={<AccountHistory />} /> */}
         </Routes>
       </BrowserRouter>
     </div>
