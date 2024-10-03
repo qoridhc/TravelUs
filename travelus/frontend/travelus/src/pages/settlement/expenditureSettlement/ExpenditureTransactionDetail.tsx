@@ -46,7 +46,7 @@ const ExpenditureTransactionDetail = () => {
   };
 
   const handleNext = () => {
-    navigate("/settlement/expenditure/info", { state: { selectAmmount } });
+    navigate(`/settlement/expenditure/participants/${id}`, { state: { totalAmount: selectAmmount } });
   };
 
   // 무한스크롤 데이터 요청을 위해 page를 증가시키는 함수

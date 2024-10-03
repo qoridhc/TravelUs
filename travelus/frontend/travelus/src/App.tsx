@@ -189,7 +189,7 @@ function App() {
           <Route
             path="/settlement/expenditure/transaction/detail/:id"
             element={<ExpenditureTransactionDetail />}></Route>
-          <Route path="/settlement/expenditure/info" element={<ExpenditureSettlementInfo />}></Route>
+          <Route path="/settlement/expenditure/participants/:id" element={<ExpenditureSettlementInfo />}></Route>
           <Route path="/settlement/expenditure/completed" element={<ExpenditureSettlementCompleted />}></Route>
 
           {/* ver1 */}

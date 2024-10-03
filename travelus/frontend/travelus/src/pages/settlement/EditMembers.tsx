@@ -29,7 +29,9 @@ const EditMembers = () => {
         },
       });
     } else {
-      navigate("/settlement/expenditure/info", { state: { members: selectedMembers } });
+      navigate(`/settlement/expenditure/participants/${id}`, {
+        state: { members: selectedMembers, totalAmount: location.state.totalAmount },
+      });
     }
   };
 
