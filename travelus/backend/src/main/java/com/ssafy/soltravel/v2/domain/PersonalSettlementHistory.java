@@ -31,6 +31,9 @@ public class PersonalSettlementHistory {
   //정산 금액
   private double amount;
 
+  //남은 금액
+  private double remainingAmount;
+
   //정산 여부
   private boolean isSettled;
 
@@ -38,6 +41,7 @@ public class PersonalSettlementHistory {
     PersonalSettlementHistory personalSettlementHistory = new PersonalSettlementHistory();
     personalSettlementHistory.participant = participant;
     personalSettlementHistory.amount = amount;
+    personalSettlementHistory.remainingAmount = amount;
     personalSettlementHistory.isSettled = false;
     return personalSettlementHistory;
   }

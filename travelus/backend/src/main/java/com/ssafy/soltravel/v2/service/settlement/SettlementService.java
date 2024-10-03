@@ -20,6 +20,7 @@ import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
 import com.ssafy.soltravel.v2.exception.group.GroupMasterNotFoundException;
 import com.ssafy.soltravel.v2.exception.participant.ParticipantNotFoundException;
+import com.ssafy.soltravel.v2.exception.settlement.PersonalSettlementHistoryNotFoundException;
 import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.PersonalSettlementHistoryRepository;
 import com.ssafy.soltravel.v2.service.account.AccountService;
@@ -193,10 +194,29 @@ public class SettlementService {
   public ResponseEntity<List<TransferHistoryResponseDto>> postPersonalSettlementTransfer(
       PersonalSettlementTransferRequestDto requestDto) {
 
-    //TODO: 일반이체로직
-    transactionService.postGeneralTransfer(new TransferRequestDto());
-    //TODO: 정산금 모두 정산했다면 true로 변경
+    ResponseEntity<List<TransferHistoryResponseDto>> response = transactionService.postGeneralTransfer(
+        TransferRequestDto.builder().transferType(TransferType.G).withdrawalAccountNo(requestDto.getWithdrawalAccountNo())
+            .withdrawalTransactionSummary(requestDto.getWithdrawalTransactionSummary())
+            .depositAccountNo(requestDto.getDepositAccountNo())
+            .depositTransactionSummary(requestDto.getDepositTransactionSummary()).accountPassword(requestDto.getAccountPassword())
+            .transactionBalance(requestDto.getTransactionBalance()).build());
 
-    return null;
+    long historyId = requestDto.getPersonalSettlementHistoryId();
+    PersonalSettlementHistory history = personalSettlementHistoryRepository.findById(historyId)
+        .orElseThrow(() -> new PersonalSettlementHistoryNotFoundException(historyId));
+
+    BigDecimal currentRemainingAmount = BigDecimal.valueOf(history.getRemainingAmount());
+    BigDecimal transactionAmount = BigDecimal.valueOf(requestDto.getTransactionBalance());
+
+    BigDecimal afterRemainingAmount = currentRemainingAmount.subtract(transactionAmount);
+    history.setRemainingAmount(afterRemainingAmount.doubleValue());
+
+    if (afterRemainingAmount.compareTo(BigDecimal.ZERO) <= 0) {
+
+      history.setSettled(true);
+      personalSettlementHistoryRepository.save(history);
+    }
+
+    return response;
   }
 }
