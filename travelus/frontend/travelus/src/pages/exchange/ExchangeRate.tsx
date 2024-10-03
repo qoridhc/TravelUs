@@ -18,7 +18,7 @@ const ExchangeRateItem: React.FC<ExchangeRateInfo> = ({ currencyCode, exchangeRa
 
   return (
     <div
-      className="m-3 flex items-center justify-between p-4 border-b cursor-pointer hover:bg-gray-100"
+      className="p-8 flex items-center justify-between border-b cursor-pointer hover:bg-gray-100"
       onClick={handleClick}>
       <div className="flex items-center">
         <img src={flagImagePath} alt={`${currencyCode} flag`} className="w-8 h-5 mr-2 object-cover rounded" />
@@ -39,11 +39,13 @@ const ExchangeRateList: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchExchangeRates = async () => {
       try {
         const data = await exchangeRateApi.getExchangeRates();
-        const filteredRates = data.filter((rate) => ["USD", "JPY", "EUR", "CNY"].includes(rate.currencyCode));
+        const filteredRates = data.filter((rate) => ["USD", "JPY", "EUR", "TWD"].includes(rate.currencyCode));
         setExchangeRates(filteredRates);
         setIsLoading(false);
       } catch (err) {
@@ -71,7 +73,6 @@ const ExchangeRateList: React.FC = () => {
           <GoHome className="w-6 h-6 text-gray-600" />
         </Link>
         <div className="bg-white rounded-lg shadow mb-4">
-          <h2 className="p-4 text-lg font-bold">실시간 환율</h2>
           {exchangeRates.map((rate, index) => (
             <ExchangeRateItem key={index} {...rate} />
           ))}
