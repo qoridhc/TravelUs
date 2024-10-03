@@ -70,6 +70,7 @@ import CheckPasswordOfCreateCard from "./pages/card/cardCreate/CheckPasswordOfCr
 import PasswordOfBalanceSettlement from "./pages/settlement/balanceSettlement/PasswordOfBalanceSettlement";
 import AddressOfCreateCard from "./pages/card/cardCreate/AddressOfCreateCard";
 import CompletedOfCreateCard from "./pages/card/cardCreate/CompletedOfCreateCard";
+import CardDetail from "./pages/card/cardDetail/CardDetail";
 
 function App() {
   return (
@@ -155,6 +156,9 @@ function App() {
           <Route path="/card/:groupId/create/password/check" element={<CheckPasswordOfCreateCard />} />
           <Route path="/card/:groupId/create/address" element={<AddressOfCreateCard />} />
           <Route path="/card/:groupId/create/completed" element={<CompletedOfCreateCard />} />
+
+          {/* 카드 상세 */}
+          <Route path="/card/:groupId" element={<CardDetail />} />
 
           {/* 이체 */}
           <Route path="/transfer/selectbank" element={<TransferSelectBank />} />

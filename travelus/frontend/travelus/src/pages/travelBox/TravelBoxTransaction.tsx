@@ -32,7 +32,6 @@ const TravelBoxTransaction = () => {
 
         if (accountResponse.status === 201) {
           setAccount(accountResponse.data);
-          console.log(accountResponse.data);
         }
       } catch (error) {
         console.error("데이터 조회 실패", error);
