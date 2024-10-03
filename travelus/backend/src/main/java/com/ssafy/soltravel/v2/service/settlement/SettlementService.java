@@ -16,6 +16,7 @@ import com.ssafy.soltravel.v2.dto.settlement.request.SettlementRequestDto;
 import com.ssafy.soltravel.v2.dto.settlement.response.PersonalSettlementTransferResponseDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
+import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
 import com.ssafy.soltravel.v2.exception.group.GroupMasterNotFoundException;
 import com.ssafy.soltravel.v2.exception.participant.ParticipantNotFoundException;
@@ -165,9 +166,8 @@ public class SettlementService {
       Participant participant = participantRepository.findById(request.getParticipantId())
           .orElseThrow(() -> new ParticipantNotFoundException(request.getParticipantId()));
 
-      PersonalSettlementHistory history = PersonalSettlementHistory.builder().participant(participant).amount(request.getAmount())
-          .isSettled(false).build();
-
+      PersonalSettlementHistory history = PersonalSettlementHistory.createPersonalSettlementHistory(participant,
+          request.getAmount());
       personalSettlementHistoryRepository.save(history);
 
       //TODO: 알림 보내기
@@ -194,7 +194,7 @@ public class SettlementService {
       PersonalSettlementTransferRequestDto requestDto) {
 
     //TODO: 일반이체로직
-
+    transactionService.postGeneralTransfer(new TransferRequestDto());
     //TODO: 정산금 모두 정산했다면 true로 변경
 
     return null;

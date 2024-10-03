@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,7 +16,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class PersonalSettlementHistory {
 
   @Id
@@ -35,4 +33,12 @@ public class PersonalSettlementHistory {
 
   //정산 여부
   private boolean isSettled;
+
+  public static PersonalSettlementHistory createPersonalSettlementHistory(Participant participant, double amount) {
+    PersonalSettlementHistory personalSettlementHistory = new PersonalSettlementHistory();
+    personalSettlementHistory.participant = participant;
+    personalSettlementHistory.amount = amount;
+    personalSettlementHistory.isSettled = false;
+    return personalSettlementHistory;
+  }
 }
