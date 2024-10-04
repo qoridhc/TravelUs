@@ -137,10 +137,6 @@ public class SettlementService {
     BigDecimal krwAmount = new BigDecimal(settlementRequestDto.getAmounts().get(0)); // 원화 금액
     BigDecimal transactionBalance = transactionAmount.add(krwAmount);
 
-    LogUtil.info("재환전된 원화 금액", transactionAmount);
-    LogUtil.info("정산신청 원화 금액", krwAmount);
-    LogUtil.info("정산될 총액", transactionBalance.toString());
-
     transactionService.postAccountWithdrawal(
         new TransactionRequestDto(settlementRequestDto.getAccountNo(), settlementRequestDto.getAccountPassword(),
             CurrencyType.KRW, TransactionType.SW, transactionBalance.toString(), "자동 정산 출금"), masterUserId);
