@@ -56,13 +56,13 @@ export const setupChart = (currencyCode: string, formatExchangeRate: (value: num
     },
     elements: {
       line: {
-        borderColor: isIncreasing ? 'rgb(255, 99, 132)' : 'rgb(75, 192, 192)',
+        borderColor: isIncreasing ? 'rgb(221, 82, 87)' : 'rgb(72, 128, 238)',
         tension: 0.1,
       },
       point: {
         radius: 0,
         hoverRadius: 7,
-        backgroundColor: isIncreasing ? 'rgb(255, 99, 132)' : 'rgb(75, 192, 192)',
+        backgroundColor: isIncreasing ? 'rgb(221, 82, 87)' : 'rgb(72, 128, 238)',
       },
     },
     interaction: {

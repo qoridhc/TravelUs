@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate, useLocation } from "react-router";
 import { MdKeyboardArrowRight } from "react-icons/md";
-import { MeetingAccountInfo } from "../../../types/account";
+import { MeetingAccountInfo, TransactionNew, AccountInfoNew } from "../../../types/account";
 import { accountApi } from "../../../api/account";
 
 const CardDetail: React.FC = (props) => {
@@ -10,19 +10,39 @@ const CardDetail: React.FC = (props) => {
   const location = useLocation();
   const groupId = location.state.groupId;
   const [meeting, setMeeting] = useState<MeetingAccountInfo | null>(null);
+  const [account, setAccount] = useState<AccountInfoNew | null>(null);
+  const [transactionList, setTransactionList] = useState<TransactionNew[]>([]);
+  const [domesticTotal, setDomesticTotal] = useState(0); // 국내 금액 누적 합계
+  const [foreignTotal, setForeignTotal] = useState(0); // 해외 금액 누적 합계
 
-  // 특정 모임 조회 API 호출
-  const fetchSpecificMeetingAccount = async () => {
-    try {
-      const response = await accountApi.fetchSpecificMeetingAccount(Number(groupId));
-      if (response.status === 200) {
-        const meetingData = response.data;
-        setMeeting(meetingData);
-        console.log(meetingData);
-      }
-    } catch (error) {
-      console.error("모임 조회 에러", error);
-    }
+  const currencySymbols: { [key: string]: string } = {
+    KRW: "원",
+    USD: "$",
+    EUR: "€",
+    CNY: "¥",
+    JPY: "¥",
+  };
+
+  const fetchSpecificMeetingAccount = () => {
+    accountApi
+      .fetchSpecificMeetingAccount(Number(groupId))
+      .then((response) => {
+        if (response.status === 200) {
+          const meetingData = response.data;
+          setMeeting(meetingData);
+
+          // 두 개의 비동기 요청을 순차적으로 호출
+          return Promise.all([
+            fetchTransactionHistory(meetingData.groupAccountNo),
+            fetchSpecificAccountInfo(meetingData.groupAccountNo),
+          ]);
+        } else {
+          console.log("모임 조회 실패");
+        }
+      })
+      .catch((error) => {
+        console.error("모임 조회 에러", error);
+      });
   };
 
   useEffect(() => {
@@ -42,9 +62,61 @@ const CardDetail: React.FC = (props) => {
     return `${firstFourDigits} ${middleDigits}${maskedSection} ${lastFourDigits}`;
   };
 
+  const fetchTransactionHistory = async (accountNo: string) => {
+    try {
+      const data = {
+        accountNo: accountNo,
+        orderByType: "DESC",
+        transactionType: "CD",
+      };
+
+      console.log(data);
+      const response = await accountApi.fetchTracsactionHistory(data);
+
+      if (response.status === 200) {
+        setTransactionList(response.data.content);
+        calculateTotals(response.data.content);
+      }
+    } catch (error) {
+      console.error("카드 내역 조회 실패", error);
+    }
+  };
+
+  const fetchSpecificAccountInfo = async (accountNo: string) => {
+    try {
+      const response = await accountApi.fetchSpecificAccountInfo(accountNo);
+      if (response.status === 201) {
+        setAccount(response.data);
+        console.log("계좌 조회 성공", response.data);
+      }
+    } catch (error) {
+      console.error("계좌 조회 에러", error);
+    }
+  };
+
+  const calculateTotals = (transactions: TransactionNew[]) => {
+    let domesticSum = 0;
+    let foreignSum = 0;
+
+    transactions.forEach((transaction) => {
+      if (transaction.currencyCode === "KRW") {
+        domesticSum += Number(transaction.transactionAmount);
+      } else {
+        foreignSum += Number(transaction.transactionAmount);
+      }
+    });
+
+    setDomesticTotal(domesticSum);
+    setForeignTotal(foreignSum);
+  };
+
+  const formatCurrencyNum = (amount: number) => {
+    return new Intl.NumberFormat("ko-KR").format(amount);
+  };
+
   return (
     <>
-      {meeting && (
+      {meeting && account && (
         <div className="h-full p-5 pb-8 bg-[#F3F4F6]">
           <div className="flex flex-col space-y-5">
             <div className="grid grid-cols-3 items-center">
@@ -54,7 +126,7 @@ const CardDetail: React.FC = (props) => {
                 }}
                 className="text-2xl"
               />
-              <p className="text-lg text-center">모임 카드</p>
+              <p className="text-lg text-center">모임카드</p>
             </div>
 
             <div className="w-full p-5 bg-white rounded-3xl space-y-4">
@@ -74,9 +146,22 @@ const CardDetail: React.FC = (props) => {
 
             <div className="w-full bg-white rounded-3xl">
               <div className="p-5 space-y-5">
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <p className="text-zinc-500">이번 여행 쓴 금액</p>
-                  <p className="text-2xl font-semibold">0원</p>
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-center">
+                      <p className="text-zinc-600">국내</p>
+                      <p className="text-2xl font-semibold">
+                        {formatCurrencyNum(domesticTotal)} {currencySymbols[account.moneyBoxDtos[0].currencyCode]}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <p className="text-zinc-600">해외</p>
+                      <p className="text-2xl font-semibold">
+                        {formatCurrencyNum(foreignTotal)} {currencySymbols[account.moneyBoxDtos[1].currencyCode]}
+                      </p>
+                    </div>
+                  </div>
                 </div>
                 <div className="flex justify-between">
                   <p className="text-zinc-600">카드 신청 끝</p>
@@ -86,7 +171,11 @@ const CardDetail: React.FC = (props) => {
 
               <div className="w-full border border-zinc-100"></div>
 
-              <div className="p-4">
+              <div
+                onClick={() => {
+                  navigate(`/cardtransaction/${meeting.groupId}`);
+                }}
+                className="p-4">
                 <p className="text-center text-zinc-500">내역 더 보기</p>
               </div>
             </div>
@@ -115,7 +204,9 @@ const CardDetail: React.FC = (props) => {
                 <div className="flex justify-between items-center">
                   <p className="text-zinc-500">연결 계좌</p>
                   <div
-                    onClick={() => {navigate(`/meetingaccount/${meeting.groupId}`)}}
+                    onClick={() => {
+                      navigate(`/meetingaccount/${meeting.groupId}`);
+                    }}
                     className="flex items-center space-x-2">
                     <p className="text-zinc-600">{meeting.groupName}</p>
                     <MdKeyboardArrowRight className="text-2xl text-zinc-400" />
