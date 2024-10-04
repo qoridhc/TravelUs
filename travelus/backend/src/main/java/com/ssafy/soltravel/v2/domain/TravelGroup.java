@@ -27,29 +27,29 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class TravelGroup {
 
-	@Id
-	@Column(name = "group_id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long groupId;
+    @Id
+    @Column(name = "group_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long groupId;
 
-	private String groupAccountNo;
+    private String groupAccountNo;
 
-	private String travelStartDate;
+    private String travelStartDate;
 
-	private String travelEndDate;
+    private String travelEndDate;
 
-	private String groupName;
+    private String groupName;
 
-	private String icon;
+    private String icon;
 
-	@CreatedDate
-	private LocalDateTime createdAt;
+    @CreatedDate
+    private LocalDateTime createdAt;
 
-	@LastModifiedDate
-	private LocalDateTime updatedAt;
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
-	@OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Participant> participants;
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Participant> participants;
 
 	@OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<PersonalSettlementHistory> settlementHistories;
@@ -63,6 +63,6 @@ public class TravelGroup {
 				.icon(requestDto.getIcon())
 				.build();
 
-			return travelGroup;
-	}
+        return travelGroup;
+    }
 }

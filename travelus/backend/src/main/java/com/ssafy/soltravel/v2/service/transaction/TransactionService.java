@@ -225,6 +225,8 @@ public class TransactionService {
             notificationService.sendExchangeNotification(user, requestDto);
         }
 
+        // 추후 자동 환전 메시지 로직 추가
+
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
