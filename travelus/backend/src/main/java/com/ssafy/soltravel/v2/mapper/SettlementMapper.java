@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 public interface SettlementMapper {
 
   @Mapping(source = "id", target = "personalSettlementId")
+  @Mapping(source="createdAt", target = "settlementRequestTime")
   PersonalSettlementHistoryDto toPersonalSettlementHistoryDto(PersonalSettlementHistory personalSettlementHistory);
 
   List<PersonalSettlementHistoryDto> toPersonalSettlementHistoryDtos(List<PersonalSettlementHistory> personalSettlementHistoryList);
