@@ -1,21 +1,21 @@
 package com.ssafy.soltravel.v2.mapper;
 
-import lombok.RequiredArgsConstructor;
+import com.ssafy.soltravel.v2.domain.Participant;
+import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
+import java.util.List;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 
-@RequiredArgsConstructor
-public class ParticipantMapper {
+@Mapper(componentModel = "spring", uses = ParticipantMapper.class)
+public interface ParticipantMapper {
 
-//    public static ParticipantDto toDto(Participant participant) {
-//
-//        ParticipantDto participantDto = ParticipantDto.builder()
-//            .participantId(participant.getId())
-//            .userInfo(UserMapper.convertUserToProfileResponseDto(participant.getUser()))
-//            .isMaster(participant.isMaster())
-//            .createdAt(participant.getCreatedAt())
-//            .updatedAt(participant.getUpdatedAt())
-//            .build();
-//
-//        return participantDto;
-//    }
+    @Mapping(source = "id", target = "participantId")
+    @Mapping(source = "user.userId", target = "userId")
+    @Mapping(source = "user.name", target = "userName")
+    @Mapping(source = "user.profile", target = "profile")
+    ParticipantDto toParticipantDto(Participant participant);
+
+    List<ParticipantDto> toParticipantDtoList(List<Participant> participants);
+
 }
