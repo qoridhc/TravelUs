@@ -4,6 +4,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router";
 import { accountApi } from "../../api/account";
 import { AccountInfoNew, TransactionNew } from "../../types/account";
+import { currencyTypeList } from "../../types/exchange";
 
 const TravelBoxTransaction = () => {
   const navigate = useNavigate();
@@ -14,7 +15,15 @@ const TravelBoxTransaction = () => {
   const [account, setAccount] = useState<AccountInfoNew>();
   const [transactionList, setTransactionList] = useState<TransactionNew[]>([]);
   const depositTransactionType = ["D", "TD", "ED", "SD"];
-  const withdrawTransactionType = ["W", "TW", "EW", "SW"];
+  const withdrawTransactionType = ["W", "TW", "EW", "SW", "CW"];
+
+  const currencySymbols: { [key: string]: string } = {
+    KRW: "원",
+    USD: "$",
+    EUR: "€",
+    CNY: "¥",
+    JPY: "¥",
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,13 +43,14 @@ const TravelBoxTransaction = () => {
 
         if (transactionResponse.status === 200) {
           setTransactionList(transactionResponse.data.content);
+          console.log("거래 내역 조회 성공", transactionResponse.data.content);
         }
 
         if (accountResponse.status === 201) {
           setAccount(accountResponse.data);
         }
       } catch (error) {
-        console.error("데이터 조회 실패", error);
+        console.error("거래 내역 조회 실패", error);
       }
     };
 
@@ -89,13 +99,10 @@ const TravelBoxTransaction = () => {
           <div className="p-5">
             <div className="my-10 space-y-3">
               <p className="text-zinc-500 underline underline-offset-2">
-                {currencyCode === "USD" && "USD (미국 / $)"}
-                {currencyCode === "JPY" && "JPY (일본 / ¥)"}
-                {currencyCode === "EUR" && "EUR (유로 / €)"}
-                {currencyCode === "CNY" && "CNY (중국 / ¥)"}
+                {currencyTypeList.find((item) => item.value === account.moneyBoxDtos[1].currencyCode)?.text}
               </p>
               <p className="text-3xl font-bold">
-                {formatCurrencyNum(account.moneyBoxDtos[1].balance)} {currencyCode}
+                {formatCurrencyNum(account.moneyBoxDtos[1].balance)} {currencySymbols[currencyCode]}
               </p>
             </div>
 
@@ -126,17 +133,21 @@ const TravelBoxTransaction = () => {
                 {groupedTransactions[date].map((transaction, index) => (
                   <div key={index} className="flex flex-col items-center">
                     <div className="w-full flex justify-between">
-                      <p className="text-lg font-semibold">{transaction.transactionSummary}</p>
+                      {transaction.transactionType === "ED" ? (
+                        <p className="text-lg font-semibold">트래블박스 환전</p>
+                      ) : (
+                        <p className="text-lg font-semibold">{transaction.payeeName}</p>
+                      )}
 
                       {withdrawTransactionType.includes(transaction.transactionType) ? (
                         <p className="text-lg tracking-wider">
                           - {formatCurrency(transaction.transactionAmount)}
-                          {currencyCode}
+                          {currencySymbols[currencyCode]}
                         </p>
                       ) : (
                         <p className="text-lg text-[#026CE1] tracking-wider">
                           {formatCurrency(transaction.transactionAmount)}
-                          {currencyCode}
+                          {currencySymbols[currencyCode]}
                         </p>
                       )}
                     </div>
@@ -152,7 +163,7 @@ const TravelBoxTransaction = () => {
 
                       <p className="text-sm text-right text-zinc-500 tracking-wider">
                         {formatCurrency(transaction.transactionBalance)}
-                        {currencyCode}
+                        {currencySymbols[currencyCode]}
                       </p>
                     </div>
                   </div>
