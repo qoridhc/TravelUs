@@ -1,7 +1,9 @@
 package com.ssafy.soltravel.v2.dto.settlement.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ssafy.soltravel.v2.domain.Enum.SettlementStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,4 +26,8 @@ public class PersonalSettlementHistoryDto {
 
   @Schema(description = "개별 지출 정산 완료 여부(COMPLETED: 정산 완료, NOT_COMPLETED: 정산 미완료)",example = "NOT_COMPLETED")
   private SettlementStatus isSettled;
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+  @Schema(description = "개별 지출 정산 요청 시각",example = "2024-10-04'T'14:05:13")
+  private LocalDateTime settlementRequestTime;
 }
