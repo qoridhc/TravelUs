@@ -27,6 +27,7 @@ import com.ssafy.soltravel.v2.service.user.UserService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,18 +44,19 @@ public class NotificationService {
 
     private static final String DEFAULT_ICON_URL = "/sol_favicon.ico"; // 아이콘 상수
 
-    private final SecurityUtil securityUtil;
 
     private final RedisTemplate<String, SseEmitter> redisTemplate; // RedisTemplate을 사용하여 Redis에 접근
 
     private final UserService userService;
     private final AccountService accountService;
 
-    private final NotificationRepository notificationRepository;
-    private final FcmTokenRepository fcmTokenRepository;
-    private final NotificationMapper notificationMapper;
     private final UserRepository userRepository;
+    private final FcmTokenRepository fcmTokenRepository;
+    private final NotificationRepository notificationRepository;
 
+    private final NotificationMapper notificationMapper;
+
+    private final SecurityUtil securityUtil;
 
     // 토큰 레디스 저장
     public ResponseDto saveFcmToken(RegisterNotificationRequestDto requestDto) {
@@ -255,6 +257,16 @@ public class NotificationService {
         return null;
     }
 
+
+    public List<NotificationDto> getAllByUserId(Long userId) {
+
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new UserNotFoundException(userId));
+
+        List<Notification> notificationList = notificationRepository.findAllByUser_userId(userId);
+
+        return notificationMapper.toDtoList(notificationList);
+
+    }
 
 }
 
