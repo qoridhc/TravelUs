@@ -22,6 +22,7 @@ import com.ssafy.soltravel.v2.exception.group.NotGroupMasterException;
 import com.ssafy.soltravel.v2.exception.participant.ParticipantNotFoundException;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.GroupMapper;
+import com.ssafy.soltravel.v2.mapper.ParticipantMapper;
 import com.ssafy.soltravel.v2.repository.GroupRepository;
 import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
@@ -65,6 +66,7 @@ public class GroupService {
 
     private final String BASE_URL = "/accounts/";
     private final CardService cardService;
+    private final ParticipantMapper participantMapper;
 
     /*
      * 모임 관련 메서드
@@ -202,7 +204,7 @@ public class GroupService {
         // 4. 참여자 -> 모임 추가
         participantRepository.save(participant);
 
-        ParticipantDto participantDto = groupMapper.toParticipantDto(participant);
+        ParticipantDto participantDto = participantMapper.toParticipantDto(participant);
 
         return participantDto;
     }

@@ -5,22 +5,30 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushNotification;
 import com.ssafy.soltravel.v1.dto.user.UserDetailDto;
+import com.ssafy.soltravel.v2.domain.Notification;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.domain.redis.RedisFcm;
 import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.targetAccountDto;
+import com.ssafy.soltravel.v2.dto.notification.NotificationDto;
 import com.ssafy.soltravel.v2.dto.notification.PushNotificationRequestDto;
 import com.ssafy.soltravel.v2.dto.notification.RegisterNotificationRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
 import com.ssafy.soltravel.v2.exception.notification.FcmTokenNotFound;
+import com.ssafy.soltravel.v2.exception.notification.NotificationNotFoundException;
+import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
+import com.ssafy.soltravel.v2.mapper.NotificationMapper;
+import com.ssafy.soltravel.v2.repository.NotificationRepository;
+import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.repository.redis.FcmTokenRepository;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.service.user.UserService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,12 +45,19 @@ public class NotificationService {
 
     private static final String DEFAULT_ICON_URL = "/sol_favicon.ico"; // 아이콘 상수
 
-    private final FcmTokenRepository fcmTokenRepository;
+
     private final RedisTemplate<String, SseEmitter> redisTemplate; // RedisTemplate을 사용하여 Redis에 접근
-    private final SecurityUtil securityUtil;
 
     private final UserService userService;
     private final AccountService accountService;
+
+    private final UserRepository userRepository;
+    private final FcmTokenRepository fcmTokenRepository;
+    private final NotificationRepository notificationRepository;
+
+    private final NotificationMapper notificationMapper;
+
+    private final SecurityUtil securityUtil;
 
     // 토큰 레디스 저장
     public ResponseDto saveFcmToken(RegisterNotificationRequestDto requestDto) {
@@ -91,6 +106,9 @@ public class NotificationService {
             resultMap.put("message", "요청 실패");
             resultMap.put("exception", e.getMessage());
         }
+
+        // 알림 저장
+        saveNotification(requestDto);
 
         return new ResponseEntity<>(resultMap, status);
     }
@@ -226,6 +244,50 @@ public class NotificationService {
         return ResponseEntity.ok().body(new ResponseDto());
     }
 
+    public ResponseEntity<?> saveNotification(PushNotificationRequestDto requestDto) {
+
+        User user = userRepository.findByUserId(requestDto.getTargetUserId())
+            .orElseThrow(() -> new UserNotFoundException(requestDto.getTargetUserId()));
+
+        Notification notification = Notification.createNotification(user, requestDto);
+
+        notificationRepository.save(notification);
+
+        NotificationDto notificationDto = notificationMapper.toDto(notification);
+
+        return null;
+    }
+
+
+    public List<NotificationDto> getAllByUserId() {
+
+        User user = securityUtil.getUserByToken();
+
+        List<Notification> notificationList = notificationRepository.findAllByUser_userId(user.getUserId());
+
+        return notificationMapper.toDtoList(notificationList);
+    }
+
+    public ResponseDto readAllNotifications() {
+
+        User user = securityUtil.getUserByToken();
+
+        notificationRepository.readAllNotifications(user.getUserId());
+
+        return new ResponseDto();
+    }
+
+    public ResponseDto deleteNotification(Long notificationId) {
+        User user = securityUtil.getUserByToken();
+
+        notificationRepository.findById(notificationId)
+            .orElseThrow(() -> new NotificationNotFoundException(notificationId));
+
+        notificationRepository.deleteById(notificationId);
+
+        return new ResponseDto();
+
+    }
 
 }
 
