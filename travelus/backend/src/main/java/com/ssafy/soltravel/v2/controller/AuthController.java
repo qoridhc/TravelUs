@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -97,11 +98,17 @@ public class AuthController {
     return ResponseEntity.ok().body(response);
   }
 
-
-  @PostMapping("/id-card")
-  public ResponseEntity ocrIdCard(@ModelAttribute AuthOcrIdCardRequestDto request) {
+  @Operation(summary = "신분증 인식", description = "신분증 이미지로 이름과 주민등록번호 정보를 받아옵니다.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "조회 성공", content = @Content(schema = @Schema(implementation = AuthOcrIdCardResponseDto.class))),
+      @ApiResponse(responseCode = "404", description = "잘못된 요청", content = @Content),
+      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+  })
+  @PostMapping(value = "/id-card", consumes = "multipart/form-data")
+  public ResponseEntity ocrIdCard(@ModelAttribute AuthOcrIdCardRequestDto request)
+      throws IOException {
       LogUtil.info("민증 인식 요청", request.toString());
-    AuthOcrIdCardResponseDto response = authService.ocrIdCard(request);
+    String response = authService.ocrIdCard(request);
     return ResponseEntity.ok().body(response);
   }
 
