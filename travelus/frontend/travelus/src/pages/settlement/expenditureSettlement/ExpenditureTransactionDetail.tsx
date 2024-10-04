@@ -192,7 +192,7 @@ const ExpenditureTransactionDetail = () => {
                   <div className="row-span-2 grid grid-rows-2 grid-cols-2">
                     <p className="text-lg font-semibold tracking-wider">
                       {transaction.currencyCode === "KRW"
-                        ? transaction.payeeName.slice(0, 10)
+                        ? transaction.payeeName.slice(0, 9)
                         : transaction.payeeName.slice(0, 13)}
                     </p>
 
