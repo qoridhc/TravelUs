@@ -46,7 +46,7 @@ const CardTransaction = () => {
       const data = {
         accountNo: accountNo,
         orderByType: "DESC",
-        transactionType: "CD",
+        transactionType: "CW",
       };
 
       console.log(data);

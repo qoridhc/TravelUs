@@ -72,7 +72,7 @@ const ExpenditureTransactionDetail = () => {
       if (groupInfo?.groupAccountNo) {
         const data = {
           accountNo: groupInfo?.groupAccountNo,
-          transactionType: "CD",
+          transactionType: "CW",
           orderByType: "DESC",
           page: page,
           size: 10,

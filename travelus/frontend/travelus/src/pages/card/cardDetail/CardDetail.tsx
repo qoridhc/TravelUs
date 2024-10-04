@@ -67,7 +67,7 @@ const CardDetail: React.FC = (props) => {
       const data = {
         accountNo: accountNo,
         orderByType: "DESC",
-        transactionType: "CD",
+        transactionType: "CW",
       };
 
       console.log(data);
