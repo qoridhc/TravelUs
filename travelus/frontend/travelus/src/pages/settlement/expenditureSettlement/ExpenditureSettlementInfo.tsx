@@ -5,6 +5,7 @@ import { accountApi } from "../../../api/account";
 import { GroupInfo } from "../../../types/meetingAccount";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../../lottie/loadingAnimation.json";
+import { settlementApi } from "../../../api/settle";
 
 interface Member {
   participantId: number;
@@ -31,8 +32,19 @@ const ExpenditureSettlementInfo = () => {
     });
   };
 
-  const handleSettlement = () => {
-    navigate("/settlement/expenditure/completed");
+  const handleSettlement = async () => {
+    const updatedMembers = members.map((member) => {
+      const { name, ...rest } = member;
+      return rest;
+    });
+
+    try {
+      const response = await settlementApi.fetchSettlementPersonal(updatedMembers);
+      console.log(response);
+      navigate("/settlement/expenditure/completed");
+    } catch (error) {
+      console.log("settlementApi의 fetchSettlementPersonal : ", error);
+    }
   };
 
   // 금액을 한국 통화 형식으로 포맷(콤마가 포함된 형태)
