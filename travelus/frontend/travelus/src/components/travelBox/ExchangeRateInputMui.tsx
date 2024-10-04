@@ -1,8 +1,10 @@
 import { FilledInput, FormControl, FormHelperText, Input, InputAdornment, TextField } from "@mui/material";
 import React from "react";
 import { BsDot } from "react-icons/bs";
+import { currencyTypeList } from "../../types/exchange";
 
 interface Props {
+  currency: string;
   exchangeRateFront: number;
   setExchangeRateFront: (num: number) => void;
   exchangeRateBack: number;
@@ -10,6 +12,7 @@ interface Props {
 }
 
 const ExchangeRateInputMui = ({
+  currency,
   exchangeRateFront,
   setExchangeRateFront,
   exchangeRateBack,
@@ -21,7 +24,7 @@ const ExchangeRateInputMui = ({
         <label className="text-[#565656]" htmlFor="">
           희망 환율
         </label>
-        <p>USD(미국/$)</p>
+        <p>{currencyTypeList.find((item) => item.value === currency)?.text}</p>
       </div>
 
       <div className="text-xl flex justify-between space-x-3">
