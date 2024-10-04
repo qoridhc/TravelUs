@@ -8,6 +8,7 @@ import com.ssafy.soltravel.v2.dto.settlement.response.PersonalSettlementHistoryD
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
 import com.ssafy.soltravel.v2.service.settlement.SettlementService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -57,7 +58,7 @@ public class SettlementController {
 
   @Operation(summary = "개별 정산 요청 내역 개인별 조회", description = "개인의 개별 정산 요청 내역을 조회합니다.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "정산 완료", content = @Content(schema = @Schema(implementation = String.class))),
+      @ApiResponse(responseCode = "200", description = "정산 완료", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PersonalSettlementHistoryDto.class)))),
       @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = String.class))),
       @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = String.class)))})
   @GetMapping("/personal/transfer")
