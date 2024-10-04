@@ -15,6 +15,7 @@ import com.ssafy.soltravel.v2.dto.settlement.request.PersonalSettlementRegisterR
 import com.ssafy.soltravel.v2.dto.settlement.request.PersonalSettlementTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.SettlementParticipantRequestDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.SettlementRequestDto;
+import com.ssafy.soltravel.v2.dto.settlement.response.PersonalSettlementHistoryDto;
 import com.ssafy.soltravel.v2.dto.settlement.response.PersonalSettlementTransferResponseDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
@@ -23,12 +24,14 @@ import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDt
 import com.ssafy.soltravel.v2.exception.group.GroupMasterNotFoundException;
 import com.ssafy.soltravel.v2.exception.participant.ParticipantNotFoundException;
 import com.ssafy.soltravel.v2.exception.settlement.PersonalSettlementHistoryNotFoundException;
+import com.ssafy.soltravel.v2.mapper.SettlementMapper;
 import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.PersonalSettlementHistoryRepository;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.service.group.GroupService;
 import com.ssafy.soltravel.v2.service.transaction.TransactionService;
 import com.ssafy.soltravel.v2.util.LogUtil;
+import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +49,9 @@ public class SettlementService {
   private final GroupService groupService;
   private final PersonalSettlementHistoryRepository personalSettlementHistoryRepository;
   private final ParticipantRepository participantRepository;
+
+  private final SecurityUtil securityUtil;
+  private final SettlementMapper settlementMapper;
 
   @Transactional
   public String executeSettlement(SettlementRequestDto settlementRequestDto) {
@@ -181,15 +187,21 @@ public class SettlementService {
   }
 
   /**
-   * 개별 정산 내역 조회 메서드
+   * 개인별 - 개별 정산 내역 조회 메서드
    */
-  public List<PersonalSettlementTransferResponseDto> getPersonalSettlementHistory(PersonalSettlementHistoryRequestDto requestDto) {
+  public List<PersonalSettlementHistoryDto> getPersonalSettlementHistory(
+      PersonalSettlementHistoryRequestDto requestDto) {
 
+    long userId = securityUtil.getCurrentUserId();
+    List<PersonalSettlementHistory> response = personalSettlementHistoryRepository.findByUserIdAndSettlementStatus(userId,
+        requestDto.getSettlementStatus()).orElseThrow(() -> new PersonalSettlementHistoryNotFoundException(userId));
 
-
-    return null;
+    return settlementMapper.toPersonalSettlementHistoryDtos(response);
   }
 
+  /**
+   * 모임별 - 개별 정산 내역 조회
+   */
 
   /**
    * 개별 정산금 이체 메서드
