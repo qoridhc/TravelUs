@@ -103,7 +103,7 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
           <div className="flex items-center space-x-3">
             <IoPerson className="text-3xl text-[#5e91ff]" />
             <div className="w-full flex justify-between">
-              <p className="text-zinc-500">개별 지출</p>
+              <p className="text-zinc-500">개별 지출 정산</p>
               <div
                 onClick={() => {
                   navigate(`/settlement/balance/amount/${id}`);
@@ -117,7 +117,7 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
           <div className="flex items-center space-x-3">
             <IoIosListBox className="text-3xl text-[#adb3be]" />
             <div className="w-full flex justify-between">
-              <p className="text-zinc-500">개별 지출</p>
+              <p className="text-zinc-500">개별 지출 내역</p>
               <div className="flex items-center">
                 <p className="text-[#0471E9]">내역보기</p>
                 <MdKeyboardArrowRight className="text-2xl text-zinc-600" />
@@ -127,7 +127,7 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
           <div className="flex items-center space-x-3">
             <RiHandCoinFill className="text-3xl text-[#f3ba4f]" />
             <div className="w-full flex justify-between">
-              <p className="text-zinc-500">모임통장 잔액</p>
+              <p className="text-zinc-500">모임통장 잔액 정산</p>
               <div
                 onClick={() => navigate(`/settlement/expenditure/transaction/detail/${id}`)}
                 className="flex items-center">
