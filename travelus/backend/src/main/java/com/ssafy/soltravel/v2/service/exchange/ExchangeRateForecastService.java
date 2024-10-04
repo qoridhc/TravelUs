@@ -49,19 +49,41 @@ public class ExchangeRateForecastService {
     return length;
   }
 
-  //-----------------------------예측값 저장-----------------------------
+  // -----------------------------예측값 수정/ 전날 환율 저장-----------------------------
   public int parsePredExchangeRates(ExchangeRateSaveRequestDto request) {
     int length = 0;
 
     for (String currency : request.getCurrencies().keySet()) {
       CurrencyType currencyType = exchangeService.getCurrencyType(currency);
       Map<String, Double> forecast = request.getCurrencies().get(currency).getForecast();
-      if(forecast == null) continue;
 
-      length += updateExchangeRate(forecast, currencyType);
+      // 어제 환율 데이터 파싱
+      String yesterday = LocalDate.now().minusDays(1).toString();
+      Double rate = getYesterdayRate(request, currency, yesterday);
+
+      Map<String, Double> yesterdayRate = new LinkedHashMap<>();
+      yesterdayRate.put(yesterday, rate);
+
+      // 예측값이 없으면 어제 환율 데이터만 저장
+      if (forecast == null) {
+        length += saveExchangeRate(yesterdayRate, currencyType);
+      }
+      // 예측값이 있으면 어제 환율 데이터 수정/ 예측 환율 수정 및 저장
+      else {
+        length += updateExchangeRate(yesterdayRate, currencyType);
+        length += updateExchangeRate(forecast, currencyType);
+      }
     }
     return length;
   }
+
+  // 전날 환율 데이터를 조회하는 메서드
+  private Double getYesterdayRate(ExchangeRateSaveRequestDto request, String currency, String yesterday) {
+    Map<String, Object> recentRates = request.getCurrencies().get(currency).getRecentRates();
+    Map<String, Double> recentRates_3 = (Map<String, Double>) recentRates.get("3_months");
+    return recentRates_3.get(yesterday);
+  }
+
 
   //-----------------------------환율 저장-----------------------------
   private int saveExchangeRate(Map<String, Double> data, CurrencyType currencyType) {
