@@ -147,7 +147,7 @@ const MeetingAccountDetail = () => {
                 onClick={() => {
                   navigate(`/meetingaccount/management/${meeting.groupId}`);
                 }}
-                className="w-14 h-8 bg-zinc-500 opacity-40 rounded-3xl text-zinc-50 font-semibold flex justify-center items-center">
+                className="w-14 h-8 bg-zinc-500 opacity-40 rounded-3xl text-white font-semibold flex justify-center items-center">
                 관리
               </button>
             </div>
@@ -176,7 +176,7 @@ const MeetingAccountDetail = () => {
                 </div>
                 {
                   // 카드가 없는 경우에만 버튼 표시
-                  !meeting.cardNumber && (
+                  !meeting.cardNumber ? (
                     <div
                       onClick={(e) => {
                         e.stopPropagation();
@@ -185,6 +185,16 @@ const MeetingAccountDetail = () => {
                       className="w-[4.5rem] h-[2.3rem] bg-[#f0f0f0] rounded-3xl flex justify-center items-center">
                       <FiPlus className="text-lg text-blue-500 mr-[0.1rem]" />
                       <button className="text-sm">카드</button>
+                    </div>
+                  ) : (
+                    // 카드가 있을 경우 카드 페이지로 연결
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/card/${meeting.groupId}`, { state: { groupId: meeting.groupId } });
+                      }}
+                      className="w-[4.0rem] h-[2.3rem] bg-[#f0f0f0] rounded-3xl flex justify-center items-center">
+                      <button className=" text-zinc-600 font-semibold">카드</button>
                     </div>
                   )
                 }
@@ -226,29 +236,33 @@ const MeetingAccountDetail = () => {
 
             <div
               onClick={() => {
-                navigate("/transaction/detail/travelbox/1");
+                navigate(`/travelbox/transaction/${meeting.groupAccountNo}`, {
+                  state: { groupId: meeting.groupId, currencyCode: account.moneyBoxDtos[1].currencyCode },
+                });
               }}
               className="p-5 flex flex-col space-y-5">
-              <div className="flex flex-col space-y-1">
+              <div className="flex flex-col space-y-5">
                 {account.moneyBoxDtos.length > 1 ? (
                   <>
-                    <p>트래블박스</p>
-                    <p className="text-2xl font-bold">
-                      {formatCurrency(account.moneyBoxDtos[1].balance)}
-                      <span>{account.moneyBoxDtos[1].currencyCode}</span>
-                    </p>
+                    <div className="flex flex-col space-y-1">
+                      <p>트래블박스</p>
+                      <p className="text-2xl font-bold">
+                        {formatCurrency(account.moneyBoxDtos[1].balance)}
+                        <span>{account.moneyBoxDtos[1].currencyCode}</span>
+                      </p>
+                    </div>
                     <div className="flex justify-between">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           navigate("/exchangekrw");
                         }}
-                        className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
+                        className="w-full h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
                         재환전
                       </button>
-                      <button className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
+                      {/* <button className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
                         내역
-                      </button>
+                      </button> */}
                     </div>
                   </>
                 ) : (

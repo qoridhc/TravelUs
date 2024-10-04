@@ -1,6 +1,7 @@
 
 import api from "../lib/axios";
 import { AccountInfo, AccountInfoNew, MeetingAccountInfo, AccountParticipants, GeneralAccountCreate, MeetingAccountCreate, meetingInvitationCode } from "../types/account";
+import { AccountHistoryRequest } from "../types/accountHistory";
 import { NewParticipant, TravelboxInfo } from "../types/meetingAccount";
 
 export const accountApi = {
@@ -82,8 +83,8 @@ export const accountApi = {
   },
 
   // 거래 내역 조회
-  fetchTracsactionHistory: (accountNo: string, currencyCode: string , orderByType: string, page?: number, size?: number ) => {
-    return api.get(`/transaction/history?accountNo=${accountNo}&currencyCode=${currencyCode}&orderByType=${orderByType}`);
+  fetchTracsactionHistory: (data: AccountHistoryRequest) => {
+    return api.get(`/transaction/history`, {params: data});
   },
 
   // 트래블박스 개설

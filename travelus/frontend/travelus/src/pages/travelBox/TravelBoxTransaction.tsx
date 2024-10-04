@@ -5,11 +5,12 @@ import { useNavigate } from "react-router";
 import { accountApi } from "../../api/account";
 import { AccountInfoNew, TransactionNew } from "../../types/account";
 
-const MeetingTransaction = () => {
+const TravelBoxTransaction = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const accountNo = useParams().accountNo;
   const groupId = location.state.groupId;
+  const currencyCode = location.state.currencyCode;
   const [account, setAccount] = useState<AccountInfoNew>();
   const [transactionList, setTransactionList] = useState<TransactionNew[]>([]);
   const depositTransactionType = ["D", "TD", "ED", "SD"];
@@ -19,12 +20,13 @@ const MeetingTransaction = () => {
     const fetchData = async () => {
       if (!accountNo) return;
 
+      const data = {
+        accountNo: accountNo,
+        currencyCode: currencyCode,
+        orderByType: "DESC",
+      };
+
       try {
-        const data = {
-          accountNo: accountNo,
-          currencyCode: "KRW",
-          orderByType: "DESC",
-        };
         const [transactionResponse, accountResponse] = await Promise.all([
           accountApi.fetchTracsactionHistory(data),
           accountApi.fetchSpecificAccountInfo(accountNo),
@@ -80,14 +82,21 @@ const MeetingTransaction = () => {
             }}
             className="text-2xl"
           />
-          <p className="text-lg text-center">모임통장</p>
+          <p className="text-lg text-center">트래블박스</p>
         </div>
 
-        {account && (
+        {account?.moneyBoxDtos && (
           <div className="p-5">
             <div className="my-10 space-y-3">
-              <p className="text-zinc-500 underline underline-offset-2">{account?.accountNo}</p>
-              <p className="text-3xl font-bold">{formatCurrencyNum(account?.moneyBoxDtos[0].balance)} 원</p>
+              <p className="text-zinc-500 underline underline-offset-2">
+                {currencyCode === "USD" && "USD (미국 / $)"}
+                {currencyCode === "JPY" && "JPY (일본 / ¥)"}
+                {currencyCode === "EUR" && "EUR (유로 / €)"}
+                {currencyCode === "CNY" && "CNY (중국 / ¥)"}
+              </p>
+              <p className="text-3xl font-bold">
+                {formatCurrencyNum(account.moneyBoxDtos[1].balance)} {currencyCode}
+              </p>
             </div>
 
             <div className="flex justify-between">
@@ -95,15 +104,8 @@ const MeetingTransaction = () => {
                 onClick={() => {
                   navigate("/transfer/selectbank");
                 }}
-                className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
-                채우기
-              </button>
-              <button
-                onClick={() => {
-                  navigate("/");
-                }}
-                className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
-                환전
+                className="w-full h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
+                재환전
               </button>
             </div>
           </div>
@@ -127,10 +129,14 @@ const MeetingTransaction = () => {
                       <p className="text-lg font-semibold">{transaction.transactionSummary}</p>
 
                       {withdrawTransactionType.includes(transaction.transactionType) ? (
-                        <p className="text-lg tracking-wider">- {formatCurrency(transaction.transactionAmount)}원</p>
+                        <p className="text-lg tracking-wider">
+                          - {formatCurrency(transaction.transactionAmount)}
+                          {currencyCode}
+                        </p>
                       ) : (
                         <p className="text-lg text-[#026CE1] tracking-wider">
-                          {formatCurrency(transaction.transactionAmount)}원
+                          {formatCurrency(transaction.transactionAmount)}
+                          {currencyCode}
                         </p>
                       )}
                     </div>
@@ -145,7 +151,8 @@ const MeetingTransaction = () => {
                       </p>
 
                       <p className="text-sm text-right text-zinc-500 tracking-wider">
-                        {formatCurrency(transaction.transactionBalance)}원
+                        {formatCurrency(transaction.transactionBalance)}
+                        {currencyCode}
                       </p>
                     </div>
                   </div>
@@ -164,4 +171,4 @@ const MeetingTransaction = () => {
   );
 };
 
-export default MeetingTransaction;
+export default TravelBoxTransaction;
