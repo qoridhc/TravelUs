@@ -58,7 +58,7 @@ public class CardHistory extends AbstractHistory {
         cardHistory.exchangeRate = currency.getExchangeRate();
         cardHistory.transactionId = transactionId;
         cardHistory.transactionAt = LocalDateTime.now();
-        cardHistory.transactionType = TransactionType.CD;
+        cardHistory.transactionType = TransactionType.CW;
         return cardHistory;
     }
 
@@ -79,7 +79,7 @@ public class CardHistory extends AbstractHistory {
         cardHistory.exchangeRate = currency.getExchangeRate();
         cardHistory.transactionId = request.getTransactionId();
         cardHistory.transactionAt = LocalDateTime.now();
-        cardHistory.transactionType = TransactionType.CD;
+        cardHistory.transactionType = TransactionType.CW;
         return cardHistory;
     }
 }
