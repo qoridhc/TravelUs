@@ -7,16 +7,19 @@ import com.ssafy.soltravel.v2.domain.Enum.TransactionType;
 import com.ssafy.soltravel.v2.domain.Enum.TransferType;
 import com.ssafy.soltravel.v2.domain.Participant;
 import com.ssafy.soltravel.v2.domain.PersonalSettlementHistory;
+import com.ssafy.soltravel.v2.domain.TravelGroup;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.group.GroupDto;
 import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
+import com.ssafy.soltravel.v2.dto.settlement.request.GroupSettlementHistoryRequestDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.PersonalSettlementHistoryRequestDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.PersonalSettlementRegisterRequestDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.PersonalSettlementTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.SettlementParticipantRequestDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.SettlementRequestDto;
+import com.ssafy.soltravel.v2.dto.settlement.response.GroupSettlementResponseDto;
+import com.ssafy.soltravel.v2.dto.settlement.response.PersonalSettlementDto;
 import com.ssafy.soltravel.v2.dto.settlement.response.PersonalSettlementHistoryDto;
-import com.ssafy.soltravel.v2.dto.settlement.response.PersonalSettlementTransferResponseDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
@@ -33,7 +36,10 @@ import com.ssafy.soltravel.v2.service.transaction.TransactionService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -170,13 +176,16 @@ public class SettlementService {
   public String registerPersonalSettlement(PersonalSettlementRegisterRequestDto requestDto) {
 
     List<SettlementParticipantRequestDto> participants = requestDto.getParticipants();
+    LocalDateTime now = LocalDateTime.now();
+    Long id = getNextSettlementId();
     for (SettlementParticipantRequestDto request : participants) {
 
       Participant participant = participantRepository.findById(request.getParticipantId())
           .orElseThrow(() -> new ParticipantNotFoundException(request.getParticipantId()));
 
-      PersonalSettlementHistory history = PersonalSettlementHistory.createPersonalSettlementHistory(participant,
-          request.getAmount());
+      TravelGroup group = participant.getGroup();
+      PersonalSettlementHistory history = PersonalSettlementHistory.createPersonalSettlementHistory(id, participant, group,
+          request.getAmount(), now);
       personalSettlementHistoryRepository.save(history);
 
       //TODO: 알림 보내기
@@ -189,19 +198,52 @@ public class SettlementService {
   /**
    * 개인별 - 개별 정산 내역 조회 메서드
    */
-  public List<PersonalSettlementHistoryDto> getPersonalSettlementHistory(
-      PersonalSettlementHistoryRequestDto requestDto) {
+  public List<PersonalSettlementDto> getPersonalSettlementHistory(PersonalSettlementHistoryRequestDto requestDto) {
 
     long userId = securityUtil.getCurrentUserId();
     List<PersonalSettlementHistory> response = personalSettlementHistoryRepository.findByUserIdAndSettlementStatus(userId,
         requestDto.getSettlementStatus()).orElseThrow(() -> new PersonalSettlementHistoryNotFoundException(userId));
 
-    return settlementMapper.toPersonalSettlementHistoryDtos(response);
+    return settlementMapper.toPersonalSettlementNotificationListDto(response);
   }
 
   /**
    * 모임별 - 개별 정산 내역 조회
    */
+  public List<GroupSettlementResponseDto> getGroupSettlementHistory(GroupSettlementHistoryRequestDto requestDto) {
+
+    // 모든 PersonalSettlementHistory 엔티티 조회
+    List<PersonalSettlementHistory> settlementHistories = personalSettlementHistoryRepository.findByGroupIdGroupedById(requestDto.getGroupId());
+
+    // personalSettlementId로 그룹핑
+    Map<Long, List<PersonalSettlementHistory>> groupedBySettlementId = settlementHistories.stream()
+        .collect(Collectors.groupingBy(PersonalSettlementHistory::getId));
+
+    // 각 그룹을 GroupSettlementResponseDto로 변환
+    return groupedBySettlementId.entrySet().stream()
+        .map(entry -> {
+          List<PersonalSettlementHistory> groupedHistories = entry.getValue();
+          // 첫 번째 항목을 기준으로 그룹 정보 설정
+          PersonalSettlementHistory firstHistory = groupedHistories.get(0);
+
+          // GroupSettlementResponseDto 생성
+          GroupSettlementResponseDto responseDto = settlementMapper.toGroupSettlementResponseDto(firstHistory);
+
+          // participants 리스트 매핑 (매퍼 사용)
+          List<PersonalSettlementHistoryDto> participants = settlementMapper.toPersonalSettlementHistoryDtoList(groupedHistories);
+
+          responseDto.setParticipants(participants);
+
+          // 모든 participants가 COMPLETED이면 isSettled를 COMPLETED로 설정
+          boolean allCompleted = participants.stream()
+              .allMatch(p -> p.getIsSettled() == SettlementStatus.COMPLETED);
+
+          responseDto.setIsSettled(allCompleted ? SettlementStatus.COMPLETED : SettlementStatus.NOT_COMPLETED);
+
+          return responseDto;
+        })
+        .collect(Collectors.toList());
+  }
 
   /**
    * 개별 정산금 이체 메서드
@@ -217,9 +259,10 @@ public class SettlementService {
             .depositTransactionSummary(requestDto.getDepositTransactionSummary()).accountPassword(requestDto.getAccountPassword())
             .transactionBalance(requestDto.getTransactionBalance()).build());
 
-    long historyId = requestDto.getPersonalSettlementHistoryId();
-    PersonalSettlementHistory history = personalSettlementHistoryRepository.findById(historyId)
-        .orElseThrow(() -> new PersonalSettlementHistoryNotFoundException(historyId));
+    long historyId = requestDto.getPersonalSettlementId();
+    long participantId = requestDto.getParticipantId();
+    PersonalSettlementHistory history = personalSettlementHistoryRepository.findByIdAndParticipantId(historyId, participantId)
+        .orElseThrow(() -> new PersonalSettlementHistoryNotFoundException(historyId, participantId));
 
     BigDecimal currentRemainingAmount = BigDecimal.valueOf(history.getRemainingAmount());
     BigDecimal transactionAmount = BigDecimal.valueOf(requestDto.getTransactionBalance());
@@ -234,5 +277,15 @@ public class SettlementService {
     }
 
     return response;
+  }
+
+  /**
+   * 다음 정산 기록 id 조회
+   */
+  @Transactional(readOnly = true)
+  public Long getNextSettlementId() {
+
+    Long nextId = personalSettlementHistoryRepository.findMaxHistoryId();
+    return (nextId == null) ? 1L : nextId + 1;
   }
 }

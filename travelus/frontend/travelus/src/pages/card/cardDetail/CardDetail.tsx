@@ -67,7 +67,7 @@ const CardDetail: React.FC = (props) => {
       const data = {
         accountNo: accountNo,
         orderByType: "DESC",
-        transactionType: "CD",
+        transactionType: "CW",
       };
 
       console.log(data);
@@ -117,7 +117,7 @@ const CardDetail: React.FC = (props) => {
   return (
     <>
       {meeting && account && (
-        <div className="h-full p-5 pb-8 bg-[#F3F4F6]">
+        <div className="min-h-screen p-5 pb-8 bg-[#F3F4F6]">
           <div className="flex flex-col space-y-5">
             <div className="grid grid-cols-3 items-center">
               <IoIosArrowBack

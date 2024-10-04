@@ -51,14 +51,17 @@ public class TravelGroup {
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participant> participants;
 
-    public static TravelGroup createGroupEntity(String accountNo, CreateGroupRequestDto requestDto) {
-        TravelGroup travelGroup = TravelGroup.builder()
-            .groupAccountNo(accountNo)
-            .travelStartDate(requestDto.getTravelStartDate())
-            .travelEndDate(requestDto.getTravelEndDate())
-            .groupName(requestDto.getGroupName())
-            .icon(requestDto.getIcon())
-            .build();
+	@OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<PersonalSettlementHistory> settlementHistories;
+
+	public static TravelGroup createGroupEntity(String accountNo, CreateGroupRequestDto requestDto){
+			TravelGroup travelGroup = TravelGroup.builder()
+				.groupAccountNo(accountNo)
+				.travelStartDate(requestDto.getTravelStartDate())
+				.travelEndDate(requestDto.getTravelEndDate())
+				.groupName(requestDto.getGroupName())
+				.icon(requestDto.getIcon())
+				.build();
 
         return travelGroup;
     }

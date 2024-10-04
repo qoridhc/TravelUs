@@ -20,10 +20,13 @@ import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.AuthMapper;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.repository.redis.PhoneRepository;
+import com.ssafy.soltravel.v2.service.GPTService;
 import com.ssafy.soltravel.v2.service.NotificationService;
+import com.ssafy.soltravel.v2.service.account_book.ClovaOcrService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.PasswordEncoder;
 import jakarta.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +35,7 @@ import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import net.nurigo.sdk.message.service.DefaultMessageService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,10 +47,12 @@ public class AuthService {
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final PhoneRepository phoneRepository;
-    private final Map<String, String> apiKeys;
-    private final NotificationService notificationService;
-    private final String SERVICE_PHONE_NUM = "01062966409";
     private DefaultMessageService messageService;
+    private final ClovaOcrService clovaOcrService;
+    private final GPTService gptService;
+
+    private final Map<String, String> apiKeys;
+    private final String SERVICE_PHONE_NUM = "01062966409";
 
     @PostConstruct
     public void init() {
@@ -162,12 +168,9 @@ public class AuthService {
         return AuthMapper.convertLoginToReissueDto(loginDto);
     }
 
-    public AuthOcrIdCardResponseDto ocrIdCard(AuthOcrIdCardRequestDto request) {
-
-
-        return AuthOcrIdCardResponseDto.builder()
-            .name("허동원")
-            .residentRegistrationNumber("991121-1234567")
-            .build();
+    public String ocrIdCard(AuthOcrIdCardRequestDto request) throws IOException {
+        ResponseEntity<Map<String, Object>> response = clovaOcrService.executeIdCard(request.getFile());
+        String idCardInfoString = gptService.askChatGPTIC(response.getBody().toString());
+        return idCardInfoString;
     }
 }

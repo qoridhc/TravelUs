@@ -12,7 +12,7 @@ const AccountTransaction: React.FC<AccountTransactionProps> = (props) => {
   const accountNo = useParams().accountNo;
   const [account, setAccount] = useState<AccountInfoNew>();
   const [transactionList, setTransactionList] = useState<TransactionNew[]>([]);
-  const depositTransactionType = ["D", "TD", "ED", "SD", "CD"];
+  const depositTransactionType = ["D", "TD", "ED", "SD", "CW"];
   const withdrawTransactionType = ["W", "TW", "EW", "SW"];
 
   useEffect(() => {

@@ -46,7 +46,7 @@ const CardTransaction = () => {
       const data = {
         accountNo: accountNo,
         orderByType: "DESC",
-        transactionType: "CD",
+        transactionType: "CW",
       };
 
       console.log(data);
@@ -144,11 +144,11 @@ const CardTransaction = () => {
 
         {meeting && account && (
           <div className="p-5">
-            <div className="mt-10 mb-5 space-y-7">
+            <div className="mt-8 mb-5 space-y-7">
               {/* <div>
                 <p className="text-sm text-zinc-500 underline underline-offset-2">{formatCardNumber(meeting?.cardNumber)}</p>
               </div> */}
-              <div className="space-y-1">
+              <div className="space-y-5">
                 <p className="text-zinc-700">누적 이용 금액</p>
                 <div className="space-y-2">
                   <div>

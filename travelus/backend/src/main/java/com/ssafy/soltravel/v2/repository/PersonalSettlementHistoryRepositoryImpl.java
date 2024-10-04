@@ -17,6 +17,7 @@ public class PersonalSettlementHistoryRepositoryImpl implements PersonalSettleme
 
   private final JPAQueryFactory queryFactory;
 
+  @Override
   public Optional<List<PersonalSettlementHistory>> findByUserIdAndSettlementStatus(Long userId, SettlementStatus status) {
     QPersonalSettlementHistory personalSettlementHistory = QPersonalSettlementHistory.personalSettlementHistory;
     QParticipant participant = QParticipant.participant;
@@ -24,7 +25,6 @@ public class PersonalSettlementHistoryRepositoryImpl implements PersonalSettleme
 
     List<PersonalSettlementHistory> results = queryFactory
         .selectFrom(personalSettlementHistory)
-        .join(personalSettlementHistory.participant, participant)
         .join(participant.user, user)
         .where(user.userId.eq(userId)
             .and(status == null ? null : personalSettlementHistory.isSettled.eq(status)))

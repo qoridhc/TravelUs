@@ -8,12 +8,21 @@ public class PersonalSettlementHistoryNotFoundException extends CustomException 
   private static final String DEFAULT_CODE = "PERSONAL_SETTLEMENT_HISTORY_NOT_FOUND";
   private static final int DEFAULT_STATUS = 404;
 
-  public PersonalSettlementHistoryNotFoundException(Long id) {
+  public PersonalSettlementHistoryNotFoundException(Long id, Long participantId) {
     super(
         DEFAULT_MESSAGE,
         DEFAULT_CODE,
         DEFAULT_STATUS,
-        String.format("%s: %d", DEFAULT_MESSAGE, id)
+        String.format("%s [Settlement ID: %d, Participant ID: %d]", DEFAULT_MESSAGE, id, participantId)
+    );
+  }
+
+  public PersonalSettlementHistoryNotFoundException(Long userId) {
+    super(
+        DEFAULT_MESSAGE,
+        DEFAULT_CODE,
+        DEFAULT_STATUS,
+        String.format("%s [User ID: %d]", DEFAULT_MESSAGE, userId)
     );
   }
 }
