@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { accountApi } from "../../api/account";
+import { accountApi } from "../../../api/account";
 import { IoIosArrowBack } from "react-icons/io";
-import { AccountInfoNew, TransactionNew } from "../../types/account";
+import { AccountInfoNew, TransactionNew } from "../../../types/account";
 
 interface AccountTransactionProps {}
 
