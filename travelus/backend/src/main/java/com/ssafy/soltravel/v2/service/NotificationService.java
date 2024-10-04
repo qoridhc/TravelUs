@@ -13,9 +13,11 @@ import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.domain.redis.RedisFcm;
 import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
+import com.ssafy.soltravel.v2.dto.exchange.targetAccountDto;
 import com.ssafy.soltravel.v2.dto.notification.NotificationDto;
 import com.ssafy.soltravel.v2.dto.notification.PushNotificationRequestDto;
 import com.ssafy.soltravel.v2.dto.notification.RegisterNotificationRequestDto;
+import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
 import com.ssafy.soltravel.v2.exception.group.InvalidGroupIdException;
@@ -253,58 +255,64 @@ public class NotificationService {
 
     /*
      * 자동 환전 알림 전송
-//     */
-//    public ResponseEntity<?> sendAutoExchangeNotification(
-//        targetAccountDto targetAccountDto,
-//        MoneyBoxTransferRequestDto requestDto
-//    ) {
-//
-//        String title = "자동 환전 완료";
-//        String message = "설정 환율 " + targetAccountDto.getTargetRate() + "에 도달하여 " + requestDto.getTransactionBalance()
-//            + requestDto.getSourceCurrencyCode() + " 이 성공적으로 환전되었습니다.";
-//
-//        PushNotificationRequestDto notificationRequestDto = new PushNotificationRequestDto(
-//            targetAccountDto.getUserId(),
-//            null,
-//            title,
-//            message,
-//            DEFAULT_ICON_URL,
-//            targetAccountDto.getAccountNo()
-//        );
-//
-//        // 알림 전송
-//        pushNotification(notificationRequestDto);
-//
-//        return ResponseEntity.ok().body(new ResponseDto());
-//    }
-//
+     */
+    public ResponseEntity<?> sendAutoExchangeNotification(
+        targetAccountDto targetAccountDto,
+        MoneyBoxTransferRequestDto requestDto
+    ) {
+
+        String title = "자동 환전 완료";
+        String message = "설정 환율 " + targetAccountDto.getTargetRate() + "에 도달하여 " + requestDto.getTransactionBalance()
+            + requestDto.getSourceCurrencyCode() + " 이 성공적으로 환전되었습니다.";
+
+        TravelGroup group = groupRepository.findByGroupAccountNo(targetAccountDto.getAccountNo());
+
+        PushNotificationRequestDto notificationRequestDto = new PushNotificationRequestDto(
+            targetAccountDto.getUserId(),
+            NotificationType.E,
+            title,
+            message,
+            DEFAULT_ICON_URL,
+            group.getGroupId(),
+            targetAccountDto.getAccountNo()
+        );
+
+        // 알림 전송
+        pushNotification(notificationRequestDto);
+
+        return ResponseEntity.ok().body(new ResponseDto());
+    }
+
 
     /*
      *  환전 알림 전송
      */
-//
-//    public ResponseEntity<?> sendExchangeNotification(
-//        User user,
-//        MoneyBoxTransferRequestDto requestDto
-//    ) {
-//
-//        String title = "환전 완료";
-//        String message = requestDto.getTransactionBalance() + requestDto.getSourceCurrencyCode() + " 이 성공적으로 환전되었습니다.";
-//
-//        PushNotificationRequestDto notificationRequestDto = new PushNotificationRequestDto(
-//            user.getUserId(),
-//            null,
-//            title,
-//            message,
-//            DEFAULT_ICON_URL,
-//            requestDto.getAccountNo()
-//        );
-//
-//        // 알림 전송
-//        pushNotification(notificationRequestDto);
-//
-//        return ResponseEntity.ok().body(new ResponseDto());
-//    }
+
+    public ResponseEntity<?> sendExchangeNotification(
+        User user,
+        MoneyBoxTransferRequestDto requestDto
+    ) {
+
+        String title = "환전 완료";
+        String message = requestDto.getTransactionBalance() + requestDto.getSourceCurrencyCode() + " 이 성공적으로 환전되었습니다.";
+
+        TravelGroup group = groupRepository.findByGroupAccountNo(requestDto.getAccountNo());
+
+        PushNotificationRequestDto notificationRequestDto = new PushNotificationRequestDto(
+            user.getUserId(),
+            NotificationType.E,
+            title,
+            message,
+            DEFAULT_ICON_URL,
+            group.getGroupId(),
+            requestDto.getAccountNo()
+        );
+
+        // 알림 전송
+        pushNotification(notificationRequestDto);
+
+        return ResponseEntity.ok().body(new ResponseDto());
+    }
 
     public void saveNotification(PushNotificationRequestDto requestDto) {
 
