@@ -20,7 +20,7 @@ const TravelBoxTransaction = () => {
   const [transactions, setTransactions] = useState<{ [date: string]: AccountHistoryResponse[] }>({}); // 거래내역 배열
   const [dateList, setDateList] = useState<string[]>([]); // 날짜 리스트
   const withdrawTransactionType = ["W", "TW", "EW", "SW"];
-  const payeeNameType = ["TD", "TW", "CW"]; // payeeName 출력, 나머지는 summary 출력
+  const payeeNameType = ["TD", "TW", "CD"]; // payeeName 출력, 나머지는 summary 출력
 
   // 무한 스크롤 관련 상태변수
   const [page, setPage] = useState(0);
@@ -202,10 +202,10 @@ const TravelBoxTransaction = () => {
 
                   {transactions[date].map((transaction, index) => (
                     <div key={index} className="flex flex-col items-center">
-                      <div className="w-full flex justify-between">
+                      <div className="w-full flex justify-between space-x-3">
                         <p className="text-lg font-bold">
                           {payeeNameType.includes(transaction.transactionType)
-                            ? transaction.payeeName
+                            ? transaction.payeeName.slice(0, 15)
                             : transaction.transactionSummary}
                         </p>
 
