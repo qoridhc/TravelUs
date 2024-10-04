@@ -23,17 +23,10 @@ import { calculateDailyChange, formatExchangeRate } from "../../utils/currencyUt
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale);
 
 // 국가 이름 매핑
-const countryNameMapping: { [key: string]: string } = {
-  EUR: "Europe",
-  JPY: "Japan",
-  USD: "TheUnitedStates",
-  TWD: "Taiwan",
-};
-
-const getFlagImagePath = (currencyCode: string): string => {
-  const countryName = countryNameMapping[currencyCode] || currencyCode;
-  return `/assets/flag/flagOf${countryName}.png`;
-};
+// const getFlagImagePath = (currencyCode: string): string => {
+//   const countryName = countryNameMapping[currencyCode] || currencyCode;
+//   return `/assets/flag/flagOf${countryName}.png`;
+// };
 
 // Types
 type PeriodKey = "1주" | "1달" | "3달" | "2주";
@@ -99,6 +92,7 @@ const useExchangeData = (currencyCode: string) => {
 // Component
 const ExchangeDetail: React.FC = () => {
   const { currencyCode = "" } = useParams<{ currencyCode: string }>();
+  const flagImagePath = `/assets/flag/flagOf${currencyCode}.png`;
   const navigate = useNavigate();
   // const chartRef = useRef<ChartJS<"line">>(null);
 
@@ -133,7 +127,7 @@ const ExchangeDetail: React.FC = () => {
   const dailyChange =
     exchangeData && yesterdayRate ? calculateDailyChange(exchangeData.exchangeRate, yesterdayRate) : 0;
 
-  const handlePeriodChange = (newPeriod: PeriodKey) => setSelectedPeriod(newPeriod);
+  // const handlePeriodChange = (newPeriod: PeriodKey) => setSelectedPeriod(newPeriod);
 
   const chartData: ChartData<"line"> = {
     labels: (activeTab === "exchange" ? filteredHistoricalData : filteredPredictionData).map((data) => data.date),
@@ -141,7 +135,7 @@ const ExchangeDetail: React.FC = () => {
       {
         label: activeTab === "exchange" ? "실제 환율" : "예측 환율",
         data: (activeTab === "exchange" ? filteredHistoricalData : filteredPredictionData).map((data) => data.rate),
-        borderColor: dailyChange >= 0 ? "rgb(255, 99, 132)" : "rgb(75, 192, 192)",
+        borderColor: dailyChange >= 0 ? "rgb(221, 82, 87)" : "rgb(72, 128, 238)",
         tension: 0.1,
       },
     ],
@@ -160,7 +154,7 @@ const ExchangeDetail: React.FC = () => {
           <span className="font-semibold">
             {exchangeData && formatExchangeRate(exchangeData.exchangeRate, currencyCode)}
           </span>
-          <span className={`${isIncreasing ? "text-red-500" : "text-blue-500"}`}>
+          <span className={`${isIncreasing ? "text-[#DD5257]" : "text-[#4880EE]"}`}>
             전일대비 {formatExchangeRate(Math.abs(dailyChange), currencyCode)}
             {isIncreasing ? "▲" : "▼"}
           </span>
@@ -263,7 +257,7 @@ const ExchangeDetail: React.FC = () => {
         <ChevronLeft className="w-5 h-5 mr-1" />
       </button>
       <div className="flex items-center mb-4">
-        <img src={getFlagImagePath(currencyCode)} alt={`${currencyCode} Flag`} className="w-8 h-6 mr-2" />
+        <img src={flagImagePath} alt={`${currencyCode} Flag`} className="w-8 h-6 mr-2" />
         <h1 className="text-2xl font-bold">{currencyCode}</h1>
       </div>
       <hr className="mb-4" />

@@ -1,5 +1,7 @@
 package com.ssafy.soltravel.v2.controller;
 
+import com.ssafy.soltravel.v2.dto.auth.AuthOcrIdCardRequestDto;
+import com.ssafy.soltravel.v2.dto.auth.AuthOcrIdCardResponseDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthReissueRequestDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthReissueResponseDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthSMSSendRequestDto;
@@ -19,6 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -95,6 +98,12 @@ public class AuthController {
   }
 
 
+  @PostMapping("/id-card")
+  public ResponseEntity ocrIdCard(@ModelAttribute AuthOcrIdCardRequestDto request) {
+      LogUtil.info("민증 인식 요청", request.toString());
+    AuthOcrIdCardResponseDto response = authService.ocrIdCard(request);
+    return ResponseEntity.ok().body(response);
+  }
 
 
   @Operation(hidden = true)

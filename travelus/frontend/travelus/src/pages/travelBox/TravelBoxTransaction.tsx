@@ -20,9 +20,15 @@ const TravelBoxTransaction = () => {
     const fetchData = async () => {
       if (!accountNo) return;
 
+      const data = {
+        accountNo: accountNo,
+        currencyCode: currencyCode,
+        orderByType: "DESC",
+      };
+
       try {
         const [transactionResponse, accountResponse] = await Promise.all([
-          accountApi.fetchTracsactionHistory(accountNo, currencyCode, "DESC"),
+          accountApi.fetchTracsactionHistory(data),
           accountApi.fetchSpecificAccountInfo(accountNo),
         ]);
 
@@ -32,7 +38,6 @@ const TravelBoxTransaction = () => {
 
         if (accountResponse.status === 201) {
           setAccount(accountResponse.data);
-          console.log(accountResponse.data);
         }
       } catch (error) {
         console.error("데이터 조회 실패", error);

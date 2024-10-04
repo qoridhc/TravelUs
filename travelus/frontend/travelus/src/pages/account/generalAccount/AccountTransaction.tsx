@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { accountApi } from "../../api/account";
+import { accountApi } from "../../../api/account";
 import { IoIosArrowBack } from "react-icons/io";
-import { AccountInfoNew, TransactionNew } from "../../types/account";
+import { AccountInfoNew, TransactionNew } from "../../../types/account";
 
 interface AccountTransactionProps {}
 
@@ -21,9 +21,14 @@ const AccountTransaction: React.FC<AccountTransactionProps> = (props) => {
       if (!accountNo) return;
 
       try {
+        const data = {
+          accountNo: accountNo,
+          currencyCode: "KRW",
+          orderByType: "DESC",
+        };
         // 두 API를 병렬로 호출
         const [transactionResponse, accountResponse] = await Promise.all([
-          accountApi.fetchTracsactionHistory(accountNo, "KRW", "DESC"),
+          accountApi.fetchTracsactionHistory(data),
           accountApi.fetchSpecificAccountInfo(accountNo),
         ]);
 

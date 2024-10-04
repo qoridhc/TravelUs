@@ -14,7 +14,7 @@ import MeetingAccountDetail from "./pages/account/meetingAccount/MeetingAccountD
 import MeetingAccountManagement from "./pages/account/meetingAccount/MeetingAccountManagement";
 import MeetingAccountGroupMember from "./pages/account/meetingAccount/MeetingAccountGroupMember";
 import JoinedMeetingAccountDetail from "./pages/account/meetingAccount/JoinedMeetingAccountDetail";
-import AccountTransaction from "./pages/account/AccountTransaction";
+import AccountTransaction from "./pages/account/generalAccount/AccountTransaction";
 import TransferSelectBank from "./pages/transfer/TransferSelectBank";
 import TransferSetMoney from "./pages/transfer/TransferSetMoney";
 import TransferPassword from "./pages/transfer/TransferPassword";
@@ -70,6 +70,8 @@ import CheckPasswordOfCreateCard from "./pages/card/cardCreate/CheckPasswordOfCr
 import PasswordOfBalanceSettlement from "./pages/settlement/balanceSettlement/PasswordOfBalanceSettlement";
 import AddressOfCreateCard from "./pages/card/cardCreate/AddressOfCreateCard";
 import CompletedOfCreateCard from "./pages/card/cardCreate/CompletedOfCreateCard";
+import CardDetail from "./pages/card/cardDetail/CardDetail";
+import CardTransaction from "./pages/card/cardTransaction/cardTransaction";
 
 function App() {
   return (
@@ -156,6 +158,12 @@ function App() {
           <Route path="/card/:groupId/create/address" element={<AddressOfCreateCard />} />
           <Route path="/card/:groupId/create/completed" element={<CompletedOfCreateCard />} />
 
+          {/* 카드 상세 */}
+          <Route path="/card/:groupId" element={<CardDetail />} />
+
+          {/* 카드 내역 */}
+          <Route path="/cardtransaction/:groupId" element={<CardTransaction />} />
+
           {/* 이체 */}
           <Route path="/transfer/selectbank" element={<TransferSelectBank />} />
           <Route path="/transfer/setmoney" element={<TransferSetMoney />} />
@@ -185,7 +193,7 @@ function App() {
           <Route
             path="/settlement/expenditure/transaction/detail/:id"
             element={<ExpenditureTransactionDetail />}></Route>
-          <Route path="/settlement/expenditure/info" element={<ExpenditureSettlementInfo />}></Route>
+          <Route path="/settlement/expenditure/participants/:id" element={<ExpenditureSettlementInfo />}></Route>
           <Route path="/settlement/expenditure/completed" element={<ExpenditureSettlementCompleted />}></Route>
 
           {/* ver1 */}
@@ -194,6 +202,7 @@ function App() {
           <Route path="/generalmeetingaccountcreate" element={<GeneralMeetingAccountCreate />} />
           <Route path="/meetingaccountcreatecomplete" element={<MeetingAccountCreateComplete />} />
           {/* <Route path="/settlement" element={<Settlement />}></Route> */}
+          {/* <Routes path="/accounthistory/:accountNo" element={<AccountHistory />} /> */}
         </Routes>
       </BrowserRouter>
     </div>

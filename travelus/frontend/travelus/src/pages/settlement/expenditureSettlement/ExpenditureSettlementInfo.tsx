@@ -1,28 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
+import { accountApi } from "../../../api/account";
+import { GroupInfo } from "../../../types/meetingAccount";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../../lottie/loadingAnimation.json";
 
 interface Member {
+  participantId: number;
   name: string;
   amount: number;
 }
+
 const ExpenditureSettlementInfo = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { id } = useParams();
 
-  const totalAmount = location.state.selectAmmount;
-  const [members, setMembers] = useState<Member[]>([
-    { name: "박민규", amount: 16649 },
-    { name: "박예진", amount: 16647 },
-    { name: "이예림", amount: 16647 },
-  ]);
+  const totalAmount = location.state.totalAmount;
+  const [members, setMembers] = useState<Member[]>([]);
+  const [groupInfo, setGroupInfo] = useState<GroupInfo | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const handleMembers = () => {
+    navigate(`/settlement/editmembers/expenditure/${id}`, {
+      state: {
+        members: members,
+        totalAmount: location.state.totalAmount,
+      },
+    });
+  };
 
   const handleSettlement = () => {
     navigate("/settlement/expenditure/completed");
-  };
-
-  const handleMembers = () => {
-    navigate("/editmembers/expenditure", { state: { selectedMemberList: members } });
   };
 
   // 금액을 한국 통화 형식으로 포맷(콤마가 포함된 형태)
@@ -30,22 +40,65 @@ const ExpenditureSettlementInfo = () => {
     return new Intl.NumberFormat("ko-KR").format(amount);
   };
 
+  // 특정 모임 조회 API 호출
+  const fetchSpecificMeetingAccount = async () => {
+    try {
+      const response = await accountApi.fetchSpecificMeetingAccount(Number(id));
+      if (response.status === 200) {
+        setGroupInfo(response.data);
+      }
+    } catch (error) {
+      console.error("accountApi의 fetchSpecificMeetingAccount : ", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (location.state?.members) {
+    fetchSpecificMeetingAccount();
+  }, []);
+
+  useEffect(() => {
+    if (location.state.members) {
       const memberList = location.state.members;
       const memberCount = memberList.length;
+      if (memberList && memberCount > 0) {
+        const amountPerMember = Math.floor(totalAmount / memberCount);
+        const remainder = totalAmount % memberCount;
 
-      const amountPerMember = Math.floor(totalAmount / memberCount);
-      const remainder = totalAmount % memberCount;
+        const updatedMembers = memberList.map(
+          (member: { participantId: number; name: string; amount: number }, index: number) => ({
+            participantId: member.participantId,
+            name: member.name,
+            amount: index === 0 ? amountPerMember + remainder : amountPerMember,
+          })
+        );
+        setMembers(updatedMembers);
+      }
+    } else {
+      const memberList = groupInfo?.participants;
+      const memberCount = groupInfo?.participants.length;
+      if (memberList && memberCount && memberCount > 0) {
+        const amountPerMember = Math.floor(totalAmount / memberCount);
+        const remainder = totalAmount % memberCount;
 
-      const updatedMembers = memberList.map((member: Member, index: number) => ({
-        name: member.name,
-        amount: index === 0 ? amountPerMember + remainder : amountPerMember,
-      }));
-
-      setMembers(updatedMembers);
+        const updatedMembers = memberList.map((member, index) => ({
+          participantId: member.participantId,
+          name: member.userName,
+          amount: index === 0 ? amountPerMember + remainder : amountPerMember,
+        }));
+        setMembers(updatedMembers);
+      }
     }
-  }, [location.state]);
+  }, [groupInfo]);
+
+  if (isLoading) {
+    return (
+      <div className="h-full flex flex-col justify-center items-center">
+        <Lottie animationData={loadingAnimation} />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full py-5 pb-8 flex flex-col justify-between">
@@ -61,7 +114,7 @@ const ExpenditureSettlementInfo = () => {
           <div className="px-5 text-2xl font-semibold tracking-wide">
             <div className="flex">
               <p>총&nbsp;</p>
-              <p className="text-[#1429A0]">{formatCurrency(totalAmount)}</p>
+              <p className="text-[#1429A0]">{formatCurrency(totalAmount)}원</p>
               <p>을</p>
             </div>
 
@@ -77,13 +130,13 @@ const ExpenditureSettlementInfo = () => {
             친구편집
           </p>
           {members.map((item, index) => (
-            <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-3" key={index}>
+            <div className="flex justify-between items-center" key={index}>
+              <div className="flex items-center space-x-3">
                 <img className="w-10 aspect-1" src="/assets/user/userIconSample.png" alt="" />
                 <p>{item.name}</p>
               </div>
 
-              <p>{item.amount}원</p>
+              <p>{formatCurrency(item.amount)}원</p>
             </div>
           ))}
         </div>
