@@ -12,6 +12,7 @@ public interface SettlementMapper {
   @Mapping(source = "participant.group.groupId", target = "groupId")
   @Mapping(source="participant.group.groupName", target = "groupName")
   @Mapping(source = "id", target = "personalSettlementId")
+  @Mapping(source = "participant.id", target = "participantId")
   @Mapping(source="createdAt", target = "settlementRequestTime")
   @Mapping(target = "participantCount", expression = "java(personalSettlementHistory.getParticipant().getGroup().getParticipants().size())")
   PersonalSettlementDto toPersonalSettlementNotificationListDto(PersonalSettlementHistory personalSettlementHistory);

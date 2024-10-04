@@ -218,9 +218,10 @@ public class SettlementService {
             .depositTransactionSummary(requestDto.getDepositTransactionSummary()).accountPassword(requestDto.getAccountPassword())
             .transactionBalance(requestDto.getTransactionBalance()).build());
 
-    long historyId = requestDto.getPersonalSettlementHistoryId();
-    PersonalSettlementHistory history = personalSettlementHistoryRepository.findById(historyId)
-        .orElseThrow(() -> new PersonalSettlementHistoryNotFoundException(historyId));
+    long historyId = requestDto.getPersonalSettlementId();
+    long participantId = requestDto.getParticipantId();
+    PersonalSettlementHistory history = personalSettlementHistoryRepository.findByIdAndParticipantId(historyId, participantId)
+        .orElseThrow(() -> new PersonalSettlementHistoryNotFoundException(historyId, participantId));
 
     BigDecimal currentRemainingAmount = BigDecimal.valueOf(history.getRemainingAmount());
     BigDecimal transactionAmount = BigDecimal.valueOf(requestDto.getTransactionBalance());
