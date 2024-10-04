@@ -4,6 +4,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushNotification;
+import com.ssafy.soltravel.v1.dto.user.UserDetailDto;
 import com.ssafy.soltravel.v2.domain.Enum.AccountType;
 import com.ssafy.soltravel.v2.domain.Enum.NotificationType;
 import com.ssafy.soltravel.v2.domain.Notification;
@@ -16,6 +17,7 @@ import com.ssafy.soltravel.v2.dto.notification.NotificationDto;
 import com.ssafy.soltravel.v2.dto.notification.PushNotificationRequestDto;
 import com.ssafy.soltravel.v2.dto.notification.RegisterNotificationRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
+import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
 import com.ssafy.soltravel.v2.exception.group.InvalidGroupIdException;
 import com.ssafy.soltravel.v2.exception.notification.FcmTokenNotFound;
 import com.ssafy.soltravel.v2.exception.notification.NotificationNotFoundException;
@@ -183,46 +185,71 @@ public class NotificationService {
 
     /*
      * 이체 알림
-//     */
-//    public ResponseEntity<?> sendTransferNotification(User user, TransferRequestDto requestDto) {
-//
-//        // 돈을 받는 사람 유저 정보
-//        UserDetailDto depositUser = accountService.getUserByAccountNo(requestDto.getDepositAccountNo());
-//
-//        String title = "이체 완료";
-//        String message = depositUser.getName() + "님에게 : " + requestDto.getTransactionBalance() + "원을 보냈어요.";
-//
-//        // 돈을 보내는 사람
-//        PushNotificationRequestDto notificationRequestDto = new PushNotificationRequestDto(
-//            user.getUserId(),
-//            null,
-//            title,
-//            message,
-//            DEFAULT_ICON_URL,
-//            requestDto.getWithdrawalAccountNo()
-//        );
-//
-//        // 알림 전송
-//        pushNotification(notificationRequestDto);
-//
-//        // 돈 받는 사람
-//        title = user.getName() + "님이 돈을 보냈어요";
-//        message = requestDto.getTransactionBalance() + "원이 튜나은행 계좌로 입금되었어요";
-//
-//        PushNotificationRequestDto depositNotificationRequestDto = new PushNotificationRequestDto(
-//            depositUser.getId(),
-//            null,
-//            title,
-//            message,
-//            DEFAULT_ICON_URL,
-//            requestDto.getWithdrawalAccountNo()
-//        );
-//
-//        // 알림 전송
-//        pushNotification(depositNotificationRequestDto);
-//
-//        return ResponseEntity.ok().body(new ResponseDto());
-//    }
+     */
+    public ResponseEntity<?> sendTransferNotification(User user, TransferRequestDto requestDto) {
+
+        // 돈을 받는 사람 유저 정보
+        UserDetailDto depositUser = accountService.getUserByAccountNo(requestDto.getDepositAccountNo());
+
+        String title = "이체 완료";
+        String message = depositUser.getName() + "님에게 : " + requestDto.getTransactionBalance() + "원을 보냈어요.";
+
+        AccountDto senderAccount = accountService.getByAccountNo(requestDto.getWithdrawalAccountNo());
+
+        NotificationType notificationType = NotificationType.PT;
+        TravelGroup group = null;
+
+        if (senderAccount.getAccountType().equals(AccountType.G)) {
+            title = "모임통장 " + title;
+            group = groupRepository.findByGroupAccountNo(requestDto.getWithdrawalAccountNo());
+            notificationType = NotificationType.GT;
+        }
+
+        // 돈을 보내는 사람
+        PushNotificationRequestDto notificationRequestDto = new PushNotificationRequestDto(
+            user.getUserId(),
+            notificationType,
+            title,
+            message,
+            DEFAULT_ICON_URL,
+            (group != null) ? group.getGroupId() : null,
+            requestDto.getWithdrawalAccountNo()
+        );
+
+        // 알림 전송
+        pushNotification(notificationRequestDto);
+
+        title = user.getName() + "님이 돈을 보냈어요";
+        message = requestDto.getTransactionBalance() + "원이 튜나은행 계좌로 입금되었어요.";
+
+        AccountDto depositAccount = accountService.getByAccountNo(requestDto.getDepositAccountNo());
+        notificationType = NotificationType.PT;
+
+        TravelGroup depositGroup = null;
+
+        if (depositAccount.getAccountType().equals(AccountType.G)) {
+
+            depositGroup = groupRepository.findByGroupAccountNo(requestDto.getDepositAccountNo());
+
+            message = requestDto.getTransactionBalance() + "원이 " + depositGroup.getGroupName() + " 모임통장으로 입금되었어요.";
+            notificationType = NotificationType.GT;
+        }
+
+        PushNotificationRequestDto depositNotificationRequestDto = new PushNotificationRequestDto(
+            depositUser.getId(),
+            notificationType,
+            title,
+            message,
+            DEFAULT_ICON_URL,
+            (depositGroup != null) ? depositGroup.getGroupId() : null,
+            requestDto.getDepositAccountNo()
+        );
+
+        // 알림 전송
+        pushNotification(depositNotificationRequestDto);
+
+        return ResponseEntity.ok().body(new ResponseDto());
+    }
 
     /*
      * 자동 환전 알림 전송
@@ -284,8 +311,11 @@ public class NotificationService {
         User user = userRepository.findByUserId(requestDto.getTargetUserId())
             .orElseThrow(() -> new UserNotFoundException(requestDto.getTargetUserId()));
 
-        TravelGroup group = groupRepository.findById(requestDto.getGroupId())
-            .orElseThrow(InvalidGroupIdException::new);
+        TravelGroup group = null;
+
+        if (requestDto.getGroupId() != null) {
+            group = groupRepository.findById(requestDto.getGroupId()).orElseThrow(InvalidGroupIdException::new);
+        }
 
         Notification notification = Notification.createNotification(user, group, requestDto);
 
