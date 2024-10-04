@@ -1,5 +1,7 @@
 package com.ssafy.soltravel.v2.dto.notification;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.ssafy.soltravel.v2.domain.Enum.NotificationType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
@@ -7,6 +9,7 @@ import lombok.Data;
 
 @Data
 @Schema(description = "알림 정보를 담고 있는 DTO")
+@JsonInclude(Include.NON_NULL)
 public class NotificationDto {
 
     @Schema(description = "알림 ID", example = "1")
