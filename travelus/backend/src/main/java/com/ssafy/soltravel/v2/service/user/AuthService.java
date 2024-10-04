@@ -3,6 +3,8 @@ package com.ssafy.soltravel.v2.service.user;
 
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.domain.redis.RedisPhone;
+import com.ssafy.soltravel.v2.dto.auth.AuthOcrIdCardRequestDto;
+import com.ssafy.soltravel.v2.dto.auth.AuthOcrIdCardResponseDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthReissueRequestDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthReissueResponseDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthSMSSendRequestDto;
@@ -158,5 +160,14 @@ public class AuthService {
         // 토큰 재발급 및 응답
         UserLoginResponseDto loginDto = tokenService.saveRefreshToken(userId);
         return AuthMapper.convertLoginToReissueDto(loginDto);
+    }
+
+    public AuthOcrIdCardResponseDto ocrIdCard(AuthOcrIdCardRequestDto request) {
+
+
+        return AuthOcrIdCardResponseDto.builder()
+            .name("허동원")
+            .residentRegistrationNumber("991121-1234567")
+            .build();
     }
 }
