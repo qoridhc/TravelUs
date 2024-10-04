@@ -2,20 +2,19 @@ package com.ssafy.soltravel.v2.service.exchange;
 
 
 import com.ssafy.soltravel.v2.common.Header;
-import com.ssafy.soltravel.v2.config.RabbitMQConfig;
 import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
 import com.ssafy.soltravel.v2.domain.Enum.TransferType;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateCacheDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateRegisterRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.targetAccountDto;
-import com.ssafy.soltravel.v2.service.NotificationService;
 import com.ssafy.soltravel.v2.dto.moneyBox.BalanceResponseDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
 import com.ssafy.soltravel.v2.mapper.ExchangeRateMapper;
 import com.ssafy.soltravel.v2.repository.ExchangeRateForecastRepository;
 import com.ssafy.soltravel.v2.repository.GroupRepository;
+import com.ssafy.soltravel.v2.service.NotificationService;
 import com.ssafy.soltravel.v2.service.transaction.TransactionService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.WebClientUtil;
@@ -34,7 +33,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachePut;
@@ -128,7 +126,7 @@ public class ExchangeService {
   /**
    * 자동 환전
    */
-  private void processCurrencyConversions(String currencyCode, Double exchangeRate) {
+  public void processCurrencyConversions(String currencyCode, Double exchangeRate) {
 
     Set<targetAccountDto> list = getAccountsForRateHigherThan(currencyCode, exchangeRate);
     for (targetAccountDto dto : list) {
@@ -149,7 +147,7 @@ public class ExchangeService {
             transferHistoryResponseDtos.get(1).getTransactionSummary(),
             transferHistoryResponseDtos.get(1).getTransactionAmount());
 
-            notificationService.sendAutoExchangeNotification(dto, requestDto);
+        notificationService.sendAutoExchangeNotification(dto, requestDto);
 
       } catch (WebClientResponseException e) {
         //잔액부족시
@@ -232,40 +230,8 @@ public class ExchangeService {
   }
 
   /**
-   * ----------------------아래부터는 은행서버와 통신을 위한 메서드----------------------
+   * ----------------------환율 캐시관련 메서드----------------------
    */
-  /**
-   * RabbitMQ 메시지 수신
-   */
-  @RabbitListener(queues = RabbitMQConfig.EXCHANGE_RATE_QUEUE)
-  public void receiveMessage(String message) {
-    // 메시지 파싱
-    String[] parts = message.split(", ");
-    String currencyCode = parts[0].split(": ")[1];
-    Double exchangeRate = Double.parseDouble(parts[1].split(": ")[1]);
-    String timeLastUpdateUtc = parts[2].split(": ")[1];
-    int exchangeMin = Integer.parseInt(parts[3].split(": ")[1]);
-
-    // 이전 환율 가져오기
-    ExchangeRateCacheDto cachedDto = getExchangeRateFromCache(currencyCode);
-
-    // 환율이 변경되었는지 체크
-    if (cachedDto == null || !exchangeRate.equals(cachedDto.getExchangeRate())) {
-      // 캐시에 새로운 환율 저장
-      updateExchangeRateCache(
-          new ExchangeRateCacheDto(currencyCode, exchangeRate, timeLastUpdateUtc,
-              String.valueOf(exchangeMin)));
-
-      processCurrencyConversions(currencyCode, exchangeRate);
-    } else {
-      LogUtil.info(String.format("환율 변동 없음. 통화 코드: {}, 기존 환율: {}, 새로운 환율: {}"), currencyCode,
-          cachedDto.getExchangeRate(), exchangeRate);
-    }
-    /**
-     * 코컬 테스트용
-     */
-//    processCurrencyConversions(currencyCode, exchangeRate);
-  }
 
   /**
    * 환율 캐시 업데이트
