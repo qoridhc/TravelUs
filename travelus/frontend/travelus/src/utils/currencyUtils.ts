@@ -27,3 +27,16 @@ export const roundToDecimalPlaces = (value: number, places: number): number => {
   const factor = Math.pow(10, places);
   return Math.round(value * factor) / factor;
 }
+
+export const calculateDailyChange = (todayRate: number, yesterdayRate: number): number => {
+  return todayRate - yesterdayRate;
+}
+
+export const formatExchangeRate = (rate: number, currencyCode: string): string => {
+  return new Intl.NumberFormat('ko-KR', {
+    style: 'currency',
+    currency: currencyCode,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(rate);
+}

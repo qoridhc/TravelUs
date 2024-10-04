@@ -92,24 +92,14 @@ const MainMeetingAccount = ({ index, account }: Props) => {
             <div className="flex justify-between">
               <p className="text-sm">트래블박스</p>
               {account?.moneyBoxDtoList?.[1] ? (
-                <p className="font-semibold">{account.moneyBoxDtoList[1].balance}</p>
+                <div className="flex space-x-1">
+                  <p className="font-semibold">{formatCurrency(account.moneyBoxDtoList[1].balance)}</p>
+                  <p>{account.moneyBoxDtoList[1].currencyCode}</p>
+                </div>
               ) : (
                 <button className="font-semibold">개설하기</button>
               )}
             </div>
-            {/* {foreignAccount && (
-              <div className="rounded-md flex justify-between">
-                <div className="flex flex-col">
-                  <p className="text-sm font-bold">외화모임통장</p>
-                  <p className="text-sm text-zinc-500">{formatAccountNumber(foreignAccount.accountNo)}</p>
-                </div>
-
-                <div className="flex items-center space-x-1">
-                  <p className="text-[1.3rem] font-semibold">{formatCurrency(foreignAccount.balance)}</p>
-                  <p className="text-[1rem]">{foreignAccount.currency.currencyCode}</p>
-                </div>
-              </div>
-            )} */}
           </div>
         </div>
       )}

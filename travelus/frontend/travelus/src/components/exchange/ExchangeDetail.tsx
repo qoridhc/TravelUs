@@ -12,30 +12,24 @@ import {
   Legend,
   ChartData,
   ChartOptions,
+  TimeScale,
 } from "chart.js";
 import { ChevronLeft } from "lucide-react";
 import { exchangeApi } from "../../api/exchange";
 import { ExchangeRateInfo2, CurrencyPrediction, RecentRates } from "../../types/exchange";
 import { setupChart } from "../../utils/chartSetup";
-import { calculateChange, formatCurrency, getLatestRate } from "../../utils/currencyUtils";
+import { calculateDailyChange, formatExchangeRate } from "../../utils/currencyUtils";
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale);
 
 // 국가 이름 매핑
-const countryNameMapping: { [key: string]: string } = {
-  EUR: "Europe",
-  JPY: "Japan",
-  USD: "TheUnitedStates",
-  CNY: "China",
-};
-
-const getFlagImagePath = (currencyCode: string): string => {
-  const countryName = countryNameMapping[currencyCode] || currencyCode;
-  return `/assets/flag/flagOf${countryName}.png`;
-};
+// const getFlagImagePath = (currencyCode: string): string => {
+//   const countryName = countryNameMapping[currencyCode] || currencyCode;
+//   return `/assets/flag/flagOf${countryName}.png`;
+// };
 
 // Types
-type PeriodKey = "1주" | "1달" | "3달";
+type PeriodKey = "1주" | "1달" | "3달" | "2주";
 type TabType = "exchange" | "prediction";
 
 // Utility functions
@@ -47,141 +41,168 @@ const isRecentRatesOnly = (data: any): data is { recent_rates: RecentRates } => 
   return data && "recent_rates" in data && !("forecast" in data);
 };
 
-// Component
-const ExchangeDetail: React.FC = () => {
-  const { currencyCode = "" } = useParams<{ currencyCode: string }>();
-  const navigate = useNavigate();
-  const chartRef = useRef<ChartJS<"line">>(null);
-
+// Custom hook for fetching data
+const useExchangeData = (currencyCode: string) => {
   const [exchangeData, setExchangeData] = useState<ExchangeRateInfo2 | null>(null);
   const [historicalData, setHistoricalData] = useState<{ date: string; rate: number }[]>([]);
   const [predictionData, setPredictionData] = useState<{ date: string; rate: number }[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState<PeriodKey>("1주");
-  const [activeTab, setActiveTab] = useState<TabType>("exchange");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
         const response = await exchangeApi.getPrediction();
         const currencyData = response[currencyCode as keyof typeof response];
 
-        if (typeof currencyData === "string") {
-          console.error("Unexpected string data for currency:", currencyCode);
-          return;
-        }
-
         if (isCurrencyPrediction(currencyData) || isRecentRatesOnly(currencyData)) {
-          const latestRate = getLatestRate(currencyData.recent_rates["1_week"]);
+          const rates = Object.entries(currencyData.recent_rates["3_months"]).sort(
+            ([dateA], [dateB]) => new Date(dateB).getTime() - new Date(dateA).getTime()
+          );
+
           setExchangeData({
             currencyCode,
-            exchangeRate: latestRate,
+            exchangeRate: rates[0][1],
             lastUpdated: response.last_updated,
           });
 
-          const historicalRates: Record<PeriodKey, { [date: string]: number }> = {
-            "1주": currencyData.recent_rates["1_week"],
-            "1달": currencyData.recent_rates["1_month"],
-            "3달": currencyData.recent_rates["3_months"],
-          };
-
-          setHistoricalData(Object.entries(historicalRates[selectedPeriod]).map(([date, rate]) => ({ date, rate })));
+          setHistoricalData(rates.map(([date, rate]) => ({ date, rate })));
 
           if (isCurrencyPrediction(currencyData)) {
             setPredictionData(Object.entries(currencyData.forecast).map(([date, rate]) => ({ date, rate })));
           }
         } else {
-          console.error("Unexpected data structure for currency:", currencyCode);
+          throw new Error("Unexpected data structure for currency");
         }
-      } catch (error) {
-        console.error("Failed to fetch exchange rate data:", error);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An unknown error occurred");
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchData();
-  }, [currencyCode, selectedPeriod]);
+  }, [currencyCode]);
 
-  const handlePeriodChange = (newPeriod: PeriodKey) => setSelectedPeriod(newPeriod);
+  return { exchangeData, historicalData, predictionData, isLoading, error };
+};
+
+// Component
+const ExchangeDetail: React.FC = () => {
+  const { currencyCode = "" } = useParams<{ currencyCode: string }>();
+  const flagImagePath = `/assets/flag/flagOf${currencyCode}.png`;
+  const navigate = useNavigate();
+  // const chartRef = useRef<ChartJS<"line">>(null);
+
+  const { exchangeData, historicalData, predictionData, isLoading, error } = useExchangeData(currencyCode);
+  const [selectedPeriod, setSelectedPeriod] = useState<PeriodKey>("1주");
+  const [activeTab, setActiveTab] = useState<TabType>("exchange");
+
+  const getFilteredData = (data: typeof historicalData) => {
+    const now = new Date();
+    let startDate: Date;
+    switch (selectedPeriod) {
+      case "1주":
+        startDate = new Date(now.setDate(now.getDate() - 7));
+        break;
+      case "1달":
+        startDate = new Date(now.setMonth(now.getMonth() - 1));
+        break;
+      case "3달":
+        startDate = new Date(now.setMonth(now.getMonth() - 3));
+        break;
+      default:
+        startDate = new Date(now.setDate(now.getDate() - 7));
+    }
+    return data.filter((item) => new Date(item.date) >= startDate);
+  };
+
+  const filteredHistoricalData = getFilteredData(historicalData);
+  const filteredPredictionData = getFilteredData(predictionData);
+
+  // 어제의 환율과 일일 변화량 계산
+  const yesterdayRate = filteredHistoricalData[1]?.rate;
+  const dailyChange =
+    exchangeData && yesterdayRate ? calculateDailyChange(exchangeData.exchangeRate, yesterdayRate) : 0;
+
+  // const handlePeriodChange = (newPeriod: PeriodKey) => setSelectedPeriod(newPeriod);
 
   const chartData: ChartData<"line"> = {
-    labels: (activeTab === "exchange" ? historicalData : predictionData).map((data) => data.date),
+    labels: (activeTab === "exchange" ? filteredHistoricalData : filteredPredictionData).map((data) => data.date),
     datasets: [
       {
         label: activeTab === "exchange" ? "실제 환율" : "예측 환율",
-        data: (activeTab === "exchange" ? historicalData : predictionData).map((data) => data.rate),
-        borderColor: activeTab === "exchange" ? "rgb(75, 192, 192)" : "rgb(255, 99, 132)",
+        data: (activeTab === "exchange" ? filteredHistoricalData : filteredPredictionData).map((data) => data.rate),
+        borderColor: dailyChange >= 0 ? "rgb(255, 99, 132)" : "rgb(75, 192, 192)",
         tension: 0.1,
       },
     ],
   };
 
-  const chartOptions: ChartOptions<"line"> = setupChart(currencyCode, formatCurrency);
+  // 차트 옵션 설정
+  const isIncreasing = dailyChange >= 0;
+  const chartOptions: ChartOptions<"line"> = setupChart(currencyCode, formatExchangeRate, isIncreasing);
 
   // Render functions
   const renderExchangeTab = () => (
     <>
       <div className="bg-gray-100 rounded-md p-4 mb-6">
-        <h2 className="text-2xl font-semibold mb-2">{formatCurrency(exchangeData?.exchangeRate || 0, currencyCode)}</h2>
-        <p
-          className={`${
-            historicalData[0]?.rate < historicalData[historicalData.length - 1]?.rate ? "text-red-500" : "text-blue-500"
-          }`}>
-          전일대비{" "}
-          {formatCurrency(
-            Math.abs(calculateChange(historicalData[0]?.rate, historicalData[historicalData.length - 1]?.rate)),
-            currencyCode
-          )}
-          {historicalData[0]?.rate < historicalData[historicalData.length - 1]?.rate ? "▲" : "▼"}
-        </p>
-      </div>
-      <div className="flex justify-between mb-6">
-        {(["1주", "1달", "3달"] as const).map((period) => (
-          <button
-            key={period}
-            onClick={() => handlePeriodChange(period)}
-            className={`px-3 py-1 rounded-md ${
-              selectedPeriod === period
-                ? "bg-white text-[#353535] font-bold"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}>
-            {period}
-          </button>
-        ))}
+        <h2 className="mb-1">실시간 환율</h2>
+        <div className="flex justify-between">
+          <span className="font-semibold">
+            {exchangeData && formatExchangeRate(exchangeData.exchangeRate, currencyCode)}
+          </span>
+          <span className={`${isIncreasing ? "text-red-500" : "text-blue-500"}`}>
+            전일대비 {formatExchangeRate(Math.abs(dailyChange), currencyCode)}
+            {isIncreasing ? "▲" : "▼"}
+          </span>
+        </div>
       </div>
       {renderChart()}
+      {renderPeriodButtons()}
     </>
   );
 
   const renderPredictionTab = () => (
     <>
-      {["EUR", "CNY"].includes(currencyCode) ? (
+      {["EUR", "TWD"].includes(currencyCode) ? (
         <div className="text-center py-8">
           <p>이 통화는 환율 예측을 지원하지 않습니다.</p>
         </div>
       ) : (
         <>
           <div className="bg-gray-100 rounded-md p-4 mb-6">
-            <h2 className="text-2xl font-semibold mb-2">
-              예측 평균:
-              {formatCurrency(
-                predictionData.reduce((sum, data) => sum + data.rate, 0) / predictionData.length,
-                currencyCode
-              )}
-            </h2>
-            <p
-              className={`${
-                predictionData[0]?.rate < predictionData[predictionData.length - 1]?.rate
-                  ? "text-red-500"
-                  : "text-blue-500"
-              }`}>
-              예측 변화:{" "}
-              {formatCurrency(
-                Math.abs(predictionData[predictionData.length - 1]?.rate - predictionData[0]?.rate),
-                currencyCode
-              )}
-              {predictionData[0]?.rate < predictionData[predictionData.length - 1]?.rate ? "▲" : "▼"}
-            </p>
+            <h2 className="mb-1">환율 예측</h2>
+            <div className="flex justify-between">
+              <span className="font-semibold">
+                {formatExchangeRate(
+                  filteredPredictionData.reduce((sum, data) => sum + data.rate, 0) / filteredPredictionData.length,
+                  currencyCode
+                )}
+              </span>
+              <span
+                className={`${
+                  filteredPredictionData[0]?.rate < filteredPredictionData[filteredPredictionData.length - 1]?.rate
+                    ? "text-red-500"
+                    : "text-blue-500"
+                }`}>
+                예측 변화{" "}
+                {formatExchangeRate(
+                  Math.abs(
+                    filteredPredictionData[filteredPredictionData.length - 1]?.rate - filteredPredictionData[0]?.rate
+                  ),
+                  currencyCode
+                )}
+                {filteredPredictionData[0]?.rate < filteredPredictionData[filteredPredictionData.length - 1]?.rate
+                  ? "▲"
+                  : "▼"}
+              </span>
+            </div>
           </div>
           {renderChart()}
+          {renderPeriodButtons()}
         </>
       )}
     </>
@@ -189,46 +210,80 @@ const ExchangeDetail: React.FC = () => {
 
   const renderChart = () => (
     <div className="mb-6 h-64">
-      <Line data={chartData} options={chartOptions as ChartOptions<"line">} ref={chartRef} />
+      <Line data={chartData} options={chartOptions} />
     </div>
   );
 
-  if (!exchangeData) {
+  const renderPeriodButtons = () => {
+    if (activeTab === "exchange") {
+      return (
+        <div className="flex justify-center items-center bg-gray-200 rounded-full p-1">
+          {(["1주", "1달", "3달"] as const).map((period) => (
+            <button
+              key={period}
+              onClick={() => setSelectedPeriod(period)}
+              className={`px-3 py-1 rounded-full text-center w-full transition-colors duration-300 ${
+                selectedPeriod === period ? "bg-white text-[#353535] font-bold shadow-sm" : "text-gray-600"
+              }`}>
+              {period}
+            </button>
+          ))}
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex justify-center items-center bg-gray-200 rounded-full p-1">
+          <button
+            onClick={() => setSelectedPeriod("2주")}
+            className="px-3 py-1 rounded-full text-center w-full bg-white text-[#353535] font-bold shadow-sm">
+            금일로부터 2주 예상
+          </button>
+        </div>
+      );
+    }
+  };
+
+  if (isLoading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
 
+  if (error) {
+    return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
+  }
+
   return (
-    <div className="container mx-auto max-w-md h-full p-5 pb-8">
-      <button onClick={() => navigate(-1)} className="flex items-center text-blue-600 mb-4">
+    <div className="container mx-auto max-w-md h-full p-5 pb-8 flex flex-col">
+      <button onClick={() => navigate(-1)} className="flex items-center text-blue-600 mb-6">
         <ChevronLeft className="w-5 h-5 mr-1" />
       </button>
       <div className="flex items-center mb-4">
-        <img src={getFlagImagePath(currencyCode)} alt={`${currencyCode} Flag`} className="w-8 h-6 mr-2" />
+        <img src={flagImagePath} alt={`${currencyCode} Flag`} className="w-8 h-6 mr-2" />
         <h1 className="text-2xl font-bold">{currencyCode}</h1>
       </div>
-      <div className="flex mb-6">
+      <hr className="mb-4" />
+      <div className="mb-3 flex justify-center items-center bg-gray-200 rounded-full p-1">
         {(["exchange", "prediction"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`flex-1 py-2 text-center ${
-              activeTab === tab
-                ? "bg-white text-[#353535] font-bold border-b-2 border-[#353535]"
-                : "bg-gray-100 text-gray-600"
+              activeTab === tab ? "bg-white text-[#353535] font-bold shadow-sm rounded-full" : "text-gray-600"
             }`}>
             {tab === "exchange" ? "환율" : "환율 예측"}
           </button>
         ))}
       </div>
       {activeTab === "exchange" ? renderExchangeTab() : renderPredictionTab()}
-      <div className="flex justify-between mt-auto">
+
+      {/* 채우기 버튼은 아래에 고정 */}
+      <div className="flex justify-between mt-auto bottom-0 w-full fixed left-0 px-5 pb-8 bg-white">
         <button
-          onClick={() => navigate("/exchangekrw")}
+          onClick={() => navigate("/exchange/korean-currency")}
           className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
-          원화로 바꾸기
+          원화 채우기
         </button>
         <button
-          onClick={() => navigate("/exchange")}
+          onClick={() => navigate("/exchange/foreign-currency")}
           className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
           외화 채우기
         </button>

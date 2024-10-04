@@ -49,7 +49,7 @@ export const currencyNames: { [key: string]: string } = {
   USD: '미국 달러',
   JPY: '일본 엔',
   EUR: '유럽 유로',
-  CNY: '중국 위안',
+  TWD: '대만 달러',
 };
 
 // 통화 종류 목록
@@ -57,7 +57,7 @@ export const currencyTypeList: Array<{text: string, value: string}> = [
   { text: "USD(미국/$)", value: "USD" },
   { text: "JPY(일본/¥)", value: "JPY" },
   { text: "EUR(유로/€)", value: "EUR" },
-  { text: "CNY(중국/¥)", value: "CNY" },
+  { text: "TWD(대만/$)", value: "TWD" },
 ];
 
 // --------------------------------------------------
@@ -97,7 +97,7 @@ export interface PredictionResponse {
   USD: CurrencyPrediction;
   JPY: CurrencyPrediction;
   EUR: { recent_rates: RecentRates };
-  CNY: { recent_rates: RecentRates };
+  TWD: { recent_rates: RecentRates };
   last_updated: string;
 }
 

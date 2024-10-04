@@ -37,7 +37,15 @@ public class ExchangeRateForecastController {
     return ResponseEntity.ok(new ResponseDto(String.format("예측값(%d) 저장 완료", response)));
   }
 
-  @GetMapping("/{currencyCode}")
+  @GetMapping("/get")
+  public ResponseEntity loadAllExchangeRate(){
+    LogUtil.info("전체 환율 조회 요청");
+    Map<String, ExchangeRateData> response =
+        exchangeRateForecastService.findAllRates();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/get/{currencyCode}")
   public ResponseEntity loadExchangeRate(@PathVariable(name = "currencyCode") String currencyCode){
     LogUtil.info("환율 조회 요청", currencyCode);
     Map<String, ExchangeRateData> response =

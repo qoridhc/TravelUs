@@ -23,7 +23,6 @@ public class UserRepository {
     return user.getUserId();
   }
 
-  //TODO: master 값이 false인데
   public Optional<User> findGroupMasterByGroupIdAndUserId(Long groupId, Long userId){
     List<User> result = em.createQuery(
         "SELECT u From User u " +
