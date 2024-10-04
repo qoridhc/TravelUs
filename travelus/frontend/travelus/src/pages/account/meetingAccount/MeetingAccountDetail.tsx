@@ -287,22 +287,7 @@ const MeetingAccountDetail = () => {
             </div>
           </div>
 
-          {account.moneyBoxDtos.length > 1 ? (
-            <div className="p-5 pb-8 flex flex-col items-center justify-center space-y-5">
-              <button
-                onClick={() => {
-                  navigate(`/settlement/balance/amount/${id}`);
-                }}
-                className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]">
-                정산하기
-              </button>
-              <button
-                className="text-sm text-[#1429A0] font-semibold"
-                onClick={() => navigate("/settlement/expenditure/transaction/detail/1")}>
-                개별지출 정산하기
-              </button>
-            </div>
-          ) : (
+          {account.moneyBoxDtos.length < 1 && (
             <div className="p-5 pb-8 flex flex-col items-center justify-center space-y-5">
               <button
                 className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]"

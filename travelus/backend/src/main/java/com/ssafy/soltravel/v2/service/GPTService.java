@@ -17,6 +17,7 @@ public class GPTService {
 
   private final WebClient openAiWebClient;
   private Map<String, String> basePrompt = new HashMap<>();
+  private Map<String, String> ICBasePrompt = new HashMap<>();
 
   @PostConstruct
   public void init() {
@@ -25,6 +26,12 @@ public class GPTService {
         + "list of purchased items (items), item names (item), prices (price), quantity(quantity)(int, default: 1) and payment amount (paid). "
         + "Additionally, format the extracted information to ensure it becomes a complete JSON data."
     );
+
+    ICBasePrompt.put("role", "system");
+    ICBasePrompt.put("content", "You are an image data analyst. "
+        + "The following data is extracted from a South Korean ID card using OCR technology. "
+        + "Please parse the Korean name and the resident registration number in the format YYMMDD-OOOOOOO from this ID card. "
+        + "Please respond according to the following JSON format: { \"name\": \"Korean name\", \"residentRegistrationNumber\": \"Resident registration number\" }");
   }
 
   public String askChatGPT(String prompt) {
@@ -63,4 +70,41 @@ public class GPTService {
 
     return null;
   }
+
+
+  public String askChatGPTIC(String prompt) {
+
+    Map<String, Object> requestBody = new HashMap<>();
+    requestBody.put("model", "gpt-4o"); // 사용할 모델
+    requestBody.put("response_format", Map.of("type", "json_object"));
+    requestBody.put("messages", List.of(ICBasePrompt, Map.of("role", "user", "content", prompt))); // 'messages' 필드 사용
+    requestBody.put("max_tokens", 2048); // 최대 토큰 수 설정
+
+    ResponseEntity<Map<String, Object>> response = openAiWebClient.post()
+        .uri("/chat/completions")
+        .bodyValue(requestBody) // 요청 본문 설정
+        .retrieve()
+        .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
+        })
+        .block();
+
+    if (response != null && response.getBody() != null) {
+      Map<String, Object> responseBody = response.getBody();
+
+      // OpenAI 응답 형식에 따라 처리 ('choices' 필드에서 텍스트 추출)
+      if (responseBody.containsKey("choices")) {
+        List<Map<String, Object>> choices = (List<Map<String, Object>>) responseBody.get("choices");
+        if (!choices.isEmpty()) {
+          Map<String, Object> choice = choices.get(0);
+          if (choice.containsKey("message")) {
+            Map<String, Object> message = (Map<String, Object>) choice.get("message");
+            return (String) message.get("content");
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+
 }

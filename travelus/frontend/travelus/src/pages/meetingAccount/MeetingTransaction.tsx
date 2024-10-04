@@ -13,7 +13,7 @@ const MeetingTransaction = () => {
   const [account, setAccount] = useState<AccountInfoNew>();
   const [transactionList, setTransactionList] = useState<TransactionNew[]>([]);
   const depositTransactionType = ["D", "TD", "ED", "SD"];
-  const withdrawTransactionType = ["W", "TW", "EW", "SW"];
+  const withdrawTransactionType = ["W", "TW", "EW", "SW", "CW"];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,6 +32,7 @@ const MeetingTransaction = () => {
 
         if (transactionResponse.status === 200) {
           setTransactionList(transactionResponse.data.content);
+          console.log("데이터 조회 성공", transactionResponse.data.content);
         }
 
         if (accountResponse.status === 201) {
@@ -71,8 +72,8 @@ const MeetingTransaction = () => {
   };
 
   return (
-    <div className="h-full pb-8">
-      <div className="flex flex-col">
+    <div className="w-full h-full pb-8">
+      <div className="w-full flex flex-col">
         <div className="p-5 grid grid-cols-3 items-center sticky top-0">
           <IoIosArrowBack
             onClick={() => {
@@ -84,7 +85,7 @@ const MeetingTransaction = () => {
         </div>
 
         {account && (
-          <div className="p-5">
+          <div className="w-full p-5">
             <div className="my-10 space-y-3">
               <p className="text-zinc-500 underline underline-offset-2">{account?.accountNo}</p>
               <p className="text-3xl font-bold">{formatCurrencyNum(account?.moneyBoxDtos[0].balance)} 원</p>
@@ -124,7 +125,11 @@ const MeetingTransaction = () => {
                 {groupedTransactions[date].map((transaction, index) => (
                   <div key={index} className="flex flex-col items-center">
                     <div className="w-full flex justify-between">
-                      <p className="text-lg font-semibold">{transaction.transactionSummary}</p>
+                      {transaction.transactionType === "EW" ? (
+                        <p className="text-lg font-semibold">트래블박스 환전</p>
+                      ) : (
+                        <p className="text-lg font-semibold">{transaction.payeeName}</p>
+                      )}
 
                       {withdrawTransactionType.includes(transaction.transactionType) ? (
                         <p className="text-lg tracking-wider">- {formatCurrency(transaction.transactionAmount)}원</p>
