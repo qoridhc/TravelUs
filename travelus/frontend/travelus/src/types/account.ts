@@ -195,11 +195,13 @@ export interface meetingInvitationCode {
 
 // 거래 내역 조회 (New ver.)
 export interface TransactionNew {
-    transactionUniqueNo: string;
+  transactionUniqueNo: string;
   transactionType: string;
   accountNo: string;
   transactionDate: string;
   transactionAmount: string;
   transactionBalance: string;
   transactionSummary: string;
+  payeeName: string;
+  currencyCode: string;
 }
