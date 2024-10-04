@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { accountApi } from "../../../api/account";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -14,12 +14,27 @@ import { FaUserFriends, FaBriefcase, FaHeart } from "react-icons/fa";
 import { GoHome } from "react-icons/go";
 import { FiPlus } from "react-icons/fi";
 import { MeetingAccountInfo, MeetingAccountDetailInfo } from "../../../types/account";
+import { setTravelboxInfo } from "../../../redux/meetingAccountSlice";
 
 const MeetingAccountDetail = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { id } = useParams();
   const [meeting, setMeeting] = useState<MeetingAccountInfo | null>(null);
   const [account, setAccount] = useState<MeetingAccountDetailInfo | null>(null);
+
+  const handlleCreateTravelbox = () => {
+    if (!account?.accountNo) return;
+
+    dispatch(
+      setTravelboxInfo({
+        accountPassword: "",
+        accountNo: account?.accountNo,
+        currencyCode: "",
+      })
+    );
+    navigate("/currencyinfoofcreatetravelbox");
+  };
 
   // 특정 모임 조회 API 호출
   const fetchSpecificMeetingAccount = async () => {
@@ -274,7 +289,11 @@ const MeetingAccountDetail = () => {
 
           {account.moneyBoxDtos.length < 1 && (
             <div className="p-5 pb-8 flex flex-col items-center justify-center space-y-5">
-              <button className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]">
+              <button
+                className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]"
+                onClick={() => {
+                  handlleCreateTravelbox();
+                }}>
                 트래블박스 개설하기
               </button>
             </div>
