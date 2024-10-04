@@ -265,8 +265,17 @@ public class NotificationService {
         List<Notification> notificationList = notificationRepository.findAllByUser_userId(userId);
 
         return notificationMapper.toDtoList(notificationList);
-
     }
+
+    public ResponseDto readAllNotifications() {
+
+        User user = securityUtil.getUserByToken();
+
+        notificationRepository.readAllNotifications(user.getUserId());
+
+        return new ResponseDto();
+    }
+
 
 }
 
