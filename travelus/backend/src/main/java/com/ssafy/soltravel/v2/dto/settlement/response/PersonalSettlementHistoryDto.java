@@ -1,0 +1,27 @@
+package com.ssafy.soltravel.v2.dto.settlement.response;
+
+import com.ssafy.soltravel.v2.domain.Enum.SettlementStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class PersonalSettlementHistoryDto {
+
+  @Schema(description = "개별 지출 정산 내역 id",example = "1")
+  private Long personalSettlementId;
+
+  @Schema(description = "개별 지출 정산 금액",example = "10000")
+  private double amount;
+
+  @Schema(description = "개별 지출 정산 남은 금액",example = "5000")
+  private double remainingAmount;
+
+  @Schema(description = "개별 지출 정산 완료 여부(COMPLETED: 정산 완료, NOT_COMPLETED: 정산 미완료)",example = "NOT_COMPLETED")
+  private SettlementStatus isSettled;
+}
