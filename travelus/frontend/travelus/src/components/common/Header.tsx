@@ -35,7 +35,8 @@ const Header = () => {
         <p className="text-[#565656] font-semibold">{userName} 님</p>
         <IoIosArrowForward className="text-[#565656]" />
       </button>
-      <button>
+      <button
+        onClick={() => {navigate("/notification")}}>
         <IoNotificationsOutline className="text-2xl" />
       </button>
     </div>
