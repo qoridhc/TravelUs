@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +31,12 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    /* FCM Token 서버 저장 API */
+    @Operation(summary = "FCM 토큰 프론트 저장", description = "프론트에서 받은 FCM토큰을 Redis에 저장하는 API.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "토큰 저장 성공", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
     @PostMapping("/register")
     public ResponseEntity<ResponseDto> setToken(@RequestBody RegisterNotificationRequestDto requestDto) {
         ResponseDto responseDto = notificationService.saveFcmToken(requestDto);
@@ -66,11 +72,10 @@ public class NotificationController {
         @ApiResponse(responseCode = "404", description = "유저를 찾을 수 없음", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<NotificationDto>> getUserNotification(
-        @PathVariable Long userId) {
+    @GetMapping("/all")
+    public ResponseEntity<List<NotificationDto>> getUserNotification() {
 
-        List<NotificationDto> response = notificationService.getAllByUserId(userId);
+        List<NotificationDto> response = notificationService.getAllByUserId();
 
         return ResponseEntity.ok().body(response);
     }
@@ -91,5 +96,20 @@ public class NotificationController {
         return ResponseEntity.ok().body(response);
     }
 
+    /*
+     * 특정 알림 삭제
+     */
+    @Operation(summary = "특정 알림 삭제 처리", description = "유저의 모든 알림을 삭제 처리하는 API.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "읽음 처리 성공", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @DeleteMapping("/{notificationId}")
+    public ResponseEntity<ResponseDto> deleteNotification(@PathVariable Long notificationId) {
+
+        ResponseDto response = notificationService.deleteNotification(notificationId);
+
+        return ResponseEntity.ok().body(response);
+    }
 
 }

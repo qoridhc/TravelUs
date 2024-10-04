@@ -17,6 +17,7 @@ import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
 import com.ssafy.soltravel.v2.exception.notification.FcmTokenNotFound;
+import com.ssafy.soltravel.v2.exception.notification.NotificationNotFoundException;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.NotificationMapper;
 import com.ssafy.soltravel.v2.repository.NotificationRepository;
@@ -258,11 +259,11 @@ public class NotificationService {
     }
 
 
-    public List<NotificationDto> getAllByUserId(Long userId) {
+    public List<NotificationDto> getAllByUserId() {
 
-        User user = userRepository.findByUserId(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        User user = securityUtil.getUserByToken();
 
-        List<Notification> notificationList = notificationRepository.findAllByUser_userId(userId);
+        List<Notification> notificationList = notificationRepository.findAllByUser_userId(user.getUserId());
 
         return notificationMapper.toDtoList(notificationList);
     }
@@ -276,6 +277,17 @@ public class NotificationService {
         return new ResponseDto();
     }
 
+    public ResponseDto deleteNotification(Long notificationId) {
+        User user = securityUtil.getUserByToken();
+
+        notificationRepository.findById(notificationId)
+            .orElseThrow(() -> new NotificationNotFoundException(notificationId));
+
+        notificationRepository.deleteById(notificationId);
+
+        return new ResponseDto();
+
+    }
 
 }
 
