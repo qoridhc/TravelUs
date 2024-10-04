@@ -32,4 +32,6 @@ public class PersonalSettlementDto {
   private LocalDateTime settlementRequestTime;
   
   //모임참여자수
+  @Schema(description = "모임 참여자 수",example = "2")
+  private int participantCount;
 }
