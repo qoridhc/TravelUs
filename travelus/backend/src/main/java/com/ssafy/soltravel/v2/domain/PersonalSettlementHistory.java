@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.v2.domain;
 
+import com.ssafy.soltravel.v2.domain.Enum.SettlementStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -35,14 +36,14 @@ public class PersonalSettlementHistory {
   private double remainingAmount;
 
   //정산 여부
-  private boolean isSettled;
+  private SettlementStatus isSettled;
 
   public static PersonalSettlementHistory createPersonalSettlementHistory(Participant participant, double amount) {
     PersonalSettlementHistory personalSettlementHistory = new PersonalSettlementHistory();
     personalSettlementHistory.participant = participant;
     personalSettlementHistory.amount = amount;
     personalSettlementHistory.remainingAmount = amount;
-    personalSettlementHistory.isSettled = false;
+    personalSettlementHistory.isSettled = SettlementStatus.NOT_COMPLETED;
     return personalSettlementHistory;
   }
 }

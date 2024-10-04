@@ -1,6 +1,7 @@
 package com.ssafy.soltravel.v2.service.settlement;
 
 import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
+import com.ssafy.soltravel.v2.domain.Enum.SettlementStatus;
 import com.ssafy.soltravel.v2.domain.Enum.SettlementType;
 import com.ssafy.soltravel.v2.domain.Enum.TransactionType;
 import com.ssafy.soltravel.v2.domain.Enum.TransferType;
@@ -9,6 +10,7 @@ import com.ssafy.soltravel.v2.domain.PersonalSettlementHistory;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.group.GroupDto;
 import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
+import com.ssafy.soltravel.v2.dto.settlement.request.PersonalSettlementHistoryRequestDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.PersonalSettlementRegisterRequestDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.PersonalSettlementTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.SettlementParticipantRequestDto;
@@ -181,7 +183,9 @@ public class SettlementService {
   /**
    * 개별 정산 내역 조회 메서드
    */
-  public List<PersonalSettlementTransferResponseDto> getPersonalSettlementHistory(long userId) {
+  public List<PersonalSettlementTransferResponseDto> getPersonalSettlementHistory(PersonalSettlementHistoryRequestDto requestDto) {
+
+
 
     return null;
   }
@@ -213,7 +217,7 @@ public class SettlementService {
 
     if (afterRemainingAmount.compareTo(BigDecimal.ZERO) <= 0) {
 
-      history.setSettled(true);
+      history.setIsSettled(SettlementStatus.COMPLETED);
       personalSettlementHistoryRepository.save(history);
     }
 
