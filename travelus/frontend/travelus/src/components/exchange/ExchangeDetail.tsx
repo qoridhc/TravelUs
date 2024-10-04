@@ -135,7 +135,7 @@ const ExchangeDetail: React.FC = () => {
       {
         label: activeTab === "exchange" ? "실제 환율" : "예측 환율",
         data: (activeTab === "exchange" ? filteredHistoricalData : filteredPredictionData).map((data) => data.rate),
-        borderColor: dailyChange >= 0 ? "rgb(255, 99, 132)" : "rgb(75, 192, 192)",
+        borderColor: dailyChange >= 0 ? "rgb(255, 0, 0)" : "rgb(0, 0, 255)",
         tension: 0.1,
       },
     ],
