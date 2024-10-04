@@ -72,6 +72,7 @@ import AddressOfCreateCard from "./pages/card/cardCreate/AddressOfCreateCard";
 import CompletedOfCreateCard from "./pages/card/cardCreate/CompletedOfCreateCard";
 import CardDetail from "./pages/card/cardDetail/CardDetail";
 import CardTransaction from "./pages/card/cardTransaction/cardTransaction";
+import ExpenditureSettlementList from "./pages/settlement/expenditureSettlement/ExpenditureSettlementList";
 
 function App() {
   return (
@@ -195,6 +196,7 @@ function App() {
             element={<ExpenditureTransactionDetail />}></Route>
           <Route path="/settlement/expenditure/participants/:id" element={<ExpenditureSettlementInfo />}></Route>
           <Route path="/settlement/expenditure/completed" element={<ExpenditureSettlementCompleted />}></Route>
+          <Route path="/settlement/expenditure/list" element={<ExpenditureSettlementList />}></Route>
 
           {/* ver1 */}
           <Route path="/accountcreate" element={<AccountCreate />} />
