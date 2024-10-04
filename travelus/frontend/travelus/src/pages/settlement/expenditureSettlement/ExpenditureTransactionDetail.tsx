@@ -46,7 +46,7 @@ const ExpenditureTransactionDetail = () => {
   };
 
   const handleNext = () => {
-    navigate("/settlement/expenditure/info", { state: { selectAmmount } });
+    navigate(`/settlement/expenditure/participants/${id}`, { state: { totalAmount: selectAmmount } });
   };
 
   // 무한스크롤 데이터 요청을 위해 page를 증가시키는 함수
@@ -72,12 +72,12 @@ const ExpenditureTransactionDetail = () => {
       if (groupInfo?.groupAccountNo) {
         const data = {
           accountNo: groupInfo?.groupAccountNo,
+          transactionType: "CD",
           orderByType: "DESC",
           page: page,
           size: 10,
         };
         const response = await accountApi.fetchTracsactionHistory(data);
-        console.log("내역 : ", response);
         const newTransactions = response.data.content;
 
         // 거래내역을 날짜별로 그룹화하여 병합
@@ -145,14 +145,6 @@ const ExpenditureTransactionDetail = () => {
     }
   }, [isLoading]);
 
-  useEffect(() => {
-    console.log(transactions);
-  }, [transactions]);
-
-  useEffect(() => {
-    console.log(dateList);
-  }, [dateList]);
-
   return (
     <div className="h-full pb-8">
       <div className="flex flex-col">
@@ -167,7 +159,7 @@ const ExpenditureTransactionDetail = () => {
         </div>
 
         <div className="p-5 flex items-center space-x-3">
-          <p className="text-3xl font-bold">9월</p>
+          <p className="text-3xl font-bold">{new Date().getMonth() + 1}월</p>
           <IoIosArrowDown className="text-xl text-[#555555]" />
         </div>
 
@@ -175,53 +167,62 @@ const ExpenditureTransactionDetail = () => {
 
         <div className="p-5 overflow-y-auto">
           {dateList.map((date) => (
-            <div className="grid gap-5" key={date}>
-              <p className="text-sm text-zinc-500">{date}</p>
+            <div className="grid gap-3" key={date}>
+              <p className="mb-3 text-[#565656] font-semibold">{date}</p>
 
               {transactions[date].map((transaction, index) => (
-                <label key={index} className="flex justify-between items-center">
-                  <div className="flex flex-col justify-between">
-                    <p className="text-lg font-bold tracking-wider">
+                <label key={index} className="grid grid-rows-2 grid-cols-[1fr_9fr]">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      className="w-6 h-6 appearance-none bg-[url('./assets/check/nochecked.png')] checked:bg-[url('./assets/check/checked.png')] bg-cover rounded-full"
+                      onChange={(e) =>
+                        handleChecked(
+                          e.target.checked,
+                          Number(transaction.transactionSummary.slice(-7)) === 0
+                            ? Number(transaction.transactionAmount)
+                            : Math.ceil(
+                                Number(transaction.transactionAmount) * Number(transaction.transactionSummary.slice(-7))
+                              )
+                        )
+                      }
+                    />
+                  </div>
+
+                  <div className="row-span-2 grid grid-rows-2 grid-cols-2">
+                    <p className="text-lg font-semibold tracking-wider">
+                      {transaction.currencyCode === "KRW"
+                        ? transaction.payeeName.slice(0, 10)
+                        : transaction.payeeName.slice(0, 13)}
+                    </p>
+
+                    <p className="text-lg font-semibold text-right tracking-wider">
                       - {formatCurrency(Number(transaction.transactionAmount))}
                       {transaction.currencyCode === "KRW"
                         ? "원"
                         : currencyTypeList.find((item) => item.value === transaction.currencyCode)?.text.slice(-2, -1)}
                     </p>
+
                     {transaction.currencyCode === "KRW" ? (
                       <></>
                     ) : (
-                      <p className="text-sm text-[#565656] tracking-wider">
-                        =
-                        {formatCurrency(
-                          Number(
-                            (
+                      <>
+                        <p className="text-sm text-[#565656] tracking-wider">
+                          환율&nbsp;
+                          {Number(transaction.transactionSummary.slice(-7))}원
+                        </p>
+                        <p className="text-sm text-[#565656] text-right tracking-wider">
+                          &nbsp;=&nbsp;
+                          {formatCurrency(
+                            Math.ceil(
                               Number(transaction.transactionAmount) * Number(transaction.transactionSummary.slice(-7))
-                            ).toFixed(0)
-                          )
-                        )}
-                        원 (당시 환율
-                        {Number(transaction.transactionSummary.slice(-7))}원)
-                      </p>
-                    )}
-                    <p className="tracking-wider">{transaction.payeeName}</p>
-                  </div>
-
-                  <input
-                    type="checkbox"
-                    className="w-6 h-6 appearance-none bg-[url('./assets/check/nochecked.png')] checked:bg-[url('./assets/check/checked.png')] bg-cover rounded-full"
-                    onChange={(e) =>
-                      handleChecked(
-                        e.target.checked,
-                        Number(transaction.transactionSummary.slice(-7)) === 0
-                          ? Number(transaction.transactionAmount)
-                          : Number(
-                              (
-                                Number(transaction.transactionAmount) * Number(transaction.transactionSummary.slice(-7))
-                              ).toFixed(0)
                             )
-                      )
-                    }
-                  />
+                          )}
+                          원
+                        </p>
+                      </>
+                    )}
+                  </div>
                 </label>
               ))}
 
@@ -230,10 +231,19 @@ const ExpenditureTransactionDetail = () => {
           ))}
 
           {/* 무한스크롤에서 인식할 마지막 타겟 */}
-          <div ref={pageEnd} className="h-14 bg-transparent"></div>
+          <div ref={pageEnd} className="h-24 bg-transparent"></div>
         </div>
 
-        <div className="w-full p-5 pb-8 bg-white fixed bottom-0 z-50">
+        <div className="w-full p-5 pb-8 bg-white fixed bottom-0 z-50 grid gap-5">
+          {selectAmmount === 0 ? (
+            <></>
+          ) : (
+            <p className="text-xl text-right font-semibold">
+              총액&nbsp;
+              {formatCurrency(selectAmmount)}
+              &nbsp;원
+            </p>
+          )}
           <button
             className={`w-full h-14 text-lg rounded-xl tracking-wide ${
               checkedNum === 0 ? "text-[#565656] bg-[#E3E4E4]" : "text-white bg-[#1429A0]"

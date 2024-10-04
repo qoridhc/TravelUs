@@ -135,7 +135,7 @@ const ExchangeDetail: React.FC = () => {
       {
         label: activeTab === "exchange" ? "실제 환율" : "예측 환율",
         data: (activeTab === "exchange" ? filteredHistoricalData : filteredPredictionData).map((data) => data.rate),
-        borderColor: dailyChange >= 0 ? "rgb(255, 0, 0)" : "rgb(0, 0, 255)",
+        borderColor: dailyChange >= 0 ? "rgb(221, 82, 87)" : "rgb(72, 128, 238)",
         tension: 0.1,
       },
     ],
@@ -154,7 +154,7 @@ const ExchangeDetail: React.FC = () => {
           <span className="font-semibold">
             {exchangeData && formatExchangeRate(exchangeData.exchangeRate, currencyCode)}
           </span>
-          <span className={`${isIncreasing ? "text-red-500" : "text-blue-500"}`}>
+          <span className={`${isIncreasing ? "text-[#DD5257]" : "text-[#4880EE]"}`}>
             전일대비 {formatExchangeRate(Math.abs(dailyChange), currencyCode)}
             {isIncreasing ? "▲" : "▼"}
           </span>
