@@ -34,4 +34,8 @@ public class NotificationController {
 
         return ResponseEntity.ok().body(response);
     }
+
+    /*
+     * 알림 조회
+     */
 }
