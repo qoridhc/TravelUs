@@ -20,7 +20,7 @@ const TravelBoxTransaction = () => {
   const [transactions, setTransactions] = useState<{ [date: string]: AccountHistoryResponse[] }>({}); // 거래내역 배열
   const [dateList, setDateList] = useState<string[]>([]); // 날짜 리스트
   const withdrawTransactionType = ["W", "TW", "EW", "SW"];
-  const payeeNameType = ["TD", "TW", "CD"]; // payeeName 출력, 나머지는 summary 출력
+  const payeeNameType = ["TD", "TW", "CW"]; // payeeName 출력, 나머지는 summary 출력
 
   // 무한 스크롤 관련 상태변수
   const [page, setPage] = useState(0);
