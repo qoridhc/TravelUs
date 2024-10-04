@@ -14,7 +14,7 @@ import MeetingAccountDetail from "./pages/account/meetingAccount/MeetingAccountD
 import MeetingAccountManagement from "./pages/account/meetingAccount/MeetingAccountManagement";
 import MeetingAccountGroupMember from "./pages/account/meetingAccount/MeetingAccountGroupMember";
 import JoinedMeetingAccountDetail from "./pages/account/meetingAccount/JoinedMeetingAccountDetail";
-import AccountTransaction from "./pages/account/AccountTransaction";
+import AccountTransaction from "./pages/account/generalAccount/AccountTransaction";
 import TransferSelectBank from "./pages/transfer/TransferSelectBank";
 import TransferSetMoney from "./pages/transfer/TransferSetMoney";
 import TransferPassword from "./pages/transfer/TransferPassword";
@@ -71,6 +71,7 @@ import PasswordOfBalanceSettlement from "./pages/settlement/balanceSettlement/Pa
 import AddressOfCreateCard from "./pages/card/cardCreate/AddressOfCreateCard";
 import CompletedOfCreateCard from "./pages/card/cardCreate/CompletedOfCreateCard";
 import CardDetail from "./pages/card/cardDetail/CardDetail";
+import CardTransaction from "./pages/card/cardTransaction/cardTransaction";
 
 function App() {
   return (
@@ -159,6 +160,9 @@ function App() {
 
           {/* 카드 상세 */}
           <Route path="/card/:groupId" element={<CardDetail />} />
+
+          {/* 카드 내역 */}
+          <Route path="/cardtransaction/:groupId" element={<CardTransaction />} />
 
           {/* 이체 */}
           <Route path="/transfer/selectbank" element={<TransferSelectBank />} />
