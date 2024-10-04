@@ -1,9 +1,11 @@
 package com.ssafy.soltravel.v2.controller;
 
+import com.ssafy.soltravel.v2.dto.settlement.request.GroupSettlementHistoryRequestDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.PersonalSettlementHistoryRequestDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.PersonalSettlementRegisterRequestDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.PersonalSettlementTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.settlement.request.SettlementRequestDto;
+import com.ssafy.soltravel.v2.dto.settlement.response.GroupSettlementResponseDto;
 import com.ssafy.soltravel.v2.dto.settlement.response.PersonalSettlementDto;
 import com.ssafy.soltravel.v2.dto.settlement.response.PersonalSettlementHistoryDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
@@ -83,14 +85,13 @@ public class SettlementController {
 
   @Operation(summary = "개별 정산 요청 내역 모임별 조회", description = "모임의 개별 정산 요청 내역을 조회합니다.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "정산 완료", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PersonalSettlementHistoryDto.class)))),
+      @ApiResponse(responseCode = "200", description = "정산 완료", content = @Content(array = @ArraySchema(schema = @Schema(implementation = GroupSettlementResponseDto.class)))),
       @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = String.class))),
       @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = String.class)))})
   @GetMapping("/group")
-  public ResponseEntity<List<PersonalSettlementHistoryDto>> getGroupSettlementHistory(@ModelAttribute
-  PersonalSettlementHistoryRequestDto requestDto) {
-//    List<PersonalSettlementHistoryDto> response = settlementService.getPersonalSettlementHistory(requestDto);
-//    return ResponseEntity.ok().body(response);
-    return null;
+  public ResponseEntity<List<GroupSettlementResponseDto>> getGroupSettlementHistory(@ModelAttribute
+  GroupSettlementHistoryRequestDto requestDto) {
+    List<GroupSettlementResponseDto> response = settlementService.getGroupSettlementHistory(requestDto);
+    return ResponseEntity.ok().body(response);
   }
 }

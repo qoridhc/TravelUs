@@ -18,6 +18,9 @@ public class PersonalSettlementDto {
   @Schema(description = "개별 지출 정산 내역 id",example = "1")
   private Long personalSettlementId;
 
+  @Schema(description = "참여자 id",example = "1")
+  private Long participantId;
+
   @Schema(description = "개별 지출 정산 금액",example = "10000")
   private double amount;
 
@@ -30,6 +33,7 @@ public class PersonalSettlementDto {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
   @Schema(description = "개별 지출 정산 요청 시각",example = "2024-10-04'T'14:05:13")
   private LocalDateTime settlementRequestTime;
-  
-  //모임참여자수
+
+  @Schema(description = "모임 참여자 수",example = "2")
+  private int participantCount;
 }
