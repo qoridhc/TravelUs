@@ -14,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -66,6 +65,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participant> participants;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications;
+
     @Column(name = "gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -95,6 +97,7 @@ public class User {
 
         return user;
     }
+
     public static User createUser(
         String name, String password, String email, String phone,
         String address, LocalDate birth, String profileImageUrl
@@ -116,8 +119,8 @@ public class User {
     }
 
     /*
-    * 수정 메서드
-    */
+     * 수정 메서드
+     */
     public void updateProfile(String profileImageUrl) {
         this.profile = profileImageUrl;
     }
