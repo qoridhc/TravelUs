@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import ExchangeRateInputMui from "../../components/travelBox/ExchangeRateInputMui";
 import ExchangeAmmountInput from "../../components/travelBox/ExchangeAmmountInput";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +9,7 @@ import { RootState } from "../../redux/store";
 
 const AutoCurrencyExchangeOfCreateTravelBox = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [exchangeRate, setExchangeRate] = useState(0);
   const [exchangeRateFront, setExchangeRateFront] = useState(0);
@@ -46,6 +47,7 @@ const AutoCurrencyExchangeOfCreateTravelBox = () => {
           </div>
 
           <ExchangeRateInputMui
+            currency={location.state.currency}
             exchangeRateFront={exchangeRateFront}
             setExchangeRateFront={setExchangeRateFront}
             exchangeRateBack={exchangeRateBack}

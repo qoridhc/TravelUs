@@ -3,6 +3,8 @@ package com.ssafy.soltravel.v2.service.user;
 
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.domain.redis.RedisPhone;
+import com.ssafy.soltravel.v2.dto.auth.AuthOcrIdCardRequestDto;
+import com.ssafy.soltravel.v2.dto.auth.AuthOcrIdCardResponseDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthReissueRequestDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthReissueResponseDto;
 import com.ssafy.soltravel.v2.dto.auth.AuthSMSSendRequestDto;
@@ -18,10 +20,13 @@ import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.AuthMapper;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.repository.redis.PhoneRepository;
+import com.ssafy.soltravel.v2.service.GPTService;
 import com.ssafy.soltravel.v2.service.NotificationService;
+import com.ssafy.soltravel.v2.service.account_book.ClovaOcrService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.PasswordEncoder;
 import jakarta.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +35,7 @@ import net.nurigo.sdk.message.model.Message;
 import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import net.nurigo.sdk.message.service.DefaultMessageService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,10 +47,12 @@ public class AuthService {
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final PhoneRepository phoneRepository;
-    private final Map<String, String> apiKeys;
-    private final NotificationService notificationService;
-    private final String SERVICE_PHONE_NUM = "01062966409";
     private DefaultMessageService messageService;
+    private final ClovaOcrService clovaOcrService;
+    private final GPTService gptService;
+
+    private final Map<String, String> apiKeys;
+    private final String SERVICE_PHONE_NUM = "01062966409";
 
     @PostConstruct
     public void init() {
@@ -158,5 +166,11 @@ public class AuthService {
         // 토큰 재발급 및 응답
         UserLoginResponseDto loginDto = tokenService.saveRefreshToken(userId);
         return AuthMapper.convertLoginToReissueDto(loginDto);
+    }
+
+    public String ocrIdCard(AuthOcrIdCardRequestDto request) throws IOException {
+        ResponseEntity<Map<String, Object>> response = clovaOcrService.executeIdCard(request.getFile());
+        String idCardInfoString = gptService.askChatGPTIC(response.getBody().toString());
+        return idCardInfoString;
     }
 }
