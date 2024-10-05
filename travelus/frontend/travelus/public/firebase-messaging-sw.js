@@ -40,6 +40,7 @@ self.addEventListener("notificationclick", function (event) {
   const data = event.notification.data;
   const notificationType = data?.notificationType;
   const accountNo = data?.accountNo;
+  const groupId = data?.groupId;  // 알림에서 groupId를 가져옴
 
   let urlToOpen = "/";
 
@@ -49,6 +50,14 @@ self.addEventListener("notificationclick", function (event) {
       return;
     }
     urlToOpen = `${baseUrl}/transaction/${accountNo}`;
+  } else if (notificationType == "GT") {
+    if (accountNo == null) {
+      console.log("Error : 계좌 정보가 없습니다.");
+      return;
+    }
+
+
+    urlToOpen = `${baseUrl}/meetingtransaction/${accountNo}?groupId=${groupId}`;
   }
 
   event.waitUntil(

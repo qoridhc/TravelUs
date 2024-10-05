@@ -8,12 +8,20 @@ import { AccountInfoNew, TransactionNew } from "../../types/account";
 const MeetingTransaction = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const accountNo = useParams().accountNo;
-  const groupId = location.state.groupId;
-  const [account, setAccount] = useState<AccountInfoNew>();
-  const [transactionList, setTransactionList] = useState<TransactionNew[]>([]);
+
   const depositTransactionType = ["D", "TD", "ED", "SD"];
   const withdrawTransactionType = ["W", "TW", "EW", "SW", "CW"];
+
+  const accountNo = useParams().accountNo;
+
+  // state로 넘어오는 groupoId 없으면 -> 알림 라우팅 쿼리 파라미터에서 추출
+  const groupId = location.state?.groupId || new URLSearchParams(location.search).get('groupId');
+
+  const searchParams = new URLSearchParams(location.search);
+
+  const [account, setAccount] = useState<AccountInfoNew>();
+  const [transactionList, setTransactionList] = useState<TransactionNew[]>([]);
+
 
   useEffect(() => {
     const fetchData = async () => {
