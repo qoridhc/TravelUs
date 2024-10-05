@@ -1,10 +1,13 @@
 package com.ssafy.soltravel.v2.domain;
 
+import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
 import com.ssafy.soltravel.v2.domain.Enum.NotificationType;
 import com.ssafy.soltravel.v2.dto.notification.PushNotificationRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,11 +35,15 @@ public class Notification {
     @Column(name = "notification_id")
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
 
     private String title;
 
     private String message;
+
+    @Enumerated(EnumType.STRING)
+    private CurrencyType currencyType;
 
     private String icon;
 
@@ -55,6 +62,7 @@ public class Notification {
     @JoinColumn(name = "group_id")
     private TravelGroup group;
 
+
     public static Notification createNotification(User user, TravelGroup group, PushNotificationRequestDto requestDto) {
 
         return Notification.builder()
@@ -66,7 +74,7 @@ public class Notification {
             .group(group)  // 그룹 ID (null 가능)
             .accountNo(requestDto.getAccountNo())  // 계좌 번호 (null 가능)
             .isRead(false)  // 처음 알림이 생성될 때는 읽지 않은 상태로 설정
+            .currencyType(requestDto.getCurrencyType())
             .build();
-
     }
 }
