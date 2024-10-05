@@ -40,25 +40,11 @@ self.addEventListener("notificationclick", function (event) {
   const data = event.notification.data;
   const notificationType = data?.notificationType;
   const accountNo = data?.accountNo;
-  const groupId = data?.groupId;  // 알림에서 groupId를 가져옴
-
-  let urlToOpen = "/";
-
-  if (notificationType == "PT") {
-    if (accountNo == null) {
-      console.log("Error : 계좌 정보가 없습니다.");
-      return;
-    }
-    urlToOpen = `${baseUrl}/transaction/${accountNo}`;
-  } else if (notificationType == "GT") {
-    if (accountNo == null) {
-      console.log("Error : 계좌 정보가 없습니다.");
-      return;
-    }
+  const groupId = data?.groupId;
+  const currencyCode = data?.currencyCode;
 
 
-    urlToOpen = `${baseUrl}/meetingtransaction/${accountNo}?groupId=${groupId}`;
-  }
+  const urlToOpen = generateUrl(notificationType, accountNo, groupId, currencyCode);
 
   event.waitUntil(
     (async () => {
@@ -84,3 +70,27 @@ self.addEventListener("notificationclick", function (event) {
     })()
   );
 });
+
+// URL 생성 헬퍼 함수
+const generateUrl = (type, accountNo, groupId, currencyCode) => {
+  if (!accountNo) {
+    console.log("Error : 계좌 정보가 없습니다.");
+    return "/";
+  }
+
+  switch (type) {
+    case "PT":
+      return `${baseUrl}/transaction/${accountNo}`;
+    case "GT":
+      return `${baseUrl}/meetingtransaction/${accountNo}?groupId=${groupId}`;
+    case "E":
+      return `${baseUrl}/travelbox/transaction/${accountNo}?groupId=${groupId}&currencyCode=${currencyCode}`;
+
+    // 정산 추후 추가
+    // case "S":
+    //   return `${baseUrl}/travelbox/transaction/${accountNo}?groupId=${groupId}`;
+
+    default:
+      return "/";
+  }
+};
