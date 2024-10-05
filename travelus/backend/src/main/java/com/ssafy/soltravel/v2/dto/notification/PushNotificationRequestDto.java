@@ -1,12 +1,15 @@
 package com.ssafy.soltravel.v2.dto.notification;
 
+import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
 import com.ssafy.soltravel.v2.domain.Enum.NotificationType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor  // 기본 생성자 추가
 @AllArgsConstructor
 public class PushNotificationRequestDto {
@@ -32,14 +35,29 @@ public class PushNotificationRequestDto {
     @Schema(description = "계좌 번호", example = "123-456-7890")
     private String accountNo;
 
-    public PushNotificationRequestDto(Long targetUserId, NotificationType notificationType, String title,
-        String message, String icon, String accountNo, Long groupId) {
-        this.targetUserId = targetUserId;
-        this.notificationType = notificationType;
-        this.title = title;
-        this.message = message;
-        this.icon = icon;
-        this.accountNo = accountNo;
-        this.groupId = groupId;
+    @Schema(description = "통화 코드", example = "KRW")
+    private CurrencyType currencyType;
+
+    // 정적 팩토리 메서드
+    public static PushNotificationRequestDto createDto(
+        Long userId, NotificationType notificationType, String title,
+        String message, String accountNo, Long groupId, CurrencyType currencyType) {
+        return PushNotificationRequestDto.builder()
+            .targetUserId(userId)
+            .notificationType(notificationType)
+            .title(title)
+            .message(message)
+            .icon("/sol_favicon.ico")
+            .accountNo(accountNo)
+            .groupId(groupId)
+            .currencyType(currencyType)
+            .build();
     }
+
+    // currencyType 제외
+    public static PushNotificationRequestDto createDto(
+        Long userId, NotificationType notificationType, String title, String message, String accountNo, Long groupId) {
+        return createDto(userId, notificationType, title, message, accountNo, groupId, null);
+    }
+
 }
