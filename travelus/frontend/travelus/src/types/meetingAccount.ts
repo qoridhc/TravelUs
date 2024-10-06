@@ -29,6 +29,7 @@ export interface ParticipantInfo {
   updatedAt: string;
   master: boolean;
   userName: string;
+  profile: string;
 }
 
 export interface GroupInfo {
