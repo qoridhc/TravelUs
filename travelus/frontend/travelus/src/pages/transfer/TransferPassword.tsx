@@ -19,7 +19,7 @@ const TransferPassword: React.FC<TransferPasswordProps> = (props) => {
   const [password, setPassword] = useState("");
   const { accountNo } = location.state as { accountNo: string };
   const { transferAmount } = location.state as { transferAmount: string };
-  const { depositAccount } = location.state as { depositAccount: AccountInfoNew };
+  const { depositAccount } = location.state as { depositAccount: string };
   const { userName } = location.state as { userName: string };
   const { withdrawalAccountNo } = location.state as { withdrawalAccountNo: string };
 
@@ -44,7 +44,7 @@ const TransferPassword: React.FC<TransferPasswordProps> = (props) => {
       accountPassword: password,
       depositAccountNo: formatAccountNumber(accountNo),
       transactionBalance: parseInt(transferAmount),
-      withdrawalTransactionSummary: depositAccount.userName,
+      withdrawalTransactionSummary: depositAccount,
       depositTransactionSummary: userName,
     };
 

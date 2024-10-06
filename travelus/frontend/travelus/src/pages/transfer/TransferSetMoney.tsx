@@ -40,7 +40,6 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
         // 받는 사람 이름을 표시하기 위한 API 호출
         const accountInfo = await accountApi.fetchSpecificAccountInfo(accountNo);
         setDepositAccount(accountInfo.data);
-
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -117,11 +116,11 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
           />
           <div className="flex flex-col space-y-16">
             <div className="flex flex-col space-y-2">
-              <div className="flex items-center">
-                <p className="pr-1 text-lg font-extrabold">{depositAccount?.userName}</p>
+              <div className="text-xl flex items-center">
+                <p className="pr-1 font-semibold">{depositAccount?.userName}</p>
                 <p>님에게</p>
               </div>
-              <p className="text-sm">튜나뱅크 {depositAccount?.accountNo}</p>
+              <p className="">튜나뱅크 {depositAccount?.accountNo}</p>
             </div>
 
             <div className="flex flex-col space-y-10">
@@ -132,7 +131,7 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
                   type="tel"
                   inputMode="numeric"
                   placeholder="얼마를 보낼까요?"
-                  className={`w-full py-3 text-2xl font-extrabold outline-none ${
+                  className={`w-full py-3 text-3xl font-bold outline-none ${
                     transferAmount ? "caret-transparent" : "caret-blue-600"
                   }`}
                   value={displayValue}
@@ -147,29 +146,23 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
               </div>
             </div>
           </div>
-          <div className="w-full absolute top-80">
-            <div className="p-4 bg-zinc-100 rounded-lg">
-              <p className="text-sm">내 입출금통장 : {formatNumber(String(account?.moneyBoxDtos[0].balance))} 원</p>
+          <div className="w-full text-[#565656] absolute top-80">
+            <div className="px-5 py-4 bg-zinc-100 rounded-lg">
+              <p>내 입출금통장 : {formatNumber(String(account?.moneyBoxDtos[0].balance))} 원</p>
             </div>
-            <div className="mt-2 flex justify-between">
-              <button
-                onClick={() => handleIncrement(10000)}
-                className="px-5 py-[0.15rem] border border-zinc-300 rounded-md">
+            <div className="mt-3 grid grid-cols-4 gap-2">
+              <button onClick={() => handleIncrement(10000)} className="py-1 border border-zinc-300 rounded-md">
                 +1만
               </button>
-              <button
-                onClick={() => handleIncrement(50000)}
-                className="px-5 py-[0.15rem] border border-zinc-300 rounded-md">
+              <button onClick={() => handleIncrement(50000)} className="py-1 border border-zinc-300 rounded-md">
                 +5만
               </button>
-              <button
-                onClick={() => handleIncrement(100000)}
-                className="px-5 py-[0.15rem] border border-zinc-300 rounded-md">
+              <button onClick={() => handleIncrement(100000)} className="py-1 border border-zinc-300 rounded-md">
                 +10만
               </button>
               <button
                 onClick={() => handleIncrement(userAmount - Number(transferAmount))}
-                className="px-5 py-[0.15rem] border border-zinc-300 rounded-md">
+                className="py-1 border border-zinc-300 rounded-md">
                 전액
               </button>
             </div>
@@ -179,7 +172,9 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
         <div>
           <button
             onClick={() => {
-              navigate("/transfer/confirm", { state: { accountNo, transferAmount, depositAccount } });
+              navigate("/transfer/confirm", {
+                state: { accountNo, transferAmount, depositAccount: depositAccount?.userName },
+              });
             }}
             className={`w-full h-14 text-lg font-semibold rounded-xl tracking-wide ${
               isValidation ? "text-white bg-[#1429A0]" : "text-[#565656] bg-[#E3E4E4]"
