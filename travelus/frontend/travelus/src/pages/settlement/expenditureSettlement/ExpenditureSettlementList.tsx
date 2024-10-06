@@ -5,6 +5,8 @@ import { AxiosError } from "axios";
 import { AxiosErrorResponseData } from "../../../types/axiosError";
 import { useNavigate } from "react-router";
 import { SettlementPersonalInfo } from "../../../types/settlement";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../../lottie/loadingAnimation.json";
 
 const ExpenditureSettlementList = () => {
   const navigate = useNavigate();
@@ -100,7 +102,9 @@ const ExpenditureSettlementList = () => {
           {isEmpty ? (
             <></>
           ) : dateList.length === 0 ? (
-            <>loading...</>
+            <div className="flex flex-col justify-center items-center">
+              <Lottie animationData={loadingAnimation} />
+            </div>
           ) : (
             dateList.map((date, index) => (
               <div className="grid gap-5" key={index}>
