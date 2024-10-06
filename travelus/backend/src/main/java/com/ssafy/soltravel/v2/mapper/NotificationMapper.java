@@ -11,6 +11,7 @@ public interface NotificationMapper {
 
     @Mapping(source = "id", target = "notificationId")
     @Mapping(source = "user.userId", target = "userId")
+    @Mapping(source = "group.groupId", target = "groupId")
     NotificationDto toDto(Notification notification);
 
     List<NotificationDto> toDtoList(List<Notification> notifications);

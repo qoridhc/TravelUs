@@ -86,10 +86,10 @@ const MeetingAccountGroupMember: React.FC<Props> = (props) => {
         <div className="px-6 space-y-7">
           {memberList?.map((member, index) => (
             <div key={index} className="flex items-center space-x-4">
-              <img className="w-11" src="/assets/user/userIconSample.png" alt="유저아이콘" />
+              <img className="w-11 rounded-full border border-zinc-100" src={member.profile} alt="유저아이콘" />
               <div className="w-full flex justify-between items-center">
                 <div className="flex flex-col">
-                  <p className="font-bold">이름</p>
+                  <p className="font-bold">{member.userName}</p>
                   <div className="flex">
                     <p className="text-zinc-500">{userId === member.userId && "나"}</p>
                     <p className="text-zinc-500">{userId === member.userId && member.master && "ﾠ·ﾠ"}</p>

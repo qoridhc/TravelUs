@@ -28,7 +28,7 @@ const Footer = () => {
 
   const handleMenuAccountDiary = () => {
     navigate("/accountbookdetail");
-    setCurrentMenu("가계부");
+    setCurrentMenu("머니로그");
   };
 
   const handleMenuConversation = () => {
@@ -37,13 +37,11 @@ const Footer = () => {
   };
 
   return (
-    <div className="w-full h-16 p-3 bg-white border-t fixed bottom-0 flex justify-around items-center z-50">
+    <div className="w-full h-[4.7rem] p-3 pb-5 bg-white border-t fixed bottom-0 flex justify-around items-center z-50">
       <button
         className={`flex flex-col items-center ${currentMenu === "홈" ? "" : "text-[#9E9E9E]"} duration-200`}
         onClick={() => handleMenuHome()}>
-        {
-          currentMenu === "홈" ? <GoHomeFill className="text-2xl" /> : <GoHome className="text-2xl" />
-        }
+        {currentMenu === "홈" ? <GoHomeFill className="text-2xl" /> : <GoHome className="text-2xl" />}
         <p className="text-sm font-medium">홈</p>
       </button>
       <button
@@ -53,10 +51,10 @@ const Footer = () => {
         <p className="text-sm font-medium">모임통장</p>
       </button>
       <button
-        className={`flex flex-col items-center ${currentMenu === "가계부" ? "" : "text-[#9E9E9E]"} duration-200`}
+        className={`flex flex-col items-center ${currentMenu === "머니로그" ? "" : "text-[#9E9E9E]"} duration-200`}
         onClick={() => handleMenuAccountDiary()}>
         <MdOutlineEventNote className="text-2xl" />
-        <p className="text-sm font-medium">가계부</p>
+        <p className="text-sm font-medium">머니로그</p>
       </button>
       <button
         className={`flex flex-col items-center ${currentMenu === "환율" ? "" : "text-[#9E9E9E]"} duration-200`}
