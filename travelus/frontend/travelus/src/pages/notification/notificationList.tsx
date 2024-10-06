@@ -55,7 +55,7 @@ const NotificationList: React.FC<NotificationListProps> = (props) => {
                     <p className="text-sm text-zinc-400">{notification.title}</p>
                     <p className="text-sm text-zinc-400">{notification.date}</p>
                   </div>
-                  <p className=" text-gray-500">{notification.content}</p>
+                  <p className=" text-gray-600">{notification.content}</p>
                 </div>
               </div>
             </div>
