@@ -1,40 +1,23 @@
 import api from "../lib/axios";
-import { ExchangeRateInfo, ExchangeRequest, ExchangeResponse, ExchangeRateHistoryRequest, ExchangeRateHistoryResponse, TargetRate } from "../types/exchange";
+import { ExchangeRateInfo, ExchangeRequest, ExchangeResponse, ExchangeRateHistoryRequest, ExchangeRateHistoryResponse, TargetRate, ExchangeRateInfo2, RecentRates, ConfidenceInterval, CurrencyPrediction, PredictionResponse, AllDetailedPredictions } from "../types/exchange";
 
-// import axios from "axios";
+import axios from "axios";
 
-// API 응답 타입 정의
-interface RecentRates {
-  "3_months": { [date: string]: number };
-  "1_month"?: { [date: string]: number };
-  "1_week"?: { [date: string]: number };
-}
+const API_BASE_URL = "http://70.12.130.121:11209"; // GPU 서버
 
-interface ConfidenceInterval {
-  lower: number;
-  upper: number;
-}
+// GPU 서버 요청 api(환율 예측 detail 받아오기)
+export const fetchDetailedPredictions = async (): Promise<AllDetailedPredictions> => {
+  try {
+    const response = await axios.get<AllDetailedPredictions>(`${API_BASE_URL}/prediction/detail/`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching detailed predictions:', error);
+    throw error;
+  }
+};
 
-interface CurrencyPrediction {
-  forecast: { [date: string]: number };
-  average_forecast: number;
-  confidence_interval: ConfidenceInterval;
-  daily_changes: { [date: string]: number };
-  recent_rates: RecentRates;
-}
-
-interface PredictionResponse {
-  USD: CurrencyPrediction;
-  JPY: CurrencyPrediction;
-  EUR: { recent_rates: RecentRates };
-  TWD: { recent_rates: RecentRates };
-  last_updated: string;
-}
-
-// const API_BASE_URL = "http://70.12.130.121:11209"; // GPU 서버
-
+// 환율 예측 정보 및 환율 받아오기
 export const exchangeApi = {
-  // GPU 서버 요청 api
   getPrediction: async (): Promise<PredictionResponse> => {
     try {
       const response = await api.get<PredictionResponse>("/exchange/forecast/get");
@@ -57,6 +40,7 @@ export const exchangeApi = {
   },
 };
 
+// 기본 환율 정보 불러오기
 export const exchangeRateApi = {
   getExchangeRates: async (): Promise<ExchangeRateInfo[]> => {
     const response = await api.get<ExchangeRateInfo[]>('/exchange/rate');

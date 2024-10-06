@@ -28,8 +28,9 @@ import ExchangeDetail from "./components/exchange/ExchangeDetail";
 import Exchange from "./pages/exchange/Exchange";
 import ExchangeKRWFlow from "./pages/exchange/ExchangeKRW";
 import ExchangeCompletion from "./pages/exchange/ExchangeCompletion";
+import ExchangeRateForecastDetail from "./pages/exchange/ExchangeRateForecastDetail";
 import AccountPasswordInput from "./pages/exchange/ExchangeConfirmation";
-import SelectAccount from "./pages/exchange/SelectAccount";
+import SelectAccount from "./pages/ver1/SelectAccount";
 import AccountCreateComplete from "./pages/ver1/AccountCreateComplete";
 import GeneralMeetingAccountCreate from "./pages/ver1/GeneralMeetingAccountCreate";
 import MeetingAccountCreatePrepare from "./pages/ver1/MeetingAccountCreatePrepare";
@@ -182,6 +183,7 @@ function App() {
           {/* 환율 */}
           <Route path="/exchangerate" element={<ExchangeRate />} />
           <Route path="/exchangerate/:currencyCode" element={<ExchangeDetail />} />
+          <Route path="/exchangerate/forecast-detail" element={<ExchangeRateForecastDetail />} />
 
           {/* 잔액정산 */}
           <Route path="/settlement/balance/amount/:id" element={<SelectSettlementAmount />}></Route>

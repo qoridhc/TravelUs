@@ -1,3 +1,5 @@
+import { Detail } from "react-calendar/dist/cjs/shared/types";
+
 // 환율 타입
 export interface ExchangeRateInfo {
   currencyCode: string;
@@ -69,8 +71,8 @@ export interface ExchangeRateInfo2 {
 }
 
 export interface RecentRates {
-  "1_week": { [date: string]: number };
-  "1_month": { [date: string]: number };
+  "1_week"?: { [date: string]: number };
+  "1_month"?: { [date: string]: number };
   "3_months": { [date: string]: number };
 }
 
@@ -106,4 +108,27 @@ export interface TargetRate {
   currencyCode: string;
   transactionBalance: number;
   targetRate: number;
+}
+
+// 환율 예측 detail을 주기 위한 type 선언
+export interface DetailedPrediction {
+  // currency: string;
+  forecast: { [date: string]: number };
+  current_rate: number;
+  trend: string;
+  min_profit: {
+    recommended_rate: number;
+    recommended_date: string;
+  };
+  max_profit: {
+    average_rate: number;
+    min_rate: number;
+    max_rate: number;
+  };
+}
+
+export interface AllDetailedPredictions {
+  USD: DetailedPrediction;
+  JPY: DetailedPrediction;
+  last_updated: string;
 }
