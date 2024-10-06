@@ -22,3 +22,14 @@ export interface SettlementPersonalInfo {
   remainingAmount: number;
   settlementRequestTime: string;
 }
+
+export interface SettlementTransferRequest {
+  personalSettlementId:number;
+  participantId: number;
+  withdrawalAccountNo: string;
+  depositAccountNo: string;
+  transactionBalance: number;
+  withdrawalTransactionSummary: string;
+  accountPassword: string;
+  depositTransactionSummary: string;
+}
