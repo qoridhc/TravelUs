@@ -29,6 +29,17 @@ const ExpenditureSettlementList = () => {
     });
   };
 
+  const handleNext = (settlement: SettlementPersonalInfo) => {
+    const data = {
+      personalSettlementId: settlement.personalSettlementId,
+      participantId: settlement.participantId,
+      remainingAmount: settlement.remainingAmount,
+      groupName: settlement.groupName,
+      groupId: settlement.groupId,
+    };
+    navigate("/settlement/expenditure/transfer/confirm", { state: { data } });
+  };
+
   const fetchSettlementList = async (settlementStatus: string) => {
     try {
       const response = await settlementApi.fetchSettlementPersonalList(settlementStatus);
@@ -125,7 +136,9 @@ const ExpenditureSettlementList = () => {
                       </div>
 
                       <div className="col-start-2 col-span-2 flex items-center">
-                        <button className="w-full p-3 text-white bg-[#1429A0] rounded-xl">
+                        <button
+                          className="w-full p-3 text-white bg-[#1429A0] rounded-xl"
+                          onClick={() => handleNext(settlement)}>
                           {formatCurrency(settlement.remainingAmount)}원 보내기
                         </button>
                       </div>
