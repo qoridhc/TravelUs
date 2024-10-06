@@ -266,10 +266,18 @@ const MainPage = () => {
             </div>
           </div>
 
-          <div className="w-full h-40 p-5 rounded-xl bg-white shadow-md flex flex-col items-start space-y-8">
+          <div
+            className="w-full h-40 p-5 rounded-xl bg-white shadow-md flex flex-col items-start space-y-8"
+            onClick={() => {
+              navigate("/settlement/expenditure/list");
+            }}>
             <img className="w-12" src="/assets/creditCardIcon.png" alt="카드아이콘" />
             <div>
-              <p className="font-semibold">카드 신청하기</p>
+              <p className="font-semibold">
+                빠르게
+                <br />
+                정산금 보내기
+              </p>
             </div>
           </div>
         </div>
