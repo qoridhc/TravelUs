@@ -4,20 +4,52 @@ import { settlementApi } from "../../../api/settle";
 import { AxiosError } from "axios";
 import { AxiosErrorResponseData } from "../../../types/axiosError";
 import { useNavigate } from "react-router";
+import { SettlementPersonalInfo } from "../../../types/settlement";
 
 const ExpenditureSettlementList = () => {
   const navigate = useNavigate();
-  const [isTab, setIsTab] = useState("COMPLETED"); // 진행 중 : NOT_COMPLETED, 완료 : COMPLETED
+  const [isTab, setIsTab] = useState("NOT_COMPLETED"); // 진행 중 : NOT_COMPLETED, 완료 : COMPLETED
   const [isEmpty, setIsEmpty] = useState(false);
-  const settlementList = [
-    { amount: 200, members: 3 },
-    { amount: 100, members: 2 },
-  ];
+  const [settlementList, setSettlementList] = useState<{ [date: string]: SettlementPersonalInfo[] }>({});
+  const [dateList, setDateList] = useState<string[]>([]);
+
+  // 금액을 한국 통화 형식으로 포맷(콤마가 포함된 형태)
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("ko-KR").format(amount);
+  };
+
+  // 날짜 형식 변환 함수
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("ko-KR", {
+      month: "long",
+      day: "numeric",
+    });
+  };
 
   const fetchSettlementList = async (settlementStatus: string) => {
     try {
       const response = await settlementApi.fetchSettlementPersonalList(settlementStatus);
-      console.log(response);
+      console.log(response.data);
+
+      // 거래내역을 날짜별로 그룹화하여 병합
+      const temp = response.data.reduce(
+        (acc: { [date: string]: SettlementPersonalInfo[] }, cur: SettlementPersonalInfo) => {
+          const dateKey = formatDate(cur.settlementRequestTime);
+          if (acc[dateKey]) {
+            acc[dateKey].push(cur);
+          } else {
+            acc[dateKey] = [cur];
+          }
+          return acc;
+        },
+        {} as { [date: string]: SettlementPersonalInfo[] }
+      );
+
+      console.log(temp);
+
+      setSettlementList(temp);
+      setIsEmpty(false);
     } catch (error) {
       const axiosError = error as AxiosError;
       if (axiosError.response && axiosError.response.data) {
@@ -33,6 +65,10 @@ const ExpenditureSettlementList = () => {
   useEffect(() => {
     fetchSettlementList(isTab);
   }, [isTab]);
+
+  useEffect(() => {
+    setDateList(Object.keys(settlementList));
+  }, [settlementList]);
 
   return (
     <div className="h-full p-5">
@@ -50,44 +86,50 @@ const ExpenditureSettlementList = () => {
 
           <div className="text-center text-lg font-semibold grid grid-cols-2">
             <p
-              className={`pb-1 ${isTab === "COMPLETED" ? "border-b-[3px] border-[#565656]" : "text-[#9e9e9e]"}`}
-              onClick={() => setIsTab("COMPLETED")}>
+              className={`pb-1 ${isTab === "NOT_COMPLETED" ? "border-b-[3px] border-[#565656]" : "text-[#9e9e9e]"}`}
+              onClick={() => setIsTab("NOT_COMPLETED")}>
               진행 중
             </p>
             <p
-              className={`pb-1 ${isTab === "NOT_COMPLETED" ? "border-b-[3px] border-[#565656]" : "text-[#9e9e9e]"}`}
-              onClick={() => setIsTab("NOT_COMPLETED")}>
+              className={`pb-1 ${isTab === "COMPLETED" ? "border-b-[3px] border-[#565656]" : "text-[#9e9e9e]"}`}
+              onClick={() => setIsTab("COMPLETED")}>
               완료
             </p>
           </div>
 
           {isEmpty ? (
             <></>
+          ) : dateList.length === 0 ? (
+            <>loading...</>
           ) : (
-            <div className="grid gap-5">
-              <p className="text-[#565656] font-semibold">10월 4일</p>
-              <div className="grid gap-8">
-                {settlementList.map((settlement, index) => (
-                  <div className="grid grid-rows-2 grid-cols-[1fr_5fr_1fr] gap-y-3" key={index}>
-                    <div className="flex items-center">
-                      <img className="w-10 h-10" src="/assets/user/userIconSample.png" alt="" />
-                    </div>
-                    <div>
-                      <p className="text-xl font-bold tracking-tight">{settlement.amount}원</p>
-                      <p className="font-[#565656]">발리가자의 총 {settlement.members}명</p>
-                    </div>
+            dateList.map((date, index) => (
+              <div className="grid gap-5" key={index}>
+                <p className="text-[#565656] font-semibold">{date}</p>
+                <div className="grid gap-8">
+                  {settlementList[date].map((settlement, index) => (
+                    <div className="grid grid-rows-2 grid-cols-[1fr_5fr_1fr] gap-y-3" key={index}>
+                      <div className="flex items-center">
+                        <img className="w-10 h-10" src="/assets/user/userIconSample.png" alt="" />
+                      </div>
+                      <div>
+                        <p className="text-xl font-bold tracking-tight">{formatCurrency(settlement.amount)}원</p>
+                        <p className="font-[#565656]">발리가자의 총 {settlement.participantCount}명</p>
+                      </div>
 
-                    <div className="flex justify-end items-center">
-                      <IoIosArrowForward className="text-lg" />
-                    </div>
+                      <div className="flex justify-end items-center">
+                        <IoIosArrowForward className="text-lg" />
+                      </div>
 
-                    <div className="col-start-2 col-span-2 flex items-center">
-                      <button className="w-full p-3 text-white bg-[#1429A0] rounded-xl">100원 보내기</button>
+                      <div className="col-start-2 col-span-2 flex items-center">
+                        <button className="w-full p-3 text-white bg-[#1429A0] rounded-xl">
+                          {formatCurrency(settlement.remainingAmount)}원 보내기
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            ))
           )}
         </div>
       </div>
