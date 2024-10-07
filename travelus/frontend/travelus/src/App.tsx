@@ -63,6 +63,10 @@ import TravelBoxCreatePrepare from "./pages/travelBox/TravelBoxCreatePrepare";
 import InvitationOfMeeting from "./pages/meetingAccount/inviteMeeting/InvitationOfMeeting";
 import InviteInfoOfMeeting from "./pages/meetingAccount/inviteMeeting/InviteInfoOfMeeting";
 import AlreadyInviteOfMeeting from "./pages/meetingAccount/inviteMeeting/AlreadyInviteOfMeeting";
+import FillSetMoney from "./pages/account/meetingAccount/meetingAccountFill/FillSetMoney";
+import FillPassword from "./pages/account/meetingAccount/meetingAccountFill/FillPassword";
+import FillConfirm from "./pages/account/meetingAccount/meetingAccountFill/FillConfirm";
+import FillSuccess from "./pages/account/meetingAccount/meetingAccountFill/FillSuccess";
 import SelectAccountOfMeeting from "./pages/meetingAccount/SelectAccountOfMeeting";
 import EnglishNameOfCreateCard from "./pages/card/cardCreate/EnglishNameOfCreateCard";
 import PasswordOfCreateCard from "./pages/card/cardCreate/PasswordOfCreateCard";
@@ -148,6 +152,12 @@ function App() {
           <Route path="/meeting/invite/:code/info" element={<InviteInfoOfMeeting />} />
           <Route path="/meeting/invite/participated" element={<AlreadyInviteOfMeeting />} />
 
+          {/* 모임통장 채우기 */}
+          <Route path="/meeting/:groupId/fill/setmoney" element={<FillSetMoney />}></Route>
+          <Route path="/meeting/:groupId/fill/confirm" element={<FillConfirm />}></Route>
+          <Route path="/meeting/:groupId/fill/password" element={<FillPassword />}></Route>
+          <Route path="/meeting/:groupId/fill/success" element={<FillSuccess />}></Route>
+          
           {/* 통장 내역 */}
           <Route path="/transaction/:accountNo" element={<AccountTransaction />} />
           <Route path="/meetingtransaction/:accountNo/:type" element={<MeetingTransaction />} />

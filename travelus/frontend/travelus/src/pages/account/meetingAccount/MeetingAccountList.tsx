@@ -1,24 +1,24 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { RootState } from "../../../redux/store";
-import { editJoinedAccountList } from "../../../redux/accountSlice";
 import MeetingAccount from "../../../components/account/MeetingAccount";
 import JoinedMeetingAccount from "../../../components/account/JoinedMeetingAccount";
 import { useEffect } from "react";
 import { accountApi } from "../../../api/account";
 import { IoMdAdd } from "react-icons/io";
 import { MeetingAccountInfo } from "../../../types/account";
-import { set } from "date-fns";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../../lottie/loadingAnimation.json";
 
 const MeetingAccountListNew = () => {
   const navigate = useNavigate();
   const [createdAccountList, setCreatedAccountList] = useState<MeetingAccountInfo[]>([]);
   const [joinedAccountList, setJoinedAccountList] = useState<MeetingAccountInfo[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const createdResponse = await accountApi.fetchCreatedMeetingAccount();
         setCreatedAccountList(createdResponse);
 
@@ -26,11 +26,21 @@ const MeetingAccountListNew = () => {
         setJoinedAccountList(joinedResponse);
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchData();
   }, []); // 의존성 배열에 필요한 값 추가
+
+  if (isLoading) {
+    return (
+      <div className="h-full flex flex-col justify-center items-center">
+        <Lottie animationData={loadingAnimation} />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
