@@ -62,7 +62,7 @@ const FillConfirm: React.FC<TransferConfirmProps> = (props) => {
         <div>
           <IoIosArrowBack
             onClick={() => {
-              navigate(`/meeting/${meeting?.groupId}/fill/selectbank`);
+              navigate(`/meeting/${meeting?.groupId}/fill/setmoney`);
             }}
             className="text-2xl"
           />
@@ -70,7 +70,7 @@ const FillConfirm: React.FC<TransferConfirmProps> = (props) => {
         <div className="mb-16 flex flex-col items-center">
           <p className="text-2xl font-bold">
             {meeting?.groupName}
-            <span className="font-normal"> 모임통장에</span>
+            <span className="font-normal"> 에</span>
           </p>
           <p className="text-2xl font-bold">{formatCurrency(parseInt(transferAmount))}원</p>
           <p className="text-2xl">채울까요?</p>
@@ -89,8 +89,8 @@ const FillConfirm: React.FC<TransferConfirmProps> = (props) => {
           <div className="flex flex-col space-y-3">
             <button
               onClick={() => {
-                navigate(`/meeting/${meeting?.groupId}/password`, {
-                  state: { meetingAccountNo, transferAmount, userName, withdrawalAccountNo },
+                navigate(`/meeting/${meeting?.groupId}/fill/password`, {
+                  state: { meetingAccountNo, transferAmount, generalAccountNo },
                 });
               }}
               className="w-full h-14 text-lg font-semibold rounded-xl tracking-wide text-white bg-[#1429A0]">
@@ -98,7 +98,7 @@ const FillConfirm: React.FC<TransferConfirmProps> = (props) => {
             </button>
             <button
               onClick={() => {
-                navigate(`/meeting/${groupId}/fill/selectbank`);
+                navigate(`/meeting/${groupId}/fill/setmoney`);
               }}
               className="w-full h-14 text-lg font-semibold rounded-xl tracking-wide">
               취소

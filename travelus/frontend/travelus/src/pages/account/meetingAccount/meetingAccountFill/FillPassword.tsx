@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../../redux/store";
-import { useNavigate, useLocation } from "react-router";
+import { useNavigate, useLocation, useParams } from "react-router";
 import { transactionApi } from "../../../../api/transaction";
-import { AccountInfoNew } from "../../../../types/account";
+import { userApi } from "../../../../api/user";
 import SecurityNumberKeyboard from "../../../../components/common/SecurityNumberKeyboard";
 import { AxiosError } from "axios";
 import { AxiosErrorResponseData } from "../../../../types/axiosError";
@@ -15,19 +15,32 @@ interface TransferPasswordProps {
 const FillPassword: React.FC<TransferPasswordProps> = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { groupId } = useParams();
 
   const [password, setPassword] = useState("");
-  const { accountNo } = location.state as { accountNo: string };
+  const [userName, setUserName] = useState<string>("");
   const { transferAmount } = location.state as { transferAmount: string };
-  const { depositAccount } = location.state as { depositAccount: string };
-  const { userName } = location.state as { userName: string };
-  const { withdrawalAccountNo } = location.state as { withdrawalAccountNo: string };
+  const { meetingAccountNo } = location.state as { meetingAccountNo: string };
+  const { generalAccountNo } = location.state as { generalAccountNo: string };
 
   useEffect(() => {
     if (password.length === 4) {
       handleTransfer();
     }
   }, [password]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // 사용자 이름을 위한 API 호출
+        const userResponse = await userApi.fetchUser();
+        setUserName(userResponse.data.name);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const formatAccountNumber = (accountNo: string) => {
     if (accountNo.length !== 14) {
@@ -40,18 +53,17 @@ const FillPassword: React.FC<TransferPasswordProps> = (props) => {
   const handleTransfer = async () => {
     const data = {
       transferType: "G",
-      withdrawalAccountNo: formatAccountNumber(withdrawalAccountNo),
+      withdrawalAccountNo: formatAccountNumber(generalAccountNo),
       accountPassword: password,
-      depositAccountNo: formatAccountNumber(accountNo),
+      depositAccountNo: formatAccountNumber(meetingAccountNo),
       transactionBalance: parseInt(transferAmount),
-      withdrawalTransactionSummary: depositAccount,
+      withdrawalTransactionSummary: userName,
       depositTransactionSummary: userName,
     };
 
     try {
       const response = await transactionApi.Transfer(data);
-      console.log("이체 성공");
-      navigate("/transfer/success", { state: { transferAmount, depositAccount } });
+      navigate(`/meeting/${groupId}/fill/success`, { state: { transferAmount } });
     } catch (error) {
       const axiosError = error as AxiosError;
       if (axiosError.response && axiosError.response.data) {

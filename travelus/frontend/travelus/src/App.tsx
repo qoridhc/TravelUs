@@ -66,6 +66,7 @@ import AlreadyInviteOfMeeting from "./pages/meetingAccount/inviteMeeting/Already
 import FillSetMoney from "./pages/account/meetingAccount/meetingAccountFill/FillSetMoney";
 import FillPassword from "./pages/account/meetingAccount/meetingAccountFill/FillPassword";
 import FillConfirm from "./pages/account/meetingAccount/meetingAccountFill/FillConfirm";
+import FillSuccess from "./pages/account/meetingAccount/meetingAccountFill/FillSuccess";
 import SelectAccountOfMeeting from "./pages/meetingAccount/SelectAccountOfMeeting";
 import EnglishNameOfCreateCard from "./pages/card/cardCreate/EnglishNameOfCreateCard";
 import PasswordOfCreateCard from "./pages/card/cardCreate/PasswordOfCreateCard";
@@ -155,6 +156,8 @@ function App() {
           <Route path="/meeting/:groupId/fill/setmoney" element={<FillSetMoney />}></Route>
           <Route path="/meeting/:groupId/fill/confirm" element={<FillConfirm />}></Route>
           <Route path="/meeting/:groupId/fill/password" element={<FillPassword />}></Route>
+          <Route path="/meeting/:groupId/fill/success" element={<FillSuccess />}></Route>
+          
           {/* 통장 내역 */}
           <Route path="/transaction/:accountNo" element={<AccountTransaction />} />
           <Route path="/meetingtransaction/:accountNo/:type" element={<MeetingTransaction />} />

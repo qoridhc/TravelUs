@@ -148,7 +148,7 @@ const FillSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
             <div className="flex flex-col space-y-2">
               <div className="text-lg flex items-center">
                 <p className="pr-1 font-semibold">{meeting?.groupName}</p>
-                <p>모임 통장에</p>
+                <p>에</p>
               </div>
               <p className="text-sm">튜나뱅크 {meeting?.groupAccountNo}</p>
             </div>
