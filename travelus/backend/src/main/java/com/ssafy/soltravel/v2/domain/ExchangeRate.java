@@ -1,7 +1,6 @@
 package com.ssafy.soltravel.v2.domain;
 
 
-import com.ssafy.soltravel.v1.domain.ExchangeRate;
 import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,12 +16,12 @@ import lombok.Getter;
 @Entity
 @Getter
 @Table(
-    name = "exchange_Rate",
+    name = "exchange_rate",
     uniqueConstraints = {
         @jakarta.persistence.UniqueConstraint(columnNames = {"date", "currency"})
     }
 )
-public class ExchangeRateForecast {
+public class ExchangeRate {
 
   @Id
   @Column(name = "exchange_rate_id")
@@ -39,8 +38,8 @@ public class ExchangeRateForecast {
   @Column
   private Double rate;
 
-  public static ExchangeRateForecast create(LocalDate date, CurrencyType currency, Double rate) {
-    ExchangeRateForecast forecast = new ExchangeRateForecast();
+  public static ExchangeRate create(LocalDate date, CurrencyType currency, Double rate) {
+    ExchangeRate forecast = new ExchangeRate();
     forecast.date = date;
     forecast.currency = currency;
     forecast.rate = rate;

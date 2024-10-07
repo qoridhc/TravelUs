@@ -1,19 +1,17 @@
 package com.ssafy.soltravel.v2.service.exchange;
 
 import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
-import com.ssafy.soltravel.v2.domain.ExchangeRateForecast;
+import com.ssafy.soltravel.v2.domain.ExchangeRate;
 import com.ssafy.soltravel.v2.dto.exchange.forecast.ExchangeRateForecastResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.forecast.ExchangeRateForecastResponseDto.ExchangeRateData;
 import com.ssafy.soltravel.v2.dto.exchange.forecast.ExchangeRateSaveRequestDto;
 import com.ssafy.soltravel.v2.exception.exchange.CurrencyCodeInvalidException;
 import com.ssafy.soltravel.v2.repository.ExchangeRateForecastRepository;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,111 +24,113 @@ public class ExchangeRateForecastService {
   private final ExchangeService exchangeService;
   private final ExchangeRateForecastRepository exchangeRateForecastRepository;
 
-  //-----------------------------전체 저장-----------------------------
-  public int parseExchangeRates(ExchangeRateSaveRequestDto request) {
+  private final static int DEFAULT_UPDATE_PERIOD = 7;
+
+
+  //-----------------------------과거 환율 전체 저장-----------------------------
+  public int saveAllHistories(ExchangeRateSaveRequestDto request) {
     int length = 0;
 
     for (String currency : request.getCurrencies().keySet()) {
-
-      // 통화코드 조회
       CurrencyType currencyType = exchangeService.getCurrencyType(currency);
       ExchangeRateSaveRequestDto.ExchangeRateData data = request.getCurrencies().get(currency);
 
-      // 과거 저장
+      // 기간별 데이터 저장 메서드 호출
       Map<String, Double> recentRates = (Map<String, Double>) data.getRecentRates().get("3_months");
-      length += saveExchangeRate(recentRates, currencyType);
-
-      // 예측값 저장
-      Map<String, Double> forecast = data.getForecast();
-      length += saveExchangeRate(forecast, currencyType);
-
+      length += saveExchangeRateByPeriod(recentRates, currencyType, recentRates.size());
     }
 
     return length;
   }
 
-  // -----------------------------예측값 수정/ 전날 환율 저장-----------------------------
-  public int parsePredExchangeRates(ExchangeRateSaveRequestDto request) {
+  //-----------------------------과거 환율 일부 업데이트-----------------------------
+  public int updateHistories(ExchangeRateSaveRequestDto request) {
     int length = 0;
 
     for (String currency : request.getCurrencies().keySet()) {
       CurrencyType currencyType = exchangeService.getCurrencyType(currency);
-      Map<String, Double> forecast = request.getCurrencies().get(currency).getForecast();
+      ExchangeRateSaveRequestDto.ExchangeRateData data = request.getCurrencies().get(currency);
 
-      // 어제 환율 데이터 파싱
-      String yesterday = LocalDate.now().minusDays(1).toString();
-      Double rate = getYesterdayRate(request, currency, yesterday);
-
-      Map<String, Double> yesterdayRate = new LinkedHashMap<>();
-      yesterdayRate.put(yesterday, rate);
-
-      // 예측값이 없으면 어제 환율 데이터만 저장
-      if (forecast == null) {
-        length += saveExchangeRate(yesterdayRate, currencyType);
-      }
-      // 예측값이 있으면 어제 환율 데이터 수정/ 예측 환율 수정 및 저장
-      else {
-        length += updateExchangeRate(yesterdayRate, currencyType);
-        length += updateExchangeRate(forecast, currencyType);
-      }
+      // 기간별 데이터 저장 메서드 호출
+      Map<String, Double> recentRates = (Map<String, Double>) data.getRecentRates().get("3_months");
+      length += updateExchangeRateByPeriod(recentRates, currencyType, DEFAULT_UPDATE_PERIOD);
     }
+
     return length;
   }
 
-  // 전날 환율 데이터를 조회하는 메서드
-  private Double getYesterdayRate(ExchangeRateSaveRequestDto request, String currency, String yesterday) {
-    Map<String, Object> recentRates = request.getCurrencies().get(currency).getRecentRates();
-    Map<String, Double> recentRates_3 = (Map<String, Double>) recentRates.get("3_months");
-    return recentRates_3.get(yesterday);
-  }
 
+  // 기간별 환율 저장
+  public int saveExchangeRateByPeriod(Map<String, Double> data, CurrencyType cType, int period) {
+    if(period != data.size()){ //전체 데이터를 저장할경우 기간 파싱 X
+      data = parseDataByPeriod(data, period);
+    }
 
-  //-----------------------------환율 저장-----------------------------
-  private int saveExchangeRate(Map<String, Double> data, CurrencyType currencyType) {
-    if(data == null) return 0;
-    List<ExchangeRateForecast> list = new ArrayList<>();
-
-    //date별 rate 저장
-    data.forEach((date, rate) -> {
-      ExchangeRateForecast pred = ExchangeRateForecast.create(
-          LocalDate.parse(date),
-          currencyType,
-          Double.valueOf(rate)
+    for(String dateString : data.keySet()) {
+      ExchangeRate rate = ExchangeRate.create(
+          LocalDate.parse(dateString),
+          cType,
+          data.get(dateString)
       );
-      list.add(pred);
-    });
-    exchangeRateForecastRepository.save(list);
-    return list.size();
+      exchangeRateForecastRepository.save(rate);
+    }
+
+    return period;
   }
 
-  //-----------------------------환율 수정-----------------------------
-  private int updateExchangeRate(Map<String, Double> newValues, CurrencyType currencyType) {
-    AtomicInteger length = new AtomicInteger();
-    newValues.forEach((dateString, rate) -> {
+  // 기간별 환율 수정
+  public int updateExchangeRateByPeriod(Map<String, Double> data, CurrencyType cType, int period) {
+    if(period != data.size()){
+      data = parseDataByPeriod(data, period);
+    }
+
+    for(String dateString : data.keySet()) {
       LocalDate date = LocalDate.parse(dateString);
+      Double exchangeRateValue = data.get(dateString);
 
-      ExchangeRateForecast forecast = exchangeRateForecastRepository.findByDateAndCurrency(
-          date,
-          currencyType
-      ).orElse(null);
+      ExchangeRate rate = exchangeRateForecastRepository.findByDateAndCurrency(date, cType).orElse(
+          null
+      );
 
-      if(forecast != null) {
-        forecast.updateRate(rate);
+      if(rate != null) {
+        rate.updateRate(exchangeRateValue);
       }
       else{
-        ExchangeRateForecast pred = ExchangeRateForecast.create(
+        rate = ExchangeRate.create(
             date,
-            currencyType,
-            rate
+            cType,
+            exchangeRateValue
         );
-        exchangeRateForecastRepository.save(pred);
+        exchangeRateForecastRepository.save(rate);
       }
+    }
 
-      length.getAndIncrement();
-    });
-
-    return length.get();
+    return period;
   }
+
+  // 데이터 기간으로 파싱
+  public Map<String, Double> parseDataByPeriod(Map<String, Double> data, int period) {
+    Map<String, Double> parsedData = new LinkedHashMap<>();
+    for(int i = period; i > 0; i--) {
+      LocalDate date = LocalDate.now().minusDays(i);
+      if(!data.containsKey(date.toString())) continue;
+
+      Double rate = data.get(date.toString());
+      parsedData.put(date.toString(), rate);
+    }
+    return parsedData;
+  }
+
+
+
+
+
+
+
+
+
+
+
 
 
   // -----------------------------환율 기간 조회-----------------------------
@@ -138,7 +138,7 @@ public class ExchangeRateForecastService {
     CurrencyType cType = exchangeService.getCurrencyType(currencyCode);
 
     // 최근 3개월치 환율 데이터 조회
-    List<ExchangeRateForecast> recentRates_3 = exchangeRateForecastRepository.findByPeriodAndCurrency(
+    List<ExchangeRate> recentRates_3 = exchangeRateForecastRepository.findByPeriodAndCurrency(
         LocalDate.now().minusMonths(3),
         LocalDate.now(),
         cType
@@ -147,7 +147,7 @@ public class ExchangeRateForecastService {
     );
 
     // 2주치 예측 환율 데이터 조회
-    List<ExchangeRateForecast> forecast = exchangeRateForecastRepository.findByPeriodAndCurrency(
+    List<ExchangeRate> forecast = exchangeRateForecastRepository.findByPeriodAndCurrency(
         LocalDate.now(),
         LocalDate.now().plusWeeks(2),
         cType
@@ -178,8 +178,8 @@ public class ExchangeRateForecastService {
 
   //데이터(도메인) -> DTO
   private Map<String, ExchangeRateData> toDto(
-      List<ExchangeRateForecast> forecast,
-      List<ExchangeRateForecast> recent,
+      List<ExchangeRate> forecast,
+      List<ExchangeRate> recent,
       String currencyCode
   ){
 
@@ -190,7 +190,7 @@ public class ExchangeRateForecastService {
     // 예측 데이터를 Map으로 변환
     Map<String, Double> forecastMap = new LinkedHashMap<>();
     if(forecast != null) {
-      for (ExchangeRateForecast rate : forecast) {
+      for (ExchangeRate rate : forecast) {
         forecastMap.put(rate.getDate().toString(), rate.getRate());
       }
     }
@@ -198,7 +198,7 @@ public class ExchangeRateForecastService {
     // 최근 3개월치 데이터를 Map으로 변환
     Map<String, Map<String, Double>> recentRatesMap = new HashMap<>();
     Map<String, Double> recentRatesValues = new LinkedHashMap<>();
-    for (ExchangeRateForecast rate : recent) {
+    for (ExchangeRate rate : recent) {
       recentRatesValues.put(rate.getDate().toString(), rate.getRate());
     }
     recentRatesMap.put("3_months", recentRatesValues);
