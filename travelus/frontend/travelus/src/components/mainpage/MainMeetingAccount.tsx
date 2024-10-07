@@ -3,8 +3,9 @@ import { useNavigate } from "react-router";
 import { IoHome } from "react-icons/io5";
 import { PiAirplaneTiltFill } from "react-icons/pi";
 import { FaUserFriends, FaBriefcase, FaHeart } from "react-icons/fa";
-import path from "path";
+import { setTravelboxInfo } from "../../redux/meetingAccountSlice";
 import { MeetingAccountInfo } from "../../types/account";
+import { useDispatch } from "react-redux";
 
 interface Props {
   index: number;
@@ -13,6 +14,7 @@ interface Props {
 
 const MainMeetingAccount = ({ index, account }: Props) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // 숫자를 세 자리마다 쉼표로 구분하여 표시
   const formatCurrency = (amount: number) => {
@@ -67,20 +69,35 @@ const MainMeetingAccount = ({ index, account }: Props) => {
     return <span className={containerClasses}>{IconComponent}</span>;
   };
 
+  const handleCreate = () => {
+    dispatch(
+      setTravelboxInfo({
+        accountPassword: "",
+        accountNo: account.groupAccountNo,
+        currencyCode: "",
+      })
+    );
+    navigate("/currencyinfoofcreatetravelbox");
+  };
+
   return (
     <>
       {account && (
-        <div
-          onClick={() => {
-            navigate(`/meetingaccount/${account.groupId}`);
-          }}
-          className="w-full p-5 flex flex-col rounded-xl bg-white shadow-md">
+        <div className="w-full p-5 flex flex-col rounded-xl bg-white shadow-md">
           <div className="flex flex-col space-y-4">
-            <div className="flex mb-3 space-x-2">
+            <div
+              className="flex mb-3 space-x-2"
+              onClick={() => {
+                navigate(`/meetingaccount/${account.groupId}`);
+              }}>
               {getIcon(account.icon)}
               <p className="font-bold">{account.groupName}</p>
             </div>
-            <div className="rounded-md flex justify-between">
+            <div
+              className="rounded-md flex justify-between"
+              onClick={() => {
+                navigate(`/meetingaccount/${account.groupId}`);
+              }}>
               <div className="flex items-center space-x-1">
                 <p className="text-[1.3rem] font-semibold">{formatCurrency(account.moneyBoxDtoList[0].balance)}</p>
                 <p className="text-[1rem]">원</p>
@@ -97,7 +114,9 @@ const MainMeetingAccount = ({ index, account }: Props) => {
                   <p>{account.moneyBoxDtoList[1].currencyCode}</p>
                 </div>
               ) : (
-                <button className="font-semibold">개설하기</button>
+                <button className="font-semibold" onClick={() => handleCreate()}>
+                  개설하기
+                </button>
               )}
             </div>
           </div>
