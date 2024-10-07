@@ -30,9 +30,7 @@ const SettlementTransferSuccess = () => {
 
         <div className="flex flex-col space-y-6">
           <button
-            onClick={() => {
-              navigate("/");
-            }}
+            onClick={() => navigate("/settlement/expenditure/list/COMPLETED")}
             className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]">
             확인
           </button>

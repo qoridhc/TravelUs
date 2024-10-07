@@ -34,7 +34,7 @@ const TransferSuccess = () => {
         <div className="flex flex-col space-y-6">
           <button
             onClick={() => {
-              navigate("/settlement/expenditure/list");
+              navigate("/");
             }}
             className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]">
             확인

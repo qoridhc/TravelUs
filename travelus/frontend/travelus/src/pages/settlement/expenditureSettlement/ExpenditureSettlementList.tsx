@@ -3,14 +3,15 @@ import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { settlementApi } from "../../../api/settle";
 import { AxiosError } from "axios";
 import { AxiosErrorResponseData } from "../../../types/axiosError";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { SettlementPersonalInfo } from "../../../types/settlement";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../../lottie/loadingAnimation.json";
 
 const ExpenditureSettlementList = () => {
   const navigate = useNavigate();
-  const [isTab, setIsTab] = useState("NOT_COMPLETED"); // 진행 중 : NOT_COMPLETED, 완료 : COMPLETED
+  const { status } = useParams();
+  const [isTab, setIsTab] = useState(status); // 진행 중 : NOT_COMPLETED, 완료 : COMPLETED
   const [isEmpty, setIsEmpty] = useState(false);
   const [settlementList, setSettlementList] = useState<{ [date: string]: SettlementPersonalInfo[] }>({});
   const [dateList, setDateList] = useState<string[]>([]);
@@ -38,6 +39,10 @@ const ExpenditureSettlementList = () => {
       groupId: settlement.groupId,
     };
     navigate("/settlement/expenditure/transfer/setMoney", { state: { data } });
+  };
+
+  const handleDetail = () => {
+    navigate(`/settlement/expenditure/detail/1`);
   };
 
   const fetchSettlementList = async (settlementStatus: string) => {
@@ -78,7 +83,7 @@ const ExpenditureSettlementList = () => {
   useEffect(() => {
     setDateList([]);
     setSettlementList({});
-    fetchSettlementList(isTab);
+    fetchSettlementList(isTab ? isTab : "NOT_COMPLETED");
   }, [isTab]);
 
   useEffect(() => {
@@ -132,17 +137,20 @@ const ExpenditureSettlementList = () => {
                       <div className="flex items-center">
                         <img className="w-10 h-10" src="/assets/user/userIconSample.png" alt="" />
                       </div>
-                      <div>
-                        <p className="text-xl font-bold tracking-tight">{formatCurrency(settlement.amount)}원</p>
-                        <p className="text-[#565656]">
-                          {isTab === "NOT_COMPLETED"
-                            ? `${settlement.groupName}의 총 ${settlement.participantCount}명`
-                            : `${formatCurrency(settlement.amount)}원 보내기 완료`}
-                        </p>
-                      </div>
 
-                      <div className="flex justify-end items-center">
-                        <IoIosArrowForward className="text-lg" />
+                      <div className="col-span-2 grid grid-cols-[9fr_1fr]" onClick={() => handleDetail()}>
+                        <div>
+                          <p className="text-xl font-bold tracking-tight">{formatCurrency(settlement.amount)}원</p>
+                          <p className="text-[#565656]">
+                            {isTab === "NOT_COMPLETED"
+                              ? `${settlement.groupName}의 총 ${settlement.participantCount}명`
+                              : `${formatCurrency(settlement.amount)}원 보내기 완료`}
+                          </p>
+                        </div>
+
+                        <div className="flex justify-end items-center">
+                          <IoIosArrowForward className="text-lg" />
+                        </div>
                       </div>
 
                       <div className="col-start-2 col-span-2 flex items-center">
