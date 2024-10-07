@@ -1,5 +1,5 @@
-// const baseUrl = "http://localhost:3000"; // 로컬
-const baseUrl = "https://j11d209.p.ssafy.io"; // 서비스
+const baseUrl = "http://localhost:3000"; // 로컬
+// const baseUrl = "https://j11d209.p.ssafy.io"; // 서비스
 
 
 self.addEventListener("install", function (e) {
@@ -82,9 +82,9 @@ const generateUrl = (type, accountNo, groupId, currencyCode) => {
     case "PT":
       return `${baseUrl}/transaction/${accountNo}`;
     case "GT":
-      return `${baseUrl}/meetingtransaction/${accountNo}?groupId=${groupId}`;
+      return `${baseUrl}/meetingtransaction/${accountNo}?groupId=${groupId}/notification`;
     case "E":
-      return `${baseUrl}/travelbox/transaction/${accountNo}?groupId=${groupId}&currencyCode=${currencyCode}`;
+      return `${baseUrl}/travelbox/transaction/${accountNo}?groupId=${groupId}&currencyCode=${currencyCode}/notification`;
 
     // 정산 추후 추가
     // case "S":
