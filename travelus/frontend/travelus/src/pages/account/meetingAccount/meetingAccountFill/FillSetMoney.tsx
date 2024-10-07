@@ -4,6 +4,8 @@ import { useLocation } from "react-router";
 import { AccountInfoNew, MeetingAccountInfo } from "../../../../types/account";
 import { accountApi } from "../../../../api/account";
 import { IoIosArrowBack } from "react-icons/io";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../../../lottie/loadingAnimation.json";
 
 interface TransferSetMoneyProps {}
 
@@ -134,6 +136,14 @@ const FillSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
     }
   };
 
+  if ((!account && !meeting)) {
+    return (
+      <div className="h-full flex flex-col justify-center items-center">
+        <Lottie animationData={loadingAnimation} />
+      </div>
+    );
+  }
+
   return (
     <div className="h-full p-5 pb-8">
       <div className="relative h-full flex flex-col justify-between">
@@ -203,7 +213,11 @@ const FillSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
           <button
             onClick={() => {
               navigate(`/meeting/${groupId}/fill/confirm`, {
-                state: { transferAmount, generalAccountNo: generalAccount?.accountNo, meetingAccountNo: meeting?.groupAccountNo },  
+                state: {
+                  transferAmount,
+                  generalAccountNo: generalAccount?.accountNo,
+                  meetingAccountNo: meeting?.groupAccountNo,
+                },
               });
             }}
             className={`w-full h-14 text-lg font-semibold rounded-xl tracking-wide ${

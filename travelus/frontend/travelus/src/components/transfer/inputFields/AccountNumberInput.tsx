@@ -26,6 +26,8 @@ const AccountNumberInput: React.FC<AccountNumberInputProps> = ({ labelName, valu
         },
       }}
       id="accountNumber"
+      type="tel"
+      inputMode="numeric"
       label={labelName}
       variant="standard"
       value={value}

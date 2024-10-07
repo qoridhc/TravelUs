@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useNavigate, useLocation, useParams } from "react-router";
 import { MeetingAccountInfo } from "../../../../types/account";
 import { accountApi } from "../../../../api/account";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../../../lottie/loadingAnimation.json";
 
 const FillSuccess = () => {
   const navigate = useNavigate();
@@ -32,6 +34,14 @@ const FillSuccess = () => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("ko-KR").format(amount);
   };
+
+  if (!meeting) {
+    return (
+      <div className="h-full flex flex-col justify-center items-center">
+        <Lottie animationData={loadingAnimation} />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full p-5 pb-8">

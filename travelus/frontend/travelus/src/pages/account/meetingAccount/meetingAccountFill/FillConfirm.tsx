@@ -5,6 +5,8 @@ import { accountApi } from "../../../../api/account";
 import { userApi } from "../../../../api/user";
 import { AccountInfoNew, MeetingAccountInfo } from "../../../../types/account";
 import { IoIosArrowBack } from "react-icons/io";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../../../lottie/loadingAnimation.json";
 
 interface TransferConfirmProps {
   // Define the props for the component here
@@ -14,9 +16,7 @@ const FillConfirm: React.FC<TransferConfirmProps> = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { groupId } = useParams();
-  const [isValidation, setIsValidation] = useState<boolean>(false);
   const [meeting, setMeeting] = useState<MeetingAccountInfo | null>(null);
-  const [withdrawalAccountNo, setWithdrawalAccountNo] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
   const { generalAccountNo, meetingAccountNo, transferAmount } = location.state as {
     generalAccountNo: string;
@@ -55,6 +55,14 @@ const FillConfirm: React.FC<TransferConfirmProps> = (props) => {
     fetchData();
     fetchSpecificMeetingAccount();
   }, []);
+
+  if ((!meeting && !userName)) {
+    return (
+      <div className="h-full flex flex-col justify-center items-center">
+        <Lottie animationData={loadingAnimation} />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full p-5 pb-8">
