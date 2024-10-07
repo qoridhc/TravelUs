@@ -15,6 +15,9 @@ import { GoHome } from "react-icons/go";
 import { FiPlus } from "react-icons/fi";
 import { MeetingAccountInfo, MeetingAccountDetailInfo } from "../../../types/account";
 import { setTravelboxInfo } from "../../../redux/meetingAccountSlice";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../../lottie/loadingAnimation.json";
+
 
 const MeetingAccountDetail = () => {
   const navigate = useNavigate();
@@ -141,8 +144,12 @@ const MeetingAccountDetail = () => {
     return <span className={containerClasses}>{IconComponent}</span>;
   };
 
-  if (account === null) {
-    return <p>계좌 정보를 불러오는 중입니다...</p>;
+  if (!account && !meeting) {
+    return (
+      <div className="h-full flex flex-col justify-center items-center">
+        <Lottie animationData={loadingAnimation} />
+      </div>
+    );
   }
 
   return (
