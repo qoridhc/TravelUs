@@ -45,7 +45,6 @@ const AccountTransaction = () => {
       if (response.status === 201) {
         setAccount(response.data);
         console.log("account : ", response.data);
-        // fetchTransactionHistory(response.data.moneyBoxDtos[0].currencyCode);
       }
     } catch (error) {
       console.error("accountApi의 fetchSpecificMeetingAccount : ", error);
@@ -53,13 +52,12 @@ const AccountTransaction = () => {
   };
 
   // 거래 내역 조회
-  const fetchTransactionHistory = async (currencyCode: string) => {
-    console.log("currency : ", currencyCode);
+  const fetchTransactionHistory = async () => {
     try {
       if (accountNo) {
         const data = {
           accountNo: accountNo,
-          currencyCode: currencyCode,
+          currencyCode: "KRW",
           orderByType: "DESC",
           page: page,
           size: 10,
@@ -111,7 +109,11 @@ const AccountTransaction = () => {
 
   useEffect(() => {
     fetchSpecificAccountInfo();
-  }, [account]);
+  }, []);
+
+  useEffect(() => {
+    fetchTransactionHistory();
+  }, [page]);
 
   useEffect(() => {
     if (isLoading && pageEnd.current) {
@@ -149,7 +151,7 @@ const AccountTransaction = () => {
   return (
     <div className="h-full pb-8">
       <div className="flex flex-col">
-        <div className="p-5 grid grid-cols-3 items-center">
+        <div className="p-5 bg-white grid grid-cols-3 items-center sticky top-0">
           <IoIosArrowBack
             onClick={() => {
               navigate("/");
