@@ -8,6 +8,8 @@ import com.ssafy.soltravel.v1.dto.user.UserDetailDto;
 import com.ssafy.soltravel.v2.domain.Enum.AccountType;
 import com.ssafy.soltravel.v2.domain.Enum.NotificationType;
 import com.ssafy.soltravel.v2.domain.Notification;
+import com.ssafy.soltravel.v2.domain.Participant;
+import com.ssafy.soltravel.v2.domain.PersonalSettlementHistory;
 import com.ssafy.soltravel.v2.domain.TravelGroup;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.domain.redis.RedisFcm;
@@ -31,6 +33,7 @@ import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.repository.redis.FcmTokenRepository;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +50,8 @@ public class NotificationService {
 
     // 기본 알림 아이콘
     private static final String DEFAULT_ICON_URL = "/sol_favicon.ico";
+    // 소술점 0인경우 떼기 ex) 1000.00 -> 1000
+    private static final DecimalFormat df = new DecimalFormat("#,###.##");
 
     private final AccountService accountService;
 
@@ -148,24 +153,25 @@ public class NotificationService {
 
         String title;
         String message;
+        String formattedAmount = df.format(requestDto.getTransactionBalance());
 
         // 트랜잭션 타입에 따라 switch-case로 알림 제목 및 메시지 설정
         switch (requestDto.getTransactionType()) {
             case D -> {
                 title = "입금 완료";
-                message = "입금 금액: " + requestDto.getTransactionBalance() + "원이 입금되었습니다.";
+                message = String.format("입금 금액: %s원이 입금되었습니다.", formattedAmount);
             }
             case W -> {
                 title = "출금 완료";
-                message = "출금 금액: " + requestDto.getTransactionBalance() + "원이 출금되었습니다.";
+                message = String.format("출금 금액: %s원이 출금되었습니다.", formattedAmount);
             }
             case SD -> {
                 title = "정산 입금 완료";
-                message = "정산 입금 금액: " + requestDto.getTransactionBalance() + "원이 입금되었습니다.";
+                message = String.format("정산 입금 금액: %s원이 입금되었습니다.", formattedAmount);
             }
             case SW -> {
                 title = "정산 출금 완료";
-                message = "정산 출금 금액: " + requestDto.getTransactionBalance() + "원이 출금되었습니다.";
+                message = String.format("정산 출금 금액: %s원이 출금되었습니다.", formattedAmount);
             }
             default -> {
                 throw new IllegalArgumentException("지원되지 않는 트랜잭션 타입입니다.");
@@ -207,8 +213,10 @@ public class NotificationService {
         // 돈을 받는 사람 유저 정보
         UserDetailDto depositUser = accountService.getUserByAccountNo(requestDto.getDepositAccountNo());
 
+        String formattedAmount = df.format(requestDto.getTransactionBalance());
+
         String title = "이체 완료";
-        String message = depositUser.getName() + "님에게 : " + requestDto.getTransactionBalance() + "원을 보냈어요.";
+        String message = String.format("%s님에게 %s원을 보냈어요.", depositUser.getName(), formattedAmount);
 
         AccountDto senderAccount = accountService.getByAccountNo(requestDto.getWithdrawalAccountNo());
 
@@ -235,7 +243,7 @@ public class NotificationService {
         pushNotification(notificationRequestDto);
 
         title = user.getName() + "님이 돈을 보냈어요";
-        message = requestDto.getTransactionBalance() + "원이 튜나은행 계좌로 입금되었어요.";
+        message = String.format("%s원이 튜나은행 계좌로 입금되었어요.", formattedAmount);
 
         AccountDto depositAccount = accountService.getByAccountNo(requestDto.getDepositAccountNo());
         notificationType = NotificationType.PT;
@@ -245,7 +253,7 @@ public class NotificationService {
         if (depositAccount.getAccountType().equals(AccountType.G)) {
             depositGroup = groupRepository.findByGroupAccountNo(requestDto.getDepositAccountNo());
 
-            message = requestDto.getTransactionBalance() + "원이 " + depositGroup.getGroupName() + " 모임통장으로 입금되었어요.";
+            message = String.format("%s원이 %s 모임통장으로 입금되었어요.", formattedAmount, depositGroup.getGroupName());
             notificationType = NotificationType.GT;
         }
 
@@ -272,9 +280,11 @@ public class NotificationService {
         MoneyBoxTransferRequestDto requestDto
     ) {
 
+        String formattedAmount = df.format(requestDto.getTransactionBalance());
+
         String title = "자동 환전 완료";
-        String message = "설정 환율 " + targetAccountDto.getTargetRate() + "에 도달하여 " + requestDto.getTransactionBalance()
-            + requestDto.getSourceCurrencyCode() + " 이 성공적으로 환전되었습니다.";
+        String message = String.format("설정 환율 %s에 도달하여 %s%s이 성공적으로 환전되었습니다.",
+            targetAccountDto.getTargetRate(), formattedAmount, requestDto.getSourceCurrencyCode());
 
         TravelGroup group = groupRepository.findByGroupAccountNo(targetAccountDto.getAccountNo());
 
@@ -302,8 +312,9 @@ public class NotificationService {
         MoneyBoxTransferRequestDto requestDto
     ) {
 
+        String formattedAmount = df.format(requestDto.getTransactionBalance());
         String title = "환전 완료";
-        String message = requestDto.getTransactionBalance() + requestDto.getSourceCurrencyCode() + " 이 성공적으로 환전되었습니다.";
+        String message = String.format("%s%s 이 성공적으로 환전되었습니다.", formattedAmount, requestDto.getSourceCurrencyCode());
 
         TravelGroup group = groupRepository.findByGroupAccountNo(requestDto.getAccountNo());
 
@@ -315,6 +326,40 @@ public class NotificationService {
             requestDto.getAccountNo(),
             group.getGroupId(),
             requestDto.getTargetCurrencyCode()
+        );
+
+        // 알림 전송
+        pushNotification(notificationRequestDto);
+
+        return ResponseEntity.ok().body(new ResponseDto());
+    }
+
+    /*
+     *  개별 정산 알림
+     */
+    public ResponseEntity<?> sendPersonalSettlementNotification(
+        PersonalSettlementHistory requestDto
+    ) {
+
+        String title = "새로운 정산 요청이 들어왔어요!";
+
+        String formattedAmount = df.format(requestDto.getAmount());
+
+        String message = String.format("%s에서 %s원 정산을 요청했어요.",
+            requestDto.getGroup().getGroupName(),
+            formattedAmount
+        );
+
+        TravelGroup group = requestDto.getGroup();
+        Participant participant = requestDto.getParticipant();
+
+        PushNotificationRequestDto notificationRequestDto = PushNotificationRequestDto.createDto(
+            participant.getUser().getUserId(),
+            NotificationType.S,
+            title,
+            message,
+            group.getGroupAccountNo(),
+            group.getGroupId()
         );
 
         // 알림 전송
