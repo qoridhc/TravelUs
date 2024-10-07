@@ -4,9 +4,11 @@ import { RootState } from "../../../../redux/store";
 import { useNavigate, useLocation, useParams } from "react-router";
 import { transactionApi } from "../../../../api/transaction";
 import { userApi } from "../../../../api/user";
+import { accountApi } from "../../../../api/account";
 import SecurityNumberKeyboard from "../../../../components/common/SecurityNumberKeyboard";
 import { AxiosError } from "axios";
 import { AxiosErrorResponseData } from "../../../../types/axiosError";
+import { MeetingAccountInfo } from "../../../../types/account";
 
 interface TransferPasswordProps {
   // Define the props for your component here
@@ -19,6 +21,7 @@ const FillPassword: React.FC<TransferPasswordProps> = (props) => {
 
   const [password, setPassword] = useState("");
   const [userName, setUserName] = useState<string>("");
+  const [meeting, setMeeting] = useState<MeetingAccountInfo | null>(null);
   const { transferAmount } = location.state as { transferAmount: string };
   const { meetingAccountNo } = location.state as { meetingAccountNo: string };
   const { generalAccountNo } = location.state as { generalAccountNo: string };
@@ -50,14 +53,32 @@ const FillPassword: React.FC<TransferPasswordProps> = (props) => {
     return `${accountNo.slice(0, 3)}-${accountNo.slice(3, 11)}-${accountNo.slice(11)}`;
   };
 
+  // 특정 모임 조회 API 호출
+  const fetchSpecificMeetingAccount = async () => {
+    try {
+      const response = await accountApi.fetchSpecificMeetingAccount(Number(groupId));
+      if (response.status === 200) {
+        const meetingData = response.data;
+
+        setMeeting(meetingData);
+      }
+    } catch (error) {
+      console.error("모임 조회 에러", error);
+    }
+  };
+
   const handleTransfer = async () => {
+    if (!meeting || !meetingAccountNo || !generalAccountNo || !transferAmount) {
+      return;
+    }
+
     const data = {
       transferType: "G",
       withdrawalAccountNo: formatAccountNumber(generalAccountNo),
       accountPassword: password,
       depositAccountNo: formatAccountNumber(meetingAccountNo),
       transactionBalance: parseInt(transferAmount),
-      withdrawalTransactionSummary: userName,
+      withdrawalTransactionSummary: meeting?.groupName,
       depositTransactionSummary: userName,
     };
 
