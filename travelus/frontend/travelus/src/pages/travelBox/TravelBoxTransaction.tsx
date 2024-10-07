@@ -122,6 +122,8 @@ const TravelBoxTransaction = () => {
 
   useEffect(() => {
     fetchSpecificAccountInfo();
+    console.log("groupId : ", groupId);
+    console.log("currencyCode : ", currencyCode);
   }, []);
 
   useEffect(() => {

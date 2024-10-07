@@ -73,12 +73,11 @@ const Login = () => {
                   handleChange(e);
                 }}
                 id="email"
-                className="focus:outline-none text-zinc-800"
+                className="focus:outline-none text-zinc-800 border-b border-zinc-300"
                 type="text"
                 name="email"
                 value={email}
               />
-              <hr className="bg-zinc-800" />
               <label htmlFor="password" className="text-sm font-semibold cursor-pointer">
                 사용자 암호
               </label>
@@ -92,12 +91,11 @@ const Login = () => {
                   }
                 }}
                 id="password"
-                className="focus:outline-none text-zinc-800"
+                className="focus:outline-none text-zinc-800 border-b border-zinc-300"
                 type="password"
                 name="password"
                 value={password}
               />
-              <hr className="bg-zinc-800" />
             </div>
             <button
               onClick={() => {
