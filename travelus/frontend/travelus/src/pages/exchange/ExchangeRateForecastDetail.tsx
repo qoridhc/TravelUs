@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { fetchDetailedPredictions } from "../../api/exchange";
+import { exchangeApi } from "../../api/exchange";
 import { AllDetailedPredictions, DetailedPrediction } from "../../types/exchange";
 
 const ExchangeRateForecastDetail: React.FC = () => {
   const [predictions, setPredictions] = useState<AllDetailedPredictions | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = useState<"USD" | "JPY">("USD");
 
   useEffect(() => {
     const loadPredictions = async () => {
       try {
-        const data = await fetchDetailedPredictions();
+        const data = await exchangeApi.fetchDetailedPredictions();
         setPredictions(data);
         setLoading(false);
       } catch (err) {
@@ -22,26 +23,39 @@ const ExchangeRateForecastDetail: React.FC = () => {
     loadPredictions();
   }, []);
 
-  const renderCurrencyPrediction = (currency: string, prediction: DetailedPrediction) => (
+  const renderForecastStats = (stats: DetailedPrediction["forecast_stats"]) => {
+    return (
+      <div className="forecast-stats">
+        <h3 className="text-lg font-semibold mb-2">Forecast Statistics</h3>
+        <p>Average: {stats.average.toFixed(2)}</p>
+        <p>Minimum: {stats.min.toFixed(2)}</p>
+        <p>Maximum: {stats.max.toFixed(2)}</p>
+        <h4 className="text-md font-semibold mt-4 mb-2">Percentiles</h4>
+        <ul className="list-disc pl-5">
+          {[10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((percentile) => (
+            <li key={percentile}>
+              {percentile}th: {stats[`p${percentile}` as keyof typeof stats]?.toFixed(2) ?? "N/A"}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
+  const renderCurrencyPrediction = (currency: "USD" | "JPY", prediction: DetailedPrediction) => (
     <div key={currency} className="currency-prediction">
-      <h2>{currency} Prediction</h2>
+      <h2 className="text-xl font-bold mb-4">{currency} Prediction</h2>
       <p>Current Rate: {prediction.current_rate.toFixed(2)}</p>
       <p>Trend: {prediction.trend}</p>
-      <h3>Forecast</h3>
-      <ul>
+      <h3 className="text-lg font-semibold mt-4 mb-2">Forecast</h3>
+      <ul className="list-disc pl-5">
         {Object.entries(prediction.forecast).map(([date, rate]) => (
           <li key={date}>
             {date}: {rate.toFixed(2)}
           </li>
         ))}
       </ul>
-      <h3>Minimum Profit Strategy</h3>
-      <p>Recommended Rate: {prediction.min_profit.recommended_rate.toFixed(2)}</p>
-      <p>Recommended Date: {prediction.min_profit.recommended_date}</p>
-      <h3>Maximum Profit Strategy</h3>
-      <p>Average Rate: {prediction.max_profit.average_rate.toFixed(2)}</p>
-      <p>Minimum Rate: {prediction.max_profit.min_rate.toFixed(2)}</p>
-      <p>Maximum Rate: {prediction.max_profit.max_rate.toFixed(2)}</p>
+      {renderForecastStats(prediction.forecast_stats)}
     </div>
   );
 
@@ -50,11 +64,26 @@ const ExchangeRateForecastDetail: React.FC = () => {
   if (!predictions) return <div>No predictions available</div>;
 
   return (
-    <div className="exchange-rate-forecast-detail">
-      <h1>Exchange Rate Forecast Detail</h1>
-      <p>Last Updated: {predictions.last_updated}</p>
-      {renderCurrencyPrediction("USD", predictions.USD)}
-      {renderCurrencyPrediction("JPY", predictions.JPY)}
+    <div className="h-full p-5 pb-8">
+      <div className="exchange-rate-forecast-detail">
+        <h1 className="text-2xl font-bold mb-4">희망 환율 추천</h1>
+        <p className="mb-4">Last Updated: {predictions.last_updated}</p>
+        <div className="mb-3 flex justify-center items-center bg-gray-200 rounded-full p-1">
+          {(["USD", "JPY"] as const).map((currency) => (
+            <button
+              key={currency}
+              onClick={() => setSelectedCurrency(currency)}
+              className={`flex-1 py-2 text-center ${
+                selectedCurrency === currency
+                  ? "bg-white text-[#353535] font-bold shadow-sm rounded-full"
+                  : "text-gray-600"
+              }`}>
+              {currency}
+            </button>
+          ))}
+        </div>
+        {renderCurrencyPrediction(selectedCurrency, predictions[selectedCurrency])}
+      </div>
     </div>
   );
 };

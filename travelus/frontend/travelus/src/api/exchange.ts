@@ -5,17 +5,6 @@ import axios from "axios";
 
 const API_BASE_URL = "http://70.12.130.121:11209"; // GPU 서버
 
-// GPU 서버 요청 api(환율 예측 detail 받아오기)
-export const fetchDetailedPredictions = async (): Promise<AllDetailedPredictions> => {
-  try {
-    const response = await axios.get<AllDetailedPredictions>(`${API_BASE_URL}/prediction/detail/`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching detailed predictions:', error);
-    throw error;
-  }
-};
-
 // 환율 예측 정보 및 환율 받아오기
 export const exchangeApi = {
   getPrediction: async (): Promise<PredictionResponse> => {
@@ -38,6 +27,16 @@ export const exchangeApi = {
       throw error;
     }
   },
+
+  fetchDetailedPredictions: async (): Promise<AllDetailedPredictions> => {
+    try {
+      const response = await axios.get<AllDetailedPredictions>(`${API_BASE_URL}/prediction/detail/`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching detailed predictions:', error);
+      throw error;
+    }
+  }
 };
 
 // 기본 환율 정보 불러오기

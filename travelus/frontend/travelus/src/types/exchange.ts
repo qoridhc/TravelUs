@@ -111,20 +111,28 @@ export interface TargetRate {
 }
 
 // 환율 예측 detail을 주기 위한 type 선언
+export interface ForecastStats {
+  average: number;
+  min: number;
+  max: number;
+  p10?: number;
+  p20?: number;
+  p30?: number;
+  p40?: number;
+  p50?: number;
+  p60?: number;
+  p70?: number;
+  p80?: number;
+  p90?: number;
+  p100?: number;
+}
+
 export interface DetailedPrediction {
   // currency: string;
   forecast: { [date: string]: number };
   current_rate: number;
   trend: string;
-  min_profit: {
-    recommended_rate: number;
-    recommended_date: string;
-  };
-  max_profit: {
-    average_rate: number;
-    min_rate: number;
-    max_rate: number;
-  };
+  forecast_stats: ForecastStats;
 }
 
 export interface AllDetailedPredictions {
