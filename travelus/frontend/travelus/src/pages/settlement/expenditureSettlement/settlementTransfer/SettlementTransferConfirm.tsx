@@ -10,7 +10,6 @@ const SettlementTransferConfirm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [withdrawalAccountNo, setWithdrawalAccountNo] = useState<string>("");
-  const [depositAccountNo, setDepositAccountNo] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
 
   // 금액에 콤마 추가
@@ -23,7 +22,7 @@ const SettlementTransferConfirm = () => {
     const data = {
       personalSettlementId: settlement.personalSettlementId,
       participantId: settlement.participantId,
-      depositAccountNo,
+      depositAccountNo: settlement.depositAccountNo,
       withdrawalAccountNo,
       transactionBalance: settlement.remainingAmount,
       withdrawalTransactionSummary: userName,
@@ -46,24 +45,11 @@ const SettlementTransferConfirm = () => {
     }
   };
 
-  // 특정 모임 조회 API 호출
-  const fetchSpecificMeetingAccount = async () => {
-    try {
-      const response = await accountApi.fetchSpecificMeetingAccount(Number(location.state.data.groupId));
-      if (response.status === 200) {
-        setDepositAccountNo(response.data.groupAccountNo);
-      }
-    } catch (error) {
-      console.error("accountApi의 fetchSpecificMeetingAccount : ", error);
-    }
-  };
-
   useEffect(() => {
     fetchData();
-    fetchSpecificMeetingAccount();
   }, []);
 
-  if (withdrawalAccountNo === "" || userName === "" || depositAccountNo === "") {
+  if (withdrawalAccountNo === "" || userName === "") {
     return (
       <div className="h-full flex flex-col justify-center items-center">
         <Lottie animationData={loadingAnimation} />
@@ -102,7 +88,7 @@ const SettlementTransferConfirm = () => {
             </div>
             <div className="flex justify-between">
               <p className="text-zinc-500">입금 계좌</p>
-              <p>{depositAccountNo}</p>
+              <p>{location.state.data.depositAccountNo}</p>
             </div>
           </div>
           <div className="flex flex-col space-y-3">

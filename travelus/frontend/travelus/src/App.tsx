@@ -32,7 +32,7 @@ import AccountPasswordInput from "./pages/exchange/ExchangeConfirmation";
 import SelectAccount from "./pages/exchange/SelectAccount";
 import AccountCreateComplete from "./pages/ver1/AccountCreateComplete";
 import GeneralMeetingAccountCreate from "./pages/ver1/GeneralMeetingAccountCreate";
-import MeetingAccountCreatePrepare from "./pages/ver1/MeetingAccountCreatePrepare";
+import MeetingAccountCreatePrepare from "./pages/meetingAccount/createMeetingAccount/PrepareOfCreateMeetingAccount";
 import MeetingAccountCreateComplete from "./pages/ver1/MeetingAccountCreateComplete";
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
 import PrivateRoute from "./pages/user/PrivateRoute";
@@ -42,13 +42,13 @@ import UserInfoOfCreateAccount from "./pages/account/generalAccount/generalAccou
 import PasswordOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/PasswordOfCreateAccount";
 import CheckPasswordOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/CheckPasswordOfCreateAccount";
 import IDVerificationOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/IDVerificationOfCreateAccount";
-import UserInfoOfCreateMeetingAccount from "./pages/meetingAccount/UserInfoOfCreateMeetingAccount";
+import UserInfoOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/UserInfoOfCreateMeetingAccount";
 import CompletedOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/CompletedOfCreateAccount";
-import MeetingInfoOfCreateMeetingAccount from "./pages/meetingAccount/MeetingInfoOfCreateMeetingAccount";
-import PasswordOfCreateMeetingAccount from "./pages/meetingAccount/PasswordOfCreateMeetingAccount";
-import CheckPasswordOfCreateMeetingAccount from "./pages/meetingAccount/CheckPasswordOfCreateMeetingAccount";
-import CompletedOfCreateMeetingAccount from "./pages/meetingAccount/CompletedOfCreateMeetingAccount";
-import IDVerificationOfCreateMeetingAccount from "./pages/meetingAccount/IDVerificationOfCreateMeetingAccount";
+import MeetingInfoOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/MeetingInfoOfCreateMeetingAccount";
+import PasswordOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/PasswordOfCreateMeetingAccount";
+import CheckPasswordOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/CheckPasswordOfCreateMeetingAccount";
+import CompletedOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/CompletedOfCreateMeetingAccount";
+import IDVerificationOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/IDVerificationOfCreateMeetingAccount";
 import TravelBoxTransaction from "./pages/travelBox/TravelBoxTransaction";
 import MeetingTransaction from "./pages/meetingAccount/MeetingTransaction";
 import CurrencyInfoOfCreateTravelBox from "./pages/travelBox/CurrencyInfoOfCreateTravelBox";
@@ -60,9 +60,9 @@ import ExpenditureTransactionDetail from "./pages/settlement/expenditureSettleme
 import ExpenditureSettlementInfo from "./pages/settlement/expenditureSettlement/ExpenditureSettlementInfo";
 import ExpenditureSettlementCompleted from "./pages/settlement/expenditureSettlement/ExpenditureSettlementCompleted";
 import TravelBoxCreatePrepare from "./pages/travelBox/TravelBoxCreatePrepare";
-import InvitationOfMeeting from "./pages/meetingAccount/InvitationOfMeeting";
-import InviteInfoOfMeeting from "./pages/meetingAccount/InviteInfoOfMeeting";
-import AlreadyInviteOfMeeting from "./pages/meetingAccount/AlreadyInviteOfMeeting";
+import InvitationOfMeeting from "./pages/meetingAccount/inviteMeeting/InvitationOfMeeting";
+import InviteInfoOfMeeting from "./pages/meetingAccount/inviteMeeting/InviteInfoOfMeeting";
+import AlreadyInviteOfMeeting from "./pages/meetingAccount/inviteMeeting/AlreadyInviteOfMeeting";
 import SelectAccountOfMeeting from "./pages/meetingAccount/SelectAccountOfMeeting";
 import EnglishNameOfCreateCard from "./pages/card/cardCreate/EnglishNameOfCreateCard";
 import PasswordOfCreateCard from "./pages/card/cardCreate/PasswordOfCreateCard";
@@ -76,6 +76,9 @@ import ExpenditureSettlementList from "./pages/settlement/expenditureSettlement/
 import NotificationList from "./pages/notification/notificationList";
 import SettlementTransferConfirm from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferConfirm";
 import SettlementTransferPassword from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferPassword";
+import SettlementTransferSetMoney from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferSetMoney";
+import ExpenditureSettlementDetail from "./pages/settlement/expenditureSettlement/ExpenditureSettlementDetail";
+import SettlementTransferSuccess from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferSuccess";
 
 function App() {
   return (
@@ -147,8 +150,8 @@ function App() {
 
           {/* 통장 내역 */}
           <Route path="/transaction/:accountNo" element={<AccountTransaction />} />
-          <Route path="/meetingtransaction/:accountNo" element={<MeetingTransaction />} />
-          <Route path="/travelbox/transaction/:accountNo" element={<TravelBoxTransaction />} />
+          <Route path="/meetingtransaction/:accountNo/:type" element={<MeetingTransaction />} />
+          <Route path="/travelbox/transaction/:accountNo/:type" element={<TravelBoxTransaction />} />
 
           {/* 트래블박스 생성 */}
           <Route path="/travelbox/create/prepare" element={<TravelBoxCreatePrepare />} />
@@ -199,11 +202,14 @@ function App() {
             element={<ExpenditureTransactionDetail />}></Route>
           <Route path="/settlement/expenditure/participants/:id" element={<ExpenditureSettlementInfo />}></Route>
           <Route path="/settlement/expenditure/completed" element={<ExpenditureSettlementCompleted />}></Route>
-          <Route path="/settlement/expenditure/list" element={<ExpenditureSettlementList />}></Route>
+          <Route path="/settlement/expenditure/list/:status" element={<ExpenditureSettlementList />}></Route>
+          <Route path="/settlement/expenditure/detail/:id" element={<ExpenditureSettlementDetail />}></Route>
 
           {/* 지출정산 이체 */}
+          <Route path="/settlement/expenditure/transfer/setMoney" element={<SettlementTransferSetMoney />}></Route>
           <Route path="/settlement/expenditure/transfer/confirm" element={<SettlementTransferConfirm />}></Route>
           <Route path="/settlement/expenditure/transfer/password" element={<SettlementTransferPassword />}></Route>
+          <Route path="/settlement/expenditure/transfer/success" element={<SettlementTransferSuccess />}></Route>
 
           {/* 알림 */}
           <Route path="/notification" element={<NotificationList />} />

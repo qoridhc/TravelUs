@@ -14,6 +14,7 @@ import "swiper/css/pagination";
 import "swiper/css";
 import { ExchangeRateInfo } from "../types/exchange";
 import { exchangeRateApi } from "../api/exchange";
+import { IoMdAdd } from "react-icons/io";
 
 const CURRENCY_CODES = ["USD", "JPY", "EUR"];
 
@@ -94,27 +95,53 @@ const MainPage = () => {
     <div className="w-full">
       <div className="w-full p-5 flex flex-col items-center space-y-4">
         {account === null ? (
-          <div className="w-full p-6 flex flex-col space-y-5 rounded-xl bg-white shadow-md">
-            <div className="flex justify-between items-center">
-              <div className="flex flex-col space-y-2">
-                <p className="text-sm">트래블러스가 처음이신가요?</p>
-                <div>
-                  <p className="text-lg font-semibold">튜나뱅크</p>
-                  <p className="text-lg font-semibold">입출금통장이 필요해요</p>
-                </div>
-              </div>
+          // <div className="w-full p-6 flex flex-col space-y-5 rounded-xl bg-white shadow-md">
+          //   <div className="flex justify-between items-center">
+          //     <div className="flex flex-col space-y-2">
+          //       <p className="text-sm">트래블러스가 처음이신가요?</p>
+          //       <div>
+          //         <p className="text-lg font-semibold">튜나뱅크</p>
+          //         <p className="text-lg font-semibold">입출금통장이 필요해요</p>
+          //       </div>
+          //     </div>
 
-              <div>
-                <img className="w-20" src="/assets/bankBookIcon.png" alt="올인원모임통장" />
-              </div>
-            </div>
-            <button
-              className="h-10 rounded-md bg-[#1429A0] font-semibold text-white text-sm"
+          //     <div>
+          //       <img className="w-20" src="/assets/bankBookIcon.png" alt="올인원모임통장" />
+          //     </div>
+          //   </div>
+          //   <button
+          //     className="h-10 rounded-md bg-[#1429A0] font-semibold text-white text-sm"
+          //     onClick={() => {
+          //       navigate("/account/create/userinfo");
+          //     }}>
+          //     개설하기
+          //   </button>
+          // </div>
+          <div className="w-full p-5 bg-white rounded-xl shadow-md space-y-5">
+            <p className="font-semibold">입출금</p>
+            <div
               onClick={() => {
                 navigate("/account/create/userinfo");
-              }}>
-              개설하기
-            </button>
+              }}
+              className="flex items-center space-x-4">
+              <div className="w-10 h-10 bg-blue-200 rounded-full flex justify-center items-center">
+                <img className="w-9 h-9" src="/assets/travelusLogo.png" alt="통장 아이콘" />
+              </div>
+              <div className="flex flex-col">
+                <p className="text-sm text-zinc-500">튜나뱅크 통장</p>
+                <p className="font-semibold">통장 만들기</p>
+              </div>
+            </div>
+            <div
+              onClick={() => {
+                navigate("/account/create/userinfo");
+              }}
+              className="flex items-center space-x-4">
+              <div className="w-10 h-10 bg-zinc-200 rounded-full flex justify-center items-center">
+                <IoMdAdd className="text-3xl text-zinc-400 font-bold" />
+              </div>
+              <p className="font-bold text-[#949494]">입출금통장 추가하기</p>
+            </div>
           </div>
         ) : (
           <div className="w-full p-6 flex flex-col space-y-5 rounded-xl bg-white shadow-md">
@@ -269,7 +296,7 @@ const MainPage = () => {
           <div
             className="w-full h-40 p-5 rounded-xl bg-white shadow-md flex flex-col items-start space-y-8"
             onClick={() => {
-              navigate("/settlement/expenditure/list");
+              navigate("/settlement/expenditure/list/NOT_COMPLETED");
             }}>
             <img className="w-12" src="/assets/creditCardIcon.png" alt="카드아이콘" />
             <div>

@@ -181,7 +181,7 @@ const MeetingAccountDetail = () => {
           <div>
             <div
               onClick={() => {
-                navigate(`/meetingtransaction/${meeting.groupAccountNo}`, { state: { groupId: meeting.groupId } });
+                navigate(`/meetingtransaction/${meeting.groupAccountNo}/detail`, { state: { groupId: meeting.groupId } });
               }}
               className="mt-6 p-5 flex flex-col space-y-5">
               <div className="flex justify-between items-center">
@@ -251,7 +251,7 @@ const MeetingAccountDetail = () => {
 
             <div
               onClick={() => {
-                navigate(`/travelbox/transaction/${meeting.groupAccountNo}`, {
+                navigate(`/travelbox/transaction/${meeting.groupAccountNo}/detail`, {
                   state: { groupId: meeting.groupId, currencyCode: account.moneyBoxDtos[1].currencyCode },
                 });
               }}

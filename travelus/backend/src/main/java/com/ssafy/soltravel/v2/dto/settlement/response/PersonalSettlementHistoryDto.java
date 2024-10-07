@@ -16,10 +16,16 @@ import lombok.NoArgsConstructor;
 public class PersonalSettlementHistoryDto {
 
   @Schema(description = "개별 지출 정산 내역 id",example = "1")
-  private Long personalSettlementId;
+  private Long settlementDetailId;
 
   @Schema(description = "참여자 id",example = "1")
   private Long participantId;
+
+  @Schema(description = "참여자 이름",example = "도경수")
+  private String participantName;
+
+  @Schema(description = "참여자 프로필", example="https://my-s3-mingyu.s3.ap-southeast-2.amazonaws.com/profile/%EC%99%95%EA%B4%80%EC%95%B5%EB%AC%B4%EC%83%88.png")
+  private String profile;
 
   @Schema(description = "개별 지출 정산 금액",example = "10000")
   private double amount;

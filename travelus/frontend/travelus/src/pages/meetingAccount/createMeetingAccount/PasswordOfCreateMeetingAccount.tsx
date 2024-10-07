@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { RootState } from "../../../redux/store";
 import { useNavigate, useParams } from "react-router";
-import SecurityNumberKeyboard from "../../components/common/SecurityNumberKeyboard";
-import { accountApi } from "../../api/account";
+import SecurityNumberKeyboard from "../../../components/common/SecurityNumberKeyboard";
+import { accountApi } from "../../../api/account";
 import { AxiosError } from "axios";
-import { AxiosErrorResponseData } from "../../types/axiosError";
-import { exchangeRateApi } from "../../api/exchange";
+import { AxiosErrorResponseData } from "../../../types/axiosError";
+import { exchangeRateApi } from "../../../api/exchange";
 
 const PasswordOfCreateMeetingAccount = () => {
   const navigate = useNavigate();

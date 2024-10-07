@@ -6,6 +6,7 @@ import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateGroupRequestDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateParticipantRequestDto;
 import com.ssafy.soltravel.v2.dto.group.request.GroupCodeGenerateRequestDto;
+import com.ssafy.soltravel.v2.dto.group.request.GroupUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.group.response.GroupCodeGenerateResponseDto;
 import com.ssafy.soltravel.v2.dto.group.response.GroupSummaryDto;
 import com.ssafy.soltravel.v2.service.group.GroupService;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -95,6 +97,25 @@ public class GroupController {
         List<GroupSummaryDto> groupSummaryDtoList = groupService.getAllJoinedGroup(true);
 
         return ResponseEntity.status(HttpStatus.OK).body(groupSummaryDtoList);
+    }
+
+    // 모임 정보 업데이트
+    @Operation(summary = "그룹 정보 업데이트", description = "모임주가 특정 모임 정보를 업데이트 하는 API")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "모임 요약 업데이트 성공",
+            content = @Content(schema = @Schema(implementation = GroupSummaryDto.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @PutMapping("/{groupId}")
+    public ResponseEntity<ResponseDto> updateGroupinfo(
+        @PathVariable Long groupId,
+        @RequestBody GroupUpdateRequestDto requestDto
+    ) {
+
+        ResponseDto responseDto = groupService.updateGroupInfo(groupId, requestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     // 모임 탈퇴

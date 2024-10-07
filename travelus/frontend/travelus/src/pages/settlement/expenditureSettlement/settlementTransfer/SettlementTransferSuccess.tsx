@@ -1,10 +1,7 @@
 import React from "react";
-import { useState } from "react";
-import { useNavigate, useLocation } from "react-router";
-import { AccountInfoNew } from "../../types/account";
-import { IoIosArrowBack } from "react-icons/io";
+import { useLocation, useNavigate } from "react-router";
 
-const TransferSuccess = () => {
+const SettlementTransferSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { transferAmount } = location.state as { transferAmount: string };
@@ -33,9 +30,7 @@ const TransferSuccess = () => {
 
         <div className="flex flex-col space-y-6">
           <button
-            onClick={() => {
-              navigate("/");
-            }}
+            onClick={() => navigate("/settlement/expenditure/list/COMPLETED")}
             className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]">
             확인
           </button>
@@ -44,5 +39,4 @@ const TransferSuccess = () => {
     </div>
   );
 };
-
-export default TransferSuccess;
+export default SettlementTransferSuccess;

@@ -36,7 +36,7 @@ const SettlementTransferPassword = () => {
       setIsLoading(true);
       const response = await settlementApi.fetchSettlementPersonalTransfer(data);
       if (response.status === 200) {
-        navigate("/transfer/success", {
+        navigate("/settlement/expenditure/transfer/success", {
           state: { transferAmount: data.transactionBalance, depositAccount: data.depositTransactionSummary },
         });
       }
