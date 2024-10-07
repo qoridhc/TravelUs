@@ -1,13 +1,7 @@
-import React from "react";
 import { TextField } from "@mui/material";
+import React from "react";
 
-interface AccountNumberInputProps {
-  labelName: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
-
-const AccountNumberInput: React.FC<AccountNumberInputProps> = ({ labelName, value, onChange }) => {
+const AccountTypeInput = () => {
   return (
     <TextField
       sx={{
@@ -26,13 +20,12 @@ const AccountNumberInput: React.FC<AccountNumberInputProps> = ({ labelName, valu
         },
       }}
       id="accountNumber"
-      label={labelName}
+      label="은행"
       variant="standard"
-      value={value}
-      onChange={onChange}
+      value="튜나뱅크"
       autoComplete="off"
     />
   );
 };
 
-export default AccountNumberInput;
+export default AccountTypeInput;

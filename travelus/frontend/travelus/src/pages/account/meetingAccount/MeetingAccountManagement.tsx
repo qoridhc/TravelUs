@@ -131,7 +131,7 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
                 <p className="text-zinc-500">개별 지출 정산</p>
                 <div
                   onClick={() => {
-                    navigate(`/settlement/balance/amount/${id}`);
+                    navigate(`/settlement/expenditure/transaction/detail/${id}`);
                   }}
                   className="flex items-center">
                   <p className="text-[#0471E9]">정산하기</p>
@@ -153,9 +153,7 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
               <RiHandCoinFill className="text-3xl text-[#f3ba4f]" />
               <div className="w-full flex justify-between">
                 <p className="text-zinc-500">모임통장 잔액 정산</p>
-                <div
-                  onClick={() => navigate(`/settlement/expenditure/transaction/detail/${id}`)}
-                  className="flex items-center">
+                <div onClick={() => navigate(`/settlement/balance/amount/${id}`)} className="flex items-center">
                   <p className="text-[#0471E9]">정산하기</p>
                   <MdKeyboardArrowRight className="text-2xl text-zinc-600" />
                 </div>

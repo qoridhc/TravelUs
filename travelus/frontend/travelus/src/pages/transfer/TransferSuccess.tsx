@@ -12,7 +12,7 @@ const TransferSuccess: React.FC<TransferSuccessProps> = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { transferAmount } = location.state as { transferAmount: string };
-  const { depositAccount } = location.state as { depositAccount: AccountInfoNew };
+  const { depositAccount } = location.state as { depositAccount: string };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("ko-KR").format(amount);
@@ -25,7 +25,7 @@ const TransferSuccess: React.FC<TransferSuccessProps> = (props) => {
           <img className="w-20 aspect-1" src="/assets/confirmIcon.png" alt="확인아이콘" />
           <div className="text-2xl font-semibold text-center">
             <p>
-              {depositAccount.userName}
+              {depositAccount}
               <span className="font-normal"> 님에게</span>
             </p>
             <p>
