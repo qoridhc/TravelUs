@@ -39,7 +39,11 @@ const SecurityNumberKeyboard = ({ password, setPassword }: Props) => {
     setPassword((prev) => prev.slice(0, -1));
   }, []);
 
-  const handleTouchEnd = (n: number) => {
+  const handleTouchEnd = () => {
+    setActiveButton(null);
+  };
+
+  const handleTouchStart = (n: number) => {
     const tempSet = new Set([n]);
     while (tempSet.size < 3) {
       const num = Math.floor(Math.random() * 10);
@@ -49,25 +53,21 @@ const SecurityNumberKeyboard = ({ password, setPassword }: Props) => {
     setActiveButton(tempSet);
   };
 
-  const handleTouchStart = () => {
-    setActiveButton(null);
-  };
-
   useEffect(() => {
     setNums(shuffle(Array.from({ length: 10 }, (v, k) => k)));
   }, []);
 
   return (
     <div>
-      <div className="p-5 bg-white grid grid-cols-3 gap-7">
+      <div className="p-5 bg-white grid grid-cols-3 gap-3">
         {nums.map((n, i) => {
           const Basic_button = (
             <button
-              className={`text-3xl font-medium ${activeButton?.has(n) ? "bg-[#565656]" : ""}`}
+              className={`py-3 text-3xl font-medium ${activeButton?.has(n) ? "bg-[#F2F3F5] rounded-xl" : ""}`}
               value={n}
               onClick={() => handlePasswordChange(n)}
-              onTouchEnd={() => handleTouchEnd(n)}
-              onTouchStart={() => handleTouchStart()}
+              onTouchStart={() => handleTouchStart(n)}
+              onTouchEnd={() => handleTouchEnd()}
               key={i}>
               {n}
             </button>
