@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router";
 import { userApi } from "../../api/user";
 import { initializeFcmAndRegisterToken } from "../../utils/notificationUtils";
 
-
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +17,6 @@ const Login = () => {
       navigate("/");
     }
   }, []);
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "email") {
@@ -64,38 +62,40 @@ const Login = () => {
             <div className="flex items-center space-x-1">
               <p className="text-[1.4rem] font-bold">TravelUs 로그인</p>
             </div>
-            <div className="w-[83%] h-[50%] flex flex-col justify-around text-zinc-500">
-              <label htmlFor="email" className="text-sm font-semibold cursor-pointer">
+
+            <div className="w-[83%] h-[50%] flex flex-col justify-around space-y-5 text-zinc-500">
+              <label htmlFor="id" className="font-semibold cursor-pointer flex flex-col">
                 아이디
+                <input
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                  id="id"
+                  className="py-2 focus:outline-none text-zinc-800 border-b border-zinc-300"
+                  type="text"
+                  name="email"
+                  value={email}
+                />
               </label>
-              <input
-                onChange={(e) => {
-                  handleChange(e);
-                }}
-                id="email"
-                className="focus:outline-none text-zinc-800 border-b border-zinc-300"
-                type="text"
-                name="email"
-                value={email}
-              />
-              <label htmlFor="password" className="text-sm font-semibold cursor-pointer">
+
+              <label htmlFor="password" className="font-semibold cursor-pointer flex flex-col">
                 사용자 암호
+                <input
+                  onChange={(e) => {
+                    handleChange(e);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleLogin();
+                    }
+                  }}
+                  id="password"
+                  className="py-2 focus:outline-none text-zinc-800 border-b border-zinc-300"
+                  type="password"
+                  name="password"
+                  value={password}
+                />
               </label>
-              <input
-                onChange={(e) => {
-                  handleChange(e);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleLogin();
-                  }
-                }}
-                id="password"
-                className="focus:outline-none text-zinc-800 border-b border-zinc-300"
-                type="password"
-                name="password"
-                value={password}
-              />
             </div>
             <button
               onClick={() => {
@@ -108,12 +108,12 @@ const Login = () => {
 
           <div className="w-[90%] h-[18%] flex items-center justify-around rounded-xl bg-white shadow-sm">
             <div className="flex w-[58%] justify-around items-center">
-              <p className="text-sm font-bold">계정이 없으신가요?</p>
+              <p className="font-semibold">계정이 없으신가요?</p>
               <button
                 onClick={() => {
                   navigate("/signup");
                 }}
-                className="text-[#0046FF] font-bold">
+                className="text-[#0046FF] font-semibold">
                 가입하기
               </button>
             </div>
