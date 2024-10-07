@@ -75,6 +75,21 @@ const SettlementTransferSetMoney = () => {
     }
   };
 
+  const handleNext = () => {
+    const settlement = location.state.data;
+    const data = {
+      personalSettlementId: settlement.personalSettlementId,
+      participantId: settlement.participantId,
+      remainingAmount: transferAmount,
+      groupName: settlement.groupName,
+      groupId: settlement.groupId,
+      depositAccountNo: depositAccountNo,
+    };
+    navigate("/settlement/expenditure/transfer/confirm", {
+      state: { data },
+    });
+  };
+
   // 잔액을 위한 API 호출
   const fetchAccount = async () => {
     try {
@@ -125,7 +140,7 @@ const SettlementTransferSetMoney = () => {
         <div className="flex flex-col space-y-10">
           <IoIosArrowBack
             onClick={() => {
-              navigate("/");
+              navigate("/settlement/expenditure/list/NOT_COMPLETED");
             }}
             className="text-2xl"
           />
@@ -186,11 +201,7 @@ const SettlementTransferSetMoney = () => {
 
         <div>
           <button
-            onClick={() => {
-              navigate("/settlement/expenditure/transfer/confirm", {
-                state: { data: location.state.data },
-              });
-            }}
+            onClick={() => handleNext()}
             className={`w-full h-14 text-lg font-semibold rounded-xl tracking-wide ${
               Number(transferAmount) === 0 ? "text-[#565656] bg-[#E3E4E4]" : "text-white bg-[#1429A0]"
             }`}
