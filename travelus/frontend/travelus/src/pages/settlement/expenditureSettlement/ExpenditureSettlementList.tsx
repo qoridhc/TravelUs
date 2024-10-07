@@ -64,7 +64,13 @@ const ExpenditureSettlementList = () => {
         {} as { [date: string]: SettlementPersonalInfo[] }
       );
 
-      console.log(temp);
+      // 각 날짜에 대한 거래 내역을 내림차순 정렬
+      Object.keys(temp).forEach((date) => {
+        temp[date].sort(
+          (a: SettlementPersonalInfo, b: SettlementPersonalInfo) =>
+            new Date(b.settlementRequestTime).getTime() - new Date(a.settlementRequestTime).getTime()
+        );
+      });
 
       setSettlementList(temp);
       setIsEmpty(false);
