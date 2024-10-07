@@ -1,10 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
-import { groupApi } from "../../../api/group";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../redux/store";
-import { setMeetingAccountInfo, setTravelboxInfo } from "../../../redux/meetingAccountSlice";
-import { AiTwotoneExclamationCircle } from "react-icons/ai";
 import { userApi } from "../../../api/user";
 import { UserInfo } from "../../../types/userInformation";
 import Lottie from "lottie-react";
@@ -14,11 +9,8 @@ import { IoIosArrowBack } from "react-icons/io";
 
 const IDVerificationOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
-  const params = useParams();
-  const dispatch = useDispatch();
   const location = useLocation();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [idcardImage, setIdcardImage] = useState<string | null>(null);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingTextIdx, setLoadingTextIdx] = useState(0);
@@ -35,55 +27,11 @@ const IDVerificationOfCreateMeetingAccount = () => {
     ["거의 다 확인했어요", "조금만 더 기다려주세요"],
   ];
 
-  const meetingName = useSelector((state: RootState) => state.meetingAccount.meetingName);
-  const meetingType = useSelector((state: RootState) => state.meetingAccount.meetingType);
-  const individualAccountNo = useSelector((state: RootState) => state.meetingAccount.individualAccountNo);
-
-  const handleNext = async () => {
-    // const data = {
-    //   groupAccountPassword: location.state.password,
-    //   groupName: meetingName,
-    //   icon: meetingType,
-    //   travelStartDate: "2024-01-01",
-    //   travelEndDate: "2024-01-07",
-    //   personalAccountNo: individualAccountNo,
-    // };
-    // try {
-    //   const response = await groupApi.createMeetingAccount(data);
-    //   console.log(response);
-    //   if (response.status === 201) {
-    //     dispatch(
-    //       setMeetingAccountInfo({
-    //         groupAccountPassword: "",
-    //         groupName: response.data.groupName,
-    //         icon: response.data.icon,
-    //         groupId: response.data.groupId,
-    //       })
-    //     );
-    //     dispatch(
-    //       setTravelboxInfo({
-    //         accountPassword: "",
-    //         accountNo: response.data.groupAccountNo,
-    //         currencyCode: "",
-    //       })
-    //     );
-    //     navigate(`/meeting/create/completed/${params.type}`);
-    //   }
-    // } catch (error) {
-    //   alert("모임통장 개설에 실패했어요");
-    //   navigate("/");
-    //   console.log(error);
-    // }
-  };
-
   // File 파싱
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => {
-        setIdcardImage(reader.result as string); // 미리보기 이미지 설정
-      };
       reader.readAsDataURL(file);
 
       fetchIdcard(file);
@@ -112,7 +60,7 @@ const IDVerificationOfCreateMeetingAccount = () => {
       const response = await userApi.fetchIdcard(formData);
       if (response.status === 200) {
         if (checkInfo(response.data.name, response.data.residentRegistrationNumber)) {
-          navigate("/")
+          navigate("/meeting/create/request", { state: { password: location.state.password } });
         } else {
           alert("신분증 본인인증에 실패했습니다. 다시 촬영해주세요.");
         }

@@ -83,6 +83,7 @@ import SettlementTransferPassword from "./pages/settlement/expenditureSettlement
 import SettlementTransferSetMoney from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferSetMoney";
 import ExpenditureSettlementDetail from "./pages/settlement/expenditureSettlement/ExpenditureSettlementDetail";
 import SettlementTransferSuccess from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferSuccess";
+import CreateRequestOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/CreateRequestOfCreateMeetingAccount";
 
 function App() {
   return (
@@ -140,7 +141,8 @@ function App() {
           <Route path="/meeting/create/select/account" element={<SelectAccountOfMeeting />} />
           <Route path="/meeting/create/password/:type" element={<PasswordOfCreateMeetingAccount />} />
           <Route path="/meeting/create/password/check" element={<CheckPasswordOfCreateMeetingAccount />} />
-          <Route path="/meeting/create/idverificationo/:type" element={<IDVerificationOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/idverification" element={<IDVerificationOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/request" element={<CreateRequestOfCreateMeetingAccount />} />
           <Route path="/meeting/create/completed/:type" element={<CompletedOfCreateMeetingAccount />} />
 
           {/* 모임통장 상세 */}
@@ -157,7 +159,7 @@ function App() {
           <Route path="/meeting/:groupId/fill/confirm" element={<FillConfirm />}></Route>
           <Route path="/meeting/:groupId/fill/password" element={<FillPassword />}></Route>
           <Route path="/meeting/:groupId/fill/success" element={<FillSuccess />}></Route>
-          
+
           {/* 통장 내역 */}
           <Route path="/transaction/:accountNo" element={<AccountTransaction />} />
           <Route path="/meetingtransaction/:accountNo/:type" element={<MeetingTransaction />} />
