@@ -1,6 +1,7 @@
 package com.goofy.tunabank.v1.repository;
 
 
+import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
 import com.goofy.tunabank.v1.domain.history.CardHistory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -26,5 +27,15 @@ public class CardHistoryRepository {
 
     public void save(CardHistory cardHistory) {
         em.persist(cardHistory);
+    }
+
+    public Double getTotalAmountByCurrency(String cardNo, CurrencyType currencyCode) {
+        Double totalAmount = em.createQuery(
+                "select sum(ch.amount) from CardHistory ch where ch.card.cardNo = :cardNo and ch.currency.currencyCode = :currencyCode", Double.class)
+            .setParameter("cardNo", cardNo)
+            .setParameter("currencyCode", currencyCode)
+            .getSingleResult();
+
+        return Optional.ofNullable(totalAmount).orElse(0.0);
     }
 }
