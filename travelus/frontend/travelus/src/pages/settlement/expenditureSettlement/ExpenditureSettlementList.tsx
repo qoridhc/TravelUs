@@ -87,7 +87,7 @@ const ExpenditureSettlementList = () => {
   }, [isTab]);
 
   useEffect(() => {
-    setDateList(Object.keys(settlementList));
+    setDateList(Object.keys(settlementList).sort().reverse()); // 내림차순 정렬
   }, [settlementList]);
 
   return (
