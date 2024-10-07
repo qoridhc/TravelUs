@@ -1,16 +1,12 @@
 package com.ssafy.soltravel.v2.controller;
 
 import com.ssafy.soltravel.v2.dto.ResponseDto;
-import com.ssafy.soltravel.v2.dto.exchange.forecast.ExchangeRateForecastResponseDto.ExchangeRateData;
 import com.ssafy.soltravel.v2.dto.exchange.forecast.ExchangeRateSaveRequestDto;
 import com.ssafy.soltravel.v2.service.exchange.ExchangeRateForecastService;
 import com.ssafy.soltravel.v2.util.LogUtil;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +20,6 @@ public class ExchangeRateForecastController {
 
   private final ExchangeRateForecastService exchangeRateForecastService;
 
-
   /*
   * 예측 데이터 업데이트
   */
@@ -33,7 +28,6 @@ public class ExchangeRateForecastController {
     LogUtil.info("예측 데이터 수정 & 저장", request.toString());
     return null;
   }
-
 
   /*
   * 과거 환율 데이터 업데이트(일부)
@@ -55,22 +49,4 @@ public class ExchangeRateForecastController {
     return new ResponseEntity(String.format("저장 완료(%s)", response), HttpStatus.CREATED);
   }
 
-
-
-
-  @GetMapping("/get")
-  public ResponseEntity loadAllExchangeRate(){
-    LogUtil.info("전체 환율 조회 요청");
-    Map<String, ExchangeRateData> response =
-        exchangeRateForecastService.findAllRates();
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/get/{currencyCode}")
-  public ResponseEntity loadExchangeRate(@PathVariable(name = "currencyCode") String currencyCode){
-    LogUtil.info("환율 조회 요청", currencyCode);
-    Map<String, ExchangeRateData> response =
-        exchangeRateForecastService.findRatesByCurrencyCode(currencyCode);
-    return ResponseEntity.ok(response);
-  }
 }
