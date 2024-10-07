@@ -30,6 +30,7 @@ const BirthDateInputMui = ({ birthdate, setBirthdate }: Props) => {
       variant="standard"
       autoComplete="off"
       onChange={(e) => setBirthdate(e.target.value)}
+      inputMode="none"
     />
   );
 };
