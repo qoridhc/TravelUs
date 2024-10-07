@@ -30,47 +30,40 @@ import com.ssafy.soltravel.v2.repository.NotificationRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.repository.redis.FcmTokenRepository;
 import com.ssafy.soltravel.v2.service.account.AccountService;
-import com.ssafy.soltravel.v2.service.group.GroupService;
-import com.ssafy.soltravel.v2.service.user.UserService;
-import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
 
-    private static final String DEFAULT_ICON_URL = "/sol_favicon.ico"; // 아이콘 상수
+    // 기본 알림 아이콘
+    private static final String DEFAULT_ICON_URL = "/sol_favicon.ico";
 
-    private final RedisTemplate<String, SseEmitter> redisTemplate; // RedisTemplate을 사용하여 Redis에 접근
-
-    private final UserService userService;
     private final AccountService accountService;
 
     private final UserRepository userRepository;
+    private final GroupRepository groupRepository;
     private final FcmTokenRepository fcmTokenRepository;
     private final NotificationRepository notificationRepository;
 
     private final NotificationMapper notificationMapper;
 
     private final SecurityUtil securityUtil;
-    private final GroupService groupService;
-    private final GroupRepository groupRepository;
 
-    // 토큰 레디스 저장
+
+    /*
+     * FCM 토큰 레디스 저장
+     */
     public ResponseDto saveFcmToken(RegisterNotificationRequestDto requestDto) {
-
-        LogUtil.info("requestDto", requestDto);
 
         User user = securityUtil.getUserByToken();
 
@@ -79,26 +72,31 @@ public class NotificationService {
         return new ResponseDto();
     }
 
-    // 공통 푸시 알림 메서드
+    /*
+     * ===== 알림 전송 공통 메서드 =====
+     */
+
+    // 공통 푸시 알림 생성 메서드
     private Message createMessage(String token, PushNotificationRequestDto requestDto) {
         return Message.builder()
             .setToken(token)  // 대상 사용자 토큰
             .setWebpushConfig(WebpushConfig.builder()
                 .putHeader("ttl", "300")  // 타임 투 라이브 설정 (예: 300초)
-                .setNotification(WebpushNotification.builder()
-                    .setTitle(requestDto.getTitle())  // 알림 제목 설정
-                    .setBody(requestDto.getMessage())  // 알림 메시지 내용 설정
-                    .setIcon(requestDto.getIcon())  // 아이콘 URL 설정
+                .setNotification(WebpushNotification.builder() // 알림 내용 생성
+                    .setTitle(requestDto.getTitle())
+                    .setBody(requestDto.getMessage())
+                    .setIcon(requestDto.getIcon())
                     .build())
                 .build())
-            .putData("notificationType", requestDto.getNotificationType().toString())  // 추가 데이터로 트랜잭션 타입 전송
-            .putData("groupId", String.valueOf(requestDto.getGroupId()))  // 추가 데이터로 그룹 ID 전송
-            .putData("accountNo",
-                requestDto.getAccountNo() != null ? requestDto.getAccountNo() : "")  // 추가 데이터로 계좌 번호 전송
+            .putData("notificationType", requestDto.getNotificationType().toString()) // 알림 외 필요 데이터 추가
+            .putData("groupId", String.valueOf(requestDto.getGroupId()))
+            .putData("accountNo", requestDto.getAccountNo() != null ? requestDto.getAccountNo() : "")
+            .putData("currencyCode",
+                requestDto.getCurrencyType() != null ? requestDto.getCurrencyType().getCurrencyCode() : "")
             .build();
     }
 
-    // 사용자에게 푸시 알림 전송
+    // 알림 전송 공통 메서드 - 사용자에게 알림 푸시
     public ResponseEntity<?> pushNotification(PushNotificationRequestDto requestDto) {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -126,8 +124,25 @@ public class NotificationService {
         return new ResponseEntity<>(resultMap, status);
     }
 
+    // 알림 저장 공통 메서드 - DB에 생성된 알림 저장
+    public void saveNotification(PushNotificationRequestDto requestDto) {
+
+        User user = userRepository.findByUserId(requestDto.getTargetUserId())
+            .orElseThrow(() -> new UserNotFoundException(requestDto.getTargetUserId()));
+
+        TravelGroup group = null;
+
+        if (requestDto.getGroupId() != null) {
+            group = groupRepository.findById(requestDto.getGroupId()).orElseThrow(InvalidGroupIdException::new);
+        }
+
+        Notification notification = Notification.createNotification(user, group, requestDto);
+
+        notificationRepository.save(notification);
+    }
+
     /*
-     * 입금 & 출금 알림
+     * ===== 거래 종류 별 알림 전송 메서드 =====
      */
     public ResponseEntity<?> sendDepositNotification(Long userId, TransactionRequestDto requestDto) {
 
@@ -172,12 +187,11 @@ public class NotificationService {
         }
 
         // 알림 전송을 위한 Dto 생성 및 전송
-        PushNotificationRequestDto notificationRequestDto = new PushNotificationRequestDto(
+        PushNotificationRequestDto notificationRequestDto = PushNotificationRequestDto.createDto(
             userId,
             notificationType,
             title,
             message,
-            DEFAULT_ICON_URL,
             requestDto.getAccountNo(),
             (group != null) ? group.getGroupId() : null
         );
@@ -208,14 +222,13 @@ public class NotificationService {
         }
 
         // 돈을 보내는 사람
-        PushNotificationRequestDto notificationRequestDto = new PushNotificationRequestDto(
+        PushNotificationRequestDto notificationRequestDto = PushNotificationRequestDto.createDto(
             user.getUserId(),
             notificationType,
             title,
             message,
-            DEFAULT_ICON_URL,
-            (group != null) ? group.getGroupId() : null,
-            requestDto.getWithdrawalAccountNo()
+            requestDto.getWithdrawalAccountNo(),
+            (group != null) ? group.getGroupId() : null
         );
 
         // 알림 전송
@@ -230,21 +243,19 @@ public class NotificationService {
         TravelGroup depositGroup = null;
 
         if (depositAccount.getAccountType().equals(AccountType.G)) {
-
             depositGroup = groupRepository.findByGroupAccountNo(requestDto.getDepositAccountNo());
 
             message = requestDto.getTransactionBalance() + "원이 " + depositGroup.getGroupName() + " 모임통장으로 입금되었어요.";
             notificationType = NotificationType.GT;
         }
 
-        PushNotificationRequestDto depositNotificationRequestDto = new PushNotificationRequestDto(
+        PushNotificationRequestDto depositNotificationRequestDto = PushNotificationRequestDto.createDto(
             depositUser.getId(),
             notificationType,
             title,
             message,
-            DEFAULT_ICON_URL,
-            (depositGroup != null) ? depositGroup.getGroupId() : null,
-            requestDto.getDepositAccountNo()
+            requestDto.getDepositAccountNo(),
+            (depositGroup != null) ? depositGroup.getGroupId() : null
         );
 
         // 알림 전송
@@ -267,14 +278,14 @@ public class NotificationService {
 
         TravelGroup group = groupRepository.findByGroupAccountNo(targetAccountDto.getAccountNo());
 
-        PushNotificationRequestDto notificationRequestDto = new PushNotificationRequestDto(
+        PushNotificationRequestDto notificationRequestDto = PushNotificationRequestDto.createDto(
             targetAccountDto.getUserId(),
             NotificationType.E,
             title,
             message,
-            DEFAULT_ICON_URL,
+            targetAccountDto.getAccountNo(),
             group.getGroupId(),
-            targetAccountDto.getAccountNo()
+            requestDto.getTargetCurrencyCode()
         );
 
         // 알림 전송
@@ -283,11 +294,9 @@ public class NotificationService {
         return ResponseEntity.ok().body(new ResponseDto());
     }
 
-
     /*
      *  환전 알림 전송
      */
-
     public ResponseEntity<?> sendExchangeNotification(
         User user,
         MoneyBoxTransferRequestDto requestDto
@@ -298,41 +307,20 @@ public class NotificationService {
 
         TravelGroup group = groupRepository.findByGroupAccountNo(requestDto.getAccountNo());
 
-        PushNotificationRequestDto notificationRequestDto = new PushNotificationRequestDto(
+        PushNotificationRequestDto notificationRequestDto = PushNotificationRequestDto.createDto(
             user.getUserId(),
             NotificationType.E,
             title,
             message,
-            DEFAULT_ICON_URL,
+            requestDto.getAccountNo(),
             group.getGroupId(),
-            requestDto.getAccountNo()
+            requestDto.getTargetCurrencyCode()
         );
 
         // 알림 전송
         pushNotification(notificationRequestDto);
 
         return ResponseEntity.ok().body(new ResponseDto());
-    }
-
-    public void saveNotification(PushNotificationRequestDto requestDto) {
-
-        User user = userRepository.findByUserId(requestDto.getTargetUserId())
-            .orElseThrow(() -> new UserNotFoundException(requestDto.getTargetUserId()));
-
-        TravelGroup group = null;
-
-        if (requestDto.getGroupId() != null) {
-            group = groupRepository.findById(requestDto.getGroupId()).orElseThrow(InvalidGroupIdException::new);
-        }
-
-        Notification notification = Notification.createNotification(user, group, requestDto);
-
-        notificationRepository.save(notification);
-
-        NotificationDto notificationDto = notificationMapper.toDto(notification);
-
-        LogUtil.info("notificationDto", notificationDto);
-
     }
 
 
