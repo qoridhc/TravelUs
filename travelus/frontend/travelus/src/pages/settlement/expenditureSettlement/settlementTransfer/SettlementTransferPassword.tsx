@@ -4,11 +4,14 @@ import { useLocation, useNavigate } from "react-router";
 import { settlementApi } from "../../../../api/settle";
 import { AxiosError } from "axios";
 import { AxiosErrorResponseData } from "../../../../types/axiosError";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../../../lottie/loadingAnimation.json";
 
 const SettlementTransferPassword = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (password.length === 4) {
@@ -30,6 +33,7 @@ const SettlementTransferPassword = () => {
     };
 
     try {
+      setIsLoading(true);
       const response = await settlementApi.fetchSettlementPersonalTransfer(data);
       if (response.status === 200) {
         navigate("/transfer/success", {
@@ -46,8 +50,18 @@ const SettlementTransferPassword = () => {
         }
       }
       console.error("settlementApi의 fetchSettlementPersonalTransfer : ", error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="h-full flex flex-col justify-center items-center">
+        <Lottie animationData={loadingAnimation} />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full grid grid-rows-[2fr_1fr]">
