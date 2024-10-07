@@ -76,6 +76,7 @@ import ExpenditureSettlementList from "./pages/settlement/expenditureSettlement/
 import NotificationList from "./pages/notification/notificationList";
 import SettlementTransferConfirm from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferConfirm";
 import SettlementTransferPassword from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferPassword";
+import SettlementTransferSetMoney from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferSetMoney";
 
 function App() {
   return (
@@ -202,8 +203,10 @@ function App() {
           <Route path="/settlement/expenditure/list" element={<ExpenditureSettlementList />}></Route>
 
           {/* 지출정산 이체 */}
+          <Route path="/settlement/expenditure/transfer/setMoney" element={<SettlementTransferSetMoney />}></Route>
           <Route path="/settlement/expenditure/transfer/confirm" element={<SettlementTransferConfirm />}></Route>
           <Route path="/settlement/expenditure/transfer/password" element={<SettlementTransferPassword />}></Route>
+          <Route path="/settlement/expenditure/transfer/success" element={<TransferSuccess />}></Route>
 
           {/* 알림 */}
           <Route path="/notification" element={<NotificationList />} />

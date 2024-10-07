@@ -37,7 +37,7 @@ const ExpenditureSettlementList = () => {
       groupName: settlement.groupName,
       groupId: settlement.groupId,
     };
-    navigate("/settlement/expenditure/transfer/confirm", { state: { data } });
+    navigate("/settlement/expenditure/transfer/setMoney", { state: { data } });
   };
 
   const fetchSettlementList = async (settlementStatus: string) => {
@@ -76,6 +76,8 @@ const ExpenditureSettlementList = () => {
   };
 
   useEffect(() => {
+    setDateList([]);
+    setSettlementList({});
     fetchSettlementList(isTab);
   }, [isTab]);
 
@@ -119,16 +121,24 @@ const ExpenditureSettlementList = () => {
           ) : (
             dateList.map((date, index) => (
               <div className="grid gap-5" key={index}>
-                <p className="text-[#565656] font-semibold">{date}</p>
+                <p className="text-[#565656]">{date}</p>
                 <div className="grid gap-8">
                   {settlementList[date].map((settlement, index) => (
-                    <div className="grid grid-rows-2 grid-cols-[1fr_5fr_1fr] gap-y-3" key={index}>
+                    <div
+                      className={`grid ${
+                        isTab === "NOT_COMPLETED" ? "grid-rows-2" : "s"
+                      } grid-cols-[1fr_5fr_1fr] gap-y-3`}
+                      key={index}>
                       <div className="flex items-center">
                         <img className="w-10 h-10" src="/assets/user/userIconSample.png" alt="" />
                       </div>
                       <div>
                         <p className="text-xl font-bold tracking-tight">{formatCurrency(settlement.amount)}원</p>
-                        <p className="font-[#565656]">발리가자의 총 {settlement.participantCount}명</p>
+                        <p className="text-[#565656]">
+                          {isTab === "NOT_COMPLETED"
+                            ? `${settlement.groupName}의 총 ${settlement.participantCount}명`
+                            : `${formatCurrency(settlement.amount)}원 보내기 완료`}
+                        </p>
                       </div>
 
                       <div className="flex justify-end items-center">
@@ -136,11 +146,15 @@ const ExpenditureSettlementList = () => {
                       </div>
 
                       <div className="col-start-2 col-span-2 flex items-center">
-                        <button
-                          className="w-full p-3 text-white bg-[#1429A0] rounded-xl"
-                          onClick={() => handleNext(settlement)}>
-                          {formatCurrency(settlement.remainingAmount)}원 보내기
-                        </button>
+                        {isTab === "NOT_COMPLETED" ? (
+                          <button
+                            className="w-full p-3 text-white bg-[#1429A0] rounded-xl"
+                            onClick={() => handleNext(settlement)}>
+                            {formatCurrency(settlement.remainingAmount)}원 보내기
+                          </button>
+                        ) : (
+                          <></>
+                        )}
                       </div>
                     </div>
                   ))}
