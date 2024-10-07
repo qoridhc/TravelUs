@@ -40,11 +40,11 @@ const Login = () => {
 
         if (location.state && location.state.type !== null) {
           // 모임 초대장에서 넘어온 로그인일 경우, 초대장으로 연결
-          navigate(`/meeting/invite/${location.state.code}/info`, { state: { groupInfo: location.state.groupInfo } });
+          navigate(
+            `/meeting/invite/${location.state.code}?groupLeader=${location.state.groupInfo.groupLeader}&groupName=${location.state.groupInfo.groupName}`
+          );
         } else {
           // 그냥 로그인일 경우, 메인으로 연결
-          console.log("요기");
-
           navigate("/");
         }
       }
