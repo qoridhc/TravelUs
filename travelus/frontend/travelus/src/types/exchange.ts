@@ -62,7 +62,8 @@ export const currencyTypeList: Array<{text: string, value: string}> = [
   { text: "TWD(대만/$)", value: "TWD" },
 ];
 
-// --------------------------------------------------
+// --------------------------------------------------------------------------------
+
 // 환율 예측 types 선언
 export interface ExchangeRateInfo2 {
   currencyCode: string;
@@ -71,72 +72,53 @@ export interface ExchangeRateInfo2 {
 }
 
 export interface RecentRates {
-  "1_week"?: { [date: string]: number };
-  "1_month"?: { [date: string]: number };
   "3_months": { [date: string]: number };
 }
 
-export interface ConfidenceInterval {
-  lower: number;
-  upper: number;
+export interface ForecastStats {
+  average: number;
+  min: number;
+  max: number;
+  p10: number;
+  p20: number;
+  p30: number;
+  p40: number;
+  p50: number;
+  p60: number;
+  p70: number;
+  p80: number;
+  p90: number;
+  p100: number;
 }
 
-export interface CurrencyPrediction {
+export interface PredictionCurrencyData {
   forecast: { [date: string]: number };
-  average_forecast: number;
-  confidence_interval: ConfidenceInterval;
-  daily_changes: { [date: string]: number };
+  trend: string;
+  current_rate: number;
+  forecast_stats: ForecastStats;
   recent_rates: RecentRates;
 }
 
-export interface ExchangeRateInfo {
-  currencyCode: string;
-  exchangeRate: number;
-  lastUpdated: string;
+export interface DataCollectionCurrencyData {
+  forecast: {};
+  current_rate: number;
+  recent_rates: RecentRates;
 }
 
-export interface PredictionResponse {
-  USD: CurrencyPrediction;
-  JPY: CurrencyPrediction;
-  EUR: { recent_rates: RecentRates };
-  TWD: { recent_rates: RecentRates };
+export interface AllDetailedPredictions {
+  USD: PredictionCurrencyData;
+  JPY: PredictionCurrencyData;
+  EUR: DataCollectionCurrencyData;
+  TWD: DataCollectionCurrencyData;
   last_updated: string;
 }
+
+// 개별 통화에 대한 타입 (USD, JPY용)
+export type DetailedPrediction = PredictionCurrencyData;
 
 export interface TargetRate {
   accountNo: string;
   currencyCode: string;
   transactionBalance: number;
   targetRate: number;
-}
-
-// 환율 예측 detail을 주기 위한 type 선언
-export interface ForecastStats {
-  average: number;
-  min: number;
-  max: number;
-  p10?: number;
-  p20?: number;
-  p30?: number;
-  p40?: number;
-  p50?: number;
-  p60?: number;
-  p70?: number;
-  p80?: number;
-  p90?: number;
-  p100?: number;
-}
-
-export interface DetailedPrediction {
-  // currency: string;
-  forecast: { [date: string]: number };
-  current_rate: number;
-  trend: string;
-  forecast_stats: ForecastStats;
-}
-
-export interface AllDetailedPredictions {
-  USD: DetailedPrediction;
-  JPY: DetailedPrediction;
-  last_updated: string;
 }
