@@ -53,7 +53,7 @@ public class Participant {
   private TravelGroup group;
 
   @OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<PersonalSettlementHistory> personalSettlementHistory;
+  private List<BillingHistoryDetail> billingHistoryDetails;
 
   // 생성 메서드
   public static Participant createParticipant(User user, TravelGroup group, boolean isMaster, String personalAccountNo) {

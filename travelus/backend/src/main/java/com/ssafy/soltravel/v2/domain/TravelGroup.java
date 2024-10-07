@@ -52,7 +52,7 @@ public class TravelGroup {
     private List<Participant> participants;
 
 	@OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<PersonalSettlementHistory> settlementHistories;
+	private List<BillingHistory> settlementHistories;
 
 	public static TravelGroup createGroupEntity(String accountNo, CreateGroupRequestDto requestDto){
 			TravelGroup travelGroup = TravelGroup.builder()
