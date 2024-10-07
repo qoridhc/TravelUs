@@ -61,7 +61,7 @@ const UserInfoOfCreateMeetingAccount = () => {
                 </div>
 
                 <div className="text-2xl font-semibold">
-                  <p>모임주 이예림님의 정보를</p>
+                  <p>모임주 {name}님의 정보를</p>
                   <p>확인해주세요</p>
                 </div>
               </div>
