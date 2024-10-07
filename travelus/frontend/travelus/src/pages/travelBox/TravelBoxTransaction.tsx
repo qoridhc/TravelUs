@@ -12,9 +12,14 @@ import loadingAnimation from "../../lottie/loadingAnimation.json";
 const TravelBoxTransaction = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
   const accountNo = useParams().accountNo;
-  const groupId = location.state.groupId;
-  const currencyCode = location.state.currencyCode;
+
+  // state로 넘어오는 groupoId 없으면 -> 알림 라우팅 쿼리 파라미터에서 추출
+  const searchParams = new URLSearchParams(location.search);
+
+  const groupId = location.state?.groupId || searchParams.get('groupId');
+  const currencyCode = location.state?.currencyCode || searchParams.get('currencyCode');
 
   const [account, setAccount] = useState<AccountInfoNew | null>(null);
   const [transactions, setTransactions] = useState<{ [date: string]: AccountHistoryResponse[] }>({}); // 거래내역 배열
@@ -210,9 +215,8 @@ const TravelBoxTransaction = () => {
                         </p>
 
                         <p
-                          className={`text-lg font-bold tracking-wider ${
-                            withdrawTransactionType.includes(transaction.transactionType) ? "" : "text-[#026CE1]"
-                          }`}>
+                          className={`text-lg font-bold tracking-wider ${withdrawTransactionType.includes(transaction.transactionType) ? "" : "text-[#026CE1]"
+                            }`}>
                           {withdrawTransactionType.includes(transaction.transactionType) ? "-" : ""}
                           {formatCurrency(Number(transaction.transactionAmount))}
                           {currencyTypeList.find((item) => item.value === transaction.currencyCode)?.text.slice(-2, -1)}

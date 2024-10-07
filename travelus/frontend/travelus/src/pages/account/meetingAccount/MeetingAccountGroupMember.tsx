@@ -5,16 +5,29 @@ import { userApi } from "../../../api/user";
 import { IoIosArrowBack } from "react-icons/io";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { MeetingAccountInfo } from "../../../types/account";
+import { ParticipantInfo } from "../../../types/meetingAccount";
 
-interface Props {}
-
-const MeetingAccountGroupMember: React.FC<Props> = (props) => {
+const MeetingAccountGroupMember = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const numId = Number(id);
   const [accountInfo, setAccountInfo] = useState<MeetingAccountInfo | null>(null);
-  const [memberList, setMemberList] = useState<any[] | null>(null);
+  const [memberList, setMemberList] = useState<ParticipantInfo[] | null>(null);
   const [userId, setUserId] = useState<number | null>(null);
+  const [groupCode, setGroupCode] = useState("");
+
+  const getInvitationCode = async () => {
+    try {
+      const response = await accountApi.fetchInvitationCode(numId);
+      setGroupCode(response.data.groupCode);
+    } catch (error) {
+      console.log("account의 fetchInvitationCode : ", error);
+    }
+  };
+
+  const shareKakao = () => {
+    getInvitationCode();
+  };
 
   useEffect(() => {
     // 해당 모임 조회 API 호출
@@ -24,7 +37,6 @@ const MeetingAccountGroupMember: React.FC<Props> = (props) => {
         if (response.status === 200) {
           setAccountInfo(response.data);
           setMemberList(response.data.participants);
-          console.log(response.data.participants);
         }
       } catch (error) {
         console.error("모임 조회 에러", error);
@@ -51,15 +63,18 @@ const MeetingAccountGroupMember: React.FC<Props> = (props) => {
     fetchUser();
   }, [id]);
 
-  const shareKakao = () => {
-    window.Kakao.Link.sendCustom({
-      templateId: 112239,
-      templateArgs: {
-        hostName: "이예림",
-        groupName: "구미 2반 D209",
-      },
-    });
-  };
+  useEffect(() => {
+    if (accountInfo && memberList) {
+      window.Kakao.Link.sendCustom({
+        templateId: 112239,
+        templateArgs: {
+          groupLeader: memberList && memberList[0].userName,
+          groupName: accountInfo?.groupName,
+          code: groupCode,
+        },
+      });
+    }
+  }, [groupCode]);
 
   return (
     <div className="h-full flex flex-col justify-between">
