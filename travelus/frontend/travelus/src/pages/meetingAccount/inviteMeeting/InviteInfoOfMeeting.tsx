@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useLocation, useNavigate, useParams } from "react-router";
-import AccountListInputMui from "../../components/meetingAccount/AccountListInputMui";
+import AccountListInputMui from "../../../components/meetingAccount/AccountListInputMui";
 import { AiTwotoneExclamationCircle } from "react-icons/ai";
 import { LuDot } from "react-icons/lu";
-import { accountApi } from "../../api/account";
+import { accountApi } from "../../../api/account";
 import { AxiosError } from "axios";
-import { AxiosErrorResponseData } from "../../types/axiosError";
-import { userApi } from "../../api/user";
-import { ParticipantInfo } from "../../types/account";
+import { AxiosErrorResponseData } from "../../../types/axiosError";
+import { userApi } from "../../../api/user";
+import { ParticipantInfo } from "../../../types/account";
 
 const InviteInfoOfMeeting = () => {
   const navigate = useNavigate();

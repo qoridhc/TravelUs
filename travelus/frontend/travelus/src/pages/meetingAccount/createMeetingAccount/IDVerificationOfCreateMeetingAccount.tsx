@@ -1,9 +1,9 @@
 import React from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
-import { groupApi } from "../../api/group";
+import { groupApi } from "../../../api/group";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
-import { setMeetingAccountInfo, setTravelboxInfo } from "../../redux/meetingAccountSlice";
+import { RootState } from "../../../redux/store";
+import { setMeetingAccountInfo, setTravelboxInfo } from "../../../redux/meetingAccountSlice";
 
 const IDVerificationOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
