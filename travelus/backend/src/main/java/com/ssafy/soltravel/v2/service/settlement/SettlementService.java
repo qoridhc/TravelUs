@@ -142,7 +142,7 @@ public class SettlementService {
 
     transactionService.postAccountWithdrawal(
         new TransactionRequestDto(settlementRequestDto.getAccountNo(), settlementRequestDto.getAccountPassword(),
-            CurrencyType.KRW, TransactionType.SW, transactionBalance.toString(), "자동 정산 출금"), masterUserId);
+            CurrencyType.KRW, TransactionType.SW, transactionBalance.doubleValue(), "자동 정산 출금"), masterUserId);
 
     return response.get(0).getTransactionSummary();
   }
@@ -163,7 +163,7 @@ public class SettlementService {
       String accountNo = participant.getPersonalAccountNo();
 
       transactionService.postAccountDeposit(
-          new TransactionRequestDto(accountNo, null, CurrencyType.KRW, TransactionType.SD, String.valueOf(requestDto.getAmount()),
+          new TransactionRequestDto(accountNo, null, CurrencyType.KRW, TransactionType.SD, requestDto.getAmount(),
               String.format("[%s] 자동 정산 입금", groupName)), participant.getUserId());
     }
   }
@@ -249,7 +249,7 @@ public class SettlementService {
   public ResponseEntity<List<TransferHistoryResponseDto>> postPersonalSettlementTransfer(
       PersonalSettlementTransferRequestDto requestDto) {
 
-    long transactionBalance = requestDto.getTransactionBalance();
+    double transactionBalance = requestDto.getTransactionBalance();
     LocalDateTime now = LocalDateTime.now();
 
     ResponseEntity<List<TransferHistoryResponseDto>> response = transactionService.postGeneralTransfer(
