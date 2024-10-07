@@ -251,7 +251,7 @@ const MeetingAccountDetail = () => {
 
             <div
               onClick={() => {
-                navigate(`/travelbox/transaction/${meeting.groupAccountNo}`, {
+                navigate(`/travelbox/transaction/${meeting.groupAccountNo}/detail`, {
                   state: { groupId: meeting.groupId, currencyCode: account.moneyBoxDtos[1].currencyCode },
                 });
               }}
