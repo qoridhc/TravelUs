@@ -1,51 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useLocation } from "react-router";
-import { AccountInfoNew } from "../../types/account";
-import { accountApi } from "../../api/account";
 import { IoIosArrowBack } from "react-icons/io";
+import { AccountInfoNew } from "../../../../types/account";
+import { accountApi } from "../../../../api/account";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../../../lottie/loadingAnimation.json";
 
-interface TransferSetMoneyProps {}
-
-const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
+const SettlementTransferSetMoney = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { accountNo } = location.state as { accountNo: string };
   const [account, setAccount] = useState<AccountInfoNew | null>(null);
-  const [depositAccount, setDepositAccount] = useState<AccountInfoNew | null>(null);
-  const [transferAmount, setTransferAmount] = useState<string>("");
-  const [isValidation, setIsValidation] = useState<boolean>(false);
+  const [transferAmount, setTransferAmount] = useState<string>(String(location.state.data.remainingAmount));
   const [exceedsMaxAmount, setExceedsMaxAmount] = useState<boolean>(false);
   const [exceedsUserAmount, setExceedsUserAmount] = useState<boolean>(false);
   const MaxAmount = 100000000;
-  const [userAmount, setUserAmount] = useState<number>(0);
-
-  useEffect(() => {
-    const numberValue = Number(transferAmount);
-    if (numberValue <= MaxAmount && numberValue <= userAmount) {
-      setExceedsMaxAmount(false);
-      setExceedsUserAmount(false);
-      setIsValidation(numberValue > 0 && numberValue <= MaxAmount && numberValue <= userAmount);
-    }
-  }, [transferAmount]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // 잔액을 위한 API 호출
-        const accountResponse = await accountApi.fetchAllAccountInfo("I");
-        setAccount(accountResponse.data[0]);
-        setUserAmount(accountResponse.data[0].moneyBoxDtos[0].balance);
-
-        // 받는 사람 이름을 표시하기 위한 API 호출
-        const accountInfo = await accountApi.fetchSpecificAccountInfo(accountNo);
-        setDepositAccount(accountInfo.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, []);
+  const [userAmount, setUserAmount] = useState<number | null>(null);
+  const [depositAccountNo, setDepositAccountNo] = useState<string>("");
 
   const formatNumber = (num: string) => {
     return num.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -55,11 +26,11 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
     const value = e.target.value.replace(/[^0-9]/g, ""); // 숫자만 남기기
     const numberValue = Number(value);
 
-    if (numberValue <= MaxAmount && numberValue <= userAmount) {
+    if (userAmount && numberValue <= MaxAmount && numberValue <= userAmount) {
       setTransferAmount(value);
     } else if (numberValue > MaxAmount) {
       setExceedsMaxAmount(true);
-    } else if (numberValue > userAmount) {
+    } else if (userAmount && numberValue > userAmount) {
       setExceedsUserAmount(true);
     }
   };
@@ -68,11 +39,11 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
     const currentAmount = Number(transferAmount) || 0;
     const newAmount = currentAmount + incrementValue;
 
-    if (newAmount <= MaxAmount && newAmount <= userAmount) {
+    if (userAmount && newAmount <= MaxAmount && newAmount <= userAmount) {
       setTransferAmount(String(newAmount));
     } else if (newAmount > MaxAmount) {
       setExceedsMaxAmount(true);
-    } else if (newAmount > userAmount) {
+    } else if (userAmount && newAmount > userAmount) {
       setExceedsUserAmount(true);
     }
   };
@@ -104,23 +75,82 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
     }
   };
 
+  const handleNext = () => {
+    const settlement = location.state.data;
+    const data = {
+      personalSettlementId: settlement.personalSettlementId,
+      participantId: settlement.participantId,
+      remainingAmount: transferAmount,
+      groupName: settlement.groupName,
+      groupId: settlement.groupId,
+      depositAccountNo: depositAccountNo,
+    };
+    navigate("/settlement/expenditure/transfer/confirm", {
+      state: { data },
+    });
+  };
+
+  // 잔액을 위한 API 호출
+  const fetchAccount = async () => {
+    try {
+      const accountResponse = await accountApi.fetchAllAccountInfo("I");
+      setAccount(accountResponse.data[0]);
+      setUserAmount(accountResponse.data[0].moneyBoxDtos[0].balance);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  // 특정 모임 조회 API 호출
+  const fetchSpecificMeetingAccount = async () => {
+    try {
+      const response = await accountApi.fetchSpecificMeetingAccount(Number(location.state.data.groupId));
+      if (response.status === 200) {
+        setDepositAccountNo(response.data.groupAccountNo);
+      }
+    } catch (error) {
+      console.error("accountApi의 fetchSpecificMeetingAccount : ", error);
+    }
+  };
+
+  useEffect(() => {
+    const numberValue = Number(transferAmount);
+    if (userAmount && numberValue <= MaxAmount && numberValue <= userAmount) {
+      setExceedsMaxAmount(false);
+      setExceedsUserAmount(false);
+    }
+  }, [transferAmount]);
+
+  useEffect(() => {
+    fetchAccount();
+    fetchSpecificMeetingAccount();
+  }, []);
+
+  if (!account || !userAmount || depositAccountNo === "") {
+    return (
+      <div className="h-full flex flex-col justify-center items-center">
+        <Lottie animationData={loadingAnimation} />
+      </div>
+    );
+  }
+
   return (
     <div className="h-full p-5 pb-8">
       <div className="relative h-full flex flex-col justify-between">
         <div className="flex flex-col space-y-10">
           <IoIosArrowBack
             onClick={() => {
-              navigate("/");
+              navigate("/settlement/expenditure/list/NOT_COMPLETED");
             }}
             className="text-2xl"
           />
           <div className="flex flex-col space-y-16">
             <div className="flex flex-col space-y-2">
               <div className="text-xl flex items-center">
-                <p className="pr-1 font-semibold">{depositAccount?.userName}</p>
+                <p className="pr-1 font-semibold">{location.state.data.groupName}</p>
                 <p>님에게</p>
               </div>
-              <p className="">튜나뱅크 {depositAccount?.accountNo}</p>
+              <p className="">튜나뱅크 {depositAccountNo}</p>
             </div>
 
             <div className="flex flex-col space-y-10">
@@ -171,15 +201,11 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
 
         <div>
           <button
-            onClick={() => {
-              navigate("/transfer/confirm", {
-                state: { accountNo, transferAmount, depositAccount: depositAccount?.userName },
-              });
-            }}
+            onClick={() => handleNext()}
             className={`w-full h-14 text-lg font-semibold rounded-xl tracking-wide ${
-              isValidation ? "text-white bg-[#1429A0]" : "text-[#565656] bg-[#E3E4E4]"
+              Number(transferAmount) === 0 ? "text-[#565656] bg-[#E3E4E4]" : "text-white bg-[#1429A0]"
             }`}
-            disabled={!isValidation}>
+            disabled={Number(transferAmount) === 0}>
             다음
           </button>
         </div>
@@ -188,4 +214,4 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
   );
 };
 
-export default TransferSetMoney;
+export default SettlementTransferSetMoney;

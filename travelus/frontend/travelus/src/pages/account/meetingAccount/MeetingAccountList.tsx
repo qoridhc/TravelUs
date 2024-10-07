@@ -49,17 +49,15 @@ const MeetingAccountListNew = () => {
                   <MeetingAccount key={index} account={account} />
                 ))}
 
-                <div>
-                  <div
-                    onClick={() => {
-                      navigate("/meeting/create/prepare");
-                    }}
-                    className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-zinc-200 rounded-full flex justify-center items-center">
-                      <IoMdAdd className="text-3xl text-zinc-400 font-bold" />
-                    </div>
-                    <p className="font-bold text-[#949494]">모임통장 추가하기</p>
+                <div
+                  onClick={() => {
+                    navigate("/meeting/create/prepare");
+                  }}
+                  className="flex items-center space-x-4">
+                  <div className="w-10 h-10 bg-zinc-200 rounded-full flex justify-center items-center">
+                    <IoMdAdd className="text-3xl text-zinc-400 font-bold" />
                   </div>
+                  <p className="font-bold text-[#949494]">모임통장 추가하기</p>
                 </div>
               </div>
             ) : (
