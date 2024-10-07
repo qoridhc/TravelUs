@@ -77,6 +77,8 @@ import NotificationList from "./pages/notification/notificationList";
 import SettlementTransferConfirm from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferConfirm";
 import SettlementTransferPassword from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferPassword";
 import SettlementTransferSetMoney from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferSetMoney";
+import ExpenditureSettlementDetail from "./pages/settlement/expenditureSettlement/ExpenditureSettlementDetail";
+import SettlementTransferSuccess from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferSuccess";
 
 function App() {
   return (
@@ -200,13 +202,14 @@ function App() {
             element={<ExpenditureTransactionDetail />}></Route>
           <Route path="/settlement/expenditure/participants/:id" element={<ExpenditureSettlementInfo />}></Route>
           <Route path="/settlement/expenditure/completed" element={<ExpenditureSettlementCompleted />}></Route>
-          <Route path="/settlement/expenditure/list" element={<ExpenditureSettlementList />}></Route>
+          <Route path="/settlement/expenditure/list/:status" element={<ExpenditureSettlementList />}></Route>
+          <Route path="/settlement/expenditure/detail/:id" element={<ExpenditureSettlementDetail />}></Route>
 
           {/* 지출정산 이체 */}
           <Route path="/settlement/expenditure/transfer/setMoney" element={<SettlementTransferSetMoney />}></Route>
           <Route path="/settlement/expenditure/transfer/confirm" element={<SettlementTransferConfirm />}></Route>
           <Route path="/settlement/expenditure/transfer/password" element={<SettlementTransferPassword />}></Route>
-          <Route path="/settlement/expenditure/transfer/success" element={<TransferSuccess />}></Route>
+          <Route path="/settlement/expenditure/transfer/success" element={<SettlementTransferSuccess />}></Route>
 
           {/* 알림 */}
           <Route path="/notification" element={<NotificationList />} />

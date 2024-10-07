@@ -156,7 +156,7 @@ const ExpenditureSettlementList = () => {
                       <div className="col-start-2 col-span-2 flex items-center">
                         {isTab === "NOT_COMPLETED" ? (
                           <button
-                            className="w-full p-3 text-white bg-[#1429A0] rounded-xl"
+                            className="w-full h-14 text-white bg-[#1429A0] rounded-xl"
                             onClick={() => handleNext(settlement)}>
                             {formatCurrency(settlement.remainingAmount)}원 보내기
                           </button>
