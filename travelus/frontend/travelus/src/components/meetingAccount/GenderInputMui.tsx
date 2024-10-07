@@ -30,6 +30,7 @@ const GenderInputMui = ({ gender, setGender }: Props) => {
       variant="standard"
       autoComplete="off"
       onChange={(e) => setGender(e.target.value)}
+      inputMode="none"
     />
   );
 };
