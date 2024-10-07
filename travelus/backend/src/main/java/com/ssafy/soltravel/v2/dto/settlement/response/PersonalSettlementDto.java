@@ -14,12 +14,21 @@ public class PersonalSettlementDto {
 
   @Schema(description = "개별 지출 정산 내역 모임 이름",example = "가자")
   private String groupName;
-  
+
+  @Schema(description = "정산 내역 id",example = "1")
+  private Long settlementId;
+
   @Schema(description = "개별 지출 정산 내역 id",example = "1")
-  private Long personalSettlementId;
+  private Long settlementDetailId;
 
   @Schema(description = "참여자 id",example = "1")
   private Long participantId;
+
+  @Schema(description = "참여자 프로필", example="https://my-s3-mingyu.s3.ap-southeast-2.amazonaws.com/profile/%EC%99%95%EA%B4%80%EC%95%B5%EB%AC%B4%EC%83%88.png")
+  private String profile;
+
+  @Schema(description = "정산 총 금액",example = "10000")
+  private double totalAmount;
 
   @Schema(description = "개별 지출 정산 금액",example = "10000")
   private double amount;
