@@ -20,6 +20,9 @@ public class IntegratedForecastResponseData {
 
   private Trend trend;
 
+  @JsonProperty("current_rate")
+  private Double currentRate;
+
   @JsonProperty("forecast_stats")
   private ExchangeRateForecastStat stat;
 

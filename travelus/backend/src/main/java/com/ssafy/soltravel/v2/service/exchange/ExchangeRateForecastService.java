@@ -174,14 +174,16 @@ public class ExchangeRateForecastService {
     List<ExchangeRate> recentRates_3 = findExchangeRateByPeriod(
         LocalDate.now().minusMonths(3),
         LocalDate.now(),
-        currencyType
+        currencyType,
+        false
     );
 
     // 환율 예측 데이터 조회
     List<ExchangeRate> forecast = findExchangeRateByPeriod(
         LocalDate.now().plusDays(1),
         LocalDate.now().plusDays(15),
-        currencyType
+        currencyType,
+        true
     );
 
     // 환율 예측 관련 데이터 조회
@@ -202,8 +204,8 @@ public class ExchangeRateForecastService {
   */
 
   // 기간별 환율 조회
-  private List<ExchangeRate> findExchangeRateByPeriod(LocalDate start, LocalDate end, CurrencyType cType) {
-    return exchangeRateForecastRepository.findByPeriodAndCurrency(start, end, cType).orElse(
+  private List<ExchangeRate> findExchangeRateByPeriod(LocalDate start, LocalDate end, CurrencyType cType, Boolean isAsc) {
+    return exchangeRateForecastRepository.findByPeriodAndCurrency(start, end, cType, isAsc).orElse(
         List.of()
     );
   }
@@ -226,6 +228,7 @@ public class ExchangeRateForecastService {
         .recentRates(Map.of("3_months", toRecentRatesDto(recentRates_3)))
         .stat(toForecastStatDto(stat))
         .trend(stat == null ? null : stat.getTrend())
+        .currentRate(recentRates_3.get(0).getRate())
         .build();
   }
 

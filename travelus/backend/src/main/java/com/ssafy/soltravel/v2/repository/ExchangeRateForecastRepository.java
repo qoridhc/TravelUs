@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.v2.repository;
 
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
@@ -41,14 +42,15 @@ public class ExchangeRateForecastRepository {
     return result.stream().findFirst();
   }
 
-  public Optional<List<ExchangeRate>> findByPeriodAndCurrency(LocalDate start, LocalDate end, CurrencyType cType) {
+  public Optional<List<ExchangeRate>> findByPeriodAndCurrency(LocalDate start, LocalDate end, CurrencyType cType, Boolean isAsc) {
     QExchangeRate q = new QExchangeRate("q");
+    OrderSpecifier<?> orderSpecifier = isAsc ? q.date.asc() : q.date.desc();
     List<ExchangeRate> result = queryFactory.selectFrom(q)
         .where(
             dateBetween(q, start, end),
             currencyEq(q, cType)
         )
-        .orderBy(q.date.asc())
+        .orderBy(orderSpecifier)
         .fetch();
     return Optional.ofNullable(result.isEmpty() ? null : result);
   }
