@@ -122,7 +122,7 @@ const TravelBoxTransaction = () => {
 
   useEffect(() => {
     fetchSpecificAccountInfo();
-  }, [account]);
+  }, []);
 
   useEffect(() => {
     fetchTransactionHistory();

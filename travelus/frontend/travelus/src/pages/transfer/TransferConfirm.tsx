@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { accountApi } from "../../api/account";
 import { userApi } from "../../api/user";
-import { transactionApi } from "../../api/transaction";
 import { AccountInfoNew } from "../../types/account";
 import { IoIosArrowBack } from "react-icons/io";
 
@@ -21,7 +20,7 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
     accountNo: string;
     transferAmount: string;
     password: string;
-    depositAccount: AccountInfoNew;
+    depositAccount: string;
   };
 
   const formatAccountNumber = (accountNo: string) => {
@@ -53,7 +52,6 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
     fetchData();
   }, []);
 
-
   return (
     <div className="h-full p-5 pb-8">
       <div className="h-full flex flex-col justify-between">
@@ -67,11 +65,11 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
         </div>
         <div className="mb-16 flex flex-col items-center">
           <p className="text-2xl font-bold">
-            {depositAccount?.userName}
+            {depositAccount}
             <span className="font-normal"> 님에게</span>
           </p>
           <p className="text-2xl font-bold">{formatCurrency(parseInt(transferAmount))}원</p>
-          <p className="text-2xl font-bold">보낼까요?</p>
+          <p className="text-2xl">보낼까요?</p>
         </div>
         <div className="flex flex-col space-y-6">
           <div className="flex flex-col space-y-2">
@@ -91,7 +89,9 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
           <div className="flex flex-col space-y-3">
             <button
               onClick={() => {
-                navigate("/transfer/password", { state: { accountNo, transferAmount, depositAccount, userName, withdrawalAccountNo } });
+                navigate("/transfer/password", {
+                  state: { accountNo, transferAmount, depositAccount, userName, withdrawalAccountNo },
+                });
               }}
               className="w-full h-14 text-lg font-semibold rounded-xl tracking-wide text-white bg-[#1429A0]">
               보내기
