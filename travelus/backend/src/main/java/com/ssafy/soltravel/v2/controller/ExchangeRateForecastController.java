@@ -1,6 +1,7 @@
 package com.ssafy.soltravel.v2.controller;
 
 import com.ssafy.soltravel.v2.dto.ResponseDto;
+import com.ssafy.soltravel.v2.dto.exchange.forecast.ExchangeRateForecastSaveRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.forecast.ExchangeRateSaveRequestDto;
 import com.ssafy.soltravel.v2.service.exchange.ExchangeRateForecastService;
 import com.ssafy.soltravel.v2.util.LogUtil;
@@ -24,9 +25,10 @@ public class ExchangeRateForecastController {
   * 예측 데이터 업데이트
   */
   @PostMapping("/update")
-  public ResponseEntity<ResponseDto> updateForecast(@RequestBody ExchangeRateSaveRequestDto request) {
+  public ResponseEntity updateForecast(@RequestBody ExchangeRateForecastSaveRequestDto request) {
     LogUtil.info("예측 데이터 수정 & 저장", request.toString());
-    return null;
+    int response = exchangeRateForecastService.updatePred(request);
+    return new ResponseEntity(String.format("예측 데이터 수정 완료(%s)", response), HttpStatus.OK);
   }
 
   /*
