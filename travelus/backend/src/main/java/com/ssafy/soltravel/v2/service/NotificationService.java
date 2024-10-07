@@ -5,6 +5,7 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushNotification;
 import com.ssafy.soltravel.v1.dto.user.UserDetailDto;
+import com.ssafy.soltravel.v1.util.LogUtil;
 import com.ssafy.soltravel.v2.domain.Enum.AccountType;
 import com.ssafy.soltravel.v2.domain.Enum.NotificationType;
 import com.ssafy.soltravel.v2.domain.Notification;
@@ -21,7 +22,6 @@ import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransferRequestDto;
 import com.ssafy.soltravel.v2.exception.group.InvalidGroupIdException;
-import com.ssafy.soltravel.v2.exception.notification.FcmTokenNotFound;
 import com.ssafy.soltravel.v2.exception.notification.NotificationNotFoundException;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.NotificationMapper;
@@ -73,6 +73,16 @@ public class NotificationService {
     }
 
     /*
+     * FCM 토큰 레디스 삭제
+     */
+    public ResponseDto deleteFcmToken(Long userId) {
+
+        fcmTokenRepository.deleteById(userId);
+
+        return new ResponseDto();
+    }
+
+    /*
      * ===== 알림 전송 공통 메서드 =====
      */
 
@@ -104,8 +114,13 @@ public class NotificationService {
         try {
             // FCM 토큰 조회
             RedisFcm redisFcm = fcmTokenRepository.findById(requestDto.getTargetUserId())
-                .orElseThrow(() -> new FcmTokenNotFound(requestDto.getTargetUserId()));
+                .orElse(null);
 
+            if (redisFcm == null) {
+                // 토큰이 없는 경우 로그만 남기고 알림 전송 건너뜀
+                LogUtil.info("알림을 보내려고하는 유저의 토큰이 존재 하지 않습니다. 로그인상태를 확인해주세요");
+                return null; // 또는 적절한 로직으로 넘어가기
+            }
             // 메시지 생성 및 전송
             Message message = createMessage(redisFcm.getFcmToken(), requestDto);
 
