@@ -296,7 +296,7 @@ const MainPage = () => {
           <div
             className="w-full h-40 p-5 rounded-xl bg-white shadow-md flex flex-col items-start space-y-8"
             onClick={() => {
-              navigate("/settlement/expenditure/list");
+              navigate("/settlement/expenditure/list/NOT_COMPLETED");
             }}>
             <img className="w-12" src="/assets/creditCardIcon.png" alt="카드아이콘" />
             <div>
