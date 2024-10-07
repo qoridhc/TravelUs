@@ -12,4 +12,13 @@ export const notificationApi = {
     return api.post(`/notification/push`, notificationData);
   },
 
+  // 알림 리스트 조회
+  fetchNotificationList: () => {
+    return api.get(`/notification/all`);
+  },
+
+  // 특정 알림 삭제
+  deleteSpecificNotification: (notificationId: number) => {
+    return api.delete(`/notification/${notificationId}`);
+  },
 };

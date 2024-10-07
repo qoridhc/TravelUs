@@ -8,6 +8,7 @@ import { AccountInfoNew, TransactionNew } from "../../types/account";
 const MeetingTransaction = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { type } = useParams();
 
   const depositTransactionType = ["D", "TD", "ED", "SD"];
   const withdrawTransactionType = ["W", "TW", "EW", "SW", "CW"];
@@ -15,13 +16,12 @@ const MeetingTransaction = () => {
   const accountNo = useParams().accountNo;
 
   // state로 넘어오는 groupoId 없으면 -> 알림 라우팅 쿼리 파라미터에서 추출
-  const groupId = location.state?.groupId || new URLSearchParams(location.search).get('groupId');
+  const groupId = location.state?.groupId || new URLSearchParams(location.search).get("groupId");
 
   const searchParams = new URLSearchParams(location.search);
 
   const [account, setAccount] = useState<AccountInfoNew>();
   const [transactionList, setTransactionList] = useState<TransactionNew[]>([]);
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,16 +79,19 @@ const MeetingTransaction = () => {
     return new Intl.NumberFormat("ko-KR").format(amount);
   };
 
+  const goBack = () => {
+    if (type === "notification") {
+      navigate(`/`);
+    } else {
+      navigate(`/meetingaccount/${groupId}`);
+    }
+  };
+
   return (
     <div className="w-full h-full pb-8">
       <div className="w-full flex flex-col">
         <div className="p-5 grid grid-cols-3 items-center sticky top-0">
-          <IoIosArrowBack
-            onClick={() => {
-              navigate(`/meetingaccount/${groupId}`, { state: { groupId } });
-            }}
-            className="text-2xl"
-          />
+          <IoIosArrowBack onClick={goBack} className="text-2xl" />
           <p className="text-lg text-center">모임통장</p>
         </div>
 
