@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,7 +74,7 @@ public class SettlementController {
 
   @Operation(summary = "개별 정산 요청 내역 개인별 조회", description = "개인의 개별 정산 요청 내역을 조회합니다.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "정산 완료", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PersonalSettlementHistoryDto.class)))),
+      @ApiResponse(responseCode = "200", description = "정산 완료", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PersonalSettlementDto.class)))),
       @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = String.class))),
       @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = String.class)))})
   @GetMapping("/personal/transfer")
@@ -92,6 +93,17 @@ public class SettlementController {
   public ResponseEntity<List<GroupSettlementResponseDto>> getGroupSettlementHistory(@ModelAttribute
   GroupSettlementHistoryRequestDto requestDto) {
     List<GroupSettlementResponseDto> response = settlementService.getGroupSettlementHistory(requestDto);
+    return ResponseEntity.ok().body(response);
+  }
+
+  @Operation(summary = "개별 정산 요청 건당 조회", description = "개별 정산 요청 건당 내역을 조회합니다.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "정산 완료", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PersonalSettlementDto.class)))),
+      @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = String.class))),
+      @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = String.class)))})
+  @GetMapping("/personal/transfer/{settlementId}")
+  public ResponseEntity<GroupSettlementResponseDto> getSettlementHistory(@PathVariable Long settlementId) {
+    GroupSettlementResponseDto response = settlementService.getSettlementHistory(settlementId);
     return ResponseEntity.ok().body(response);
   }
 }

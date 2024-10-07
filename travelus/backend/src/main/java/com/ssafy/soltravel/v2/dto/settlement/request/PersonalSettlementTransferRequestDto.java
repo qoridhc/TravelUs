@@ -6,11 +6,8 @@ import lombok.Data;
 @Data
 public class PersonalSettlementTransferRequestDto {
 
-    @Schema(description = "개별 지출 정산 내역 id", example = "1")
-    private Long personalSettlementId;
-
-    @Schema(description = "참여자 id", example = "1")
-    private Long participantId;
+  @Schema(description = "개별 지출 정산 내역 id",example = "1")
+  private Long settlementDetailId;
 
     @Schema(description = "출금 계좌번호", example = "001-69042343-209")
     private String withdrawalAccountNo;
