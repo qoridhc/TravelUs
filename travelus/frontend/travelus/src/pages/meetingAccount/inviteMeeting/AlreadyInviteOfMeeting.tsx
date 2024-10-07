@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import Lottie from "lottie-react";
-import invitationAnimation from "../../lottie/invitationAnimation.json";
+import invitationAnimation from "../../../lottie/invitationAnimation.json";
 
 const AlreadyInviteOfMeeting = () => {
   const navigate = useNavigate();

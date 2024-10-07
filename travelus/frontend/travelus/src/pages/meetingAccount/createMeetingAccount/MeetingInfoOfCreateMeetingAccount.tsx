@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
-import MeetingNameInputMui from "../../components/meetingAccount/MeetingNameInputMui";
-import MeetingTypeInputMui from "../../components/meetingAccount/MeetingTypeInputMui";
+import MeetingNameInputMui from "../../../components/meetingAccount/MeetingNameInputMui";
+import MeetingTypeInputMui from "../../../components/meetingAccount/MeetingTypeInputMui";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
-import { setMeetingName, setMeetingType } from "../../redux/meetingAccountSlice";
+import { setMeetingName, setMeetingType } from "../../../redux/meetingAccountSlice";
 
 const MeetingInfoOfCreateMeetingAccount = () => {
   const navigate = useNavigate();

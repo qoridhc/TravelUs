@@ -1,11 +1,11 @@
 import { TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
-import NameInputMui from "../../components/meetingAccount/NameInputMui";
-import BirthDateInputMui from "../../components/meetingAccount/BirthDateInputMui";
-import GenderInputMui from "../../components/meetingAccount/GenderInputMui";
+import NameInputMui from "../../../components/meetingAccount/NameInputMui";
+import BirthDateInputMui from "../../../components/meetingAccount/BirthDateInputMui";
+import GenderInputMui from "../../../components/meetingAccount/GenderInputMui";
 import { useNavigate } from "react-router";
-import { userApi } from "../../api/user";
+import { userApi } from "../../../api/user";
 
 const UserInfoOfCreateMeetingAccount = () => {
   const navigate = useNavigate();

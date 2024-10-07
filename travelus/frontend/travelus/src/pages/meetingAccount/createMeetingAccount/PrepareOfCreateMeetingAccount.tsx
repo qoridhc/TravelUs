@@ -6,7 +6,7 @@ import { AiTwotoneExclamationCircle } from "react-icons/ai";
 import { LuDot } from "react-icons/lu";
 import { useNavigate } from "react-router";
 
-const MeetingAccountCreateProcess = () => {
+const PrepareOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
   const noticeTextList = [
     "모임통장은 원화(KRW)로만 관리가 됩니다.",
@@ -87,4 +87,4 @@ const MeetingAccountCreateProcess = () => {
   );
 };
 
-export default MeetingAccountCreateProcess;
+export default PrepareOfCreateMeetingAccount;
