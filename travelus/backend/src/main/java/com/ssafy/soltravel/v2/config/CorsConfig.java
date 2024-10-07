@@ -11,21 +11,21 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class CorsConfig {
 
-  @Value("${server.front.url}")
-  private String FRONT_URL;
+    @Value("${server.front.url}")
+    private String FRONT_URL;
 
-  @Bean
-  public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration config = new CorsConfiguration();
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
 
-    config.setAllowCredentials(true);
-    config.setAllowedOriginPatterns(List.of("https://j11d209.p.ssafy.io", FRONT_URL));
-    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    config.addAllowedHeader("*");
-    config.setExposedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        config.setAllowedOriginPatterns(List.of("https://j11d209.p.ssafy.io", FRONT_URL, "https://travelus.shop"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.addAllowedHeader("*");
+        config.setExposedHeaders(List.of("*"));
 
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", config);
-    return source;
-  }
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 }
