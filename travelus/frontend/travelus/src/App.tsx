@@ -144,7 +144,7 @@ function App() {
 
           {/* 통장 내역 */}
           <Route path="/transaction/:accountNo" element={<AccountTransaction />} />
-          <Route path="/meetingtransaction/:accountNo" element={<MeetingTransaction />} />
+          <Route path="/meetingtransaction/:accountNo/:type" element={<MeetingTransaction />} />
           <Route path="/travelbox/transaction/:accountNo" element={<TravelBoxTransaction />} />
 
           {/* 트래블박스 생성 */}

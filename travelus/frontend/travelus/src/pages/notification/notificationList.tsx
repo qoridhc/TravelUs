@@ -1,7 +1,14 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { IoIosArrowBack } from "react-icons/io";
-import { MdPayments } from "react-icons/md";
+import { BiTransferAlt } from "react-icons/bi";
+import { RiHandCoinFill } from "react-icons/ri";
+import { IoPerson } from "react-icons/io5";
+import { BsFillPeopleFill } from "react-icons/bs";
+import { RiExchangeDollarLine } from "react-icons/ri";
+import { notificationApi } from "../../api/notification";
+import { NotificationListInfo } from "../../types/notification";
+import { tr } from "date-fns/locale";
 
 interface NotificationListProps {
   // Define props here
@@ -9,30 +16,74 @@ interface NotificationListProps {
 
 const NotificationList: React.FC<NotificationListProps> = (props) => {
   const navigate = useNavigate();
+  const [notificationList, setNotificationList] = useState<NotificationListInfo[] | null>(null);
 
-  const notificationList = [
-    {
-      id: 1,
-      notificationType: "D",
-      title: "새로운 알림이 도착했습니다!",
-      content: "새로운 알림이 도착했습니다. 확인해보세요.",
-      date: "2021-09-01",
-    },
-    {
-      id: 2,
-      notificationType: "CW",
-      title: "새로운 알림이 도착했습니다!",
-      content: "새로운 알림이 도착했습니다. 확인해보세요.",
-      date: "2021-09-02",
-    },
-    {
-      id: 3,
-      notificationType: "CW",
-      title: "새로운 알림이 도착했습니다!",
-      content: "새로운 알림이 도착했습니다. 확인해보세요.",
-      date: "2021-09-03",
-    },
-  ];
+  useEffect(() => {
+    // 알림 리스트를 가져오는 API 호출
+    const fetchNotificaitonList = async () => {
+      try {
+        const response = await notificationApi.fetchNotificationList();
+        if (response.status === 200) {
+          const sortedNotifications = response.data.sort(
+            (a: NotificationListInfo, b: NotificationListInfo) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+          console.log(sortedNotifications);
+          setNotificationList(sortedNotifications);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchNotificaitonList();
+  }, []);
+
+  // 날짜를 "10월 1일" 형식으로 변환하는 함수
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("ko-KR", {
+      month: "long",
+      day: "numeric",
+    }).format(date);
+  };
+
+  // notificationType에 따른 아이콘을 반환하는 함수
+  const renderIcon = (type: string) => {
+    switch (type) {
+      case "S":
+        return <RiHandCoinFill className="text-xl text-[#f3ba4f]" />;
+      case "E":
+        return <RiExchangeDollarLine className="text-2xl text-[#27995a]" />;
+      case "GT":
+        return <BsFillPeopleFill className="text-xl text-[#699BF7]" />;
+      default:
+        return <IoPerson className="text-xl text-gray-400" />; // 기본 아이콘
+    }
+  };
+
+  const navigateToDetail = async (type: string, accountNo: string, notificationId: number) => {
+    try {
+      const response = await notificationApi.deleteSpecificNotification(notificationId);
+    } catch (error) {
+      console.error("알림 삭제 실패", error);
+    }
+
+    switch (type) {
+      case "S":
+        navigate("/");
+        break;
+      case "E":
+        navigate(`/meetingtransaction/${accountNo}/notification`);
+        break;
+      case "GT":
+        navigate(`/meetingtransaction/${accountNo}/notification`);
+        break;
+      default:
+        navigate(`/transaction/${accountNo}`);
+        break;
+    }
+  };
 
   return (
     <div className="min-h-screen h-full p-6 pb-8">
@@ -46,22 +97,28 @@ const NotificationList: React.FC<NotificationListProps> = (props) => {
 
         <div className="w-full space-y-9">
           <p className="text-3xl font-bold">알림</p>
-          {notificationList.map((notification) => (
-            <div key={notification.id} className="space-y-1">
-              <div className="flex items-start space-x-2">
-                <MdPayments className="text-[#26a85d]" />
-                <div className="w-full flex flex-col space-y-[0.4rem]">
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm text-zinc-400">{notification.title}</p>
-                    <p className="text-sm text-zinc-400">{notification.date}</p>
+          {notificationList &&
+            notificationList.map((notification) => (
+              <div
+                onClick={() =>
+                  navigateToDetail(notification.notificationType, notification.accountNo, notification.notificationId)
+                }
+                key={notification.notificationId}
+                className="space-y-1">
+                <div className="flex items-start space-x-2">
+                  {renderIcon(notification.notificationType)}
+                  <div className="w-full flex flex-col space-y-[0.4rem]">
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-zinc-500">{notification.title}</p>
+                      <p className="text-sm text-zinc-400">{formatDate(notification.createdAt)}</p>
+                    </div>
+                    <p className=" text-gray-600">{notification.message}</p>
                   </div>
-                  <p className=" text-gray-600">{notification.content}</p>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
 
-          <div className="pt-3 grid grid-cols-[20%_60%_20%] items-center">
+          <div className="pb-16 pt-3 grid grid-cols-[20%_60%_20%] items-center">
             <div className="w-full h-[0.1rem] bg-zinc-200"></div>
             <p className="w-full text-center text-sm text-zinc-400">7일전 알림까지 확인할 수 있어요</p>
             <div className="w-full h-[0.1rem] bg-zinc-200"></div>
