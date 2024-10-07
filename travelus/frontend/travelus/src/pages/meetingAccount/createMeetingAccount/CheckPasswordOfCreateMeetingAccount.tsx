@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import SecurityNumberKeyboard from "../../components/common/SecurityNumberKeyboard";
+import SecurityNumberKeyboard from "../../../components/common/SecurityNumberKeyboard";
 import { useLocation, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { RootState } from "../../../redux/store";
 
 const CheckPasswordOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ const CheckPasswordOfCreateMeetingAccount = () => {
   useEffect(() => {
     if (password.length === 4) {
       if (location.state.originalPassword === password) {
-        navigate(`/meeting/create/idverificationo/${location.state.type}`, { state: { password: password } });
+        navigate(`/meeting/create/idverification`, { state: { password: password } });
       } else {
         alert("비밀번호가 일치하지 않습니다.");
         navigate(`/meeting/create/password/${location.state.type}`);

@@ -55,4 +55,9 @@ export const userApi = {
   editUserInformation: (formData: FormData) => {
     return api.post(`/user/update`, formData);
   },
+
+  // 신분증 인식
+  fetchIdcard: (formData: FormData) => {
+    return api.post(`/auth/id-card`, formData);
+  },
 };

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import Lottie from "lottie-react";
-import invitationAnimation from "../../lottie/invitationAnimation.json";
+import invitationAnimation from "../../../lottie/invitationAnimation.json";
 import { useLocation, useNavigate, useParams } from "react-router";
 
 const InvitationOfMeeting = () => {

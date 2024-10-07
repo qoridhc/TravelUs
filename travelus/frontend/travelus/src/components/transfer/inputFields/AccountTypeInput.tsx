@@ -24,6 +24,7 @@ const AccountTypeInput = () => {
       variant="standard"
       value="튜나뱅크"
       autoComplete="off"
+      inputMode="none"
     />
   );
 };

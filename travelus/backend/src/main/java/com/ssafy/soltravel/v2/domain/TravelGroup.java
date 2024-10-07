@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -34,9 +35,9 @@ public class TravelGroup {
 
     private String groupAccountNo;
 
-    private String travelStartDate;
+    private LocalDate travelStartDate;
 
-    private String travelEndDate;
+    private LocalDate travelEndDate;
 
     private String groupName;
 
@@ -52,16 +53,16 @@ public class TravelGroup {
     private List<Participant> participants;
 
 	@OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<PersonalSettlementHistory> settlementHistories;
+	private List<BillingHistory> settlementHistories;
 
-	public static TravelGroup createGroupEntity(String accountNo, CreateGroupRequestDto requestDto){
-			TravelGroup travelGroup = TravelGroup.builder()
-				.groupAccountNo(accountNo)
-				.travelStartDate(requestDto.getTravelStartDate())
-				.travelEndDate(requestDto.getTravelEndDate())
-				.groupName(requestDto.getGroupName())
-				.icon(requestDto.getIcon())
-				.build();
+    public static TravelGroup createGroupEntity(String accountNo, CreateGroupRequestDto requestDto) {
+        TravelGroup travelGroup = TravelGroup.builder()
+            .groupAccountNo(accountNo)
+            .travelStartDate(requestDto.getTravelStartDate())
+            .travelEndDate(requestDto.getTravelEndDate())
+            .groupName(requestDto.getGroupName())
+            .icon(requestDto.getIcon())
+            .build();
 
         return travelGroup;
     }

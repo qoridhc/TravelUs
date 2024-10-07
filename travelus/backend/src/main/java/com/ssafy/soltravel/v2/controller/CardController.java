@@ -4,6 +4,7 @@ import com.ssafy.soltravel.v2.dto.card.CardIssueRequestDto;
 import com.ssafy.soltravel.v2.dto.card.CardPaymentRequestDto;
 import com.ssafy.soltravel.v2.dto.card.CardPaymentResponseDto;
 import com.ssafy.soltravel.v2.dto.card.CardResponseDto;
+import com.ssafy.soltravel.v2.dto.card.CardUsageAmountResponseDto;
 import com.ssafy.soltravel.v2.service.card.CardService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,8 +16,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,5 +76,14 @@ public class CardController {
   }
 
 
-
+  @Operation(summary = "카드 사용 금액 조회", description = "카드의 사용 금액을 조회합니다.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "성공적으로 조회됨"
+          , content = @Content(mediaType = "application/json", schema = @Schema(implementation = CardResponseDto.class)))
+  })
+  @GetMapping("/history/{cardNo}")
+  public ResponseEntity getUsageAmount(@PathVariable String cardNo){
+    CardUsageAmountResponseDto response = cardService.getUsageAmount(cardNo);
+    return new ResponseEntity(response, HttpStatus.OK);
+  }
 }

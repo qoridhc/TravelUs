@@ -7,6 +7,8 @@ import { IoIosArrowBack } from "react-icons/io";
 import { userApi } from "../../api/user";
 import { IoCamera } from "react-icons/io5";
 import { UserInfo } from "../../types/userInformation";
+import api from "../../lib/axios";
+import { notificationApi } from "../../api/notification";
 
 const MyPage = () => {
   const navigate = useNavigate();
@@ -15,9 +17,30 @@ const MyPage = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const doLogout = () => {
+  const doLogout = async () => {
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+      console.error("유저 ID가 없습니다.");
+      return;
+    }
+
+    try {
+      // userId를 숫자 타입으로 변환
+      const userIdNumber = parseInt(userId, 10);
+
+      // FCM 토큰 삭제 API 호출
+      await notificationApi.deleteFcmToken(userIdNumber);
+      console.log("FCM 토큰이 성공적으로 삭제되었습니다.");
+    } catch (error) {
+      console.error("FCM 토큰 삭제 중 오류 발생:", error);
+    }
+
+    // 로컬 스토리지 및 세션 스토리지 지우기
     localStorage.clear();
     sessionStorage.clear();
+
+    // 로그인 페이지로 리다이렉트
     navigate("/login");
   };
 

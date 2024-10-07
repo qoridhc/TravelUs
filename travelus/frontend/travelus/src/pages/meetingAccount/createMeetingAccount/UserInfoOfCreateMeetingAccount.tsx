@@ -1,11 +1,11 @@
 import { TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
-import NameInputMui from "../../components/meetingAccount/NameInputMui";
-import BirthDateInputMui from "../../components/meetingAccount/BirthDateInputMui";
-import GenderInputMui from "../../components/meetingAccount/GenderInputMui";
+import NameInputMui from "../../../components/meetingAccount/NameInputMui";
+import BirthDateInputMui from "../../../components/meetingAccount/BirthDateInputMui";
+import GenderInputMui from "../../../components/meetingAccount/GenderInputMui";
 import { useNavigate } from "react-router";
-import { userApi } from "../../api/user";
+import { userApi } from "../../../api/user";
 
 const UserInfoOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
@@ -56,12 +56,12 @@ const UserInfoOfCreateMeetingAccount = () => {
             <div className="grid gap-10">
               <div className="grid gap-3">
                 <div className="flex space-x-2">
-                  <p className="text-[#0471E9] font-semibold">01</p>
+                  <p className="text-[#1429A0] font-semibold">01</p>
                   <p className="font-medium">모임통장 개설</p>
                 </div>
 
                 <div className="text-2xl font-semibold">
-                  <p>모임주 이예림님의 정보를</p>
+                  <p>모임주 {name}님의 정보를</p>
                   <p>확인해주세요</p>
                 </div>
               </div>

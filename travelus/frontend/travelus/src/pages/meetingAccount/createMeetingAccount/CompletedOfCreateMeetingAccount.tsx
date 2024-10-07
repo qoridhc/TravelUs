@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
-import { userApi } from "../../api/user";
-import { accountApi } from "../../api/account";
+import { userApi } from "../../../api/user";
+import { accountApi } from "../../../api/account";
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { RootState } from "../../../redux/store";
 
 const CompletedOfCreateMeetingAccount = () => {
   const navigate = useNavigate();

@@ -66,7 +66,6 @@ const TravelBoxTransaction = () => {
 
   // 거래 내역 조회
   const fetchTransactionHistory = async () => {
-    console.log("currency : ", currencyCode);
     try {
       if (accountNo) {
         const data = {
@@ -153,14 +152,6 @@ const TravelBoxTransaction = () => {
     console.log(dateList);
   }, [dateList]);
 
-  if (!account) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
-  }
-
   const goBack = () => {
     if (type === "notification") {
       navigate(`/`);
@@ -168,6 +159,14 @@ const TravelBoxTransaction = () => {
       navigate(`/meetingaccount/${groupId}`, { state: { groupId } });
     }
   };
+
+  if (!account) {
+    return (
+      <div className="h-full flex flex-col justify-center items-center">
+        <Lottie animationData={loadingAnimation} />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full pb-8">

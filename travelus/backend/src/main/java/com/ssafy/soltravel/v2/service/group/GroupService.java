@@ -12,6 +12,7 @@ import com.ssafy.soltravel.v2.dto.group.ParticipantDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateGroupRequestDto;
 import com.ssafy.soltravel.v2.dto.group.request.CreateParticipantRequestDto;
 import com.ssafy.soltravel.v2.dto.group.request.GroupCodeGenerateRequestDto;
+import com.ssafy.soltravel.v2.dto.group.request.GroupUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.group.response.GroupCodeGenerateResponseDto;
 import com.ssafy.soltravel.v2.dto.group.response.GroupSummaryDto;
 import com.ssafy.soltravel.v2.exception.account.InvalidPersonalAccountException;
@@ -40,6 +41,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -132,6 +134,20 @@ public class GroupService {
         dto.setCardNumber(cardNoByAccountNo);
 
         return dto;
+    }
+
+    public ResponseDto updateGroupInfo(Long groupId, GroupUpdateRequestDto requestDto) {
+
+        TravelGroup group = groupRepository.findById(groupId).orElseThrow(InvalidGroupIdException::new);
+
+        updateIfPresent(requestDto.getGroupName(), group::setGroupName);
+        updateIfPresent(requestDto.getTravelStartDate(), group::setTravelStartDate);
+        updateIfPresent(requestDto.getTravelEndDate(), group::setTravelEndDate);
+        updateIfPresent(requestDto.getIcon(), group::setIcon);
+
+        groupRepository.save(group);
+
+        return new ResponseDto();
     }
 
     // 모임 탈퇴
@@ -288,4 +304,9 @@ public class GroupService {
         String urlSafeUuid = Base64.getUrlEncoder().withoutPadding().encodeToString(uuidBytes);
         return urlSafeUuid;
     }
+
+    private <T> void updateIfPresent(T value, Consumer<T> setter) {
+        Optional.ofNullable(value).ifPresent(setter);
+    }
+
 }

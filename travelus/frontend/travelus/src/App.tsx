@@ -32,7 +32,7 @@ import AccountPasswordInput from "./pages/exchange/ExchangeConfirmation";
 import SelectAccount from "./pages/exchange/SelectAccount";
 import AccountCreateComplete from "./pages/ver1/AccountCreateComplete";
 import GeneralMeetingAccountCreate from "./pages/ver1/GeneralMeetingAccountCreate";
-import MeetingAccountCreatePrepare from "./pages/ver1/MeetingAccountCreatePrepare";
+import MeetingAccountCreatePrepare from "./pages/meetingAccount/createMeetingAccount/PrepareOfCreateMeetingAccount";
 import MeetingAccountCreateComplete from "./pages/ver1/MeetingAccountCreateComplete";
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
 import PrivateRoute from "./pages/user/PrivateRoute";
@@ -42,13 +42,13 @@ import UserInfoOfCreateAccount from "./pages/account/generalAccount/generalAccou
 import PasswordOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/PasswordOfCreateAccount";
 import CheckPasswordOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/CheckPasswordOfCreateAccount";
 import IDVerificationOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/IDVerificationOfCreateAccount";
-import UserInfoOfCreateMeetingAccount from "./pages/meetingAccount/UserInfoOfCreateMeetingAccount";
+import UserInfoOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/UserInfoOfCreateMeetingAccount";
 import CompletedOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/CompletedOfCreateAccount";
-import MeetingInfoOfCreateMeetingAccount from "./pages/meetingAccount/MeetingInfoOfCreateMeetingAccount";
-import PasswordOfCreateMeetingAccount from "./pages/meetingAccount/PasswordOfCreateMeetingAccount";
-import CheckPasswordOfCreateMeetingAccount from "./pages/meetingAccount/CheckPasswordOfCreateMeetingAccount";
-import CompletedOfCreateMeetingAccount from "./pages/meetingAccount/CompletedOfCreateMeetingAccount";
-import IDVerificationOfCreateMeetingAccount from "./pages/meetingAccount/IDVerificationOfCreateMeetingAccount";
+import MeetingInfoOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/MeetingInfoOfCreateMeetingAccount";
+import PasswordOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/PasswordOfCreateMeetingAccount";
+import CheckPasswordOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/CheckPasswordOfCreateMeetingAccount";
+import CompletedOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/CompletedOfCreateMeetingAccount";
+import IDVerificationOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/IDVerificationOfCreateMeetingAccount";
 import TravelBoxTransaction from "./pages/travelBox/TravelBoxTransaction";
 import MeetingTransaction from "./pages/meetingAccount/MeetingTransaction";
 import CurrencyInfoOfCreateTravelBox from "./pages/travelBox/CurrencyInfoOfCreateTravelBox";
@@ -60,9 +60,13 @@ import ExpenditureTransactionDetail from "./pages/settlement/expenditureSettleme
 import ExpenditureSettlementInfo from "./pages/settlement/expenditureSettlement/ExpenditureSettlementInfo";
 import ExpenditureSettlementCompleted from "./pages/settlement/expenditureSettlement/ExpenditureSettlementCompleted";
 import TravelBoxCreatePrepare from "./pages/travelBox/TravelBoxCreatePrepare";
-import InvitationOfMeeting from "./pages/meetingAccount/InvitationOfMeeting";
-import InviteInfoOfMeeting from "./pages/meetingAccount/InviteInfoOfMeeting";
-import AlreadyInviteOfMeeting from "./pages/meetingAccount/AlreadyInviteOfMeeting";
+import InvitationOfMeeting from "./pages/meetingAccount/inviteMeeting/InvitationOfMeeting";
+import InviteInfoOfMeeting from "./pages/meetingAccount/inviteMeeting/InviteInfoOfMeeting";
+import AlreadyInviteOfMeeting from "./pages/meetingAccount/inviteMeeting/AlreadyInviteOfMeeting";
+import FillSetMoney from "./pages/account/meetingAccount/meetingAccountFill/FillSetMoney";
+import FillPassword from "./pages/account/meetingAccount/meetingAccountFill/FillPassword";
+import FillConfirm from "./pages/account/meetingAccount/meetingAccountFill/FillConfirm";
+import FillSuccess from "./pages/account/meetingAccount/meetingAccountFill/FillSuccess";
 import SelectAccountOfMeeting from "./pages/meetingAccount/SelectAccountOfMeeting";
 import EnglishNameOfCreateCard from "./pages/card/cardCreate/EnglishNameOfCreateCard";
 import PasswordOfCreateCard from "./pages/card/cardCreate/PasswordOfCreateCard";
@@ -79,6 +83,7 @@ import SettlementTransferPassword from "./pages/settlement/expenditureSettlement
 import SettlementTransferSetMoney from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferSetMoney";
 import ExpenditureSettlementDetail from "./pages/settlement/expenditureSettlement/ExpenditureSettlementDetail";
 import SettlementTransferSuccess from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferSuccess";
+import CreateRequestOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/CreateRequestOfCreateMeetingAccount";
 
 function App() {
   return (
@@ -136,7 +141,8 @@ function App() {
           <Route path="/meeting/create/select/account" element={<SelectAccountOfMeeting />} />
           <Route path="/meeting/create/password/:type" element={<PasswordOfCreateMeetingAccount />} />
           <Route path="/meeting/create/password/check" element={<CheckPasswordOfCreateMeetingAccount />} />
-          <Route path="/meeting/create/idverificationo/:type" element={<IDVerificationOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/idverification" element={<IDVerificationOfCreateMeetingAccount />} />
+          <Route path="/meeting/create/request" element={<CreateRequestOfCreateMeetingAccount />} />
           <Route path="/meeting/create/completed/:type" element={<CompletedOfCreateMeetingAccount />} />
 
           {/* 모임통장 상세 */}
@@ -147,6 +153,12 @@ function App() {
           <Route path="/meeting/invite/:code" element={<InvitationOfMeeting />} />
           <Route path="/meeting/invite/:code/info" element={<InviteInfoOfMeeting />} />
           <Route path="/meeting/invite/participated" element={<AlreadyInviteOfMeeting />} />
+
+          {/* 모임통장 채우기 */}
+          <Route path="/meeting/:groupId/fill/setmoney" element={<FillSetMoney />}></Route>
+          <Route path="/meeting/:groupId/fill/confirm" element={<FillConfirm />}></Route>
+          <Route path="/meeting/:groupId/fill/password" element={<FillPassword />}></Route>
+          <Route path="/meeting/:groupId/fill/success" element={<FillSuccess />}></Route>
 
           {/* 통장 내역 */}
           <Route path="/transaction/:accountNo" element={<AccountTransaction />} />

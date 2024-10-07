@@ -1,6 +1,7 @@
 package com.ssafy.soltravel.v2.dto.group.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import lombok.Data;
 
 @Data
@@ -16,10 +17,10 @@ public class CreateGroupRequestDto {
     private String icon;
 
     @Schema(description = "여행 시작 날짜", example = "2024-01-01")
-    private String travelStartDate;
+    private LocalDate travelStartDate;
 
     @Schema(description = "여행 종료 날짜", example = "2024-01-07")
-    private String travelEndDate;
+    private LocalDate travelEndDate;
 
     @Schema(description = "정산 받은 개인 계좌번호", example = "002-4561621-209")
     private String personalAccountNo;

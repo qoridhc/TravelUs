@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
-import MeetingNameInputMui from "../../components/meetingAccount/MeetingNameInputMui";
-import MeetingTypeInputMui from "../../components/meetingAccount/MeetingTypeInputMui";
+import MeetingNameInputMui from "../../../components/meetingAccount/MeetingNameInputMui";
+import MeetingTypeInputMui from "../../../components/meetingAccount/MeetingTypeInputMui";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
-import { setMeetingName, setMeetingType } from "../../redux/meetingAccountSlice";
+import { setMeetingName, setMeetingType } from "../../../redux/meetingAccountSlice";
 
 const MeetingInfoOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
@@ -41,7 +41,7 @@ const MeetingInfoOfCreateMeetingAccount = () => {
         <div className="grid gap-10">
           <div className="grid gap-3">
             <div className="flex space-x-2">
-              <p className="text-[#0471E9] font-semibold">01</p>
+              <p className="text-[#1429A0] font-semibold">01</p>
               <p className="font-medium">모임통장 개설</p>
             </div>
 

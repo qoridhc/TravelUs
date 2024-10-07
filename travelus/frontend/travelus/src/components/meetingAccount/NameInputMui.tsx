@@ -30,6 +30,7 @@ const NameInputMui = ({ name, setName }: Props) => {
       variant="standard"
       autoComplete="off"
       onChange={(e) => setName(e.target.value)}
+      inputMode="none"
     />
   );
 };
