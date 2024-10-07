@@ -224,7 +224,11 @@ public class SettlementService {
    */
   public List<GroupSettlementResponseDto> getGroupSettlementHistory(GroupSettlementHistoryRequestDto requestDto) {
 
-    return null;
+    long groupId = requestDto.getGroupId();
+    List<BillingHistory> response = billingHistoryRepository.findByGroup_GroupId(groupId)
+        .orElseThrow(() -> new BillingHistoryNotFoundException(groupId));
+
+    return settlementMapper.toGroupSettlementResponseDtos(response);
   }
 
   /**

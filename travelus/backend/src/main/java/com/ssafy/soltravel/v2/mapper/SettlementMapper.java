@@ -17,8 +17,11 @@ public interface SettlementMapper {
   @Mapping(source = "id", target = "personalSettlementId")
   @Mapping(source = "createdAt", target = "settlementRequestTime")
   @Mapping(source = "billingHistoryDetails", target = "participants")
+  @Mapping(source = "amount", target = "totalAmount")
   @Mapping(target = "isSettled", expression = "java(determineGroupSettlementStatus(billingHistory))")
   GroupSettlementResponseDto toGroupSettlementResponseDto(BillingHistory billingHistory);
+
+  List<GroupSettlementResponseDto> toGroupSettlementResponseDtos(List<BillingHistory> billingHistories);
 
   @Mapping(source = "billingHistory.group.groupId", target = "groupId")
   @Mapping(source = "billingHistory.group.groupName", target = "groupName")
