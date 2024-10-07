@@ -7,9 +7,10 @@ interface Props {
 }
 
 const SecurityNumberKeyboard = ({ password, setPassword }: Props) => {
+  const PASSWORD_MAX_LENGTH = 4; // 비밀번호 입력 길이 제한 설정
   const nums_init = Array.from({ length: 10 }, (v, k) => k);
   const [nums, setNums] = useState(nums_init); // 숫자 배열 초기화
-  const PASSWORD_MAX_LENGTH = 4; // 비밀번호 입력 길이 제한 설정
+  const [activeButton, setActiveButton] = useState<Set<number> | null>(null); // 숫자 배열 초기화
 
   // 키보드가 처음 열릴 때만 배열을 무작위로 섞음
   const shuffle = (nums: number[]) => {
@@ -38,6 +39,20 @@ const SecurityNumberKeyboard = ({ password, setPassword }: Props) => {
     setPassword((prev) => prev.slice(0, -1));
   }, []);
 
+  const handleTouchEnd = (n: number) => {
+    const tempSet = new Set([n]);
+    while (tempSet.size < 3) {
+      const num = Math.floor(Math.random() * 10);
+      tempSet.add(num);
+    }
+    console.log(tempSet);
+    setActiveButton(tempSet);
+  };
+
+  const handleTouchStart = () => {
+    setActiveButton(null);
+  };
+
   useEffect(() => {
     setNums(shuffle(Array.from({ length: 10 }, (v, k) => k)));
   }, []);
@@ -47,7 +62,13 @@ const SecurityNumberKeyboard = ({ password, setPassword }: Props) => {
       <div className="p-5 bg-white grid grid-cols-3 gap-7">
         {nums.map((n, i) => {
           const Basic_button = (
-            <button className="text-3xl font-medium" value={n} onClick={() => handlePasswordChange(n)} key={i}>
+            <button
+              className={`text-3xl font-medium ${activeButton?.has(n) ? "bg-[#565656]" : ""}`}
+              value={n}
+              onClick={() => handlePasswordChange(n)}
+              onTouchEnd={() => handleTouchEnd(n)}
+              onTouchStart={() => handleTouchStart()}
+              key={i}>
               {n}
             </button>
           );

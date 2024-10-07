@@ -4,7 +4,12 @@ import { NotificationData } from "../types/notification";
 export const notificationApi = {
   // fcm 토큰 저장
   fetchFcmToken: (fcmToken: string) => {
-    return api.post(`/notification/register`, { fcmToken });
+    return api.post(`/notification/fcmToken`, { fcmToken });
+  },
+
+  // fcm 토큰 저장
+  deleteFcmToken: (userId: Number) => {
+    return api.delete(`/notification/fcmToken/${userId}`);
   },
 
   // 푸시 알림 보내기 (포그라운드 메시지 수신 테스트용)

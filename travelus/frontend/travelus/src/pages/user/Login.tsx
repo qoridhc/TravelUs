@@ -1,13 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { userApi } from "../../api/user";
 import { initializeFcmAndRegisterToken } from "../../utils/notificationUtils";
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
+
+  // 페이지 로딩 시 토큰 확인
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      console.log("token: ", token);
+      navigate("/");
+    }
+  }, []);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "email") {
@@ -21,6 +32,7 @@ const Login = () => {
     try {
       const response = await userApi.fetchLogin(email, password);
       if (response.status === 200) {
+        localStorage.setItem("accessToken", response.data.accessToken);
         sessionStorage.setItem("accessToken", response.data.accessToken);
         localStorage.setItem("userId", response.data.userId.toString());
         localStorage.setItem("userName", response.data.name);
@@ -33,6 +45,8 @@ const Login = () => {
           navigate(`/meeting/invite/${location.state.code}/info`, { state: { groupInfo: location.state.groupInfo } });
         } else {
           // 그냥 로그인일 경우, 메인으로 연결
+          console.log("요기");
+
           navigate("/");
         }
       }

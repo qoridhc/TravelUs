@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../redux/store";
+import { useNavigate } from "react-router";
 import { accountApi } from "../api/account";
 import { AccountInfoNew, MeetingAccountInfo } from "../types/account";
-import { editAccountList, editForeingAccountList } from "../redux/accountSlice";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import { IoIosArrowForward } from "react-icons/io";
@@ -15,15 +12,17 @@ import "swiper/css";
 import { ExchangeRateInfo } from "../types/exchange";
 import { exchangeRateApi } from "../api/exchange";
 import { IoMdAdd } from "react-icons/io";
+import Lottie from "lottie-react";
+import loadingAnimation from "../lottie/loadingAnimation.json";
 
 const CURRENCY_CODES = ["USD", "JPY", "EUR"];
 
 const MainPage = () => {
   const navigate = useNavigate();
   const [account, setAccount] = useState<AccountInfoNew | null>(null);
-  const [meetingAccountList, setMeetingAccountList] = useState<MeetingAccountInfo[]>([]);
+  const [meetingAccountList, setMeetingAccountList] = useState<MeetingAccountInfo[] | null>(null);
 
-  const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[]>([]);
+  const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[] | null>(null);
 
   const navigateTransfermation = () => {
     navigate("/transfer/selectbank");
@@ -75,12 +74,19 @@ const MainPage = () => {
   }, []);
 
   const getExchangeRate = (currencyCode: string) => {
+    if (!exchangeRates) {
+      return;
+    }
+
     const rate = exchangeRates.find((r) => r.currencyCode === currencyCode);
     return rate ? rate.exchangeRate.toFixed(2) : "N/A";
   };
 
   const getLatestUpdateTime = () => {
-    if (exchangeRates.length === 0) return "N/A";
+    if (!exchangeRates) {
+      return "N/A";
+    }
+
     return new Date(exchangeRates[0].created).toLocaleString("ko-KR", {
       year: "numeric",
       month: "2-digit",
@@ -91,32 +97,18 @@ const MainPage = () => {
     });
   };
 
+  if ((!account && !meetingAccountList) || !exchangeRates) {
+    return (
+      <div className="h-full flex flex-col justify-center items-center">
+        <Lottie animationData={loadingAnimation} />
+      </div>
+    );
+  }
+
   return (
     <div className="w-full">
       <div className="w-full p-5 flex flex-col items-center space-y-4">
         {account === null ? (
-          // <div className="w-full p-6 flex flex-col space-y-5 rounded-xl bg-white shadow-md">
-          //   <div className="flex justify-between items-center">
-          //     <div className="flex flex-col space-y-2">
-          //       <p className="text-sm">트래블러스가 처음이신가요?</p>
-          //       <div>
-          //         <p className="text-lg font-semibold">튜나뱅크</p>
-          //         <p className="text-lg font-semibold">입출금통장이 필요해요</p>
-          //       </div>
-          //     </div>
-
-          //     <div>
-          //       <img className="w-20" src="/assets/bankBookIcon.png" alt="올인원모임통장" />
-          //     </div>
-          //   </div>
-          //   <button
-          //     className="h-10 rounded-md bg-[#1429A0] font-semibold text-white text-sm"
-          //     onClick={() => {
-          //       navigate("/account/create/userinfo");
-          //     }}>
-          //     개설하기
-          //   </button>
-          // </div>
           <div className="w-full p-5 bg-white rounded-xl shadow-md space-y-5">
             <p className="font-semibold">입출금</p>
             <div
@@ -200,7 +192,7 @@ const MainPage = () => {
 
         <div className="w-full flex flex-col items-center space-y-2">
           {/* 모임 통장 있을 시 표시 */}
-          {meetingAccountList.length > 0 && (
+          {meetingAccountList && meetingAccountList?.length > 0 && (
             <Swiper
               pagination={{
                 dynamicBullets: true,
@@ -250,14 +242,6 @@ const MainPage = () => {
             </button>
           </div>
         </div>
-
-        {/* ExchangeRate 컴포넌트 (숨겨진 상태로 사용) */}
-        {/* <div style={{ display: 'none' }}>
-          <ExchangeRate
-            onCurrencyChange={() => {}}
-            onExchangeRatesUpdate={handleExchangeRatesUpdate}
-          />
-        </div> */}
 
         {/* 머니로그 */}
         <div

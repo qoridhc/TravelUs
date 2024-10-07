@@ -37,9 +37,24 @@ public class NotificationController {
         @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content),
         @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
     })
-    @PostMapping("/register")
+    @PostMapping("/fcmToken")
     public ResponseEntity<ResponseDto> setToken(@RequestBody RegisterNotificationRequestDto requestDto) {
         ResponseDto responseDto = notificationService.saveFcmToken(requestDto);
+
+        return ResponseEntity.ok().body(responseDto);
+    }
+
+    @Operation(summary = "FCM 토큰 삭제", description = "특정 유저의 FCM 토큰을 Redis에서 삭제하는 API")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "토큰 삭제 성공", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+    @DeleteMapping("/fcmToken/{userId}")
+    public ResponseEntity<ResponseDto> deleteToken(
+        @PathVariable Long userId
+    ) {
+        ResponseDto responseDto = notificationService.deleteFcmToken(userId);
 
         return ResponseEntity.ok().body(responseDto);
     }
