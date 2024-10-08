@@ -10,7 +10,10 @@ import com.ssafy.soltravel.v2.dto.account_book.AccountHistoryReadRequestDto;
 import com.ssafy.soltravel.v2.dto.account_book.AccountHistoryReadResponseDto;
 import com.ssafy.soltravel.v2.dto.account_book.AccountHistoryReadResponseDto.DayAccountHistory;
 import com.ssafy.soltravel.v2.dto.account_book.AccountHistorySaveRequestDto;
+import com.ssafy.soltravel.v2.dto.account_book.AccountHistorySaveRequestDto.Item;
 import com.ssafy.soltravel.v2.dto.account_book.AccountHistorySaveResponseDto;
+import com.ssafy.soltravel.v2.dto.account_book.DetailAccountHistoryReadRequestDto;
+import com.ssafy.soltravel.v2.dto.account_book.DetailAccountHistoryReadResponseDto;
 import com.ssafy.soltravel.v2.dto.account_book.ReceiptAnalysisDto;
 import com.ssafy.soltravel.v2.dto.account_book.ReceiptUploadRequestDto;
 import com.ssafy.soltravel.v2.dto.account_book.api.TransactionRequestBody;
@@ -20,10 +23,12 @@ import com.ssafy.soltravel.v2.exception.LackOfBalanceException;
 import com.ssafy.soltravel.v2.mapper.AccountBookMapper;
 import com.ssafy.soltravel.v2.service.AwsFileService;
 import com.ssafy.soltravel.v2.service.GPTService;
+import com.ssafy.soltravel.v2.util.DateUtil;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import com.ssafy.soltravel.v2.util.WebClientUtil;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +109,7 @@ public class AccountBookService {
             request.getStartDate(),
             request.getEndDate()
         );
-        updateMoneylogFromKRWTransactions(response, objectMapper.convertValue(transactionHistory.get("REC"), TransactionResponseBody.class));
+        updateMoneylogFromKRWTransactions(response, objectMapper.convertValue(transactionHistory, TransactionResponseBody.class));
 
         // 외화 거래 기록 조회 & 추가
         transactionHistory = requestTransactionHistory(
@@ -113,7 +118,7 @@ public class AccountBookService {
             request.getStartDate(),
             request.getEndDate()
         );
-        updateMoneylogFromFRTransactions(response, objectMapper.convertValue(transactionHistory.get("REC"), TransactionResponseBody.class));
+        updateMoneylogFromFRTransactions(response, objectMapper.convertValue(transactionHistory, TransactionResponseBody.class));
 
         // 현금 기록 조회 & 추가
         List<CashHistory> cashHistoryList = cashHistoryService.findAllByForeignAccountAndPeriod(
@@ -171,7 +176,8 @@ public class AccountBookService {
             requestBody,
             TransactionRequestBody.class
         );
-        return responseBody.getBody();
+
+        return (Map<String, Object>) responseBody.getBody().get("REC");
     }
 
     
@@ -222,6 +228,100 @@ public class AccountBookService {
         for (CashHistory history : cashHistoryList) {
             int date = history.getTransactionAt().getDayOfMonth();
             calendar.get(date).addTotalExpenditureForeign(history.getAmount());
+        }
+    }
+
+
+    //-------------------------------------------------------------------------------
+    //----------------------------- 가계부 상세 조회 -----------------------------------
+    //-------------------------------------------------------------------------------
+    public List<DetailAccountHistoryReadResponseDto> findDetailAccountHistory(
+        String accountNo,
+        DetailAccountHistoryReadRequestDto request
+    ) {
+        // 응답 변수 셋팅
+        List<DetailAccountHistoryReadResponseDto> response = new ArrayList<>();
+        String start = request.getDate();
+        String end = DateUtil.getNextLocalDateStr(start);
+
+        // 원화 거래 기록 조회 & 추가
+        Map<String, Object> transactionHistory = requestTransactionHistory(
+            accountNo,
+            "KRW",
+            start,
+            end
+        );
+        updateDetailLogFromTransactions(response, objectMapper.convertValue(transactionHistory, TransactionResponseBody.class));
+
+        // 외화 거래 기록 조회 & 추가
+        transactionHistory = requestTransactionHistory(
+            accountNo,
+            requestValidCurrencyCode(accountNo),
+            start,
+            end
+        );
+        updateDetailLogFromTransactions(response, objectMapper.convertValue(transactionHistory, TransactionResponseBody.class));
+
+        // 현금 기록 조회 & 추가
+        List<CashHistory> cashHistoryList = cashHistoryService.findAllByForeignAccountAndPeriod(
+            accountNo,
+            start,
+            end
+        );
+        updateDetailLogFromCashHistory(response, cashHistoryList);
+
+        return response;
+    }
+
+    //------------------------------ 가계부 상세 조회(거래기록 -> 머니로그) --------------------------------
+    private void updateDetailLogFromTransactions(
+        List<DetailAccountHistoryReadResponseDto> response,
+        TransactionResponseBody transaction
+    ){
+        for(TransactionContent item : transaction.getContent()) {
+            DetailAccountHistoryReadResponseDto dto = DetailAccountHistoryReadResponseDto.builder()
+                .transactionAt(item.getTransactionDate())
+                .paid(item.getTransactionAmount())
+                .payeeName(item.getPayeeName())
+                .transactionSummary(item.getTransactionSummary())
+                .store("")
+                .address("")
+                .currency(item.getCurrencyCode().getCurrencyCode())
+                .items(null)
+                .build();
+            response.add(dto);
+        }
+    }
+
+    //------------------------------ 가계부 상세 조회(현금기록 -> 머니로그) --------------------------------
+    private void updateDetailLogFromCashHistory(
+        List<DetailAccountHistoryReadResponseDto> response,
+        List<CashHistory> cashHistoryList
+    ){
+        for(CashHistory history : cashHistoryList) {
+            List<Item> items = new ArrayList<>();
+            history.getItemHistoryList().stream().forEach(item -> {
+                items.add(
+                    Item.builder()
+                        .item(item.getName())
+                        .price(item.getPrice())
+                        .quantity(item.getQuantity().intValue())
+                        .build()
+                );
+            });
+
+            DetailAccountHistoryReadResponseDto dto = DetailAccountHistoryReadResponseDto.builder()
+                .transactionAt(history.getTransactionAt())
+                .paid(history.getAmount())
+                .payeeName("")
+                .transactionSummary("")
+                .store(history.getStore())
+                .address(history.getAddress())
+                .currency(history.getCurrency().getCurrencyCode())
+                .items(items)
+                .build();
+
+            response.add(dto);
         }
     }
 }

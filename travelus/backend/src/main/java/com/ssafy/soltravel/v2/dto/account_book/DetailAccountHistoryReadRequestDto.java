@@ -17,5 +17,5 @@ public class DetailAccountHistoryReadRequestDto {
   private String date;
 
   @Schema(description = "거래 유형 (M:입금, D:출금, A:전체)", example = "A")
-  private TransactionType transactionType;
+  private String transactionType;
 }
