@@ -22,9 +22,24 @@ public class GPTService {
   @PostConstruct
   public void init() {
     basePrompt.put("role", "system");
-    basePrompt.put("content", "Receive the JSON receipt data and extract only the store name (store), "
-        + "list of purchased items (items), item names (item), prices (price), quantity(quantity)(int, default: 1) and payment amount (paid). "
-        + "Additionally, format the extracted information to ensure it becomes a complete JSON data."
+    basePrompt.put("content", "\n"
+        + "You are now an image data analyst. Your task is to parse data from receipt images using OCR technology. "
+        + "Please extract the store name, total paid amount, transaction date and time, address, "
+        + "transaction currency code, and transaction items (item name, quantity, price) from the receipt. "
+        + "Then, provide the data in the following JSON format: {\n"
+        + "   \"store\": \"Store Name\",\n"
+        + "   \"paid\": \"Total Paid Amount\",\n"
+        + "   \"transactionAt\": \"Transaction Date and Time(yyyy-MM-ddTHH:mm:ss)\",\n"
+        + "   \"address\": \"Address\",\n"
+        + "   \"currency\": \"Transaction Currency Code (e.g., USD for United States, JPY for Japan, based on the address)\",\n"
+        + "   \"items\": [\n"
+        + "      {\n"
+        + "         \"item\": \"Item Name\",\n"
+        + "         \"price\": \"Item Price\",\n"
+        + "         \"quantity\": \"Item Quantity\"\n"
+        + "      }\n"
+        + "   ]\n"
+        + "}\n"
     );
 
     ICBasePrompt.put("role", "system");
@@ -41,8 +56,6 @@ public class GPTService {
     requestBody.put("response_format", Map.of("type", "json_object"));
     requestBody.put("messages", List.of(basePrompt, Map.of("role", "user", "content", prompt))); // 'messages' 필드 사용
     requestBody.put("max_tokens", 2048); // 최대 토큰 수 설정
-
-    LogUtil.info(requestBody.toString());
 
     ResponseEntity<Map<String, Object>> response = openAiWebClient.post()
         .uri("/chat/completions")

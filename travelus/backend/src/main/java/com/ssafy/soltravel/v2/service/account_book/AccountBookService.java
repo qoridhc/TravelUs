@@ -3,6 +3,7 @@ package com.ssafy.soltravel.v2.service.account_book;
 
 import com.ssafy.soltravel.v2.domain.CashHistory;
 import com.ssafy.soltravel.v2.domain.Enum.OrderByType;
+import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account_book.AccountHistoryReadRequestDto;
 import com.ssafy.soltravel.v2.dto.account_book.AccountHistoryReadResponseDto;
 import com.ssafy.soltravel.v2.dto.account_book.AccountHistorySaveRequestDto;
@@ -11,6 +12,7 @@ import com.ssafy.soltravel.v2.dto.account_book.DetailAccountHistoryReadRequestDt
 import com.ssafy.soltravel.v2.dto.account_book.DetailAccountHistoryReadResponseDto;
 import com.ssafy.soltravel.v2.dto.account_book.ReceiptAnalysisDto;
 import com.ssafy.soltravel.v2.dto.account_book.ReceiptUploadRequestDto;
+import com.ssafy.soltravel.v2.dto.exchange.Account;
 import com.ssafy.soltravel.v2.dto.transaction.TransactionHistoryDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.TransactionHistoryListRequestDto;
 import com.ssafy.soltravel.v2.exception.LackOfBalanceException;
@@ -18,6 +20,7 @@ import com.ssafy.soltravel.v2.mapper.AccountBookMapper;
 import com.ssafy.soltravel.v2.mapper.TransactionMapper;
 import com.ssafy.soltravel.v2.service.AwsFileService;
 import com.ssafy.soltravel.v2.service.GPTService;
+import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.service.transaction.TransactionService;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.io.IOException;
@@ -48,6 +51,7 @@ public class AccountBookService {
 
     // 시큐리티 유틸
     private final SecurityUtil securityUtil;
+    private final AccountService accountService;
 
     /*
      * 영수증 업로드 & 정보 파싱해서 반환
@@ -79,30 +83,10 @@ public class AccountBookService {
     public AccountHistorySaveResponseDto saveAccountHistory(AccountHistorySaveRequestDto requestDto)
         throws LackOfBalanceException {
 
-        // 현금 사용으로 출금 신청
-        // ForeignTransactionRequestDto withRequest = ForeignTransactionRequestDto.builder()
-        //     .transactionBalance(requestDto.getPaid())
-        //     .transactionSummary("현금 사용")
-        //     .userId(SecurityUtil.getCurrentUserId())
-        //     .build();
-        // transactionService.postForeignWithdrawal(false, requestDto.getAccountNo(), withRequest);
-
-//    // 현금 사용 가계 등록
-//    ForeignAccount foreignAccount = foreignAccountRepository.findByAccountNo(
-//        requestDto.getAccountNo()
-//    ).orElseThrow(
-//        () -> new ForeignAccountNotFoundException(requestDto.getAccountNo())
-//    );
-//
-//     Double newBalance = cashHistoryService.payCash(
-//         foreignAccount, requestDto.getPaid(), requestDto.getStore(), requestDto.getTransactionAt()
-//     );
-//
-//    return AccountHistorySaveResponseDto.builder()
-//        .message("가계부가 등록되었습니다.")
-//        .build();
-
-        return null;
+        cashHistoryService.payCash(requestDto);
+        return AccountHistorySaveResponseDto.builder()
+            .message("응답 메세지")
+            .build();
     }
 
 
@@ -289,7 +273,6 @@ public class AccountBookService {
                     .amount(String.valueOf(cashHistory.getAmount()))
                     .transactionType(cashHistory.getTransactionType().toString())
                     .transactionAt(cashHistory.getTransactionAt())
-                    .balance(String.valueOf(cashHistory.getBalance()))
                     .store(String.valueOf(cashHistory.getStore()))
                     .build();
             detailAccountBook.add(dto);

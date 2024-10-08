@@ -75,7 +75,9 @@ public class CardService {
 
     // 연결 계좌 검증
     String accountNo = request.getWithdrawalAccountNo();
-    Account account = accountRepository.findByAccountNo(accountNo).orElseThrow(() -> new InvalidAccountNoException(accountNo));
+    Account account = accountRepository.findByAccountNo(accountNo).orElseThrow(
+        () -> new InvalidAccountNoException(accountNo)
+    );
 
     // 카드 상품 선택
     String uniqueNo = request.getCardUniqueNo();
