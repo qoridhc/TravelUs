@@ -21,4 +21,9 @@ export const settlementApi = {
   fetchSettlementPersonalTransfer: (data: SettlementTransferRequest) => {
     return api.post(`/settlement/personal/transfer`, data);
   },
+
+  // 개별 정산 요청 건당 조회
+  fetchSettlementPersonalDetail: (settlementId: number) => {
+    return api.get(`/settlement/personal/transfer/${settlementId}`);
+  },
 };

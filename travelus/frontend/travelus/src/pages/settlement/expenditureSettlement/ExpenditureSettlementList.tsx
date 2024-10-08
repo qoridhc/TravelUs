@@ -40,8 +40,8 @@ const ExpenditureSettlementList = () => {
     navigate("/settlement/expenditure/transfer/setMoney", { state: { data } });
   };
 
-  const handleDetail = (settlementId: number) => {
-    navigate(`/settlement/expenditure/detail/${settlementId}`);
+  const handleDetail = (settlementId: number, remainingAmount: number) => {
+    navigate(`/settlement/expenditure/detail/${settlementId}`, { state: { remainingAmount } });
   };
 
   const fetchSettlementList = async (settlementStatus: string) => {
@@ -144,7 +144,7 @@ const ExpenditureSettlementList = () => {
 
                       <div
                         className="col-span-2 grid grid-cols-[9fr_1fr]"
-                        onClick={() => handleDetail(settlement.settlementId)}>
+                        onClick={() => handleDetail(settlement.settlementId, settlement.remainingAmount)}>
                         <div>
                           <p className="text-xl font-bold tracking-tight">{formatCurrency(settlement.amount)}원</p>
                           <p className="text-[#565656]">
