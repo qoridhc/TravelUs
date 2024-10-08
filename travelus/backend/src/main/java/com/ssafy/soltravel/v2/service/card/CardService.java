@@ -2,6 +2,7 @@ package com.ssafy.soltravel.v2.service.card;
 
 
 import com.ssafy.soltravel.v2.common.BankHeader;
+import com.ssafy.soltravel.v2.common.Header;
 import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
@@ -12,19 +13,21 @@ import com.ssafy.soltravel.v2.dto.card.CardPaymentRequestDto;
 import com.ssafy.soltravel.v2.dto.card.CardPaymentResponseDto;
 import com.ssafy.soltravel.v2.dto.card.CardRequestDto;
 import com.ssafy.soltravel.v2.dto.card.CardResponseDto;
+import com.ssafy.soltravel.v2.dto.card.CardUsageAmountResponseDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
 import com.ssafy.soltravel.v2.exception.moneybox.MoneyBoxNotFoundException;
-import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import com.ssafy.soltravel.v2.util.WebClientUtil;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,10 +40,10 @@ public class CardService {
     private static final String DEFAULT_REQUEST_URI = "/card";
     private final Map<String, String> apiKeys;
     private final AccountService accountService;
-    private final UserRepository userRepository;
     private final WebClientUtil webClientUtil;
     private final SecurityUtil securityUtil;
 
+    private final ModelMapper modelMapper;
     /*
      * 카드 발급
      */
@@ -241,5 +244,30 @@ public class CardService {
             .build();
 
         return dto;
+    }
+
+    /**
+     * 카드 사용 금액 조회 메서드
+     */
+    public CardUsageAmountResponseDto getUsageAmount(String cardNo){
+
+
+        // 유저 조회
+        User user = securityUtil.getUserByToken();
+
+        String API_URL = DEFAULT_REQUEST_URI + "/amount";
+
+        Header header = Header.builder()
+            .apiKey(apiKeys.get("API_KEY"))
+            .userKey(user.getUserKey()).build();
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("Header", header);
+        body.put("cardNo", cardNo);
+        ResponseEntity<Map<String, Object>> response = webClientUtil.request(API_URL, body, Map.class);
+        Object recObject = response.getBody().get("REC");
+
+        CardUsageAmountResponseDto transactionResponseDto = modelMapper.map(recObject, CardUsageAmountResponseDto.class);
+        return transactionResponseDto;
     }
 }

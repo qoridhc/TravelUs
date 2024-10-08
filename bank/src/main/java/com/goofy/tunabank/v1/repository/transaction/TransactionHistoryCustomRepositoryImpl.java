@@ -30,8 +30,7 @@ public class TransactionHistoryCustomRepositoryImpl implements TransactionHistor
 
   private final JPAQueryFactory queryFactory;
 
-  public Optional<Page<AbstractHistory>> findHistoryByAccountNo(
-      TransactionHistoryListRequestDto requestDto, Pageable pageable) {
+  private JPAQuery<AbstractHistory> buildBaseQuery(TransactionHistoryListRequestDto requestDto) {
     QAbstractHistory abstractHistory = QAbstractHistory.abstractHistory;
     QTransactionHistory transactionHistory = QTransactionHistory.transactionHistory;
     QCardHistory cardHistory = QCardHistory.cardHistory;
@@ -41,7 +40,7 @@ public class TransactionHistoryCustomRepositoryImpl implements TransactionHistor
     BooleanBuilder cardCurrencyCodeCondition = createCardCurrencyCodeCondition(cardHistory,
         requestDto.getCurrencyCode());
 
-    JPAQuery<AbstractHistory> query = queryFactory
+    return queryFactory
         .select(abstractHistory)
         .from(abstractHistory)
         .leftJoin(transactionHistory).on(
@@ -64,24 +63,30 @@ public class TransactionHistoryCustomRepositoryImpl implements TransactionHistor
                 requestDto.getEndDate())
         )
         .orderBy(getOrderByExpression(abstractHistory, requestDto.getOrderByType()));
+  }
 
-    // Pageable이 있는 경우 페이징 적용
+  public Optional<Page<AbstractHistory>> findHistoryByAccountNo(TransactionHistoryListRequestDto requestDto, Pageable pageable) {
+    JPAQuery<AbstractHistory> query = buildBaseQuery(requestDto);
+
     if (pageable != null) {
-      query.offset(pageable.getOffset())
-          .limit(pageable.getPageSize());
+      query.offset(pageable.getOffset()).limit(pageable.getPageSize());
     }
 
     List<AbstractHistory> result = query.fetch();
     long total = result.size();
 
-// pageable이 null인 경우 result 크기에 맞는 Pageable 생성
     Pageable effectivePageable = pageable != null
         ? pageable
-        : PageRequest.of(0, total > 0 ? (int) total : 1); // 기본적으로 페이지 번호는 0, 사이즈는 result 크기
+        : PageRequest.of(0, total > 0 ? (int) total : 1);
 
     return Optional.ofNullable(new PageImpl<>(result, effectivePageable, total));
-
   }
+
+  public Optional<List<AbstractHistory>> findHistoryByAccountNo(TransactionHistoryListRequestDto requestDto) {
+    List<AbstractHistory> result = buildBaseQuery(requestDto).fetch();
+    return Optional.ofNullable(result);
+  }
+
 
 
 

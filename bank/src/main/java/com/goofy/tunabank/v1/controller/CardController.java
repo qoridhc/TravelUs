@@ -10,6 +10,8 @@ import com.goofy.tunabank.v1.dto.card.CardPaymentRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardPaymentResponseDto;
 import com.goofy.tunabank.v1.dto.card.CardRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardResponseDto;
+import com.goofy.tunabank.v1.dto.card.CardUsageAmountRequestDto;
+import com.goofy.tunabank.v1.dto.card.CardUsageAmountResponseDto;
 import com.goofy.tunabank.v1.service.CardService;
 import com.goofy.tunabank.v1.util.LogUtil;
 import java.util.List;
@@ -60,6 +62,13 @@ public class CardController {
   public ResponseEntity inquireCard(@RequestBody CardNoRequestDto request) {
     LogUtil.info("계좌에 연결된 카드 조회 요청");
     CardNoResponseDto response = cardService.inquireCardNoByAccountNo(request);
+    return new ResponseEntity(new RecWrapper<>(response), HttpStatus.OK);
+  }
+
+  @PostMapping("/amount")
+  public ResponseEntity getUsageAmount(@RequestBody CardUsageAmountRequestDto request) {
+
+    CardUsageAmountResponseDto response=cardService.getUsageAmount(request);
     return new ResponseEntity(new RecWrapper<>(response), HttpStatus.OK);
   }
 }

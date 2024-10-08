@@ -15,7 +15,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("https://j11d209.p.ssafy.io"));
+        config.setAllowedOrigins(List.of("https://j11d209.p.ssafy.io", "https://travelus.shop"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.addAllowedHeader("*");
         config.setExposedHeaders(List.of("*"));

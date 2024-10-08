@@ -17,6 +17,8 @@ import com.goofy.tunabank.v1.dto.card.CardPaymentRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardPaymentResponseDto;
 import com.goofy.tunabank.v1.dto.card.CardRequestDto;
 import com.goofy.tunabank.v1.dto.card.CardResponseDto;
+import com.goofy.tunabank.v1.dto.card.CardUsageAmountRequestDto;
+import com.goofy.tunabank.v1.dto.card.CardUsageAmountResponseDto;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
 import com.goofy.tunabank.v1.exception.card.CardExpiredException;
 import com.goofy.tunabank.v1.exception.card.CardInsufficientBalanceException;
@@ -29,6 +31,7 @@ import com.goofy.tunabank.v1.exception.merchant.MerchantNotFoundException;
 import com.goofy.tunabank.v1.exception.moneybox.MoneyBoxNotFoundException;
 import com.goofy.tunabank.v1.mapper.CardHistoryMapper;
 import com.goofy.tunabank.v1.mapper.CardMapper;
+import com.goofy.tunabank.v1.mapper.HistoryMapper;
 import com.goofy.tunabank.v1.repository.CardHistoryRepository;
 import com.goofy.tunabank.v1.repository.CardProductRepository;
 import com.goofy.tunabank.v1.repository.CardRepository;
@@ -273,6 +276,22 @@ public class CardService {
 
     cardHistoryRepository.save(cardHistory);
     return cardHistory;
+  }
+
+  /**
+   * 결제 금액 조회
+   */
+  public CardUsageAmountResponseDto getUsageAmount(CardUsageAmountRequestDto requestDto) {
+
+    String cardNo = requestDto.getCardNo();
+    Card card = cardRepository.findByCardNo(requestDto.getCardNo())
+        .orElseThrow(() -> new CardNotFoundException(cardNo));
+
+    double krwAmount = cardHistoryRepository.getTotalAmountByCurrency(cardNo, CurrencyType.KRW);
+    CurrencyType foreignCurrency=card.getAccount().getMoneyBoxes().get(1).getCurrency().getCurrencyCode();
+    double foreignAmount= cardHistoryRepository.getTotalAmountByCurrency(cardNo,foreignCurrency);
+
+    return new CardUsageAmountResponseDto(krwAmount,foreignAmount);
   }
 
 

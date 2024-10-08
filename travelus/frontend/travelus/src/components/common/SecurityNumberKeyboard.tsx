@@ -49,7 +49,6 @@ const SecurityNumberKeyboard = ({ password, setPassword }: Props) => {
       const num = Math.floor(Math.random() * 10);
       tempSet.add(num);
     }
-    console.log(tempSet);
     setActiveButton(tempSet);
   };
 

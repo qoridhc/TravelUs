@@ -53,8 +53,13 @@ self.addEventListener("notificationclick", function (event) {
         includeUncontrolled: true
       });
 
+      console.log("notificationType : ", notificationType);
+      console.log("openToUrl : ", urlToOpen);
+
 
       let rootClient = allClients.find(client => client.url.includes("/") && 'focus' in client);
+
+
 
       if (rootClient) {
         try {
@@ -82,9 +87,11 @@ const generateUrl = (type, accountNo, groupId, currencyCode) => {
     case "PT":
       return `${baseUrl}/transaction/${accountNo}`;
     case "GT":
-      return `${baseUrl}/meetingtransaction/${accountNo}?groupId=${groupId}`;
+      return `${baseUrl}/meetingtransaction/${accountNo}}/notification`;
     case "E":
-      return `${baseUrl}/travelbox/transaction/${accountNo}?groupId=${groupId}&currencyCode=${currencyCode}`;
+      return `${baseUrl}/travelbox/transaction/${accountNo}/notification?groupId=${groupId}&currencyCode=${currencyCode}`;
+
+    // return `${baseUrl}/travelbox/transaction/${accountNo}?groupId=${groupId}&currencyCode=${currencyCode}/notification`;
 
     // 정산 추후 추가
     // case "S":
