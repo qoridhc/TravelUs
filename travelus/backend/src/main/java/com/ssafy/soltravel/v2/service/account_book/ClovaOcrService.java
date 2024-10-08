@@ -87,9 +87,6 @@ public class ClovaOcrService {
         // 응답값 파싱
         .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {})
         .block();
-
-    // 결과 확인
-    LogUtil.info("NCP OCR complete", response);
     return response;
   }
 

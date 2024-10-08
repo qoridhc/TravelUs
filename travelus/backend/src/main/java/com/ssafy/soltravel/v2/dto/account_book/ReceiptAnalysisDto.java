@@ -13,6 +13,9 @@ import lombok.NoArgsConstructor;
 public class ReceiptAnalysisDto {
 
   private String store;
-  private List<ItemAnalysisDto> items;
   private double paid;
+  private String transactionAt;
+  private String address;
+  private String currency;
+  private List<ItemAnalysisDto> items;
 }
