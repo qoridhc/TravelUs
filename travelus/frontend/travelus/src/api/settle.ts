@@ -26,4 +26,9 @@ export const settlementApi = {
   fetchSettlementPersonalDetail: (settlementId: number) => {
     return api.get(`/settlement/personal/transfer/${settlementId}`);
   },
+
+  // 개별 정산 요청 내역 모임별 조회
+  fetchSettlementPersonalGroupList: (groupId: string) => {
+    return api.get(`/settlement/group?groupId=${groupId}`);
+  },
 };
