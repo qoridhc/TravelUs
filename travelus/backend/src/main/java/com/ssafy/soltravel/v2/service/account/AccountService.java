@@ -10,6 +10,7 @@ import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.AddMoneyBoxRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.InquireAccountListRequestDto;
+import com.ssafy.soltravel.v2.dto.moneyBox.DeleteMoneyBoxResponseDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.AccountMapper;
@@ -17,6 +18,7 @@ import com.ssafy.soltravel.v2.repository.GeneralAccountRepository;
 import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.service.WebClientService;
+import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.util.HashMap;
 import java.util.List;
@@ -195,6 +197,36 @@ public class AccountService {
         return moneyBoxDtos;
     }
 
+    // 머니박스 삭제
+    public DeleteMoneyBoxResponseDto deleteMoneyBox(AddMoneyBoxRequestDto requestDto) {
+
+        User user = securityUtil.getUserByToken();
+
+        String API_URL = BASE_URL + "deleteMoneyBox";
+
+        BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
+
+        Map<String, Object> body = new HashMap<>();
+
+        body.put("Header", header);
+        body.putAll(objectMapper.convertValue(requestDto, Map.class));
+
+        ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+
+        // WebClient 응답에서 REC 부분을 가져오기
+        Map<String, Object> recObject = (Map<String, Object>) response.getBody().get("REC");
+
+        // REC 데이터를 MoneyBoxDto 리스트로 변환
+        DeleteMoneyBoxResponseDto responseDto = objectMapper.convertValue(recObject, DeleteMoneyBoxResponseDto.class);
+
+        LogUtil.info("responseDto: " + responseDto);
+        LogUtil.info("responseDto: " + responseDto);
+
+        // 변환된 리스트를 반환하거나, 다른 로직에 사용
+        return responseDto;
+
+    }
+
 //  public ResponseEntity<DeleteAccountResponseDto> deleteAccount(
 //      String accountNo,
 //      boolean isForeign,
@@ -293,76 +325,4 @@ public class AccountService {
 //    }
 //  }
 //
-//  public ResponseEntity<ResponseDto> addParticipant(Long accountId,
-//      AddParticipantRequestDto requestDto) {
-//
-//    GeneralAccount generalAccount = generalAccountRepository.findById(accountId).orElseThrow(
-//        () -> new IllegalArgumentException("The generalAccountId does not exist: " + accountId));
-//
-//    GeneralAccount personalAccount =
-//        generalAccountRepository.findByAccountNo(requestDto.getParticipantAccountNo()).orElseThrow(
-//            () -> new IllegalArgumentException(
-//                "The personalAccountId does not exist: " + requestDto.getParticipantAccountNo()));
-//    User user = userRepository.findByUserId(requestDto.getParticipantId()).orElseThrow(
-//        () -> new IllegalArgumentException(
-//            "The participantId does not exist: " + requestDto.getParticipantId()));
-//
-//    Participant participant = Participant.builder()
-//        .isMaster(false)
-//        .generalAccount(generalAccount)
-//        .personalAccount(personalAccount)
-//        .user(user)
-//        .build();
-//
-//    participantRepository.save(participant);
-//
-//    return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto());
-//  }
-//
-//  public ResponseEntity<ResponseDto> deleteParticipants(Long participantId) {
-//
-//    participantRepository.deleteById(participantId);
-//
-//    return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto());
-//  }
-//
-//  public ResponseEntity<ParticipantListResponseDto> getParticipants(Long accountId) {
-//
-//    List<Participant> participants = participantRepository.findAllByGeneralAccountId(accountId);
-//
-//    List<ParticipantDto> participantDtoList = participants.stream()
-//        .map(ParticipantMapper::toDto)
-//        .collect(Collectors.toList());
-//
-//    ParticipantListResponseDto responseDto = ParticipantListResponseDto.builder()
-//        .accountId(accountId)
-//        .participants(participantDtoList)
-//        .build();
-//
-//    return ResponseEntity.status(HttpStatus.OK).body(responseDto);
-//  }
-
-//  public ResponseEntity<List<AccountDto>> getAllGroupInfoByUserId(Long userId) {
-//    List<GeneralAccount> allByParticipantUserId = generalAccountRepository.findAllByParticipantUserId(userId);
-//
-//    List<AccountDto> response = allByParticipantUserId.stream().map(accountMapper::toCreateAccountDto).toList();
-//
-//    return ResponseEntity.status(HttpStatus.OK).body(response);
-//  }
-//
-//
-//  public List<Long> findUserIdsByGeneralAccountId(Long accountId) {
-//
-//    return participantRepository.findUserIdsByGeneralAccountId(accountId);
-//  }
-//
-//  public Double getBalanceByAccountId(Long accountId) {
-//    return generalAccountRepository.findBalanceByAccountId(accountId);
-//  }
-//
-//  public ForeignAccount getForeignAccount(long accountId) {
-//
-//    return foreignAccountRepository.findById(accountId).get();
-//  }
-
 }

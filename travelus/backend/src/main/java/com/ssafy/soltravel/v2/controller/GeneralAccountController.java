@@ -5,6 +5,7 @@ import com.ssafy.soltravel.v2.dto.account.request.AddMoneyBoxRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.InquireAccountListRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.InquireAccountRequestDto;
+import com.ssafy.soltravel.v2.dto.moneyBox.DeleteMoneyBoxResponseDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -87,6 +89,27 @@ public class GeneralAccountController {
         List<MoneyBoxDto> accountDto = accountService.addMoneyBox(requestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(accountDto);
+    }
+
+    @Operation(summary = "머니박스 삭제", description = "계좌의 특정 통화코드 머니박스를 삭제하는 API.")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "머니박스 삭제 성공",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = MoneyBoxDto.class)))
+        ),
+        @ApiResponse(responseCode = "404", description = "계좌를 찾을 수 없음", content = @Content),
+        @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
+    })
+
+    @DeleteMapping("/moneyBox")
+    public ResponseEntity<DeleteMoneyBoxResponseDto> deleteMoneyBox(
+        @RequestBody AddMoneyBoxRequestDto requestDto
+    ) {
+
+        DeleteMoneyBoxResponseDto responseDto = accountService.deleteMoneyBox(requestDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @Operation(
