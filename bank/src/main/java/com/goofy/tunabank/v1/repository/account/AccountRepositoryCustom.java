@@ -9,4 +9,5 @@ public interface AccountRepositoryCustom {
     Optional<Account> findByAccountNo(String accountNo);
 
     Optional<List<Account>> findAllAccountsByUserId(Long userId);
+
 }

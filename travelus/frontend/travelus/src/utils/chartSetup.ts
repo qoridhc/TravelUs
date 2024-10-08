@@ -49,9 +49,18 @@ export const setupChart = (currencyCode: string, formatExchangeRate: (value: num
         grid: {
           display: false,
         },
+        border: {
+          display: false,
+        }
       },
       y: {
         display: false,
+        grid: {
+          display: false,
+        },
+        border: {
+          display: false,
+        },
       },
     },
     elements: {

@@ -5,14 +5,14 @@ import { ChartData } from "chart.js";
 import { ChevronLeft } from "lucide-react";
 import { exchangeApi } from "../../api/exchange";
 import { AllDetailedPredictions, PredictionCurrencyData } from "../../types/exchange";
-import { setupChart } from "../../utils/chartSetup";
-import { formatExchangeRate, getLatestRate, calculateDailyChange } from "../../utils/currencyUtils";
+import { forecastChartSetup } from "../../utils/forecastChartSetup";
+import { formatExchangeRate } from "../../utils/currencyUtils";
 
 const ExchangeRateForecastDetail: React.FC = () => {
   const [predictions, setPredictions] = useState<AllDetailedPredictions | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedCurrency, setSelectedCurrency] = useState<"USD" | "JPY">("USD");
+  const [selectedCurrency, setSelectedCurrency] = useState<keyof AllDetailedPredictions>("USD");
 
   const navigate = useNavigate();
 
@@ -51,15 +51,15 @@ const ExchangeRateForecastDetail: React.FC = () => {
   // };
 
   const renderCurrencyPrediction = (
-    currency: "USD" | "JPY",
+    currency: keyof AllDetailedPredictions,
     prediction: PredictionCurrencyData,
-    selectedCurrency: "USD" | "JPY",
-    setSelectedCurrency: (currency: "USD" | "JPY") => void
+    selectedCurrency: keyof AllDetailedPredictions,
+    setSelectedCurrency: (currency: keyof AllDetailedPredictions) => void
   ) => {
     const forecastEntries = Object.entries(prediction.forecast);
     const latestForecastRate = forecastEntries[forecastEntries.length - 1][1];
     const earliestForecastRate = forecastEntries[0][1];
-    const currentRate = getLatestRate(prediction.recent_rates["3_months"]);
+    const currentRate = prediction.current_rate;
     const forecastChange = latestForecastRate - earliestForecastRate;
     const isIncreasing = forecastChange >= 0;
     const flagImagePath = `/assets/flag/flagOf${currency}.png`;
@@ -72,6 +72,8 @@ const ExchangeRateForecastDetail: React.FC = () => {
           return "하락할";
         case "STABLE":
           return "변동이 없을";
+        default:
+          return "알 수 없을";
       }
     };
 
@@ -109,13 +111,13 @@ const ExchangeRateForecastDetail: React.FC = () => {
         {
           label: `${currency} 예측`,
           data: Object.values(prediction.forecast),
-          borderColor: isIncreasing ? "rgb(221, 82, 87)" : "rgb(72, 128, 238)",
+          borderColor: prediction.trend === "UPWARD" ? "rgb(221, 82, 87)" : "rgb(72, 128, 238)",
           tension: 0.1,
         },
       ],
     };
 
-    const chartOptions = setupChart(currency, formatExchangeRate, isIncreasing);
+    const chartOptions = forecastChartSetup(currency, formatExchangeRate, prediction.trend);
 
     return (
       <div key={currency} className="currency-prediction">
@@ -127,10 +129,10 @@ const ExchangeRateForecastDetail: React.FC = () => {
           <h2 className="mb-1">환율 예측</h2>
           <div className="flex justify-between">
             <span className="font-semibold">{formatExchangeRate(latestForecastRate, currency)}</span>
-            <span className={`${isIncreasing ? "text-[#DD5257]" : "text-[#4880EE]"}`}>
+            {/* <span className={`${isIncreasing ? "text-[#DD5257]" : "text-[#4880EE]"}`}>
               예측 변화 {formatExchangeRate(Math.abs(forecastChange), currency)}
               {isIncreasing ? "▲" : "▼"}
-            </span>
+            </span> */}
           </div>
         </div>
 
@@ -138,7 +140,7 @@ const ExchangeRateForecastDetail: React.FC = () => {
           <Line data={chartData} options={chartOptions} />
         </div>
         <div className="mb-5 flex justify-center items-center bg-gray-200 rounded-full p-1">
-          {(["USD", "JPY"] as const).map((currency) => (
+          {(["USD", "JPY", "TWD", "EUR"] as const).map((currency) => (
             <button
               key={currency}
               onClick={() => setSelectedCurrency(currency)}
@@ -176,7 +178,7 @@ const ExchangeRateForecastDetail: React.FC = () => {
         {/* 추천 환율 */}
         <div className="bg-gray-100 rounded-md p-4 mb-4">
           <h2 className="mb-2 font-bold text-2xl">추천 희망 환율</h2>
-          <p className="mb-2">원하시는 환율이 있다면 클릭하시면 돼요</p>
+          <p className="mb-2 font-semibold text-gray-500">튜나뱅크에서 2주 간의 환율 예측 정보를 드려요</p>
           <h3 className="mb-2 font-semibold">
             오늘의 환율보다 조금이라도 떨어지면
             <br /> 환전되기 원하는 고객님들에게 추천해요

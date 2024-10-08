@@ -86,7 +86,7 @@ const JoinedMeetingAccount = ({ index, account }: Props) => {
           <div className="text-sm w-full flex justify-between">
             {account.moneyBoxDtoList.length > 1 ? (
               <div className="w-full flex justify-between items-center">
-                <p className="text-zinc-500 text-[0.83rem]">트래블박스</p>
+                <p className="text-zinc-500 text-[0.83rem]">외화저금통</p>
                 <div className="text-[1rem] font-semibold flex space-x-1">
                   <p>{formatCurrency(account.moneyBoxDtoList[1].balance)}</p>
                   <p>{account.moneyBoxDtoList[1].currencyCode}</p>

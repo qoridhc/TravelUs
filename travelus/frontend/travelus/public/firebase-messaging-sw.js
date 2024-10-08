@@ -1,7 +1,6 @@
 // const baseUrl = "http://localhost:3000"; // 로컬
 const baseUrl = "https://j11d209.p.ssafy.io"; // 서비스
 
-
 self.addEventListener("install", function (e) {
   console.log("fcm sw install..");
   self.skipWaiting(); // 새로운 서비스 워커가 대기하지 않고 바로 활성화되도록

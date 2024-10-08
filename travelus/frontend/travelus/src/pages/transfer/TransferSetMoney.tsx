@@ -4,10 +4,10 @@ import { useLocation } from "react-router";
 import { AccountInfoNew } from "../../types/account";
 import { accountApi } from "../../api/account";
 import { IoIosArrowBack } from "react-icons/io";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../lottie/loadingAnimation.json";
 
-interface TransferSetMoneyProps {}
-
-const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
+const TransferSetMoney: React.FC = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { accountNo } = location.state as { accountNo: string };
@@ -103,6 +103,14 @@ const TransferSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
       setTransferAmount(transferAmount.slice(0, -1));
     }
   };
+
+  if (!account || !depositAccount) {
+    return (
+      <div className="h-full flex flex-col justify-center items-center">
+        <Lottie animationData={loadingAnimation} />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full p-5 pb-8">

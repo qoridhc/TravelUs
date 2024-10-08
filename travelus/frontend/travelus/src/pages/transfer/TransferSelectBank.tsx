@@ -6,6 +6,7 @@ import { accountApi } from "../../api/account";
 import { AxiosError } from "axios";
 import { AxiosErrorResponseData } from "../../types/axiosError";
 import AccountTypeInput from "../../components/transfer/inputFields/AccountTypeInput";
+import { format } from "path";
 
 interface TransferSelectBankProps {
   // Define the props for your component here
@@ -38,9 +39,13 @@ const TransferSelectBank = () => {
   };
 
   const handleNext = async () => {
+    const formattedAccountNo = formatAccountNumber(accountNo);
     try {
-      const response = await accountApi.fetchSpecificAccountInfo(formatAccountNumber(accountNo));
-      navigate("/transfer/setmoney", { state: { accountNo } });
+      console.log(formattedAccountNo);
+      const response = await accountApi.fetchSpecificAccountInfo(formattedAccountNo);
+      if (response.status === 201) {
+        navigate("/transfer/setmoney", { state: { accountNo : formattedAccountNo } });
+      }
     } catch (error) {
       const axiosError = error as AxiosError;
       if (axiosError.response && axiosError.response.data) {

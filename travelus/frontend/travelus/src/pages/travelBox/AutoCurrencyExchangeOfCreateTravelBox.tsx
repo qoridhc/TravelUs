@@ -6,6 +6,7 @@ import ExchangeAmmountInput from "../../components/travelBox/ExchangeAmmountInpu
 import { useDispatch, useSelector } from "react-redux";
 import { setExchangeTargetRate, setTravelboxInfo } from "../../redux/meetingAccountSlice";
 import { RootState } from "../../redux/store";
+import ForecastWarningDrawer from "../../components/exchange/ExchangeRateForecastWarning";
 
 const AutoCurrencyExchangeOfCreateTravelBox = () => {
   const navigate = useNavigate();
@@ -30,14 +31,14 @@ const AutoCurrencyExchangeOfCreateTravelBox = () => {
     <div className="h-full p-5 pb-8 flex flex-col justify-between relative">
       <div className="grid gap-14">
         <div className="flex items-center">
-          <IoIosArrowBack className="text-2xl" />
+          <IoIosArrowBack onClick={() => navigate(-1)} className="text-2xl" />
         </div>
 
         <div className="grid gap-10">
           <div className="grid gap-3">
             <div className="flex space-x-2">
               <p className="text-[#0471E9] font-semibold">02</p>
-              <p className="font-medium">트래블박스 개설</p>
+              <p className="font-medium">외화저금통 개설</p>
             </div>
 
             <div className="text-2xl font-semibold">
@@ -53,6 +54,9 @@ const AutoCurrencyExchangeOfCreateTravelBox = () => {
             exchangeRateBack={exchangeRateBack}
             setExchangeRateBack={setExchangeRateBack}
           />
+          <div className="text-right font-semibold">
+            희망 환율을 추천 받고 싶어요
+          </div>
           <ExchangeAmmountInput exchangeAmount={exchangeAmount} setExchangeAmount={setExchangeAmount} />
         </div>
       </div>

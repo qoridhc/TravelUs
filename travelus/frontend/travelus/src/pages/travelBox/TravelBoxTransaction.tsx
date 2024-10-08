@@ -173,7 +173,7 @@ const TravelBoxTransaction = () => {
       <div className="flex flex-col">
         <div className="p-5 bg-white grid grid-cols-3 items-center sticky top-0">
           <IoIosArrowBack onClick={goBack} className="text-2xl" />
-          <p className="text-lg text-center">트래블박스</p>
+          <p className="text-lg text-center">외화저금통</p>
         </div>
 
         {account?.moneyBoxDtos && (

@@ -1,6 +1,7 @@
 package com.ssafy.soltravel.v2.service.user;
 
 
+import com.ssafy.soltravel.v2.common.BankHeader;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.user.ProfileUpdateRequestDto;
@@ -12,6 +13,7 @@ import com.ssafy.soltravel.v2.dto.user.UserSearchResponseDto;
 import com.ssafy.soltravel.v2.dto.user.UserUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.user.api.UserCreateRequestBody;
 import com.ssafy.soltravel.v2.dto.user.api.UserCreateRequestBody.Header;
+import com.ssafy.soltravel.v2.dto.user.api.UserUpdateRequestBody;
 import com.ssafy.soltravel.v2.exception.user.UserPwdInvalidException;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.UserMapper;
@@ -63,7 +65,8 @@ public class UserService implements UserDetailsService {
     // 외부 API 요청용 메서드
     private <T> ResponseEntity<Map<String, Object>> request(
         String uri,
-        T requestBody, Class<T> bodyClass
+        T requestBody,
+        Class<T> bodyClass
     ) {
         return webClient.post()
             .uri(uri)
@@ -233,7 +236,9 @@ public class UserService implements UserDetailsService {
             .build();
     }
 
-
+    /*
+    * 프로필 이미지 변경
+    */
     public void updateUserProfile(ProfileUpdateRequestDto request) throws IOException {
         User user = securityUtil.getUserByToken();
 
@@ -243,12 +248,38 @@ public class UserService implements UserDetailsService {
         user.updateProfile(profileImageUrl);
     }
 
+    /*
+    * 유저 정보 변경
+    */
     public String updateUser(UserUpdateRequestDto request) {
         User user = securityUtil.getUserByToken();
+
+        // 이름 변경 요청
+        UserUpdateRequestBody requestBody = UserUpdateRequestBody
+            .builder()
+            .header(
+                BankHeader.createHeader(
+                    apiKeys.get("API_KEY"),
+                    user.getUserKey()
+                )
+            )
+            .userName(request.getName())
+            .build();
+
+        request(
+            API_URI + "/update",
+            requestBody,
+            UserUpdateRequestBody.class
+        );
+
+        // 이름 변경 (SERVICE)
         user.update(request);
-       return user.getEmail();
+        return user.getEmail();
     }
 
+    /*
+    * 유저 비밀번호 변경
+    */
     public String updatePwdrequest(UserPwdUpdateRequestDto request) {
         User user = securityUtil.getUserByToken();
 

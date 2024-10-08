@@ -13,6 +13,7 @@ import MeetingAccountList from "./pages/account/meetingAccount/MeetingAccountLis
 import MeetingAccountDetail from "./pages/account/meetingAccount/MeetingAccountDetail";
 import MeetingAccountManagement from "./pages/account/meetingAccount/MeetingAccountManagement";
 import MeetingAccountGroupMember from "./pages/account/meetingAccount/MeetingAccountGroupMember";
+import MeetingAccountUpdate from "./pages/account/meetingAccount/meetingAccountUpdate/MeetingAccountUpdate";
 import JoinedMeetingAccountDetail from "./pages/account/meetingAccount/JoinedMeetingAccountDetail";
 import AccountTransaction from "./pages/account/generalAccount/AccountTransaction";
 import TransferSelectBank from "./pages/transfer/TransferSelectBank";
@@ -37,7 +38,6 @@ import MeetingAccountCreatePrepare from "./pages/meetingAccount/createMeetingAcc
 import MeetingAccountCreateComplete from "./pages/ver1/MeetingAccountCreateComplete";
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
 import PrivateRoute from "./pages/user/PrivateRoute";
-import { Sign } from "crypto";
 import EditMembers from "./pages/settlement/EditMembers";
 import UserInfoOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/UserInfoOfCreateAccount";
 import PasswordOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/PasswordOfCreateAccount";
@@ -54,6 +54,7 @@ import TravelBoxTransaction from "./pages/travelBox/TravelBoxTransaction";
 import MeetingTransaction from "./pages/meetingAccount/MeetingTransaction";
 import CurrencyInfoOfCreateTravelBox from "./pages/travelBox/CurrencyInfoOfCreateTravelBox";
 import AutoCurrencyExchangeOfCreateTravelBox from "./pages/travelBox/AutoCurrencyExchangeOfCreateTravelBox";
+import DeleteTravelBox from "./pages/travelBox/DeleteTravelbox";
 import SelectSettlementAmount from "./pages/settlement/balanceSettlement/SelectSettlementAmount";
 import BalanceSettlementCompleted from "./pages/settlement/balanceSettlement/BalanceSettlementCompleted";
 import SettlementInfo from "./pages/settlement/balanceSettlement/SettlementInfo";
@@ -86,6 +87,8 @@ import ExpenditureSettlementDetail from "./pages/settlement/expenditureSettlemen
 import SettlementTransferSuccess from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferSuccess";
 import CreateRequestOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/CreateRequestOfCreateMeetingAccount";
 import CreateRequestOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/CreateRequestOfCreateAccount";
+import ExpenditureSettlementGroupList from "./pages/account/meetingAccount/expenditureSettlement/ExpenditureSettlementGroupList";
+import ExpenditureSettlementGroupDetail from "./pages/account/meetingAccount/expenditureSettlement/ExpenditureSettlementGroupDetail";
 
 function App() {
   return (
@@ -153,6 +156,10 @@ function App() {
           <Route path="/joinedmeetingaccount/:id" element={<JoinedMeetingAccountDetail />} />
           <Route path="/meetingaccount/management/:id" element={<MeetingAccountManagement />} />
           <Route path="/meetingaccount/management/:id/groupmember" element={<MeetingAccountGroupMember />} />
+          <Route path="/meetingaccount/update/:id" element={<MeetingAccountUpdate />} />
+          <Route path="/meetingaccount/update/:id" element={<MeetingAccountUpdate />} />
+
+          {/* 모임 초대 */}
           <Route path="/meeting/invite/:code" element={<InvitationOfMeeting />} />
           <Route path="/meeting/invite/:code/info" element={<InviteInfoOfMeeting />} />
           <Route path="/meeting/invite/participated" element={<AlreadyInviteOfMeeting />} />
@@ -168,10 +175,13 @@ function App() {
           <Route path="/meetingtransaction/:accountNo/:type" element={<MeetingTransaction />} />
           <Route path="/travelbox/transaction/:accountNo/:type" element={<TravelBoxTransaction />} />
 
-          {/* 트래블박스 생성 */}
+          {/* 외화저금통 생성 */}
           <Route path="/travelbox/create/prepare" element={<TravelBoxCreatePrepare />} />
           <Route path="/currencyinfoofcreatetravelbox" element={<CurrencyInfoOfCreateTravelBox />} />
           <Route path="/autocurrencyexchangeofcreatetravelbox" element={<AutoCurrencyExchangeOfCreateTravelBox />} />
+          
+          {/* 외화저금통 해지 */}
+          <Route path="/travelbox/delete/:accountNo/:groupId" element={<DeleteTravelBox />} />
 
           {/* 카드 개설 */}
           <Route path="/card/:groupId/create/englishname" element={<EnglishNameOfCreateCard />} />
@@ -219,11 +229,21 @@ function App() {
           <Route path="/settlement/expenditure/participants/:id" element={<ExpenditureSettlementInfo />}></Route>
           <Route path="/settlement/expenditure/completed" element={<ExpenditureSettlementCompleted />}></Route>
           <Route path="/settlement/expenditure/list/:status" element={<ExpenditureSettlementList />}></Route>
-          <Route path="/settlement/expenditure/detail/:id" element={<ExpenditureSettlementDetail />}></Route>
+          <Route path="/settlement/expenditure/detail/:id/:status" element={<ExpenditureSettlementDetail />}></Route>
+
+          {/* 모임의 지출정산 내역 */}
+          <Route
+            path="/settlement/expenditure/group/list/:id/:status"
+            element={<ExpenditureSettlementGroupList />}></Route>
+          <Route
+            path="/settlement/expenditure/group/detail/:id/:status"
+            element={<ExpenditureSettlementGroupDetail />}></Route>
 
           {/* 지출정산 이체 */}
-          <Route path="/settlement/expenditure/transfer/setMoney" element={<SettlementTransferSetMoney />}></Route>
-          <Route path="/settlement/expenditure/transfer/confirm" element={<SettlementTransferConfirm />}></Route>
+          <Route
+            path="/settlement/expenditure/transfer/setMoney/:type"
+            element={<SettlementTransferSetMoney />}></Route>
+          <Route path="/settlement/expenditure/transfer/confirm/:type" element={<SettlementTransferConfirm />}></Route>
           <Route path="/settlement/expenditure/transfer/password" element={<SettlementTransferPassword />}></Route>
           <Route path="/settlement/expenditure/transfer/success" element={<SettlementTransferSuccess />}></Route>
 

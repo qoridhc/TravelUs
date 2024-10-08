@@ -32,6 +32,7 @@ import com.goofy.tunabank.v1.repository.AbstractHistoryRepository;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
 import com.goofy.tunabank.v1.repository.account.AccountRepository;
 import com.goofy.tunabank.v1.repository.transaction.TransactionHistoryRepository;
+import com.goofy.tunabank.v1.util.LogUtil;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -40,6 +41,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +59,7 @@ public class TransactionService {
   private final UserService userService;
   private final AccountRepository accountRepository;
 
+  private final PasswordEncoder passwordEncoder;
 
   /**
    * 입금 처리
@@ -112,7 +115,7 @@ public class TransactionService {
     validateUserAccess(user, moneyBox);
 
     //비밀번호 검증
-    validatePassword(requestDto.getAccountPassword(), accountNo);
+    validatePassword(requestDto.getAccountPassword(), accountNo,false);
 
     TransactionType transactionType = requestDto.getTransactionType();
     double amount = requestDto.getTransactionBalance();
@@ -148,7 +151,7 @@ public class TransactionService {
     validateUserAccess(user, withdrawalBox);
 
     //비밀번호 검증
-    validatePassword(requestDto.getAccountPassword(), requestDto.getWithdrawalAccountNo());
+    validatePassword(requestDto.getAccountPassword(), requestDto.getWithdrawalAccountNo(),false);
 
     // 입금 머니박스
     MoneyBox depositBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getDepositAccountNo(), CurrencyType.KRW);
@@ -159,7 +162,19 @@ public class TransactionService {
         .depositAmount(requestDto.getTransactionBalance()).depositSummary(requestDto.getDepositTransactionSummary())
         .transmissionDateTime(requestDto.getHeader().getTransmissionDateTime()).build();
 
-    return processTransferLogic(transferDetailDto);
+    List<TransactionResponseDto> responseDtos = processTransferLogic(transferDetailDto);
+
+    /**
+     * 1. 입금 머니박스와 연결된 계좌의 accountType을 가져오면 -> 일반인지 그룹인지 알겠지
+     * 2. 일반이다? 그냥 여기서 끝내면 됨
+     * 3. 그룹이면 어떤 환전타입인지 가져와
+     *  1) 환전타입(자동환전, 입금시마다환전, 그냥 입금)
+     *    2) 자동환전인경우- 입금한 상태로 끝내면 됨
+     *    3) 임금시마다환전- 환전 호출
+     *    4) 그냥 끝내면됨
+     */
+
+    return responseDtos;
   }
 
   /**
@@ -168,7 +183,7 @@ public class TransactionService {
   public List<TransactionResponseDto> processAutoExchange(TransferMBRequestDto requestDto) {
 
     requestDto.setAccountPassword(getPassword(requestDto.getAccountNo()));
-    return processMoneyBoxTransfer(requestDto);
+    return processMoneyBoxTransfer(requestDto,true);
   }
 
   /**
@@ -185,7 +200,7 @@ public class TransactionService {
    * 머니박스 이체(환전)
    */
   @Transactional
-  public List<TransactionResponseDto> processMoneyBoxTransfer(TransferMBRequestDto requestDto) {
+  public List<TransactionResponseDto> processMoneyBoxTransfer(TransferMBRequestDto requestDto,boolean isAuto) {
 
     double beforeAmount = requestDto.getTransactionBalance();//해당 머니박스의 통화단위임
     String summary = (requestDto.getSourceCurrencyCode() == CurrencyType.KRW) ? "환전" : "재환전";
@@ -230,7 +245,7 @@ public class TransactionService {
     validateUserAccess(user, withdrawalBox);
 
     //비밀번호 검증
-    validatePassword(requestDto.getAccountPassword(), requestDto.getAccountNo());
+    validatePassword(requestDto.getAccountPassword(), requestDto.getAccountNo(),isAuto);
 
     // 입금 머니박스
     MoneyBox depositBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountNo(), requestDto.getTargetCurrencyCode());
@@ -295,22 +310,43 @@ public class TransactionService {
             pageable) // pageable이 null일 경우 전체 데이터를 조회
         .orElseThrow(TransactionHistoryNotFoundException::new);
 
-    return transactionHistories.map(historyMapper::toHistoryResponseDto);
-  }
 
+    return transactionHistories.map(history -> {
+
+      HistoryResponseDto dto = historyMapper.toHistoryResponseDto(history);
+      if (history instanceof TransactionHistory) {
+        String accountNo = ((TransactionHistory) history).getTransactionAccountNo();
+        String payeeName = getPayeeNameFromAccount(accountNo);
+        dto.setPayeeName(payeeName);
+      }
+      return dto;
+    });
+  }
 
   /**
    * 거래 내역 단건 조회
    */
   @Transactional(readOnly = true)
   public HistoryResponseDto getHistory(TransactionHistoryRequestDto requestDto) {
-
-    TransactionHistory transactionHistory = transactionHistoryRepository.findById(
+    AbstractHistory transactionHistory = transactionHistoryRepository.findById(
             new HistoryId(requestDto.getTransactionHistoryId(), requestDto.getTransactionType()))
         .orElseThrow(TransactionHistoryNotFoundException::new);
+    HistoryResponseDto dto = historyMapper.toHistoryResponseDto(transactionHistory);
 
-    return historyMapper.toHistoryResponseDto(transactionHistory);
+    if (transactionHistory instanceof TransactionHistory) {
+      String accountNo = ((TransactionHistory) transactionHistory).getTransactionAccountNo();
+      String payeeName = getPayeeNameFromAccount(accountNo);
+      dto.setPayeeName(payeeName);
+    }
+    return dto;
   }
+
+  private String getPayeeNameFromAccount(String accountNo) {
+    return accountRepository.findByAccountNo(accountNo)
+        .map(account -> account.getUser().getName())
+        .orElse("");
+  }
+
 
   /**
    * 다음 거래 기록 id 조회
@@ -361,11 +397,14 @@ public class TransactionService {
   /**
    * 비밀번호 검증
    */
-  private boolean validatePassword(String password, String accountNo) {
+  public boolean validatePassword(String password, String accountNo, boolean isAuto) {
 
     String accountPassword = getPassword(accountNo);
-
-    if (!password.equals(accountPassword)) {
+    LogUtil.info("password:", password);
+    LogUtil.info("accountPassword:", accountPassword);
+    if (!isAuto && !passwordEncoder.matches(password, accountPassword)) {
+      throw new InvalidAccountPasswordException(password);
+    } else if (isAuto && !password.equals(accountPassword)) {
       throw new InvalidAccountPasswordException(password);
     }
     return true;

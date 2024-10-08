@@ -17,16 +17,22 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
     public Optional<Account> findByAccountNo(String accountNo) {
         QAccount account = QAccount.account;
         QMoneyBox moneyBox = QMoneyBox.moneyBox;
+        if (accountNo == null || accountNo.isEmpty()) return Optional.empty();
 
         Account result = queryFactory
             .selectFrom(account)
             .leftJoin(account.moneyBoxes, moneyBox).fetchJoin()
-            .where(account.accountNo.eq(accountNo))
+            .where(account.accountNo.eq(accountNo)
+                .and(account.status.eq("ACTIVE")
+                    .and(moneyBox.status.eq("ACTIVE")))
+            )
             .orderBy(moneyBox.createdAt.asc())  // createdAt을 기준으로 오름차순 정렬
             .fetchOne();
 
         return Optional.ofNullable(result);
     }
+
+
 
     @Override
     public Optional<List<Account>> findAllAccountsByUserId(Long userId) {
@@ -36,7 +42,9 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 
         List<Account> result = queryFactory.selectFrom(account)
             .leftJoin(account.moneyBoxes, moneyBox).fetchJoin()
-            .where(account.user.userId.eq(userId))
+            .where(account.user.userId.eq(userId)
+                .and(account.status.eq("ACTIVE"))
+                .and(moneyBox.status.eq("ACTIVE")))
             .orderBy(moneyBox.createdAt.asc())
             .fetch();
 
