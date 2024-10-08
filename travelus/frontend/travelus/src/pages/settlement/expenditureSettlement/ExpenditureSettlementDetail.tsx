@@ -9,7 +9,7 @@ import loadingAnimation from "../../../lottie/loadingAnimation.json";
 const ExpenditureSettlementDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { id } = useParams();
+  const { id, status } = useParams();
   const [settlement, setSettlement] = useState<ExpenditureSettlementDetailInfo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -68,7 +68,7 @@ const ExpenditureSettlementDetail = () => {
     <div className="h-full p-5 pb-8 flex flex-col justify-between">
       <div className="grid gap-20">
         <div className="flex items-center">
-          <IoIosArrowBack className="text-2xl" onClick={() => navigate("/settlement/expenditure/list/NOT_COMPLETED")} />
+          <IoIosArrowBack className="text-2xl" onClick={() => navigate(`/settlement/expenditure/list/${status}`)} />
         </div>
 
         <div className="grid gap-8">

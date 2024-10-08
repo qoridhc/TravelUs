@@ -47,7 +47,7 @@ const ExpenditureSettlementList = () => {
       groupName: settlement.groupName,
       groupId: settlement.groupId,
     };
-    navigate(`/settlement/expenditure/detail/${settlementId}`, { state: { data } });
+    navigate(`/settlement/expenditure/detail/${settlementId}/${isTab}`, { state: { data } });
   };
 
   const fetchSettlementList = async (settlementStatus: string) => {

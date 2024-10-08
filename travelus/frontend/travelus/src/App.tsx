@@ -225,7 +225,7 @@ function App() {
           <Route path="/settlement/expenditure/participants/:id" element={<ExpenditureSettlementInfo />}></Route>
           <Route path="/settlement/expenditure/completed" element={<ExpenditureSettlementCompleted />}></Route>
           <Route path="/settlement/expenditure/list/:status" element={<ExpenditureSettlementList />}></Route>
-          <Route path="/settlement/expenditure/detail/:id" element={<ExpenditureSettlementDetail />}></Route>
+          <Route path="/settlement/expenditure/detail/:id/:status" element={<ExpenditureSettlementDetail />}></Route>
 
           {/* 모임의 지출정산 내역 */}
           <Route
