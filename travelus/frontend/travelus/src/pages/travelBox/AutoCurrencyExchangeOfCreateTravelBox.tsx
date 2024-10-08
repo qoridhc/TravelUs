@@ -54,9 +54,6 @@ const AutoCurrencyExchangeOfCreateTravelBox = () => {
             exchangeRateBack={exchangeRateBack}
             setExchangeRateBack={setExchangeRateBack}
           />
-          <div className="text-right font-semibold">
-            희망 환율을 추천 받고 싶어요
-          </div>
           <ExchangeAmmountInput exchangeAmount={exchangeAmount} setExchangeAmount={setExchangeAmount} />
         </div>
       </div>
