@@ -10,6 +10,8 @@ import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.AddMoneyBoxRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.InquireAccountListRequestDto;
+import com.ssafy.soltravel.v2.dto.account.request.PasswordValidateRequestDto;
+import com.ssafy.soltravel.v2.dto.account.response.PasswordValidateResponseDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.AccountMapper;
@@ -17,6 +19,7 @@ import com.ssafy.soltravel.v2.repository.GeneralAccountRepository;
 import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.service.WebClientService;
+import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.util.HashMap;
 import java.util.List;
@@ -193,6 +196,29 @@ public class AccountService {
 
         // 변환된 리스트를 반환하거나, 다른 로직에 사용
         return moneyBoxDtos;
+    }
+
+    public PasswordValidateResponseDto validatePassword(PasswordValidateRequestDto requestDto) {
+
+        User user = securityUtil.getUserByToken();
+        String API_URL = BASE_URL + "validate-password";
+
+        BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
+
+        Map<String, Object> body = new HashMap<>();
+
+        body.put("Header", header);
+        body.put("accountNo", requestDto.getAccountNo());
+        body.put("accountPassword", requestDto.getAccountPassword());
+
+        ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+        Object recObject = response.getBody().get("REC");
+        PasswordValidateResponseDto responseDto = objectMapper.convertValue(recObject, PasswordValidateResponseDto.class);
+
+
+        LogUtil.info("recObject: " , recObject);
+        LogUtil.info("responseDto: " , responseDto);
+        return responseDto;
     }
 
 //  public ResponseEntity<DeleteAccountResponseDto> deleteAccount(
