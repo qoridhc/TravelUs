@@ -267,7 +267,7 @@ public class UserService implements UserDetailsService {
             .build();
 
         request(
-            "http://localhost:8080/api/v1/bank" + API_URI + "/update",
+            API_URI + "/update",
             requestBody,
             UserUpdateRequestBody.class
         );
