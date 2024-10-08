@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
+import { ExpenditureSettlementDetailInfo } from "../../../../types/settlement";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { settlementApi } from "../../../api/settle";
-import { AxiosError } from "axios";
-import { AxiosErrorResponseData } from "../../../types/axiosError";
-import { useNavigate, useParams } from "react-router";
-import { SettlementPersonalInfo } from "../../../types/settlement";
+import { useLocation, useNavigate, useParams } from "react-router";
 import Lottie from "lottie-react";
-import loadingAnimation from "../../../lottie/loadingAnimation.json";
+import loadingAnimation from "../../../../lottie/loadingAnimation.json";
+import { settlementApi } from "../../../../api/settle";
+import { AxiosErrorResponseData } from "../../../../types/axiosError";
+import { AxiosError } from "axios";
 
-const ExpenditureSettlementList = () => {
+const ExpenditureSettlementGroupList = () => {
   const navigate = useNavigate();
-  const { status } = useParams();
+  const location = useLocation();
+  const { id, status } = useParams();
   const [isTab, setIsTab] = useState(status); // 진행 중 : NOT_COMPLETED, 완료 : COMPLETED
   const [isEmpty, setIsEmpty] = useState(false);
-  const [settlementList, setSettlementList] = useState<{ [date: string]: SettlementPersonalInfo[] }>({});
   const [dateList, setDateList] = useState<string[]>([]);
+  const [settlementList, setSettlementList] = useState<{ [date: string]: ExpenditureSettlementDetailInfo[] }>({});
 
   // 금액을 한국 통화 형식으로 포맷(콤마가 포함된 형태)
   const formatCurrency = (amount: number) => {
@@ -30,34 +31,22 @@ const ExpenditureSettlementList = () => {
     });
   };
 
-  const handleNext = (settlement: SettlementPersonalInfo) => {
-    const data = {
-      settlementDetailId: settlement.settlementDetailId,
-      remainingAmount: settlement.remainingAmount,
-      groupName: settlement.groupName,
-      groupId: settlement.groupId,
-    };
-    navigate("/settlement/expenditure/transfer/setMoney/list", { state: { data } });
+  const handleNext = (settlementId: number) => {
+    navigate(`/settlement/expenditure/group/detail/${settlementId}/${isTab}`, { state: { groupId: id } });
   };
 
-  const handleDetail = (settlement: SettlementPersonalInfo, settlementId: number, remainingAmount: number) => {
-    const data = {
-      settlementDetailId: settlement.settlementDetailId,
-      remainingAmount: settlement.remainingAmount,
-      groupName: settlement.groupName,
-      groupId: settlement.groupId,
-    };
-    navigate(`/settlement/expenditure/detail/${settlementId}/${isTab}`, { state: { data } });
-  };
+  const fetchSettlementList = async () => {
+    if (id === undefined) return;
 
-  const fetchSettlementList = async (settlementStatus: string) => {
     try {
-      const response = await settlementApi.fetchSettlementPersonalList(settlementStatus);
+      const response = await settlementApi.fetchSettlementPersonalGroupList(id);
 
       // 거래내역을 날짜별로 그룹화하여 병합
       const temp = response.data.reduce(
-        (acc: { [date: string]: SettlementPersonalInfo[] }, cur: SettlementPersonalInfo) => {
+        (acc: { [date: string]: ExpenditureSettlementDetailInfo[] }, cur: ExpenditureSettlementDetailInfo) => {
           const dateKey = formatDate(cur.settlementRequestTime);
+          if (cur.isSettled !== isTab) return acc;
+
           if (acc[dateKey]) {
             acc[dateKey].push(cur);
           } else {
@@ -65,13 +54,13 @@ const ExpenditureSettlementList = () => {
           }
           return acc;
         },
-        {} as { [date: string]: SettlementPersonalInfo[] }
+        {} as { [date: string]: ExpenditureSettlementDetailInfo[] }
       );
 
       // 각 날짜에 대한 거래 내역을 내림차순 정렬
       Object.keys(temp).forEach((date) => {
         temp[date].sort(
-          (a: SettlementPersonalInfo, b: SettlementPersonalInfo) =>
+          (a: ExpenditureSettlementDetailInfo, b: ExpenditureSettlementDetailInfo) =>
             new Date(b.settlementRequestTime).getTime() - new Date(a.settlementRequestTime).getTime()
         );
       });
@@ -93,7 +82,7 @@ const ExpenditureSettlementList = () => {
   useEffect(() => {
     setDateList([]);
     setSettlementList({});
-    fetchSettlementList(isTab ? isTab : "NOT_COMPLETED");
+    fetchSettlementList();
   }, [isTab]);
 
   useEffect(() => {
@@ -104,7 +93,7 @@ const ExpenditureSettlementList = () => {
     <div className="h-full p-5">
       <div className="grid gap-14">
         <div className="flex items-center">
-          <IoIosArrowBack className="text-2xl" onClick={() => navigate("/")} />
+          <IoIosArrowBack className="text-2xl" onClick={() => navigate(`/meetingaccount/management/${id}`)} />
         </div>
 
         <div className="grid gap-10">
@@ -127,7 +116,7 @@ const ExpenditureSettlementList = () => {
             </p>
           </div>
 
-          {isEmpty ? (
+          {isEmpty || dateList.length === 0 ? (
             <p className="text-center">정산 내역이 없습니다.</p>
           ) : dateList.length === 0 ? (
             <div className="flex flex-col justify-center items-center">
@@ -137,45 +126,36 @@ const ExpenditureSettlementList = () => {
             dateList.map((date, index) => (
               <div className="grid gap-5" key={index}>
                 <p className="text-[#565656]">{date}</p>
-                <div className="grid gap-8">
+                <div className="grid gap-10">
                   {settlementList[date].map((settlement, index) => (
                     <div
                       className={`grid ${
-                        isTab === "NOT_COMPLETED" ? "grid-rows-2" : "s"
-                      } grid-cols-[1fr_5fr_1fr] gap-y-3`}
-                      key={index}>
+                        isTab === "NOT_COMPLETED" ? "grid-rows[2fr_1fr]" : ""
+                      } grid-cols-[1fr_5fr_1fr] gap-y-2`}
+                      key={index}
+                      onClick={() => handleNext(settlement.personalSettlementId)}>
                       <div className="flex items-center">
                         <img className="w-10 h-10" src="/assets/user/userIconSample.png" alt="" />
                       </div>
 
-                      <div
-                        className="col-span-2 grid grid-cols-[9fr_1fr]"
-                        onClick={() => handleDetail(settlement, settlement.settlementId, settlement.remainingAmount)}>
-                        <div>
-                          <p className="text-xl font-bold tracking-tight">{formatCurrency(settlement.amount)}원</p>
-                          <p className="text-[#565656]">
-                            {isTab === "NOT_COMPLETED"
-                              ? `${settlement.groupName}의 총 ${settlement.participantCount}명`
-                              : `${formatCurrency(settlement.amount)}원 보내기 완료`}
-                          </p>
-                        </div>
-
-                        <div className="flex justify-end items-center">
-                          <IoIosArrowForward className="text-lg" />
-                        </div>
+                      <div>
+                        <p className="text-xl font-bold tracking-tight">{formatCurrency(settlement.totalAmount)}원</p>
+                        <p className="text-[#565656]">
+                          {settlement.participants[0].participantName} 외 {settlement.participants.length - 1}명
+                        </p>
                       </div>
 
-                      <div className="col-start-2 col-span-2 flex items-center">
-                        {isTab === "NOT_COMPLETED" ? (
-                          <button
-                            className="w-full p-3 text-white bg-[#1429A0] rounded-xl"
-                            onClick={() => handleNext(settlement)}>
-                            {formatCurrency(settlement.remainingAmount)}원 보내기
-                          </button>
-                        ) : (
-                          <></>
-                        )}
+                      <div className="flex justify-end items-center">
+                        <IoIosArrowForward className="text-lg" />
                       </div>
+
+                      {isTab === "NOT_COMPLETED" ? (
+                        <p className="col-start-2 text-sm text-[#0046FF] tracking-wide">
+                          {formatCurrency(settlement.remainingAmount)}원 미완료
+                        </p>
+                      ) : (
+                        <></>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -188,4 +168,4 @@ const ExpenditureSettlementList = () => {
   );
 };
 
-export default ExpenditureSettlementList;
+export default ExpenditureSettlementGroupList;

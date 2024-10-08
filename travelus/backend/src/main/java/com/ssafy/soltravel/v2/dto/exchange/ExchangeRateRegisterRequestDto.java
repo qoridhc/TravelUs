@@ -8,8 +8,8 @@ import lombok.Data;
 @Data
 public class ExchangeRateRegisterRequestDto {
 
-  @Schema(description = "계좌번호", example = "002-45579486-209")
-  private String accountNo;
+  @Schema(description = "모임 id", example = "11")
+  private Long groupId;
 
   @Schema(description = "환전할 통화 코드", example = "USD")
   private CurrencyType currencyCode;
@@ -20,6 +20,6 @@ public class ExchangeRateRegisterRequestDto {
   @Schema(description = "목표 환율", example = "1333.40")
   private float targetRate;
 
-  @Schema(description = "만료일",example="2024-10-10")
+  @Schema(description = "만료일", example = "2024-10-10")
   private LocalDate dueDate;
 }

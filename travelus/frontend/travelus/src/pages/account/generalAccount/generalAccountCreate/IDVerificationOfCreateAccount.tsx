@@ -111,7 +111,7 @@ const IDVerificationOfCreateAccount = () => {
 
   if (!userInfo) {
     return (
-      <div className="flex flex-col justify-center items-center">
+      <div className="h-full flex flex-col justify-center items-center">
         <Lottie animationData={loadingAnimation} />
       </div>
     );
