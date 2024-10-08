@@ -56,6 +56,9 @@ public class CashHistory {
   @OneToMany(mappedBy = "cashHistory", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ItemHistory> itemHistoryList = new ArrayList<>();
 
+  @Column(name = "account_no")
+  private String accountNo;
+
   /*
   * 생성 메서드
   */
@@ -67,6 +70,7 @@ public class CashHistory {
     cashHistory.transactionAt = requestDto.getTransactionAt();
     cashHistory.currency = CurrencyType.valueOf(requestDto.getCurrency());
     cashHistory.address = requestDto.getAddress();
+    cashHistory.accountNo = requestDto.getAccountNo();
     return cashHistory;
   }
 
