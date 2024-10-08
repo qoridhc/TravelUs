@@ -71,7 +71,7 @@ const Login = () => {
                 handleChange(e);
               }}
               id="id"
-              className="py-2 text-lg outline-none border-b border-[#cccccc]"
+              className="w-full py-2 text-lg outline-none border-b border-[#cccccc]"
               type="text"
               name="email"
               value={email}
@@ -92,7 +92,7 @@ const Login = () => {
                 }
               }}
               id="password"
-              className="py-2 text-lg outline-none border-b border-[#cccccc]"
+              className="w-full py-2 text-lg outline-none border-b border-[#cccccc]"
               type="password"
               name="password"
               value={password}
