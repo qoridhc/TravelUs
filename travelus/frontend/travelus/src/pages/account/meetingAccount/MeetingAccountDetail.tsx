@@ -18,7 +18,6 @@ import { setTravelboxInfo } from "../../../redux/meetingAccountSlice";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../../lottie/loadingAnimation.json";
 
-
 const MeetingAccountDetail = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -188,7 +187,9 @@ const MeetingAccountDetail = () => {
           <div>
             <div
               onClick={() => {
-                navigate(`/meetingtransaction/${meeting.groupAccountNo}/detail`, { state: { groupId: meeting.groupId } });
+                navigate(`/meetingtransaction/${meeting.groupAccountNo}/detail`, {
+                  state: { groupId: meeting.groupId },
+                });
               }}
               className="mt-6 p-5 flex flex-col space-y-5">
               <div className="flex justify-between items-center">
@@ -234,7 +235,7 @@ const MeetingAccountDetail = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate("/exchange");
+                      navigate("/exchange/foreign-currency");
                     }}
                     className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
                     환전
@@ -277,7 +278,7 @@ const MeetingAccountDetail = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate("/exchangekrw");
+                          navigate("/exchange/korean-currency");
                         }}
                         className="w-full h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
                         재환전
