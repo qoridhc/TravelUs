@@ -54,6 +54,7 @@ import TravelBoxTransaction from "./pages/travelBox/TravelBoxTransaction";
 import MeetingTransaction from "./pages/meetingAccount/MeetingTransaction";
 import CurrencyInfoOfCreateTravelBox from "./pages/travelBox/CurrencyInfoOfCreateTravelBox";
 import AutoCurrencyExchangeOfCreateTravelBox from "./pages/travelBox/AutoCurrencyExchangeOfCreateTravelBox";
+import DeleteTravelBox from "./pages/travelBox/DeleteTravelbox";
 import SelectSettlementAmount from "./pages/settlement/balanceSettlement/SelectSettlementAmount";
 import BalanceSettlementCompleted from "./pages/settlement/balanceSettlement/BalanceSettlementCompleted";
 import SettlementInfo from "./pages/settlement/balanceSettlement/SettlementInfo";
@@ -174,10 +175,13 @@ function App() {
           <Route path="/meetingtransaction/:accountNo/:type" element={<MeetingTransaction />} />
           <Route path="/travelbox/transaction/:accountNo/:type" element={<TravelBoxTransaction />} />
 
-          {/* 트래블박스 생성 */}
+          {/* 외화저금통 생성 */}
           <Route path="/travelbox/create/prepare" element={<TravelBoxCreatePrepare />} />
           <Route path="/currencyinfoofcreatetravelbox" element={<CurrencyInfoOfCreateTravelBox />} />
           <Route path="/autocurrencyexchangeofcreatetravelbox" element={<AutoCurrencyExchangeOfCreateTravelBox />} />
+          
+          {/* 외화저금통 해지 */}
+          <Route path="/travelbox/delete/:accountNo/:groupId" element={<DeleteTravelBox />} />
 
           {/* 카드 개설 */}
           <Route path="/card/:groupId/create/englishname" element={<EnglishNameOfCreateCard />} />
