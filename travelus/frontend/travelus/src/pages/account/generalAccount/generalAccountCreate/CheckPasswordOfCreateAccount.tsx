@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SecurityNumberKeyboard from "../../../../components/common/SecurityNumberKeyboard";
 import { useLocation, useNavigate } from "react-router";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../redux/store";
 
 const CheckPasswordOfCreateAccount = () => {
   const navigate = useNavigate();

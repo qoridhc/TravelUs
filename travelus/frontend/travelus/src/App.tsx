@@ -85,6 +85,7 @@ import SettlementTransferSetMoney from "./pages/settlement/expenditureSettlement
 import ExpenditureSettlementDetail from "./pages/settlement/expenditureSettlement/ExpenditureSettlementDetail";
 import SettlementTransferSuccess from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferSuccess";
 import CreateRequestOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/CreateRequestOfCreateMeetingAccount";
+import CreateRequestOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/CreateRequestOfCreateAccount";
 
 function App() {
   return (
@@ -133,6 +134,7 @@ function App() {
           <Route path="/account/create/password" element={<PasswordOfCreateAccount />} />
           <Route path="/account/create/password/check" element={<CheckPasswordOfCreateAccount />} />
           <Route path="/account/create/idverification" element={<IDVerificationOfCreateAccount />} />
+          <Route path="/account/create/request" element={<CreateRequestOfCreateAccount />} />
           <Route path="/account/create/completed" element={<CompletedOfCreateAccount />} />
 
           {/* 모임통장 생성 */}
