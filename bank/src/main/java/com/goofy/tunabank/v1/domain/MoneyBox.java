@@ -58,6 +58,8 @@ public class MoneyBox {
     @OneToMany(mappedBy = "moneyBox", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TransactionHistory> transactionHistories;
 
+    private String status;
+
     // ==== 생성 메서드 ====
     public static MoneyBox createMoneyBox(Account account, Currency currency) {
         MoneyBox moneyBox = MoneyBox.builder()
@@ -66,6 +68,7 @@ public class MoneyBox {
             .balance(100000000.0)  // 초기 잔액 0
             .createdAt(LocalDateTime.now())
             .updatedAt(LocalDateTime.now())
+            .status("ACTIVE")
             .build();
 
         return moneyBox;
@@ -85,4 +88,11 @@ public class MoneyBox {
         //반환
         return this.balance;
     }
+
+    public void closeMoneyBox() {
+        if (!this.status.equals("CLOSED")) {
+            this.status = "CLOSED";
+        }
+    }
+
 }
