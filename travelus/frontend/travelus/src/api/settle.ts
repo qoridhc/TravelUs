@@ -1,5 +1,5 @@
 import api from "../lib/axios";
-import { SettlementParticipant, SettlementRequest, SettlementTransferRequest } from "../types/settlement";
+import { ExpenditureSettlementRequest, SettlementRequest, SettlementTransferRequest } from "../types/settlement";
 
 export const settlementApi = {
   // 잔액 정산 수행
@@ -8,8 +8,8 @@ export const settlementApi = {
   },
 
   // 개별 정산 요청
-  fetchSettlementPersonal: (participants: SettlementParticipant[]) => {
-    return api.post(`/settlement/personal`, {participants});
+  fetchSettlementPersonal: (data: ExpenditureSettlementRequest) => {
+    return api.post(`/settlement/personal`, data);
   },
 
   // 개별 정산 요청 내역 개인별 조회

@@ -13,23 +13,32 @@ export interface SettlementRequest {
 }
 
 export interface SettlementPersonalInfo {
-  amount: number;
   groupId: number;
   groupName: string;
-  participantCount: number;
+  settlementId: number;
+  settlementDetailId: number;
   participantId: number;
-  personalSettlementId: number;
+  profile: string;
+  totalAmount: number;
+  amount: number;
   remainingAmount: number;
+  isSettled: string;
   settlementRequestTime: string;
+  participantCount: number;
 }
 
 export interface SettlementTransferRequest {
-  personalSettlementId:number;
-  participantId: number;
+  settlementDetailId:number;
   withdrawalAccountNo: string;
   depositAccountNo: string;
   transactionBalance: number;
   withdrawalTransactionSummary: string;
   accountPassword: string;
   depositTransactionSummary: string;
+}
+
+export interface ExpenditureSettlementRequest {
+  groupId: number;
+  totalAmount: number;
+  participants: Array<SettlementParticipant>;
 }
