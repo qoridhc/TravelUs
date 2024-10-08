@@ -62,8 +62,10 @@ const Login = () => {
         </div>
 
         <div className="w-full grid gap-5">
-          <label htmlFor="id" className="w-full text-[#565656] font-semibold cursor-pointer flex flex-col">
-            아이디
+          <div className="w-full text-[#565656]">
+            <label htmlFor="id" className="w-full font-semibold cursor-pointer">
+              아이디
+            </label>
             <input
               onChange={(e) => {
                 handleChange(e);
@@ -74,10 +76,12 @@ const Login = () => {
               name="email"
               value={email}
             />
-          </label>
+          </div>
 
-          <label htmlFor="password" className="w-full text-[#565656] font-semibold cursor-pointer flex flex-col">
-            비밀번호
+          <div className="w-full text-[#565656]">
+            <label htmlFor="password" className="w-full font-semibold cursor-pointer">
+              비밀번호
+            </label>
             <input
               onChange={(e) => {
                 handleChange(e);
@@ -93,7 +97,7 @@ const Login = () => {
               name="password"
               value={password}
             />
-          </label>
+          </div>
         </div>
 
         <button
