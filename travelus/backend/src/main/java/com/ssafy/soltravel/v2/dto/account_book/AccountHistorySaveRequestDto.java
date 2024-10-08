@@ -45,7 +45,7 @@ public class AccountHistorySaveRequestDto {
     @Schema(description = "구매 품목 이름", example = "Tea")
     private String item;
 
-    @Schema(description = "구매 품목 가격", example = "3.05")
+    @Schema(description = "구매 품목 가격", example = "9.35")
     private Double price;
 
     @Schema(description = "구매 품목 수량", example = "1")
