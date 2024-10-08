@@ -13,6 +13,7 @@ import MeetingAccountList from "./pages/account/meetingAccount/MeetingAccountLis
 import MeetingAccountDetail from "./pages/account/meetingAccount/MeetingAccountDetail";
 import MeetingAccountManagement from "./pages/account/meetingAccount/MeetingAccountManagement";
 import MeetingAccountGroupMember from "./pages/account/meetingAccount/MeetingAccountGroupMember";
+import MeetingAccountUpdate from "./pages/account/meetingAccount/meetingAccountUpdate/MeetingAccountUpdate";
 import JoinedMeetingAccountDetail from "./pages/account/meetingAccount/JoinedMeetingAccountDetail";
 import AccountTransaction from "./pages/account/generalAccount/AccountTransaction";
 import TransferSelectBank from "./pages/transfer/TransferSelectBank";
@@ -153,6 +154,9 @@ function App() {
           <Route path="/joinedmeetingaccount/:id" element={<JoinedMeetingAccountDetail />} />
           <Route path="/meetingaccount/management/:id" element={<MeetingAccountManagement />} />
           <Route path="/meetingaccount/management/:id/groupmember" element={<MeetingAccountGroupMember />} />
+          <Route path="/meetingaccount/update/:id" element={<MeetingAccountUpdate />} />
+
+          {/* 모임 초대 */}
           <Route path="/meeting/invite/:code" element={<InvitationOfMeeting />} />
           <Route path="/meeting/invite/:code/info" element={<InviteInfoOfMeeting />} />
           <Route path="/meeting/invite/participated" element={<AlreadyInviteOfMeeting />} />
