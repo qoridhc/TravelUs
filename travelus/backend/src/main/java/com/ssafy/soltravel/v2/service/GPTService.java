@@ -29,7 +29,7 @@ public class GPTService {
         + "Then, provide the data in the following JSON format: {\n"
         + "   \"store\": \"Store Name\",\n"
         + "   \"paid\": \"Total Paid Amount\",\n"
-        + "   \"transactionAt\": \"Transaction Date and Time\",\n"
+        + "   \"transactionAt\": \"Transaction Date and Time(yyyy-MM-ddTHH:mm:ss)\",\n"
         + "   \"address\": \"Address\",\n"
         + "   \"currency\": \"Transaction Currency Code (e.g., USD for United States, JPY for Japan, based on the address)\",\n"
         + "   \"items\": [\n"
