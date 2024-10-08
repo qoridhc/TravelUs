@@ -40,7 +40,7 @@ public class CashHistoryRepository {
     List<CashHistory> result = em.createQuery(
         "select c from CashHistory c "
             + "where c.transactionAt between :startDate and :endDate "
-            + "and c.foreignAccount.accountNo = :accountNo "
+            + "and c.accountNo = :accountNo "
             + "order by c.id asc",
             CashHistory.class
         )

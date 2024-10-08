@@ -22,10 +22,9 @@ const SettlementTransferPassword = () => {
   const handleTransfer = async () => {
     const settlement = location.state.data;
     const data = {
-      personalSettlementId: Number(settlement.personalSettlementId),
-      participantId: Number(settlement.participantId),
-      depositAccountNo: settlement.depositAccountNo,
+      settlementDetailId: settlement.settlementDetailId,
       withdrawalAccountNo: settlement.withdrawalAccountNo,
+      depositAccountNo: settlement.depositAccountNo,
       transactionBalance: Number(settlement.transactionBalance),
       withdrawalTransactionSummary: settlement.withdrawalTransactionSummary,
       accountPassword: password,
@@ -37,7 +36,7 @@ const SettlementTransferPassword = () => {
       const response = await settlementApi.fetchSettlementPersonalTransfer(data);
       if (response.status === 200) {
         navigate("/settlement/expenditure/transfer/success", {
-          state: { transferAmount: data.transactionBalance, depositAccount: data.depositTransactionSummary },
+          state: { transferAmount: data.transactionBalance, depositAccountName: data.withdrawalTransactionSummary },
         });
       }
     } catch (error) {

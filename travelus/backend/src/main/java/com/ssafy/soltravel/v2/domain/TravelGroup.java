@@ -5,10 +5,12 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,42 +30,45 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class TravelGroup {
 
-    @Id
-    @Column(name = "group_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long groupId;
+  @Id
+  @Column(name = "group_id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long groupId;
 
-    private String groupAccountNo;
+  private String groupAccountNo;
 
-    private LocalDate travelStartDate;
+  private LocalDate travelStartDate;
 
-    private LocalDate travelEndDate;
+  private LocalDate travelEndDate;
 
-    private String groupName;
+  private String groupName;
 
-    private String icon;
+  private String icon;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
+  @CreatedDate
+  private LocalDateTime createdAt;
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+  @LastModifiedDate
+  private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Participant> participants;
+  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Participant> participants;
 
-	@OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<BillingHistory> settlementHistories;
+  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<BillingHistory> settlementHistories;
 
-    public static TravelGroup createGroupEntity(String accountNo, CreateGroupRequestDto requestDto) {
-        TravelGroup travelGroup = TravelGroup.builder()
-            .groupAccountNo(accountNo)
-            .travelStartDate(requestDto.getTravelStartDate())
-            .travelEndDate(requestDto.getTravelEndDate())
-            .groupName(requestDto.getGroupName())
-            .icon(requestDto.getIcon())
-            .build();
+  @OneToOne(mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private TargetRate targetRate;
 
-        return travelGroup;
-    }
+  public static TravelGroup createGroupEntity(String accountNo, CreateGroupRequestDto requestDto) {
+    TravelGroup travelGroup = TravelGroup.builder()
+        .groupAccountNo(accountNo)
+        .travelStartDate(requestDto.getTravelStartDate())
+        .travelEndDate(requestDto.getTravelEndDate())
+        .groupName(requestDto.getGroupName())
+        .icon(requestDto.getIcon())
+        .build();
+
+    return travelGroup;
+  }
 }

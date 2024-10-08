@@ -13,6 +13,8 @@ import com.ssafy.soltravel.v2.dto.account.request.DeleteAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.InquireAccountListRequestDto;
 import com.ssafy.soltravel.v2.dto.account.response.DeleteAccountResponseDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.DeleteMoneyBoxResponseDto;
+import com.ssafy.soltravel.v2.dto.account.request.PasswordValidateRequestDto;
+import com.ssafy.soltravel.v2.dto.account.response.PasswordValidateResponseDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.AccountMapper;
@@ -199,6 +201,29 @@ public class AccountService {
         return moneyBoxDtos;
     }
 
+    public PasswordValidateResponseDto validatePassword(PasswordValidateRequestDto requestDto) {
+
+        User user = securityUtil.getUserByToken();
+        String API_URL = BASE_URL + "validate-password";
+
+        BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
+
+        Map<String, Object> body = new HashMap<>();
+
+        body.put("Header", header);
+        body.put("accountNo", requestDto.getAccountNo());
+        body.put("accountPassword", requestDto.getAccountPassword());
+
+        ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+        Object recObject = response.getBody().get("REC");
+        PasswordValidateResponseDto responseDto = objectMapper.convertValue(recObject, PasswordValidateResponseDto.class);
+
+
+        LogUtil.info("recObject: " , recObject);
+        LogUtil.info("responseDto: " , responseDto);
+        return responseDto;
+    }
+    
     // 머니박스 삭제
     public DeleteMoneyBoxResponseDto deleteMoneyBox(AddMoneyBoxRequestDto requestDto) {
 

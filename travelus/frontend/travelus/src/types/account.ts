@@ -119,6 +119,16 @@ export interface MeetingAccountListDetail {
   updatedAt: string;
 }
 
+// 모임 정보 수정
+export interface MeetingAccountUpdateInfo {
+  groupAccountNo: string;
+  travelStartDate: string;
+  travelEndDate: string;
+  groupName: string;
+  icon: string;
+  }
+
+
 // 참여자 조회 정보
 export interface UserInfo {
   userId: number;
@@ -181,7 +191,7 @@ export interface GeneralMeetingAccountDetail {
 
 // 모임통장 모임종류 아이콘 
 export const meetingAccountIconList: Array<{text: string, value: string}> = [
-  { text: "선택안함", value: "none" },
+  { text: "선택안함", value: "airPlane" },
   { text: "친구", value: "friend" },
   { text: "가족", value: "family" },
   { text: "연인", value: "lover" },
@@ -204,4 +214,10 @@ export interface TransactionNew {
   transactionSummary: string;
   payeeName: string;
   currencyCode: string;
+}
+
+// 계좌 비밀번호 확인
+export interface AccountPassword {
+  accountNo: string;
+  accountPassword: string;
 }

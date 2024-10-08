@@ -1,6 +1,6 @@
 
 import api from "../lib/axios";
-import { AccountInfo, AccountInfoNew, MeetingAccountInfo, AccountParticipants, GeneralAccountCreate, MeetingAccountCreate, meetingInvitationCode } from "../types/account";
+import { AccountInfo, MeetingAccountInfo, AccountParticipants, GeneralAccountCreate, MeetingAccountCreate, MeetingAccountUpdateInfo, AccountPassword } from "../types/account";
 import { AccountHistoryRequest } from "../types/accountHistory";
 import { NewParticipant, TravelboxInfo } from "../types/meetingAccount";
 
@@ -82,6 +82,11 @@ export const accountApi = {
     return api.get(`/groups/code/${code}`);
   },
 
+  // 모임정보 수정
+  fetchUpdateMeetingAccount: (groupId: number, data: MeetingAccountUpdateInfo) => {
+    return api.put(`/groups/${groupId}`, data);
+  },
+
   // 거래 내역 조회
   fetchTracsactionHistory: (data: AccountHistoryRequest) => {
     return api.get(`/transaction/history`, {params: data});
@@ -90,5 +95,10 @@ export const accountApi = {
   // 트래블박스 개설
   fetchCreateTravelBox: (data: TravelboxInfo) => {
     return api.post(`/accounts/addMoneyBox`, data)
+  },
+
+  // 계좌 비밀번호 검증
+  fetchCheckAccountPassword: (data: AccountPassword) => {
+    return api.post(`/accounts/validate-password`, data);
   },
 };

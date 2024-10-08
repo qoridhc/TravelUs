@@ -15,8 +15,10 @@ import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.DeleteAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.InquireAccountListRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.InquireAccountRequestDto;
+import com.goofy.tunabank.v1.dto.account.request.PasswordValidateRequestDto;
 import com.goofy.tunabank.v1.dto.account.response.BalanceResponseDto;
 import com.goofy.tunabank.v1.dto.account.response.DeleteAccountResponseDto;
+import com.goofy.tunabank.v1.dto.account.response.PasswordValidateResponseDto;
 import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
 import com.goofy.tunabank.v1.dto.moneyBox.request.DeleteMoneyBoxRequestDto;
 import com.goofy.tunabank.v1.dto.moneyBox.response.DeleteMoneyBoxResponseDto;
@@ -38,9 +40,14 @@ import com.goofy.tunabank.v1.repository.CurrencyRepository;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
 import com.goofy.tunabank.v1.repository.account.AccountRepository;
 import com.goofy.tunabank.v1.util.LogUtil;
-import java.util.List;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,8 +67,10 @@ public class AccountService {
     private final AccountMapper accountMapper;
     private final MoneyBoxMapper moneyBoxMapper;
 
-    // ==== 계좌 생성 관련 메서드 ====
-    public AccountDto postNewAccount(CreateGeneralAccountRequestDto requestDto) {
+  private final PasswordEncoder passwordEncoder;
+
+  // ==== 계좌 생성 관련 메서드 ====
+  public AccountDto postNewAccount(CreateGeneralAccountRequestDto requestDto) {
 
         // 유저 정보 생성
         User user = userService.findUserByHeader();
@@ -70,13 +79,16 @@ public class AccountService {
         Currency currency = currencyRepository.findByCurrencyCode(CurrencyType.KRW);
         Bank bank = bankRepository.findById(requestDto.getBankId())
             .orElseThrow(() -> new InvalidBankIdException(requestDto.getBankId()));
+        
+    // 비밀번호 암호화
+    String plainPassword = requestDto.getAccountPassword();
+    requestDto.setAccountPassword(passwordEncoder.encode(plainPassword));
 
-        // 계좌 생성 및 기본 머니박스 추가
-        Account account = Account.createAccount(requestDto, bank, user);
+    // 계좌 생성
+    Account account = Account.createAccount(requestDto, bank, user);
 
-        // 계좌 최초 생성 시 KRW 머니박스 기본 생성
+         // 계좌 최초 생성 시 KRW 머니박스 기본 생성
         MoneyBox moneyBox = MoneyBox.createMoneyBox(account, currency);
-
         account.addMoneyBox(moneyBox);
 
         accountRepository.save(account);
@@ -116,6 +128,7 @@ public class AccountService {
 
         return accountDto;
     }
+  
 
     // ==== 계좌 삭제 ====
     public DeleteAccountResponseDto deleteAccount(DeleteAccountRequestDto requestDto) {
@@ -124,8 +137,9 @@ public class AccountService {
         Account account = accountRepository.findByAccountNo(requestDto.getAccountNo())
             .orElseThrow(() -> new InvalidAccountNoException(requestDto.getAccountNo()));
 
-        // 계좌 비밀번호 검증
-        validateAccountPassword(account, requestDto.getAccountPassword());
+        if (!passwordEncoder.matches(requestDto.getAccountPassword(), account.getAccountPassword())) {
+        throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
+        }
 
         // 계좌 잔액 여부 판단
         DeleteAccountResponseDto dto = validateAndRefundAccount(account, requestDto);
@@ -229,13 +243,6 @@ public class AccountService {
     }
 
 
-    // 비밀번호 검증 함수
-    private void validateAccountPassword(Account account, String password) {
-        if (!account.getAccountPassword().equals(password)) {
-            throw new InvalidAccountPasswordException(password);
-        }
-    }
-
     // 머니박스 잔액 검증 & 환불 함수
     private DeleteAccountResponseDto validateAndRefundAccount(Account account, DeleteAccountRequestDto requestDto) {
 
@@ -271,5 +278,21 @@ public class AccountService {
 
         return dto;
     }
+
+    public BalanceResponseDto getBalanceByAccountNo(BalanceRequestDto requestDto) {
+
+        MoneyBox moneyBox = transactionService.findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountNo(),
+            requestDto.getCurrencyCode());
+        return new BalanceResponseDto(moneyBox.getBalance());
+    }
+
+
+
+  public PasswordValidateResponseDto validatePassword(PasswordValidateRequestDto requestDto) {
+
+    PasswordValidateResponseDto responseDto = new PasswordValidateResponseDto();
+    responseDto.setResult(transactionService.validatePassword(requestDto.getAccountPassword(), requestDto.getAccountNo(),false)?"success":"fail");
+    return responseDto;
+  }
 
 }

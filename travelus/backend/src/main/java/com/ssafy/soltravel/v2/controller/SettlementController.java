@@ -62,7 +62,7 @@ public class SettlementController {
 
   @Operation(summary = "개별 정산금 이체", description = "개별 정산금을 모임통장으로 이체합니다.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "정산 완료", content = @Content(schema = @Schema(implementation = String.class))),
+      @ApiResponse(responseCode = "200", description = "정산 완료", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TransferHistoryResponseDto.class)))),
       @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = String.class))),
       @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = String.class)))})
   @PostMapping("/personal/transfer")
@@ -98,7 +98,7 @@ public class SettlementController {
 
   @Operation(summary = "개별 정산 요청 건당 조회", description = "개별 정산 요청 건당 내역을 조회합니다.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "정산 완료", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PersonalSettlementDto.class)))),
+      @ApiResponse(responseCode = "200", description = "정산 완료", content = @Content(array = @ArraySchema(schema = @Schema(implementation = GroupSettlementResponseDto.class)))),
       @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content(schema = @Schema(implementation = String.class))),
       @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content(schema = @Schema(implementation = String.class)))})
   @GetMapping("/personal/transfer/{settlementId}")
