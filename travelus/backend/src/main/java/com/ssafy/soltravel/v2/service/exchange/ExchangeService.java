@@ -13,11 +13,13 @@ import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.TargetRateUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.targetAccountDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.BalanceResponseDto;
+import com.ssafy.soltravel.v2.dto.targetRate.TargetRateDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
 import com.ssafy.soltravel.v2.exception.group.GroupNotFoundException;
 import com.ssafy.soltravel.v2.exception.targetrate.TargetRateNotFoundException;
 import com.ssafy.soltravel.v2.mapper.ExchangeRateMapper;
+import com.ssafy.soltravel.v2.mapper.TargetRateMapper;
 import com.ssafy.soltravel.v2.repository.ExchangeRateForecastRepository;
 import com.ssafy.soltravel.v2.repository.GroupRepository;
 import com.ssafy.soltravel.v2.repository.TargetRateRepository;
@@ -72,6 +74,7 @@ public class ExchangeService {
   private final GroupRepository groupRepository;
   private final ExchangeRateForecastRepository exchangeRateForecastRepository;
   private final TargetRateRepository targetRateRepository;
+  private final TargetRateMapper targetRateMapper;
 
   private List<String> Currencies = List.of("USD", "JPY", "EUR", "TWD");
 
@@ -155,9 +158,19 @@ public class ExchangeService {
     targetRate.setAmount(requestDto.getTransactionBalance());
     targetRateRepository.save(targetRate);
 
-    //TODO: 추가
     setPreferenceRate(new ExchangeRateRegisterRequestDto(groupId, getCurrencyType(requestDto.getCurrencyCode()),
         requestDto.getTransactionBalance(), requestDto.getTargetRate(), requestDto.getDueDate()), true, targetRate.getId());
+  }
+
+  /**
+   * 희망환율 조회 메서드
+   */
+  public TargetRateDto getTargetRate(long groupId) {
+
+    TargetRate response = targetRateRepository.findByGroupId(groupId)
+        .orElseThrow(() -> new TargetRateNotFoundException(groupId));
+
+    return targetRateMapper.toTargetRateDto(response);
   }
 
   /**
