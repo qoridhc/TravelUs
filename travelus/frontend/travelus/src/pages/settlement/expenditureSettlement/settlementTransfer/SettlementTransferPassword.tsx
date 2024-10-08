@@ -30,14 +30,13 @@ const SettlementTransferPassword = () => {
       accountPassword: password,
       depositTransactionSummary: settlement.depositTransactionSummary,
     };
-    console.log(data);
 
     try {
       setIsLoading(true);
       const response = await settlementApi.fetchSettlementPersonalTransfer(data);
       if (response.status === 200) {
         navigate("/settlement/expenditure/transfer/success", {
-          state: { transferAmount: data.transactionBalance, depositAccount: data.depositTransactionSummary },
+          state: { transferAmount: data.transactionBalance, depositAccountName: data.withdrawalTransactionSummary },
         });
       }
     } catch (error) {
