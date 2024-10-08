@@ -1,6 +1,6 @@
 
 import api from "../lib/axios";
-import { AccountInfo, AccountInfoNew, MeetingAccountInfo, AccountParticipants, GeneralAccountCreate, MeetingAccountCreate, meetingInvitationCode } from "../types/account";
+import { AccountInfo, AccountInfoNew, MeetingAccountInfo, AccountParticipants, GeneralAccountCreate, MeetingAccountCreate, meetingInvitationCode, AccountPassword } from "../types/account";
 import { AccountHistoryRequest } from "../types/accountHistory";
 import { NewParticipant, TravelboxInfo } from "../types/meetingAccount";
 
@@ -90,5 +90,10 @@ export const accountApi = {
   // 트래블박스 개설
   fetchCreateTravelBox: (data: TravelboxInfo) => {
     return api.post(`/accounts/addMoneyBox`, data)
+  },
+
+  // 계좌 비밀번호 검증
+  fetchCheckAccountPassword: (data: AccountPassword) => {
+    return api.post(`/accounts/validate-password`, data);
   },
 };

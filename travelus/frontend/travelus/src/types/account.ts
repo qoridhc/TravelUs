@@ -205,3 +205,9 @@ export interface TransactionNew {
   payeeName: string;
   currencyCode: string;
 }
+
+// 계좌 비밀번호 확인
+export interface AccountPassword {
+  accountNo: string;
+  accountPassword: string;
+}

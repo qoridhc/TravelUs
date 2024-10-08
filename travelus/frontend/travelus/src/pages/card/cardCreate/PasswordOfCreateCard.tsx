@@ -4,70 +4,64 @@ import SecurityNumberKeyboard from "../../../components/common/SecurityNumberKey
 import { accountApi } from "../../../api/account";
 import { AxiosError } from "axios";
 import { AxiosErrorResponseData } from "../../../types/axiosError";
-import { MeetingAccountInfo, MeetingAccountDetailInfo } from "../../../types/account";
-import { set } from "date-fns";
 
 const PasswordOfCreateCard = () => {
   const navigate = useNavigate();
-  const { groupId } = useParams();
-  const { type } = useParams();
+  const { groupId, type } = useParams();
+  const [accountNo, setAccountNo] = useState("");
   const [password, setPassword] = useState("");
-  const [meeting, setMeeting] = useState<MeetingAccountInfo | null>(null);
-  const [account, setAccount] = useState<MeetingAccountDetailInfo | null>(null);
 
-  useEffect(() => {
-    if (password.length === 4) {
-      if (type === "meeting") {
-        if (account?.accountPassword !== password) {
+  // 계좌 비밀번호 검증
+  const checkPassword = async () => {
+    const data = {
+      accountNo: accountNo,
+      accountPassword: password,
+    };
+
+    try {
+      const response = await accountApi.fetchCheckAccountPassword(data);
+      if (response.status === 200) {
+        setPassword("");
+        navigate(`/card/${groupId}/create/password/card`);
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response && axiosError.response.data && axiosError.response.data) {
+        const responseData = axiosError.response.data as AxiosErrorResponseData;
+        if (responseData.message === "ACCOUNT_PASSWORD_INVALID") {
           setPassword("");
           alert("모임통장 비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
-          return;
-        } else {
-          setPassword("");
-          navigate(`/card/${groupId}/create/password/card`);
         }
-      } else if (type === "card") {
-        navigate(`/card/${groupId}/create/password/check`, { state: { originalPassword: password } });
       }
+      console.log("", error);
     }
-  }, [password]);
-
-  useEffect(() => {
-    if (groupId && type === "meeting") {
-      fetchSpecificMeetingAccount();
-    }
-  }, [groupId]);
+  };
 
   // 특정 모임 조회 API 호출
   const fetchSpecificMeetingAccount = async () => {
     try {
       const response = await accountApi.fetchSpecificMeetingAccount(Number(groupId));
       if (response.status === 200) {
-        const meetingData = response.data;
-
-        setMeeting(meetingData);
-
-        // 모임 조회 성공 시, 바로 통장 정보 조회
-        if (meetingData?.groupAccountNo) {
-          fetchSpecificAccountInfo(meetingData.groupAccountNo);
-        } else {
-          console.log("groupAccountNo가 없습니다.");
-        }
+        setAccountNo(response.data.groupAccountNo);
       }
     } catch (error) {
-      console.error("모임 조회 에러", error);
+      console.error("accountApi의 fetchSpecificMeetingAccount : ", error);
     }
   };
 
-  // 특정 모임 통장 조회 API 호출
-  const fetchSpecificAccountInfo = async (groupAccountNo: string) => {
-    try {
-      const response = await accountApi.fetchSpecificAccountInfo(groupAccountNo);
-      setAccount(response.data);
-    } catch (error) {
-      console.error("모임 통장 조회 에러", error);
+  useEffect(() => {
+    fetchSpecificMeetingAccount();
+  }, []);
+
+  useEffect(() => {
+    if (password.length === 4) {
+      if (type === "meeting" && accountNo !== "") {
+        checkPassword();
+      } else {
+        navigate(`/card/${groupId}/create/password/check`, { state: { originalPassword: password } });
+      }
     }
-  };
+  }, [accountNo, password]);
 
   return (
     <div className="h-full grid grid-rows-[2fr_1fr]">
