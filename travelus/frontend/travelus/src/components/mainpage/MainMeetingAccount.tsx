@@ -6,6 +6,7 @@ import { FaUserFriends, FaBriefcase, FaHeart } from "react-icons/fa";
 import { setTravelboxInfo } from "../../redux/meetingAccountSlice";
 import { MeetingAccountInfo } from "../../types/account";
 import { useDispatch } from "react-redux";
+import { IoIosArrowForward } from "react-icons/io";
 
 interface Props {
   index: number;
@@ -40,8 +41,8 @@ const MainMeetingAccount = ({ index, account }: Props) => {
     // 해당 아이콘의 배경색을 가져오고, 없으면 기본값 사용
     const backgroundClass = iconBackgrounds[iconName] || iconBackgrounds.default;
 
-    const containerClasses = `w-6 h-6 ${backgroundClass} rounded-full flex justify-center items-center text-white`;
-    const iconClasses = "w-[0.9rem] h-[0.9rem]"; // 아이콘 자체 크기를 줄이기 위한 클래스
+    const containerClasses = `w-[1.5rem] h-[1.5rem] ${backgroundClass} rounded-full flex justify-center items-center text-white`;
+    const iconClasses = "w-[0.85rem] h-[0.85rem]"; // 아이콘 자체 크기를 줄이기 위한 클래스
 
     let IconComponent;
 
@@ -84,42 +85,54 @@ const MainMeetingAccount = ({ index, account }: Props) => {
     <>
       {account && (
         <div className="w-full p-5 flex flex-col rounded-xl bg-white shadow-md">
-          <div className="flex flex-col space-y-4">
+          <div className="flex flex-col space-y-6">
             <div
-              className="flex mb-3 space-x-2"
-              onClick={() => {
-                navigate(`/meetingaccount/${account.groupId}`);
-              }}>
-              {getIcon(account.icon)}
-              <p className="font-bold">{account.groupName}</p>
-            </div>
-            <div
-              className="rounded-md flex justify-between"
+              className="flex flex-col space-y-4"
               onClick={() => {
                 navigate(`/meetingaccount/${account.groupId}`);
               }}>
               <div className="flex items-center space-x-1">
-                <p className="text-[1.3rem] font-semibold">{formatCurrency(account.moneyBoxDtoList[0].balance)}</p>
-                <p className="text-[1rem]">원</p>
+                <p className="font-semibold">모임통장</p>
+                <IoIosArrowForward className="text-[#565656]" />
               </div>
             </div>
 
-            <hr />
-
-            <div
-              className="flex justify-between"
-              onClick={() =>
-                account?.moneyBoxDtoList?.[1] ? navigate(`/meetingaccount/${account.groupId}`) : handleCreate()
-              }>
-              <p className="text-sm">트래블박스</p>
-              {account?.moneyBoxDtoList?.[1] ? (
-                <div className="flex space-x-1">
-                  <p className="font-semibold">{formatCurrency(account.moneyBoxDtoList[1].balance)}</p>
-                  <p>{account.moneyBoxDtoList[1].currencyCode}</p>
+            <div className="flex flex-col space-y-4">
+              <div className="flex flex-col space-y-2">
+                <div className="flex items-center space-x-2">
+                  {getIcon(account.icon)}
+                  <p className="font-semibold">{account.groupName}</p>
                 </div>
-              ) : (
-                <button className="font-semibold">개설하기</button>
-              )}
+
+                <div
+                  className="rounded-md flex justify-between"
+                  onClick={() => {
+                    navigate(`/meetingaccount/${account.groupId}`);
+                  }}>
+                  <div className="flex items-center space-x-1">
+                    <p className="text-[1.3rem] font-semibold">{formatCurrency(account.moneyBoxDtoList[0].balance)}</p>
+                    <p className="text-[1rem]">원</p>
+                  </div>
+                </div>
+              </div>
+
+              <hr />
+
+              <div
+                className="flex justify-between"
+                onClick={() =>
+                  account?.moneyBoxDtoList?.[1] ? navigate(`/meetingaccount/${account.groupId}`) : handleCreate()
+                }>
+                <p className="text-sm">트래블박스</p>
+                {account?.moneyBoxDtoList?.[1] ? (
+                  <div className="flex space-x-1">
+                    <p className="font-semibold">{formatCurrency(account.moneyBoxDtoList[1].balance)}</p>
+                    <p>{account.moneyBoxDtoList[1].currencyCode}</p>
+                  </div>
+                ) : (
+                  <button className="font-semibold">개설하기</button>
+                )}
+              </div>
             </div>
           </div>
         </div>
