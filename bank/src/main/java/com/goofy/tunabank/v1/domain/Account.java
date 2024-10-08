@@ -63,8 +63,7 @@ public class Account {
     private String status;
 
     // ==== 엔티티 생성 메서드 ====
-    public static Account createAccount(
-        CreateGeneralAccountRequestDto requestDto, Bank bank, User user) {
+    public static Account createAccount(CreateGeneralAccountRequestDto requestDto, Bank bank, User user) {
 
         Account account = Account.builder()
             .user(user)
@@ -72,6 +71,7 @@ public class Account {
             .accountType(requestDto.getAccountType())
             .accountNo(createAccountNumber(requestDto.getAccountType()))  // 계좌 번호 생성
             .accountPassword(requestDto.getAccountPassword())
+            .moneyBoxes(new ArrayList<>())
             .createdAt(requestDto.getHeader().getTransmissionDateTime())
             .updatedAt(requestDto.getHeader().getTransmissionDateTime())
             .status("ACTIVE")
@@ -127,6 +127,10 @@ public class Account {
         if (!this.status.equals("CLOSED")) {
             this.status = "CLOSED";
         }
+    }
+
+    public void addMoneyBox(MoneyBox moneyBox) {
+        this.moneyBoxes.add(moneyBox);
     }
 
 }

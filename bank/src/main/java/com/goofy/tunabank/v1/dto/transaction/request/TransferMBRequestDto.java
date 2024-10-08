@@ -6,7 +6,6 @@ import com.goofy.tunabank.v1.domain.Account;
 import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
 import com.goofy.tunabank.v1.domain.Enum.TransferType;
 import com.goofy.tunabank.v1.domain.MoneyBox;
-import com.goofy.tunabank.v1.dto.moneyBox.request.DeleteMoneyBoxRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -36,15 +35,15 @@ public class TransferMBRequestDto {
     //신청 금액
     private double transactionBalance;
 
-    // 팩토리 메서드 정의
-    public static TransferMBRequestDto from(Account account, MoneyBox moneyBox, DeleteMoneyBoxRequestDto requestDto) {
+    // 머니박스 -> 원화 재환전을 위한 생성자 메서드
+    public static TransferMBRequestDto from(Account account, MoneyBox moneyBox, Header header) {
 
         return new TransferMBRequestDto(
-            requestDto.getHeader(),
+            header,
             TransferType.M,
             account.getAccountNo(),
             account.getAccountPassword(),
-            requestDto.getCurrencyCode(),
+            moneyBox.getCurrency().getCurrencyCode(),
             CurrencyType.KRW,
             moneyBox.getBalance()
         );

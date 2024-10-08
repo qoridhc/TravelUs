@@ -1,7 +1,6 @@
 package com.goofy.tunabank.v1.controller;
 
 import com.goofy.tunabank.v1.common.RecWrapper;
-import com.goofy.tunabank.v1.dto.ResponseDto;
 import com.goofy.tunabank.v1.dto.account.AccountDto;
 import com.goofy.tunabank.v1.dto.account.request.AddMoneyBoxRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.BalanceRequestDto;
@@ -10,6 +9,7 @@ import com.goofy.tunabank.v1.dto.account.request.DeleteAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.InquireAccountListRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.InquireAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.response.BalanceResponseDto;
+import com.goofy.tunabank.v1.dto.account.response.DeleteAccountResponseDto;
 import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
 import com.goofy.tunabank.v1.dto.moneyBox.request.DeleteMoneyBoxRequestDto;
 import com.goofy.tunabank.v1.dto.moneyBox.response.DeleteMoneyBoxResponseDto;
@@ -67,12 +67,12 @@ public class AccountController {
 
     // 계좌 삭제
     @PostMapping("/deleteAccount")
-    public ResponseEntity<ResponseDto> deleteAccount(
+    public ResponseEntity<RecWrapper<DeleteAccountResponseDto>> deleteAccount(
         @RequestBody DeleteAccountRequestDto requestDto
     ) {
-        ResponseDto responseDto = accountService.deleteAccount(requestDto);
+        DeleteAccountResponseDto responseDto = accountService.deleteAccount(requestDto);
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(new RecWrapper<>(responseDto));
     }
 
     /*
@@ -89,7 +89,7 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.OK).body(new RecWrapper<>(responseDto));
     }
 
-    // 계좌 삭제
+    // 머니박스 삭제
     @PostMapping("/deleteMoneyBox")
     public ResponseEntity<RecWrapper<DeleteMoneyBoxResponseDto>> deleteMoneyBox(
         @RequestBody DeleteMoneyBoxRequestDto requestDto

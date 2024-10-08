@@ -5,9 +5,9 @@ import com.goofy.tunabank.v1.domain.Bank;
 import com.goofy.tunabank.v1.domain.Currency;
 import com.goofy.tunabank.v1.domain.Enum.AccountType;
 import com.goofy.tunabank.v1.domain.Enum.CurrencyType;
+import com.goofy.tunabank.v1.domain.Enum.TransferType;
 import com.goofy.tunabank.v1.domain.MoneyBox;
 import com.goofy.tunabank.v1.domain.User;
-import com.goofy.tunabank.v1.dto.ResponseDto;
 import com.goofy.tunabank.v1.dto.account.AccountDto;
 import com.goofy.tunabank.v1.dto.account.request.AddMoneyBoxRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.BalanceRequestDto;
@@ -16,10 +16,12 @@ import com.goofy.tunabank.v1.dto.account.request.DeleteAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.InquireAccountListRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.InquireAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.response.BalanceResponseDto;
+import com.goofy.tunabank.v1.dto.account.response.DeleteAccountResponseDto;
 import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
 import com.goofy.tunabank.v1.dto.moneyBox.request.DeleteMoneyBoxRequestDto;
 import com.goofy.tunabank.v1.dto.moneyBox.response.DeleteMoneyBoxResponseDto;
 import com.goofy.tunabank.v1.dto.transaction.request.TransferMBRequestDto;
+import com.goofy.tunabank.v1.dto.transaction.request.TransferRequestDto;
 import com.goofy.tunabank.v1.exception.account.DuplicateCurrencyException;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountPasswordException;
@@ -27,6 +29,7 @@ import com.goofy.tunabank.v1.exception.account.InvalidBankIdException;
 import com.goofy.tunabank.v1.exception.account.InvalidGroupAccountIdException;
 import com.goofy.tunabank.v1.exception.account.RefundAccountRequiredException;
 import com.goofy.tunabank.v1.exception.account.UserAccountsNotFoundException;
+import com.goofy.tunabank.v1.exception.moneybox.InvalidDeleteCurrencyException;
 import com.goofy.tunabank.v1.exception.moneybox.MoneyBoxNotFoundException;
 import com.goofy.tunabank.v1.mapper.AccountMapper;
 import com.goofy.tunabank.v1.mapper.MoneyBoxMapper;
@@ -35,8 +38,8 @@ import com.goofy.tunabank.v1.repository.CurrencyRepository;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
 import com.goofy.tunabank.v1.repository.account.AccountRepository;
 import com.goofy.tunabank.v1.util.LogUtil;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,55 +66,38 @@ public class AccountService {
         // 유저 정보 생성
         User user = userService.findUserByHeader();
 
-        // 일반 계좌 생성
+        // 통화 및 은행 정보 조회
         Currency currency = currencyRepository.findByCurrencyCode(CurrencyType.KRW);
-
         Bank bank = bankRepository.findById(requestDto.getBankId())
             .orElseThrow(() -> new InvalidBankIdException(requestDto.getBankId()));
 
-        // 계좌 생성
+        // 계좌 생성 및 기본 머니박스 추가
         Account account = Account.createAccount(requestDto, bank, user);
 
-        // KRW 머니박스 기본 생성
+        // 계좌 최초 생성 시 KRW 머니박스 기본 생성
         MoneyBox moneyBox = MoneyBox.createMoneyBox(account, currency);
 
-        List<MoneyBox> moneyBoxes = new ArrayList<>();
-
-        moneyBoxes.add(moneyBox);
-
-        account.setMoneyBoxes(moneyBoxes);
+        account.addMoneyBox(moneyBox);
 
         accountRepository.save(account);
-        moneyBoxRepository.save(moneyBox);
 
-        // DTO 변환
-        AccountDto accountDto = accountMapper.toDto(account);
-
-        List<MoneyBoxDto> moneyBoxDtoList = moneyBoxMapper.toDtoList(account.getMoneyBoxes());
-        accountDto.setMoneyBoxDtos(moneyBoxDtoList);
-
-        return accountDto;
+        return accountMapper.toDto(account);
     }
 
     // ==== 유저 계좌 전체 조회 ====
     public List<AccountDto> inqureAccountList(InquireAccountListRequestDto requestDto) {
-
-        LogUtil.info("requestDto", requestDto);
 
         User user = userService.findUserByHeader();
 
         List<Account> accountList = accountRepository.findAllAccountsByUserId(user.getUserId())
             .orElseThrow(() -> new UserAccountsNotFoundException(user.getUserId()));
 
+        String searchType = requestDto.getSearchType();
+
         List<AccountDto> accountDtoList = accountList.stream()
-            .filter(account -> {
-                if (requestDto.getSearchType().equals("A")) {
-                    return true; // "A"인 경우 전체 조회
-                }
-                return account.getAccountType().name().equals(requestDto.getSearchType()); // "I"나 "G"인 경우 필터링
-            })
+            .filter(account -> searchType.equals("A") || account.getAccountType().name().equals(searchType))
             .map(accountMapper::toDto)
-            .toList();
+            .collect(Collectors.toList());
 
         return accountDtoList;
     }
@@ -128,30 +114,29 @@ public class AccountService {
         AccountDto accountDto = accountMapper.toDto(account);
         accountDto.setCredentialId(account.getUser().getCredentialId());
 
-        List<MoneyBoxDto> moneyBoxDtoList = moneyBoxMapper.toDtoList(account.getMoneyBoxes());
-        accountDto.setMoneyBoxDtos(moneyBoxDtoList);
-
         return accountDto;
     }
 
     // ==== 계좌 삭제 ====
-    public ResponseDto deleteAccount(DeleteAccountRequestDto requestDto) {
+    public DeleteAccountResponseDto deleteAccount(DeleteAccountRequestDto requestDto) {
 
+        // 계좌 조회 및 비밀번호 확인
         Account account = accountRepository.findByAccountNo(requestDto.getAccountNo())
             .orElseThrow(() -> new InvalidAccountNoException(requestDto.getAccountNo()));
 
-        if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
-            throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
-        }
+        // 계좌 비밀번호 검증
+        validateAccountPassword(account, requestDto.getAccountPassword());
 
-        // 추후에 자동 환전 & 환불 계좌 로직 추가
-        boolean hasBalance = account.getMoneyBoxes().stream().anyMatch(moneyBox -> moneyBox.getBalance() > 0);
+        // 계좌 잔액 여부 판단
+        DeleteAccountResponseDto dto = validateAndRefundAccount(account, requestDto);
 
-        if (hasBalance) {
-            throw new RefundAccountRequiredException();
-        }
+        LogUtil.info("dto", dto);
 
-        return new ResponseDto();
+        // 머니박스 및 계좌 상태 변경
+        account.getMoneyBoxes().forEach(MoneyBox::closeMoneyBox);
+        account.closeAccount();
+
+        return dto;
     }
 
     /*
@@ -193,8 +178,13 @@ public class AccountService {
         return moneyBoxMapper.toDtoList(account.getMoneyBoxes());
     }
 
+    // 머니박스 해지
     @Transactional
     public DeleteMoneyBoxResponseDto deleteMoneyBox(DeleteMoneyBoxRequestDto requestDto) {
+
+        if (requestDto.getCurrencyCode().toString().equals("KRW")) {
+            throw new InvalidDeleteCurrencyException();
+        }
 
         User user = userService.findUserByHeader();
 
@@ -213,7 +203,11 @@ public class AccountService {
         double beforeRefundAmount = krwMoneyBox.getBalance();
 
         if (moneyBox.getBalance() > 0) {
-            TransferMBRequestDto dto = TransferMBRequestDto.from(account, moneyBox, requestDto);
+            TransferMBRequestDto dto = TransferMBRequestDto.from(
+                account,
+                moneyBox,
+                requestDto.getHeader()
+            );
 
             transactionService.processMoneyBoxTransfer(dto);
         }
@@ -233,4 +227,49 @@ public class AccountService {
             requestDto.getCurrencyCode());
         return new BalanceResponseDto(moneyBox.getBalance());
     }
+
+
+    // 비밀번호 검증 함수
+    private void validateAccountPassword(Account account, String password) {
+        if (!account.getAccountPassword().equals(password)) {
+            throw new InvalidAccountPasswordException(password);
+        }
+    }
+
+    // 머니박스 잔액 검증 & 환불 함수
+    private DeleteAccountResponseDto validateAndRefundAccount(Account account, DeleteAccountRequestDto requestDto) {
+
+        Account refundAccount = accountRepository.findByAccountNo(requestDto.getRefundAccountNo())
+            .orElseThrow(() -> new RefundAccountRequiredException(requestDto.getRefundAccountNo()));
+
+        List<MoneyBox> moneyBoxes = account.getMoneyBoxes();
+
+        double refundAmount = 0.0;
+
+        // 외화 머니박스에 돈이 있으면 원화 머니박스로 자동 환전
+        if (moneyBoxes.size() > 1 && moneyBoxes.get(1).getBalance() > 0) {
+            refundAmount = moneyBoxes.get(1).getBalance();
+            TransferMBRequestDto dto = TransferMBRequestDto.from(account, moneyBoxes.get(1), requestDto.getHeader());
+
+            transactionService.processMoneyBoxTransfer(dto);
+        }
+
+        if (moneyBoxes.get(0).getBalance() > 0) {
+            refundAmount = moneyBoxes.get(0).getBalance();
+            TransferRequestDto transferRequestDto = TransferRequestDto.builder()
+                .header(requestDto.getHeader())
+                .transferType(TransferType.G)
+                .withdrawalAccountNo(account.getAccountNo())
+                .accountPassword(account.getAccountPassword())
+                .depositAccountNo(refundAccount.getAccountNo())
+                .transactionBalance(moneyBoxes.get(0).getBalance()).build();
+
+            transactionService.processGeneralTransfer(transferRequestDto);
+        }
+
+        DeleteAccountResponseDto dto = new DeleteAccountResponseDto("CLOSED", refundAccount.getAccountNo(), refundAmount);
+
+        return dto;
+    }
+
 }
