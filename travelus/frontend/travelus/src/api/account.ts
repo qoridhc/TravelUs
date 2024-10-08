@@ -1,6 +1,6 @@
 
 import api from "../lib/axios";
-import { AccountInfo, AccountInfoNew, MeetingAccountInfo, AccountParticipants, GeneralAccountCreate, MeetingAccountCreate, meetingInvitationCode, AccountPassword } from "../types/account";
+import { AccountInfo, MeetingAccountInfo, AccountParticipants, GeneralAccountCreate, MeetingAccountCreate, MeetingAccountUpdateInfo, AccountPassword } from "../types/account";
 import { AccountHistoryRequest } from "../types/accountHistory";
 import { NewParticipant, TravelboxInfo } from "../types/meetingAccount";
 
@@ -80,6 +80,11 @@ export const accountApi = {
   // 초대코드로 모임 정보 조회
   fetchGroupIdByInvitationCode: (code: string) => {
     return api.get(`/groups/code/${code}`);
+  },
+
+  // 모임정보 수정
+  fetchUpdateMeetingAccount: (groupId: number, data: MeetingAccountUpdateInfo) => {
+    return api.put(`/groups/${groupId}`, data);
   },
 
   // 거래 내역 조회
