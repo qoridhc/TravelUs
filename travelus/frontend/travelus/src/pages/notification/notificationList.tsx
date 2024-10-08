@@ -28,7 +28,6 @@ const NotificationList: React.FC<NotificationListProps> = (props) => {
             (a: NotificationListInfo, b: NotificationListInfo) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           );
-          console.log(sortedNotifications);
           setNotificationList(sortedNotifications);
         }
       } catch (error) {
