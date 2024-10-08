@@ -16,13 +16,9 @@ import {
 } from "chart.js";
 import { ChevronLeft } from "lucide-react";
 import { exchangeApi } from "../../api/exchange";
-import {
-  AllDetailedPredictions,
-  PredictionCurrencyData,
-  DataCollectionCurrencyData,
-  currencyTypeList,
-} from "../../types/exchange";
+import { AllDetailedPredictions, PredictionCurrencyData, currencyTypeList } from "../../types/exchange";
 import { setupChart } from "../../utils/chartSetup";
+import { forecastChartSetup } from "../../utils/forecastChartSetup";
 import { calculateDailyChange, formatExchangeRate } from "../../utils/currencyUtils";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale);
@@ -157,24 +153,22 @@ const ExchangeDetail: React.FC = () => {
     </>
   );
 
-  const renderPredictionTab = () => (
-    <>
-      {["EUR", "TWD"].includes(currencyCode) ? (
-        <div className="text-center py-8">
-          <p>이 통화는 환율 예측을 지원하지 않습니다.</p>
-        </div>
-      ) : (
-        <>
-          <div className="bg-gray-100 rounded-md p-4 mb-6">
-            <h2 className="mb-1">환율 예측</h2>
-            <div className="flex justify-between">
-              <span className="font-semibold">
-                {formatExchangeRate(
-                  filteredPredictionData.reduce((sum, data) => sum + data.rate, 0) / filteredPredictionData.length,
-                  currencyCode
-                )}
-              </span>
-              {/* <span
+  const renderPredictionTab = () => {
+    const trend = exchangeData?.trend || "STABLE";
+    const chartOptions = forecastChartSetup(currencyCode, formatExchangeRate, trend);
+
+    return (
+      <>
+        <div className="bg-gray-100 rounded-md p-4 mb-6">
+          <h2 className="mb-1">환율 예측</h2>
+          <div className="flex justify-between">
+            <span className="font-semibold">
+              {formatExchangeRate(
+                filteredPredictionData.reduce((sum, data) => sum + data.rate, 0) / filteredPredictionData.length,
+                currencyCode
+              )}
+            </span>
+            {/* <span
                 className={`${
                   filteredPredictionData[0]?.rate < filteredPredictionData[filteredPredictionData.length - 1]?.rate
                     ? "text-red-500"
@@ -191,20 +185,45 @@ const ExchangeDetail: React.FC = () => {
                   ? "▲"
                   : "▼"}
               </span> */}
-            </div>
           </div>
-          {renderChart()}
-          {renderPeriodButtons()}
-        </>
-      )}
-    </>
-  );
+        </div>
+        <div className="mb-6 h-64">
+          <Line
+            data={{
+              labels: filteredPredictionData.map((data) => data.date),
+              datasets: [
+                {
+                  label: "예측 환율",
+                  data: filteredPredictionData.map((data) => data.rate),
+                  borderColor:
+                    trend === "UPWARD"
+                      ? "rgb(221, 82, 87)"
+                      : trend === "DOWNWARD"
+                      ? "rgb(72, 128, 238)"
+                      : "rgb(128, 128, 128)",
+                  tension: 0.1,
+                },
+              ],
+            }}
+            options={chartOptions}
+          />
+        </div>
+        {renderPeriodButtons()}
+      </>
+    );
+  };
 
   const renderChart = () => (
     <div className="mb-6 h-64">
       <Line data={chartData} options={chartOptions} />
     </div>
   );
+
+  // const forecastChartSetup = () => (
+  //   <div className="mb-6 h-64">
+  //     <Line data={chartData} options={chartOptions} />
+  //   </div>
+  // );
 
   const renderPeriodButtons = () => {
     if (activeTab === "exchange") {

@@ -21,6 +21,43 @@ const RecommendationDrawer: React.FC<RecommendationDrawerProps> = ({ open, onClo
     "국제 무역 데이터",
     "정치적 안정성 지수",
   ];
+
+  return (
+    <Drawer anchor="bottom" open={open} onClose={onClose}>
+      <Box sx={{ p: 3, maxHeight: "80vh", overflowY: "auto" }}>
+        <Typography variant="h5" gutterBottom>
+          환율 예측에 대한 이해
+        </Typography>
+
+        <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+          환율 예측의 어려움
+        </Typography>
+        <List>
+          {predictionChallenges.map((challenge, index) => (
+            <ListItem key={index}>
+              <ListItemText primary={challenge} />
+            </ListItem>
+          ))}
+        </List>
+
+        <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+          환율 예측에 사용된 정보
+        </Typography>
+        <List>
+          {usedInformation.map((info, index) => (
+            <ListItem key={index}>
+              <ListItemText primary={info} />
+            </ListItem>
+          ))}
+        </List>
+
+        <Typography variant="body2" sx={{ mt: 2, fontStyle: "italic" }}>
+          주의: 환율 예측은 참고용으로만 사용하시기 바랍니다. 실제 환율은 예측과 다를 수 있으며, 금융 결정을 내릴 때는
+          항상 다양한 요소를 고려해야 합니다.
+        </Typography>
+      </Box>
+    </Drawer>
+  );
 };
 
 export default RecommendationDrawer;
