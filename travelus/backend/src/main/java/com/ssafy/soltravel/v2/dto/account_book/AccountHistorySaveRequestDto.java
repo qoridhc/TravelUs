@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AccountHistorySaveRequestDto {
 
-  @Schema(description = "가계부를 등록할 외화 계좌 번호", example = "0886438854898839")
+  @Schema(description = "머니로그를 등록할 외화 계좌 번호", example = "002-72091602-209")
   private String accountNo;
 
   @Schema(description = "현금 사용처", example = "Starbucks")

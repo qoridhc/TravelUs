@@ -53,6 +53,9 @@ public class ExchangeRateForecastController {
     return new ResponseEntity(String.format("저장 완료(%s)", response), HttpStatus.CREATED);
   }
 
+  /*
+  * 모든 데이터 조회
+  */
   @GetMapping
   public ResponseEntity getAllData() {
     LogUtil.info("모든 데이터 조회 요청");
