@@ -78,6 +78,7 @@ public class ExchangeService {
   /**
    * 현재 환율 전체 조회
    */
+  @Transactional(readOnly = true)
   public List<ExchangeRateResponseDto> getExchangeRateAll() {
 
     List<ExchangeRateResponseDto> rateEntity = new ArrayList<>();
@@ -92,6 +93,7 @@ public class ExchangeService {
   /**
    * 현재 환율 단건 조회
    */
+  @Transactional(readOnly = true)
   public ExchangeRateResponseDto getExchangeRate(String currency) {
 
     ExchangeRateResponseDto exchangeRateResponseDto = exchangeRateMapper.toExchangeRateResponseDto(
@@ -102,19 +104,23 @@ public class ExchangeService {
   /**
    * 목표 환율 설정
    */
-  public void setPreferenceRate(ExchangeRateRegisterRequestDto dto) {
+  @Transactional
+  public void setPreferenceRate(ExchangeRateRegisterRequestDto dto, boolean isUpdate, long targetId) {
 
     CurrencyType currencyCode = dto.getCurrencyCode();
-
-    long groupId = dto.getGroupId();
-    TravelGroup group = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException(groupId));
-
     double targetRate = BigDecimal.valueOf(dto.getTargetRate()).setScale(2, RoundingMode.HALF_UP).doubleValue();
-    Double amount = dto.getTransactionBalance() != null ? dto.getTransactionBalance() : -1.0;
-    TargetRate target = targetRateRepository.save(TargetRate.createTargetRate(amount, targetRate, group));
+
+    if (!isUpdate) {
+      long groupId = dto.getGroupId();
+      TravelGroup group = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException(groupId));
+
+      Double amount = dto.getTransactionBalance() != null ? dto.getTransactionBalance() : -1.0;
+      TargetRate target = targetRateRepository.save(TargetRate.createTargetRate(amount, targetRate, group));
+      targetId = target.getId();
+    }
 
     String key = currencyCode + ":targets";
-    String value = target.getId().toString();
+    String value = String.valueOf(targetId);
 
     redisTemplate.opsForZSet().add(key, value, targetRate);
 
@@ -136,16 +142,28 @@ public class ExchangeService {
   /**
    * 목표 환율 수정
    */
+  @Transactional
   public void updateTargetRate(TargetRateUpdateRequestDto requestDto) {
 
     //TODO: 삭제
+    long groupId = requestDto.getGroupId();
+    TargetRate targetRate = targetRateRepository.findByGroupId(groupId)
+        .orElseThrow(() -> new TargetRateNotFoundException(groupId));
+    removePreferenceRateFromRedis(requestDto.getCurrencyCode(), targetRate.getId());
+
+    targetRate.setRate(Double.valueOf(requestDto.getTargetRate()));
+    targetRate.setAmount(requestDto.getTransactionBalance());
+    targetRateRepository.save(targetRate);
 
     //TODO: 추가
+    setPreferenceRate(new ExchangeRateRegisterRequestDto(groupId, getCurrencyType(requestDto.getCurrencyCode()),
+        requestDto.getTransactionBalance(), requestDto.getTargetRate(), requestDto.getDueDate()), true, targetRate.getId());
   }
 
   /**
    * 자동 환전
    */
+  @Transactional
   public void processCurrencyConversions(String currencyCode, Double exchangeRate) {
 
     Set<targetAccountDto> list = getAccountsForRateHigherThan(currencyCode, exchangeRate);
@@ -190,6 +208,7 @@ public class ExchangeService {
   /**
    * 실시간 환율 <= 목표 환율인 계좌 목록 조회
    */
+  @Transactional(readOnly = true)
   public Set<targetAccountDto> getAccountsForRateHigherThan(String currencyCode, double realTimeRate) {
     boolean isAll = false;
     String key = currencyCode + ":targets";
@@ -225,6 +244,7 @@ public class ExchangeService {
   /**
    * Redis에서 값 삭제하는 메서드
    */
+  @Transactional
   public void removePreferenceRateFromRedis(String currencyCode, long targetId) {
     String key = currencyCode + ":targets";
     String value = String.valueOf(targetId);

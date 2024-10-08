@@ -3,9 +3,11 @@ package com.ssafy.soltravel.v2.dto.exchange;
 import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class ExchangeRateRegisterRequestDto {
 
   @Schema(description = "모임 id", example = "11")
