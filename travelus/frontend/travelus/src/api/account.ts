@@ -101,4 +101,9 @@ export const accountApi = {
   fetchCheckAccountPassword: (data: AccountPassword) => {
     return api.post(`/accounts/validate-password`, data);
   },
+
+  // 참여자 모임 탈퇴
+  deleteParticipantId: (participantId: number) => {
+    return api.delete(`/groups/participants/${participantId}`);
+  },
 };
