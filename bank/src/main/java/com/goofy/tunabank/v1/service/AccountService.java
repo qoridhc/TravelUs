@@ -165,7 +165,7 @@ public class AccountService {
     Account account = accountRepository.findByAccountNo(requestDto.getAccountNo())
         .orElseThrow(() -> new InvalidAccountNoException(requestDto.getAccountNo()));
 
-    if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
+    if (!passwordEncoder.matches(requestDto.getAccountPassword(), account.getAccountPassword())) {
       throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
     }
 
