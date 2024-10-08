@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { MeetingAccountInfo } from "../../../types/account";
+import { MeetingAccountInfo, MeetingAccountDetailInfo } from "../../../types/account";
 import { accountApi } from "../../../api/account";
 import { IoIosArrowBack } from "react-icons/io";
 import { IoPeopleSharp } from "react-icons/io5";
@@ -10,6 +10,8 @@ import { AiFillSmile } from "react-icons/ai";
 import { IoPerson } from "react-icons/io5";
 import { IoIosListBox } from "react-icons/io";
 import { RiHandCoinFill } from "react-icons/ri";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../../lottie/loadingAnimation.json";
 
 interface MeetingAccountManagementProps {
   // Define the props for your component here
@@ -20,6 +22,7 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
   const { id } = useParams();
   const numId = Number(id);
   const [accountInfo, setAccountInfo] = useState<MeetingAccountInfo | null>(null);
+  const [account, setAccount] = useState<MeetingAccountDetailInfo | null>(null);
 
   useEffect(() => {
     // 해당 모임 조회 API 호출
@@ -28,6 +31,7 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
         const response = await accountApi.fetchSpecificMeetingAccount(numId);
         if (response.status === 200) {
           setAccountInfo(response.data);
+          fetchSpecificAccountInfo(response.data.groupAccountNo);
         }
       } catch (error) {
         console.error("모임 조회 에러", error);
@@ -36,6 +40,24 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
 
     fetchSpecificMeetingAccount();
   }, [id]);
+
+  // 특정 모임 통장 조회 API 호출
+  const fetchSpecificAccountInfo = async (groupAccountNo: string) => {
+    try {
+      const response = await accountApi.fetchSpecificAccountInfo(groupAccountNo);
+      setAccount(response.data);
+    } catch (error) {
+      console.error("모임 통장 조회 에러", error);
+    }
+  };
+
+  if (!account || !accountInfo) {
+    return (
+      <div className="h-full flex flex-col justify-center items-center">
+        <Lottie animationData={loadingAnimation} />
+      </div>
+    );
+  }
 
   return (
     accountInfo && (
@@ -108,7 +130,9 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
             )}
 
             <div
-              onClick={() => {navigate(`/meetingaccount/update/${accountInfo.groupId}`);}}
+              onClick={() => {
+                navigate(`/meetingaccount/update/${accountInfo.groupId}`);
+              }}
               className="flex items-center space-x-4">
               <AiFillSmile className="text-3xl text-[#fcd876]" />
               <div className="w-full flex justify-between">
@@ -166,8 +190,10 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
 
         <div className="w-full h-5 bg-[#F6F6F8]"></div>
 
-        <div className="p-6">
-          <button className="text-zinc-400">통장 해지하기</button>
+        <div
+          onClick={() => {navigate(`/travelbox/delete/${account.accountNo}/${accountInfo.groupId}`)}}
+          className="p-6">
+          {account.moneyBoxDtos.length > 1 && <button className="text-zinc-400">외화저금통 해지하기</button>}
         </div>
       </div>
     )
