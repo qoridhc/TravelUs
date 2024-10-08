@@ -6,11 +6,11 @@ import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushNotification;
 import com.ssafy.soltravel.v1.dto.user.UserDetailDto;
 import com.ssafy.soltravel.v1.util.LogUtil;
+import com.ssafy.soltravel.v2.domain.BillingHistoryDetail;
 import com.ssafy.soltravel.v2.domain.Enum.AccountType;
 import com.ssafy.soltravel.v2.domain.Enum.NotificationType;
 import com.ssafy.soltravel.v2.domain.Notification;
 import com.ssafy.soltravel.v2.domain.Participant;
-import com.ssafy.soltravel.v2.domain.BillingHistory;
 import com.ssafy.soltravel.v2.domain.TravelGroup;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.domain.redis.RedisFcm;
@@ -352,36 +352,35 @@ public class NotificationService {
     /*
      *  개별 정산 알림
      */
-//    public ResponseEntity<?> sendPersonalSettlementNotification(
-//        PersonalSettlementHistory requestDto
-//    ) {
-//
-//        String title = "새로운 정산 요청이 들어왔어요!";
-//
-//        String formattedAmount = df.format(requestDto.getAmount());
-//
-//        String message = String.format("%s에서 %s원 정산을 요청했어요.",
-//            requestDto.getGroup().getGroupName(),
-//            formattedAmount
-//        );
-//
-//        TravelGroup group = requestDto.getGroup();
-//        Participant participant = requestDto.getParticipant();
-//
-//        PushNotificationRequestDto notificationRequestDto = PushNotificationRequestDto.createDto(
-//            participant.getUser().getUserId(),
-//            NotificationType.S,
-//            title,
-//            message,
-//            group.getGroupAccountNo(),
-//            group.getGroupId()
-//        );
-//
-//        // 알림 전송
-//        pushNotification(notificationRequestDto);
-//
-//        return ResponseEntity.ok().body(new ResponseDto());
-//    }
+    public ResponseEntity<?> sendPersonalSettlementNotification(
+        TravelGroup group, BillingHistoryDetail requestDto
+    ) {
+
+        String title = "새로운 정산 요청이 들어왔어요!";
+
+        String formattedAmount = df.format(requestDto.getAmount());
+
+        String message = String.format("%s에서 %s원 정산을 요청했어요.",
+            group.getGroupName(),
+            formattedAmount
+        );
+
+        Participant participant = requestDto.getParticipant();
+
+        PushNotificationRequestDto notificationRequestDto = PushNotificationRequestDto.createDto(
+            participant.getUser().getUserId(),
+            NotificationType.S,
+            title,
+            message,
+            group.getGroupAccountNo(),
+            group.getGroupId()
+        );
+
+        // 알림 전송
+        pushNotification(notificationRequestDto);
+
+        return ResponseEntity.ok().body(new ResponseDto());
+    }
 
 
     public List<NotificationDto> getAllByUserId() {
