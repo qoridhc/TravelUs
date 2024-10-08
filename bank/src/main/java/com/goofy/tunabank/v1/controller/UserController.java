@@ -5,6 +5,8 @@ import com.goofy.tunabank.v1.dto.user.UserJoinRequestDto;
 import com.goofy.tunabank.v1.dto.user.UserJoinResponseDto;
 import com.goofy.tunabank.v1.dto.user.UserSearchRequestDto;
 import com.goofy.tunabank.v1.dto.user.UserSearchResponseDto;
+import com.goofy.tunabank.v1.dto.user.UserUpdateRequestDto;
+import com.goofy.tunabank.v1.dto.user.UserUpdateResponseDto;
 import com.goofy.tunabank.v1.service.UserService;
 import com.goofy.tunabank.v1.util.LogUtil;
 import java.util.List;
@@ -42,6 +44,13 @@ public class UserController {
   public ResponseEntity deleteUser(@RequestBody UserDeleteRequestDto request){
     LogUtil.info("유저 삭제 요청", request.getHeader());
     UserDeleteResponseDto response = userService.deleteUser(request);
+    return new ResponseEntity(response, HttpStatus.OK);
+  }
+
+  @PostMapping("/update")
+  public ResponseEntity updateUser(@RequestBody UserUpdateRequestDto request){
+    LogUtil.info("유저 수정 요청", request.toString());
+    UserUpdateResponseDto response = userService.updateUser(request);
     return new ResponseEntity(response, HttpStatus.OK);
   }
 }

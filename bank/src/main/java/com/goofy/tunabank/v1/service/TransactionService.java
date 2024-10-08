@@ -40,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +58,7 @@ public class TransactionService {
   private final UserService userService;
   private final AccountRepository accountRepository;
 
+  private final PasswordEncoder passwordEncoder;
 
   /**
    * 입금 처리
@@ -361,11 +363,11 @@ public class TransactionService {
   /**
    * 비밀번호 검증
    */
-  private boolean validatePassword(String password, String accountNo) {
+  public boolean validatePassword(String password, String accountNo) {
 
     String accountPassword = getPassword(accountNo);
 
-    if (!password.equals(accountPassword)) {
+    if (!passwordEncoder.matches(password, accountPassword)) {
       throw new InvalidAccountPasswordException(password);
     }
     return true;
