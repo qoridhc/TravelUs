@@ -59,6 +59,7 @@ public class TransactionService {
   private final AccountRepository accountRepository;
 
   private final PasswordEncoder passwordEncoder;
+
   /**
    * 입금 처리
    */
@@ -362,7 +363,7 @@ public class TransactionService {
   /**
    * 비밀번호 검증
    */
-  private boolean validatePassword(String password, String accountNo) {
+  public boolean validatePassword(String password, String accountNo) {
 
     String accountPassword = getPassword(accountNo);
 

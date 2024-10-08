@@ -9,7 +9,9 @@ import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.DeleteAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.InquireAccountListRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.InquireAccountRequestDto;
+import com.goofy.tunabank.v1.dto.account.request.PasswordValidateRequestDto;
 import com.goofy.tunabank.v1.dto.account.response.BalanceResponseDto;
+import com.goofy.tunabank.v1.dto.account.response.PasswordValidateResponseDto;
 import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
 import com.goofy.tunabank.v1.service.AccountService;
 import java.util.List;
@@ -92,5 +94,15 @@ public class AccountController {
     BalanceResponseDto responseDto = accountService.getBalanceByAccountNo(requestDto);
 
     return ResponseEntity.status(HttpStatus.OK).body(new RecWrapper<>(responseDto));
+  }
+
+  /**
+   * 비밀번호 검증
+   */
+  @PostMapping("/validate-password")
+  public ResponseEntity<RecWrapper<PasswordValidateResponseDto>> validatePassword(
+      @RequestBody PasswordValidateRequestDto requestDto) {
+
+    return ResponseEntity.status(HttpStatus.OK).body(new RecWrapper<>(accountService.validatePassword(requestDto)));
   }
 }

@@ -15,7 +15,9 @@ import com.goofy.tunabank.v1.dto.account.request.CreateGeneralAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.DeleteAccountRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.InquireAccountListRequestDto;
 import com.goofy.tunabank.v1.dto.account.request.InquireAccountRequestDto;
+import com.goofy.tunabank.v1.dto.account.request.PasswordValidateRequestDto;
 import com.goofy.tunabank.v1.dto.account.response.BalanceResponseDto;
+import com.goofy.tunabank.v1.dto.account.response.PasswordValidateResponseDto;
 import com.goofy.tunabank.v1.dto.moneyBox.MoneyBoxDto;
 import com.goofy.tunabank.v1.exception.account.DuplicateCurrencyException;
 import com.goofy.tunabank.v1.exception.account.InvalidAccountNoException;
@@ -32,8 +34,11 @@ import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
 import com.goofy.tunabank.v1.repository.account.AccountRepository;
 import com.goofy.tunabank.v1.util.LogUtil;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +58,7 @@ public class AccountService {
   private final MoneyBoxMapper moneyBoxMapper;
 
   private final PasswordEncoder passwordEncoder;
+
   // ==== 계좌 생성 관련 메서드 ====
   public AccountDto postNewAccount(CreateGeneralAccountRequestDto requestDto) {
 
@@ -102,15 +108,12 @@ public class AccountService {
     List<Account> accountList = accountRepository.findAllAccountsByUserId(user.getUserId())
         .orElseThrow(() -> new UserAccountsNotFoundException(user.getUserId()));
 
-    List<AccountDto> accountDtoList = accountList.stream()
-        .filter(account -> {
-          if (requestDto.getSearchType().equals("A")) {
-            return true; // "A"인 경우 전체 조회
-          }
-          return account.getAccountType().name().equals(requestDto.getSearchType()); // "I"나 "G"인 경우 필터링
-        })
-        .map(accountMapper::toDto)
-        .toList();
+    List<AccountDto> accountDtoList = accountList.stream().filter(account -> {
+      if (requestDto.getSearchType().equals("A")) {
+        return true; // "A"인 경우 전체 조회
+      }
+      return account.getAccountType().name().equals(requestDto.getSearchType()); // "I"나 "G"인 경우 필터링
+    }).map(accountMapper::toDto).toList();
 
     return accountDtoList;
   }
@@ -197,5 +200,12 @@ public class AccountService {
     MoneyBox moneyBox = transactionService.findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountNo(),
         requestDto.getCurrencyCode());
     return new BalanceResponseDto(moneyBox.getBalance());
+  }
+
+  public PasswordValidateResponseDto validatePassword(PasswordValidateRequestDto requestDto) {
+
+    PasswordValidateResponseDto responseDto = new PasswordValidateResponseDto();
+    responseDto.setResult(transactionService.validatePassword(requestDto.getAccountPassword(), requestDto.getAccountNo())?"success":"fail");
+    return responseDto;
   }
 }
