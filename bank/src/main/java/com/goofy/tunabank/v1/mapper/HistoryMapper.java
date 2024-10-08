@@ -13,7 +13,6 @@ public interface HistoryMapper {
 
   @Mapping(target = "transactionUniqueNo", source = "id")
   @Mapping(target = "transactionType", source = "transactionType")
-  @Mapping(target = "payeeName", source = "moneyBox.account.user.name")
   @Mapping(target = "transactionDate", source = "transactionAt")
   @Mapping(target = "transactionAmount", expression = "java(String.format(\"%.2f\", transactionHistory.getAmount()))")
   @Mapping(target = "transactionBalance", expression = "java(String.format(\"%.2f\", transactionHistory.getBalance()))")
