@@ -3,6 +3,7 @@ package com.ssafy.soltravel.v2.service.exchange;
 
 import com.ssafy.soltravel.v2.common.Header;
 import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
+import com.ssafy.soltravel.v2.domain.Enum.SettlementStatus;
 import com.ssafy.soltravel.v2.domain.Enum.TransferType;
 import com.ssafy.soltravel.v2.domain.TargetRate;
 import com.ssafy.soltravel.v2.domain.TravelGroup;
@@ -103,18 +104,13 @@ public class ExchangeService {
    */
   public void setPreferenceRate(ExchangeRateRegisterRequestDto dto) {
 
-//        String accountNo = dto.getAccountNo();
     CurrencyType currencyCode = dto.getCurrencyCode();
 
     long groupId = dto.getGroupId();
     TravelGroup group = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException(groupId));
 
     double targetRate = BigDecimal.valueOf(dto.getTargetRate()).setScale(2, RoundingMode.HALF_UP).doubleValue();
-    // amount가 null이면 잔액 전체 환전으로 -1로 처리
     Double amount = dto.getTransactionBalance() != null ? dto.getTransactionBalance() : -1.0;
-//    long userId = groupRepository.findMasterUserIdByAccountNo(group.getGroupAccountNo());
-
-    //TODO: targetRate save
     TargetRate target = targetRateRepository.save(TargetRate.createTargetRate(amount, targetRate, group));
 
     String key = currencyCode + ":targets";
@@ -142,10 +138,9 @@ public class ExchangeService {
    */
   public void updateTargetRate(TargetRateUpdateRequestDto requestDto) {
 
-/**
- * removePreferenceRateFromRedis(String currencyCode, long userId, String accountNo, double amount,
- *         double targetRate)
- */
+    //TODO: 삭제
+
+    //TODO: 추가
   }
 
   /**
@@ -160,16 +155,18 @@ public class ExchangeService {
           CurrencyType.KRW, getCurrencyType(currencyCode), dto.getAmount());
 
       try {
-        // 환전 로직 호출
         List<TransferHistoryResponseDto> transferHistoryResponseDtos = transactionService.postMoneyBoxTransfer(requestDto, true,
             dto.getUserId()).getBody();
 
-        double amount = dto.isAll() ? -1 : dto.getAmount();
-
         removePreferenceRateFromRedis(currencyCode, dto.getTargetId());
+
         LogUtil.info("자동환전 성공. 환전 신청 원화: %s, 적용 환율: %s, 환전된 금액: %s ", transferHistoryResponseDtos.get(0).getTransactionAmount(),
             transferHistoryResponseDtos.get(1).getTransactionSummary(),
             transferHistoryResponseDtos.get(1).getTransactionAmount());
+
+        TargetRate target = targetRateRepository.findById(dto.getTargetId())
+            .orElseThrow(() -> new TargetRateNotFoundException(dto.getTargetId()));
+        target.setStatus(SettlementStatus.COMPLETED);
 
         notificationService.sendAutoExchangeNotification(dto, requestDto);
 
@@ -212,10 +209,6 @@ public class ExchangeService {
         double amount = target.getAmount();
         long userId = groupRepository.findMasterUserIdByAccountNo(accountNo);
 
-//        String[] parts = result.split(":");
-//        long userId = Long.parseLong(parts[0]);
-//        String accountNo = parts[1];
-//        double amount = Double.parseDouble(parts[2]);
         if (amount == -1) {
 
           amount = getKRWBalanceByAccountNo(accountNo);
@@ -223,7 +216,7 @@ public class ExchangeService {
         }
 
         double targetRate = target.getRate();
-        accounts.add(new targetAccountDto(id,accountNo, userId, amount, targetRate, isAll));
+        accounts.add(new targetAccountDto(id, accountNo, userId, amount, targetRate, isAll));
       }
     }
     return accounts;
