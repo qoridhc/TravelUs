@@ -59,7 +59,7 @@ const ExchangeRateForecastDetail: React.FC = () => {
     const forecastEntries = Object.entries(prediction.forecast);
     const latestForecastRate = forecastEntries[forecastEntries.length - 1][1];
     const earliestForecastRate = forecastEntries[0][1];
-    const currentRate = getLatestRate(prediction.recent_rates["3_months"]);
+    const currentRate = prediction.current_rate;
     const forecastChange = latestForecastRate - earliestForecastRate;
     const isIncreasing = forecastChange >= 0;
     const flagImagePath = `/assets/flag/flagOf${currency}.png`;
@@ -127,10 +127,10 @@ const ExchangeRateForecastDetail: React.FC = () => {
           <h2 className="mb-1">환율 예측</h2>
           <div className="flex justify-between">
             <span className="font-semibold">{formatExchangeRate(latestForecastRate, currency)}</span>
-            <span className={`${isIncreasing ? "text-[#DD5257]" : "text-[#4880EE]"}`}>
+            {/* <span className={`${isIncreasing ? "text-[#DD5257]" : "text-[#4880EE]"}`}>
               예측 변화 {formatExchangeRate(Math.abs(forecastChange), currency)}
               {isIncreasing ? "▲" : "▼"}
-            </span>
+            </span> */}
           </div>
         </div>
 
@@ -176,7 +176,7 @@ const ExchangeRateForecastDetail: React.FC = () => {
         {/* 추천 환율 */}
         <div className="bg-gray-100 rounded-md p-4 mb-4">
           <h2 className="mb-2 font-bold text-2xl">추천 희망 환율</h2>
-          <p className="mb-2">원하시는 환율이 있다면 클릭하시면 돼요</p>
+          <p className="mb-2 font-semibold text-gray-500">튜나뱅크에서 2주 간의 환율 예측 정보를 드려요</p>
           <h3 className="mb-2 font-semibold">
             오늘의 환율보다 조금이라도 떨어지면
             <br /> 환전되기 원하는 고객님들에게 추천해요
