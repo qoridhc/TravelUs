@@ -38,9 +38,14 @@ const ExpenditureSettlementInfo = () => {
       return rest;
     });
 
+    const data = {
+      groupId: Number(id),
+      totalAmount: Number(location.state.totalAmount),
+      participants: updatedMembers,
+    };
+
     try {
-      const response = await settlementApi.fetchSettlementPersonal(updatedMembers);
-      console.log(response);
+      const response = await settlementApi.fetchSettlementPersonal(data);
       navigate("/settlement/expenditure/completed");
     } catch (error) {
       console.log("settlementApi의 fetchSettlementPersonal : ", error);
