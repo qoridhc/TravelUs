@@ -169,7 +169,11 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
               <IoIosListBox className="text-3xl text-[#adb3be]" />
               <div className="w-full flex justify-between">
                 <p className="text-zinc-500">개별 지출 내역</p>
-                <div className="flex items-center">
+                <div
+                  className="flex items-center"
+                  onClick={() => {
+                    navigate(`/settlement/expenditure/group/list/${id}/NOT_COMPLETED`);
+                  }}>
                   <p className="text-[#0471E9]">내역보기</p>
                   <MdKeyboardArrowRight className="text-2xl text-zinc-600" />
                 </div>

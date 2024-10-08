@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useLocation, useNavigate, useParams } from "react-router";
-import { settlementApi } from "../../../api/settle";
-import { ExpenditureSettlementDetailInfo } from "../../../types/settlement";
+import { settlementApi } from "../../../../api/settle";
+import { ExpenditureSettlementDetailInfo } from "../../../../types/settlement";
 import Lottie from "lottie-react";
-import loadingAnimation from "../../../lottie/loadingAnimation.json";
+import loadingAnimation from "../../../../lottie/loadingAnimation.json";
 
-const ExpenditureSettlementDetail = () => {
+const ExpenditureSettlementGroupDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { id, status } = useParams();
@@ -31,12 +31,6 @@ const ExpenditureSettlementDetail = () => {
       ":" +
       newDate.getMinutes()
     );
-  };
-
-  const handleNext = () => {
-    navigate(`/settlement/expenditure/transfer/setMoney/detail`, {
-      state: { data: location.state.data, settlementId: id },
-    });
   };
 
   const fetchSettlementDetail = async () => {
@@ -68,14 +62,21 @@ const ExpenditureSettlementDetail = () => {
     <div className="h-full p-5 pb-8 flex flex-col justify-between">
       <div className="grid gap-20">
         <div className="flex items-center">
-          <IoIosArrowBack className="text-2xl" onClick={() => navigate(`/settlement/expenditure/list/${status}`)} />
+          <IoIosArrowBack
+            className="text-2xl"
+            onClick={() => navigate(`/settlement/expenditure/group/list/${location.state.groupId}/${status}`)}
+          />
         </div>
 
         <div className="grid gap-8">
           <div>
-            <p className="">총 {formatCurrency(settlement.totalAmount)}원 중</p>
+            <p className="">
+              총 {formatCurrency(settlement.totalAmount)}원 {settlement.isSettled === "NOT_COMPLETED" ? "중" : ""}
+            </p>
             <p className="text-3xl font-bold">
-              {formatCurrency(settlement.totalAmount - settlement.remainingAmount)}원 완료
+              {settlement.isSettled === "NOT_COMPLETED"
+                ? `${formatCurrency(settlement.totalAmount - settlement.remainingAmount)}원 완료`
+                : "정산 완료"}
             </p>
           </div>
 
@@ -101,16 +102,8 @@ const ExpenditureSettlementDetail = () => {
           </div>
         </div>
       </div>
-
-      {location.state.data.remainingAmount === 0 ? (
-        <></>
-      ) : (
-        <button className="w-full h-14  text-white bg-[#1429A0] rounded-xl" onClick={() => handleNext()}>
-          {formatCurrency(location.state.data.remainingAmount)}원 보내기
-        </button>
-      )}
     </div>
   );
 };
 
-export default ExpenditureSettlementDetail;
+export default ExpenditureSettlementGroupDetail;

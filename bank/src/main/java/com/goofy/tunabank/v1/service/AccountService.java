@@ -205,7 +205,7 @@ public class AccountService {
   public PasswordValidateResponseDto validatePassword(PasswordValidateRequestDto requestDto) {
 
     PasswordValidateResponseDto responseDto = new PasswordValidateResponseDto();
-    responseDto.setResult(transactionService.validatePassword(requestDto.getAccountPassword(), requestDto.getAccountNo())?"success":"fail");
+    responseDto.setResult(transactionService.validatePassword(requestDto.getAccountPassword(), requestDto.getAccountNo(),false)?"success":"fail");
     return responseDto;
   }
 }
