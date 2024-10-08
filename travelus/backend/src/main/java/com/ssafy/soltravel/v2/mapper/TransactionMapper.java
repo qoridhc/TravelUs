@@ -15,7 +15,7 @@ public class TransactionMapper {
     return TransactionHistoryListRequestDto.builder()
         .startDate(accountDto.getStartDate())
         .endDate(accountDto.getEndDate())
-        .transactionType(accountDto.getTransactionType())
+//        .transactionType(accountDto.getTransactionType())
         .orderByType(accountDto.getOrderByType())
         .build();
   }

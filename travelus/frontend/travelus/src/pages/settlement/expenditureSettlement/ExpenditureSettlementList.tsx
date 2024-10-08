@@ -32,23 +32,27 @@ const ExpenditureSettlementList = () => {
 
   const handleNext = (settlement: SettlementPersonalInfo) => {
     const data = {
-      personalSettlementId: settlement.personalSettlementId,
-      participantId: settlement.participantId,
+      settlementDetailId: settlement.settlementDetailId,
       remainingAmount: settlement.remainingAmount,
       groupName: settlement.groupName,
       groupId: settlement.groupId,
     };
-    navigate("/settlement/expenditure/transfer/setMoney", { state: { data } });
+    navigate("/settlement/expenditure/transfer/setMoney/list", { state: { data } });
   };
 
-  const handleDetail = () => {
-    navigate(`/settlement/expenditure/detail/1`);
+  const handleDetail = (settlement: SettlementPersonalInfo, settlementId: number, remainingAmount: number) => {
+    const data = {
+      settlementDetailId: settlement.settlementDetailId,
+      remainingAmount: settlement.remainingAmount,
+      groupName: settlement.groupName,
+      groupId: settlement.groupId,
+    };
+    navigate(`/settlement/expenditure/detail/${settlementId}/${isTab}`, { state: { data } });
   };
 
   const fetchSettlementList = async (settlementStatus: string) => {
     try {
       const response = await settlementApi.fetchSettlementPersonalList(settlementStatus);
-      console.log(response.data);
 
       // 거래내역을 날짜별로 그룹화하여 병합
       const temp = response.data.reduce(
@@ -78,7 +82,7 @@ const ExpenditureSettlementList = () => {
       const axiosError = error as AxiosError;
       if (axiosError.response && axiosError.response.data) {
         const responseData = axiosError.response.data as AxiosErrorResponseData;
-        if (responseData.message === "PERSONAL_SETTLEMENT_HISTORY_NOT_FOUND") {
+        if (responseData.message === "BILLING_HISTORY_DETAIL_NOT_FOUND") {
           setIsEmpty(true);
         }
       }
@@ -124,7 +128,7 @@ const ExpenditureSettlementList = () => {
           </div>
 
           {isEmpty ? (
-            <></>
+            <p className="text-center">정산 내역이 없습니다.</p>
           ) : dateList.length === 0 ? (
             <div className="flex flex-col justify-center items-center">
               <Lottie animationData={loadingAnimation} />
@@ -144,7 +148,9 @@ const ExpenditureSettlementList = () => {
                         <img className="w-10 h-10" src="/assets/user/userIconSample.png" alt="" />
                       </div>
 
-                      <div className="col-span-2 grid grid-cols-[9fr_1fr]" onClick={() => handleDetail()}>
+                      <div
+                        className="col-span-2 grid grid-cols-[9fr_1fr]"
+                        onClick={() => handleDetail(settlement, settlement.settlementId, settlement.remainingAmount)}>
                         <div>
                           <p className="text-xl font-bold tracking-tight">{formatCurrency(settlement.amount)}원</p>
                           <p className="text-[#565656]">

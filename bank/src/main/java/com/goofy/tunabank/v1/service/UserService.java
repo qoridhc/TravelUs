@@ -10,6 +10,8 @@ import com.goofy.tunabank.v1.dto.user.UserJoinRequestDto;
 import com.goofy.tunabank.v1.dto.user.UserJoinResponseDto;
 import com.goofy.tunabank.v1.dto.user.UserSearchRequestDto;
 import com.goofy.tunabank.v1.dto.user.UserSearchResponseDto;
+import com.goofy.tunabank.v1.dto.user.UserUpdateRequestDto;
+import com.goofy.tunabank.v1.dto.user.UserUpdateResponseDto;
 import com.goofy.tunabank.v1.exception.user.IdDuplicatedException;
 import com.goofy.tunabank.v1.exception.user.UserExitException;
 import com.goofy.tunabank.v1.exception.user.UserKeyNotFoundException;
@@ -116,6 +118,15 @@ public class UserService {
   }
 
   /*
+  * 이름 변경
+  */
+  public UserUpdateResponseDto updateUser(UserUpdateRequestDto request) {
+    User user = findUserByHeader();
+    user.updateUserName(request.getUserName());
+    return new UserUpdateResponseDto();
+  }
+
+  /*
    * 비즈니스 로직용 유저 조회 메서드(유저키로 조회)
    */
   public User findUserByUserKey(String keyValue) {
@@ -151,6 +162,4 @@ public class UserService {
     UserDetails detail = (UserDetails) authentication.getPrincipal();
     return findUserByUserKey(detail.getUsername());
   }
-
-
 }

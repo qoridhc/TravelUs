@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AccountHistorySaveResponseDto {
 
-  @Schema(description = "응답 메세지", example = "가계부가 등록되었습니다.")
+  @Schema(description = "응답 메세지", example = "머니로그가 등록되었습니다.")
   private String message;
 
 }

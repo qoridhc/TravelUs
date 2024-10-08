@@ -53,9 +53,9 @@ public class AccountBookController {
   }
 
 
-  @Operation(summary = "가계부 등록", description = "영수증 정보(사진 말고 Json 데이터)로 가계부를 등록합니다.")
+  @Operation(summary = "머니로그 등록", description = "영수증 정보(사진 말고 Json 데이터)로 가계부를 등록합니다.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "업로드 완료", content = @Content(schema = @Schema(implementation = ReceiptUploadResponseDto.class))),
+      @ApiResponse(responseCode = "200", description = "업로드 완료", content = @Content(schema = @Schema(implementation = AccountHistorySaveResponseDto.class))),
       @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
       @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
   })
@@ -68,9 +68,9 @@ public class AccountBookController {
     return ResponseEntity.ok().body(response);
   }
 
-  @Operation(summary = "가계부 조회", description = "특정 달의 가계부를 조회합니다.")
+  @Operation(summary = "머니로그 조회", description = "머니로그를 조회합니다.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "업로드 완료", content = @Content(schema = @Schema(implementation = ReceiptUploadResponseDto.class))),
+      @ApiResponse(responseCode = "200", description = "조회 완료", content = @Content(schema = @Schema(implementation = AccountHistoryReadResponseDto.class))),
       @ApiResponse(responseCode = "400", description = "잘못된 요청", content = @Content),
       @ApiResponse(responseCode = "500", description = "서버 오류", content = @Content)
   })
@@ -99,8 +99,9 @@ public class AccountBookController {
   ) {
 
     LogUtil.info("requested", accountNo, request.toString());
-    List<DetailAccountHistoryReadResponseDto> response = accountBookService.findDetailAccountHistory(accountNo, request);
-    return ResponseEntity.ok().body(response);
+//    List<DetailAccountHistoryReadResponseDto> response = accountBookService.findDetailAccountHistory(accountNo, request);
+//    return ResponseEntity.ok().body(response);
+    return ResponseEntity.ok("통완");
   }
 
 }
