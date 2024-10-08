@@ -26,6 +26,9 @@ public class GroupSettlementResponseDto {
   @Schema(description = "정산 총 금액", example = "10000")
   private double totalAmount;
 
+  @Schema(description = "정산 남은 금액", example = "10000")
+  private double remainingAmount;
+
   @Schema(description = "개별 지출 정산 완료 여부(COMPLETED: 정산 완료, NOT_COMPLETED: 정산 미완료)", example = "NOT_COMPLETED")
   private SettlementStatus isSettled;
 

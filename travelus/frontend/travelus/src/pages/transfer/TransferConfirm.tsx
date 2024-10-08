@@ -5,6 +5,8 @@ import { accountApi } from "../../api/account";
 import { userApi } from "../../api/user";
 import { AccountInfoNew } from "../../types/account";
 import { IoIosArrowBack } from "react-icons/io";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../lottie/loadingAnimation.json";
 
 interface TransferConfirmProps {
   // Define the props for the component here
@@ -51,6 +53,14 @@ const TransferConfirm: React.FC<TransferConfirmProps> = (props) => {
     };
     fetchData();
   }, []);
+
+  if (!userName || !withdrawalAccountNo) {
+    return (
+      <div className="h-full flex flex-col justify-center items-center">
+        <Lottie animationData={loadingAnimation} />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full p-5 pb-8">
