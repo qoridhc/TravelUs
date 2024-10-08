@@ -79,11 +79,19 @@ public class User implements UserDetails {
 
     keys.forEach(Key::deactivateKey); // Key의 비활성화 메서드 호출
   }
+  
+  /*
+  * 유저 이름 변경 
+  */
+  public void updateUserName(String newName) {
+    this.name = newName;
+  }
 
   /*
    * UserDetails 인터페이스 구현 메서드
    */
   @Override
+
   public Collection<? extends GrantedAuthority> getAuthorities() {
     List<SimpleGrantedAuthority> authorities = new ArrayList<>();
     authorities.add(new SimpleGrantedAuthority(this.role.name()));
