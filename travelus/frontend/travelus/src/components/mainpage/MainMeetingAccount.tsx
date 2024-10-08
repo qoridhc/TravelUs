@@ -106,7 +106,11 @@ const MainMeetingAccount = ({ index, account }: Props) => {
 
             <hr />
 
-            <div className="flex justify-between">
+            <div
+              className="flex justify-between"
+              onClick={() =>
+                account?.moneyBoxDtoList?.[1] ? navigate(`/meetingaccount/${account.groupId}`) : handleCreate()
+              }>
               <p className="text-sm">트래블박스</p>
               {account?.moneyBoxDtoList?.[1] ? (
                 <div className="flex space-x-1">
@@ -114,9 +118,7 @@ const MainMeetingAccount = ({ index, account }: Props) => {
                   <p>{account.moneyBoxDtoList[1].currencyCode}</p>
                 </div>
               ) : (
-                <button className="font-semibold" onClick={() => handleCreate()}>
-                  개설하기
-                </button>
+                <button className="font-semibold">개설하기</button>
               )}
             </div>
           </div>

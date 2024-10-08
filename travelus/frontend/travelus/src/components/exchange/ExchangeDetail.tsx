@@ -16,34 +16,31 @@ import {
 } from "chart.js";
 import { ChevronLeft } from "lucide-react";
 import { exchangeApi } from "../../api/exchange";
-import { ExchangeRateInfo2, CurrencyPrediction, RecentRates } from "../../types/exchange";
+import {
+  AllDetailedPredictions,
+  PredictionCurrencyData,
+  DataCollectionCurrencyData,
+  currencyTypeList,
+} from "../../types/exchange";
 import { setupChart } from "../../utils/chartSetup";
 import { calculateDailyChange, formatExchangeRate } from "../../utils/currencyUtils";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale);
 
-// 국가 이름 매핑
-// const getFlagImagePath = (currencyCode: string): string => {
-//   const countryName = countryNameMapping[currencyCode] || currencyCode;
-//   return `/assets/flag/flagOf${countryName}.png`;
-// };
-
 // Types
 type PeriodKey = "1주" | "1달" | "3달" | "2주";
 type TabType = "exchange" | "prediction";
 
-// Utility functions
-const isCurrencyPrediction = (data: any): data is CurrencyPrediction => {
-  return data && "forecast" in data && "recent_rates" in data;
-};
+type CurrencyData = Exclude<AllDetailedPredictions[keyof AllDetailedPredictions], string>;
 
-const isRecentRatesOnly = (data: any): data is { recent_rates: RecentRates } => {
-  return data && "recent_rates" in data && !("forecast" in data);
-};
+// Type guard
+function isCurrencyData(data: any): data is CurrencyData {
+  return data && typeof data === "object" && "recent_rates" in data;
+}
 
 // Custom hook for fetching data
 const useExchangeData = (currencyCode: string) => {
-  const [exchangeData, setExchangeData] = useState<ExchangeRateInfo2 | null>(null);
+  const [exchangeData, setExchangeData] = useState<CurrencyData | null>(null);
   const [historicalData, setHistoricalData] = useState<{ date: string; rate: number }[]>([]);
   const [predictionData, setPredictionData] = useState<{ date: string; rate: number }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,22 +52,17 @@ const useExchangeData = (currencyCode: string) => {
       setError(null);
       try {
         const response = await exchangeApi.getPrediction();
-        const currencyData = response[currencyCode as keyof typeof response];
+        const currencyData = response[currencyCode as keyof AllDetailedPredictions];
 
-        if (isCurrencyPrediction(currencyData) || isRecentRatesOnly(currencyData)) {
+        if (isCurrencyData(currencyData)) {
           const rates = Object.entries(currencyData.recent_rates["3_months"]).sort(
             ([dateA], [dateB]) => new Date(dateB).getTime() - new Date(dateA).getTime()
           );
 
-          setExchangeData({
-            currencyCode,
-            exchangeRate: rates[0][1],
-            lastUpdated: response.last_updated,
-          });
-
+          setExchangeData(currencyData);
           setHistoricalData(rates.map(([date, rate]) => ({ date, rate })));
 
-          if (isCurrencyPrediction(currencyData)) {
+          if ("forecast" in currencyData && Object.keys(currencyData.forecast).length > 0) {
             setPredictionData(Object.entries(currencyData.forecast).map(([date, rate]) => ({ date, rate })));
           }
         } else {
@@ -125,7 +117,7 @@ const ExchangeDetail: React.FC = () => {
   // 어제의 환율과 일일 변화량 계산
   const yesterdayRate = filteredHistoricalData[1]?.rate;
   const dailyChange =
-    exchangeData && yesterdayRate ? calculateDailyChange(exchangeData.exchangeRate, yesterdayRate) : 0;
+    exchangeData && yesterdayRate ? calculateDailyChange(exchangeData.current_rate, yesterdayRate) : 0;
 
   // const handlePeriodChange = (newPeriod: PeriodKey) => setSelectedPeriod(newPeriod);
 
@@ -152,7 +144,7 @@ const ExchangeDetail: React.FC = () => {
         <h2 className="mb-1">실시간 환율</h2>
         <div className="flex justify-between">
           <span className="font-semibold">
-            {exchangeData && formatExchangeRate(exchangeData.exchangeRate, currencyCode)}
+            {exchangeData && formatExchangeRate(exchangeData.current_rate, currencyCode)}
           </span>
           <span className={`${isIncreasing ? "text-[#DD5257]" : "text-[#4880EE]"}`}>
             전일대비 {formatExchangeRate(Math.abs(dailyChange), currencyCode)}
