@@ -344,7 +344,7 @@ public class TransactionService {
   private String getPayeeNameFromAccount(String accountNo) {
     return accountRepository.findByAccountNo(accountNo)
         .map(account -> account.getUser().getName())
-        .orElseThrow(() -> new InvalidAccountNoException(accountNo));
+        .orElse("");
   }
 
 

@@ -18,4 +18,9 @@ public class DateUtil {
     return date.plusDays(1).atStartOfDay();
   }
 
+  public static String getNextLocalDateStr(String dateString) {
+    LocalDate date = LocalDate.parse(dateString, formatter);
+    return date.plusDays(1).format(formatter);
+  }
+
 }

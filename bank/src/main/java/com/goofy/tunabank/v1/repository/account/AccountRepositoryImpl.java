@@ -17,6 +17,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
     public Optional<Account> findByAccountNo(String accountNo) {
         QAccount account = QAccount.account;
         QMoneyBox moneyBox = QMoneyBox.moneyBox;
+        if (accountNo == null || accountNo.isEmpty()) return Optional.empty();
 
         Account result = queryFactory
             .selectFrom(account)
@@ -30,6 +31,8 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 
         return Optional.ofNullable(result);
     }
+
+
 
     @Override
     public Optional<List<Account>> findAllAccountsByUserId(Long userId) {
