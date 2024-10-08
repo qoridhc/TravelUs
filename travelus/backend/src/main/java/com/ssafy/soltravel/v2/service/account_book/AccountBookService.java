@@ -279,12 +279,23 @@ public class AccountBookService {
         TransactionResponseBody transaction
     ){
         for(TransactionContent item : transaction.getContent()) {
+            String payeeName, store, summary;
+            if(item.getTransactionType().equals("CW")) {
+                payeeName = "";
+                store = item.getPayeeName();
+                summary = "";
+            }else{
+                payeeName = item.getPayeeName();
+                store = "";
+                summary = item.getTransactionSummary();
+            }
+
             DetailAccountHistoryReadResponseDto dto = DetailAccountHistoryReadResponseDto.builder()
                 .transactionAt(item.getTransactionDate())
                 .paid(item.getTransactionAmount())
-                .payeeName(item.getPayeeName())
-                .transactionSummary(item.getTransactionSummary())
-                .store("")
+                .payeeName(payeeName)
+                .transactionSummary(summary)
+                .store(store)
                 .address("")
                 .currency(item.getCurrencyCode().getCurrencyCode())
                 .items(null)
