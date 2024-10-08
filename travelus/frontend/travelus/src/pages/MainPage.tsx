@@ -108,6 +108,7 @@ const MainPage = () => {
   return (
     <div className="w-full">
       <div className="w-full p-5 flex flex-col items-center space-y-4">
+        {/* 입출금통장 없을 때 */}
         {account === null ? (
           <div className="w-full p-5 bg-white rounded-xl shadow-md space-y-5">
             <p className="font-semibold">입출금</p>
@@ -136,6 +137,7 @@ const MainPage = () => {
             </div>
           </div>
         ) : (
+            // 입출금통장 있을 때
           <div className="w-full p-6 flex flex-col space-y-5 rounded-xl bg-white shadow-md">
             <div className="flex justify-between items-center">
               <div className="flex flex-col space-y-2">
@@ -192,7 +194,24 @@ const MainPage = () => {
 
         <div className="w-full flex flex-col items-center space-y-2">
           {/* 모임 통장 있을 시 표시 */}
-          {meetingAccountList && meetingAccountList?.length > 0 && (
+          {/* 모임 통장 개수가 1개일 때 */}
+          {meetingAccountList && meetingAccountList?.length === 1 && (
+            <Swiper
+              pagination={{
+                dynamicBullets: true,
+              }}
+              modules={[Pagination]}
+              className="mainOneSwiper rounded-xl">
+              {meetingAccountList.map((account, index) => (
+                <SwiperSlide>
+                  <MainMeetingAccount index={index} account={account} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          )}
+
+          {/* 모임 통장 개수가 여러 개일 때 */}
+          {meetingAccountList && meetingAccountList?.length > 1 && (
             <Swiper
               pagination={{
                 dynamicBullets: true,
