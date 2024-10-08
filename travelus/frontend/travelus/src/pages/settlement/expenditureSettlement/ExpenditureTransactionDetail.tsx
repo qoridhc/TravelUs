@@ -151,7 +151,7 @@ const ExpenditureTransactionDetail = () => {
         <div className="p-5 bg-white grid grid-cols-[1fr_3fr_1fr] items-center sticky top-0">
           <IoIosArrowBack
             onClick={() => {
-              navigate("/meetingaccount/1");
+              navigate(`/meetingaccount/${id}`);
             }}
             className="text-2xl"
           />
