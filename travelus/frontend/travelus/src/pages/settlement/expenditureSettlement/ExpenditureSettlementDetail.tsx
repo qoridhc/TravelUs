@@ -33,6 +33,12 @@ const ExpenditureSettlementDetail = () => {
     );
   };
 
+  const handleNext = () => {
+    navigate(`/settlement/expenditure/transfer/setMoney/detail`, {
+      state: { data: location.state.data, settlementId: id },
+    });
+  };
+
   const fetchSettlementDetail = async () => {
     try {
       setIsLoading(true);
@@ -96,11 +102,11 @@ const ExpenditureSettlementDetail = () => {
         </div>
       </div>
 
-      {location.state.remainingAmount === 0 ? (
+      {location.state.data.remainingAmount === 0 ? (
         <></>
       ) : (
-        <button className="w-full h-14  text-white bg-[#1429A0] rounded-xl">
-          {formatCurrency(location.state.remainingAmount)}원 보내기
+        <button className="w-full h-14  text-white bg-[#1429A0] rounded-xl" onClick={() => handleNext()}>
+          {formatCurrency(location.state.data.remainingAmount)}원 보내기
         </button>
       )}
     </div>

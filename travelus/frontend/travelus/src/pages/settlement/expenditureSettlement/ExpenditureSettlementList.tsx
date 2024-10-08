@@ -37,11 +37,17 @@ const ExpenditureSettlementList = () => {
       groupName: settlement.groupName,
       groupId: settlement.groupId,
     };
-    navigate("/settlement/expenditure/transfer/setMoney", { state: { data } });
+    navigate("/settlement/expenditure/transfer/setMoney/list", { state: { data } });
   };
 
-  const handleDetail = (settlementId: number, remainingAmount: number) => {
-    navigate(`/settlement/expenditure/detail/${settlementId}`, { state: { remainingAmount } });
+  const handleDetail = (settlement: SettlementPersonalInfo, settlementId: number, remainingAmount: number) => {
+    const data = {
+      settlementDetailId: settlement.settlementDetailId,
+      remainingAmount: settlement.remainingAmount,
+      groupName: settlement.groupName,
+      groupId: settlement.groupId,
+    };
+    navigate(`/settlement/expenditure/detail/${settlementId}`, { state: { data } });
   };
 
   const fetchSettlementList = async (settlementStatus: string) => {
@@ -144,7 +150,7 @@ const ExpenditureSettlementList = () => {
 
                       <div
                         className="col-span-2 grid grid-cols-[9fr_1fr]"
-                        onClick={() => handleDetail(settlement.settlementId, settlement.remainingAmount)}>
+                        onClick={() => handleDetail(settlement, settlement.settlementId, settlement.remainingAmount)}>
                         <div>
                           <p className="text-xl font-bold tracking-tight">{formatCurrency(settlement.amount)}원</p>
                           <p className="text-[#565656]">

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { accountApi } from "../../../../api/account";
 import { userApi } from "../../../../api/user";
 import { IoIosArrowBack } from "react-icons/io";
@@ -9,6 +9,7 @@ import loadingAnimation from "../../../../lottie/loadingAnimation.json";
 const SettlementTransferConfirm = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { type } = useParams();
   const [withdrawalAccountNo, setWithdrawalAccountNo] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
 
@@ -27,7 +28,9 @@ const SettlementTransferConfirm = () => {
       groupId: settlement.groupId,
     };
 
-    navigate("/settlement/expenditure/transfer/setMoney", { state: { data } });
+    navigate(`/settlement/expenditure/transfer/setMoney/${type}`, {
+      state: { data, settlementId: location.state.settlementId },
+    });
   };
 
   const handleTransfer = () => {
@@ -37,8 +40,8 @@ const SettlementTransferConfirm = () => {
       withdrawalAccountNo,
       depositAccountNo: settlement.depositAccountNo,
       transactionBalance: settlement.remainingAmount,
-      withdrawalTransactionSummary: userName,
-      depositTransactionSummary: settlement.groupName,
+      withdrawalTransactionSummary: settlement.groupName,
+      depositTransactionSummary: userName,
     };
 
     navigate("/settlement/expenditure/transfer/password", { state: { data } });

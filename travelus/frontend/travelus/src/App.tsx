@@ -38,7 +38,6 @@ import MeetingAccountCreatePrepare from "./pages/meetingAccount/createMeetingAcc
 import MeetingAccountCreateComplete from "./pages/ver1/MeetingAccountCreateComplete";
 import AccountBookDetail from "./pages/accountBook/AccountBookDetail";
 import PrivateRoute from "./pages/user/PrivateRoute";
-import { Sign } from "crypto";
 import EditMembers from "./pages/settlement/EditMembers";
 import UserInfoOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/UserInfoOfCreateAccount";
 import PasswordOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/PasswordOfCreateAccount";
@@ -226,8 +225,10 @@ function App() {
           <Route path="/settlement/expenditure/detail/:id" element={<ExpenditureSettlementDetail />}></Route>
 
           {/* 지출정산 이체 */}
-          <Route path="/settlement/expenditure/transfer/setMoney" element={<SettlementTransferSetMoney />}></Route>
-          <Route path="/settlement/expenditure/transfer/confirm" element={<SettlementTransferConfirm />}></Route>
+          <Route
+            path="/settlement/expenditure/transfer/setMoney/:type"
+            element={<SettlementTransferSetMoney />}></Route>
+          <Route path="/settlement/expenditure/transfer/confirm/:type" element={<SettlementTransferConfirm />}></Route>
           <Route path="/settlement/expenditure/transfer/password" element={<SettlementTransferPassword />}></Route>
           <Route path="/settlement/expenditure/transfer/success" element={<SettlementTransferSuccess />}></Route>
 
