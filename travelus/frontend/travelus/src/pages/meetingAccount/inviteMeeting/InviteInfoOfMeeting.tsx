@@ -9,10 +9,12 @@ import { AxiosError } from "axios";
 import { AxiosErrorResponseData } from "../../../types/axiosError";
 import { userApi } from "../../../api/user";
 import { ParticipantInfo } from "../../../types/account";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../../lottie/loadingAnimation.json";
 
 const InviteInfoOfMeeting = () => {
   const navigate = useNavigate();
-  const params = useParams();
+  const { code } = useParams();
   const location = useLocation();
   const noticeTextList = [
     "모임통장 기능에는 정산하기 기능이 있습니다.",
@@ -35,9 +37,10 @@ const InviteInfoOfMeeting = () => {
   };
 
   const getGroupId = async () => {
-    if (params.code !== undefined) {
+    if (code !== undefined) {
       try {
-        const response = await accountApi.fetchGroupIdByInvitationCode(params.code);
+        setIsLoading(true);
+        const response = await accountApi.fetchGroupIdByInvitationCode(code);
         setGroupId(response.data.groupId);
 
         // 이미 모임에 가입한 사용자인지 확인
@@ -55,19 +58,18 @@ const InviteInfoOfMeeting = () => {
           }
         }
         console.log("account의 fetchGroupIdByInvitationCode", error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
 
   const getAccountList = async () => {
     try {
-      setIsLoading(true);
       const response = await accountApi.fetchAllAccountInfo("I");
       setAccountList(response.data);
     } catch (error) {
       console.log("accountApi의 fetchAllAccountInfo : ", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -95,6 +97,14 @@ const InviteInfoOfMeeting = () => {
     getGroupId();
   }, [userId]);
 
+  if (isLoading) {
+    return (
+      <div className="h-full flex flex-col justify-center items-center">
+        <Lottie animationData={loadingAnimation} />
+      </div>
+    );
+  }
+
   return (
     <>
       {isLoading ? (
@@ -103,7 +113,7 @@ const InviteInfoOfMeeting = () => {
         <div className="h-full p-5 pb-8 flex flex-col justify-between">
           <div className="grid gap-14">
             <div className="flex items-center">
-              <IoIosArrowBack className="text-2xl" onClick={() => navigate(`/meeting/invite/${params.code}`)} />
+              <IoIosArrowBack className="text-2xl" onClick={() => navigate(`/meeting/invite/${code}`)} />
             </div>
 
             <div className="grid gap-10">
