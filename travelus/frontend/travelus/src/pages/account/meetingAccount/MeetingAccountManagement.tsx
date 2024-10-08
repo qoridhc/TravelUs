@@ -107,7 +107,9 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
               </div>
             )}
 
-            <div className="flex items-center space-x-4">
+            <div
+              onClick={() => {navigate(`/meetingaccount/update/${accountInfo.groupId}`);}}
+              className="flex items-center space-x-4">
               <AiFillSmile className="text-3xl text-[#fcd876]" />
               <div className="w-full flex justify-between">
                 <p className="text-zinc-500">아이콘 · 모임통장명</p>
