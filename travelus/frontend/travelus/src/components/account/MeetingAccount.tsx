@@ -77,13 +77,12 @@ const MeetingAccount = ({ account }: Props) => {
         <div className="w-full flex flex-col justify-center">
           <p className="text-zinc-600 font-bold text-[0.75rem]">{account.groupName}</p>
           <div className="w-full flex justify-between items-center">
-            {/* <p className="text-zinc-400 text-[0.8rem]">일반모임통장</p> */}
             <p className="font-bold">{formatCurrency(account.moneyBoxDtoList[0].balance)}원</p>
           </div>
           <div className="w-full flex justify-between items-center">
             {account.moneyBoxDtoList.length > 1 ? (
               <div className="w-full flex justify-between items-center">
-                <p className="text-zinc-500 text-[0.83rem]">트래블박스</p>
+                <p className="text-zinc-500 text-[0.83rem]">외화저금통</p>
                 <div className="text-[1rem] font-semibold flex space-x-1">
                   <p>{formatCurrency(account.moneyBoxDtoList[1].balance)}</p>
                   <p>{account.moneyBoxDtoList[1].currencyCode}</p>

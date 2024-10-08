@@ -210,7 +210,7 @@ const MeetingTransaction = () => {
                     <div key={index} className="flex flex-col items-center">
                       <div className="w-full flex justify-between">
                         {transaction.transactionType === "EW" ? (
-                          <p className="text-lg font-semibold">트래블박스 환전</p>
+                          <p className="text-lg font-semibold">외화저금통 환전</p>
                         ) : (
                           <p className="text-lg font-semibold">{transaction.payeeName}</p>
                         )}

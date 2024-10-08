@@ -120,7 +120,7 @@ const SelectSettlementAmount = () => {
                     </div>
 
                     <label className="text-xl font-semibold" htmlFor={moneyBox.currencyCode} key={index}>
-                      {moneyBox.currencyCode === "KRW" ? "모임통장" : "트래블박스"}
+                      {moneyBox.currencyCode === "KRW" ? "모임통장" : "외화저금통"}
                     </label>
 
                     <div className={`grid gap-3 col-start-2 ${isChecked[index] ? "" : "opacity-65"}`}>

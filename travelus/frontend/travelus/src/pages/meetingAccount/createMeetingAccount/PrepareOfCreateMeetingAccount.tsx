@@ -12,7 +12,7 @@ const PrepareOfCreateMeetingAccount = () => {
     "모임통장은 원화(KRW)로만 관리가 됩니다.",
     "모임통장 개설 시, 입출금통장을 보유해야 합니다.",
     "모임원은 초대 수락 시, 입출금통장을 보유해야 합니다.",
-    "트래블박스는 언제든 가입할 수 있습니다.",
+    "외화저금통은 언제든 가입할 수 있습니다.",
   ];
 
   return (
@@ -53,7 +53,7 @@ const PrepareOfCreateMeetingAccount = () => {
               <div className="flex space-x-2">
                 <p className="text-[#1429A0] font-semibold">02</p>
                 <div>
-                  <p className="font-semibold">트래블박스 개설</p>
+                  <p className="font-semibold">외화저금통 개설</p>
                   <p className="text-sm text-[#565656]">원화는 통화로 관리되는 박스</p>
                 </div>
               </div>

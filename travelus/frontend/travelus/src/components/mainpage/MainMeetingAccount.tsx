@@ -123,7 +123,7 @@ const MainMeetingAccount = ({ index, account }: Props) => {
                 onClick={() =>
                   account?.moneyBoxDtoList?.[1] ? navigate(`/meetingaccount/${account.groupId}`) : handleCreate()
                 }>
-                <p className="text-sm">트래블박스</p>
+                <p className="text-sm">외화저금통</p>
                 {account?.moneyBoxDtoList?.[1] ? (
                   <div className="flex space-x-1">
                     <p className="font-semibold">{formatCurrency(account.moneyBoxDtoList[1].balance)}</p>
