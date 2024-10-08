@@ -13,6 +13,7 @@ import MeetingAccountList from "./pages/account/meetingAccount/MeetingAccountLis
 import MeetingAccountDetail from "./pages/account/meetingAccount/MeetingAccountDetail";
 import MeetingAccountManagement from "./pages/account/meetingAccount/MeetingAccountManagement";
 import MeetingAccountGroupMember from "./pages/account/meetingAccount/MeetingAccountGroupMember";
+import MeetingAccountUpdate from "./pages/account/meetingAccount/meetingAccountUpdate/MeetingAccountUpdate";
 import JoinedMeetingAccountDetail from "./pages/account/meetingAccount/JoinedMeetingAccountDetail";
 import AccountTransaction from "./pages/account/generalAccount/AccountTransaction";
 import TransferSelectBank from "./pages/transfer/TransferSelectBank";
@@ -28,8 +29,9 @@ import ExchangeDetail from "./components/exchange/ExchangeDetail";
 import Exchange from "./pages/exchange/Exchange";
 import ExchangeKRWFlow from "./pages/exchange/ExchangeKRW";
 import ExchangeCompletion from "./pages/exchange/ExchangeCompletion";
+import ExchangeRateForecastDetail from "./pages/exchange/ExchangeRateForecastDetail";
 import AccountPasswordInput from "./pages/exchange/ExchangeConfirmation";
-import SelectAccount from "./pages/exchange/SelectAccount";
+import SelectAccount from "./pages/ver1/SelectAccount";
 import AccountCreateComplete from "./pages/ver1/AccountCreateComplete";
 import GeneralMeetingAccountCreate from "./pages/ver1/GeneralMeetingAccountCreate";
 import MeetingAccountCreatePrepare from "./pages/meetingAccount/createMeetingAccount/PrepareOfCreateMeetingAccount";
@@ -84,6 +86,7 @@ import SettlementTransferSetMoney from "./pages/settlement/expenditureSettlement
 import ExpenditureSettlementDetail from "./pages/settlement/expenditureSettlement/ExpenditureSettlementDetail";
 import SettlementTransferSuccess from "./pages/settlement/expenditureSettlement/settlementTransfer/SettlementTransferSuccess";
 import CreateRequestOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/CreateRequestOfCreateMeetingAccount";
+import CreateRequestOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/CreateRequestOfCreateAccount";
 
 function App() {
   return (
@@ -132,6 +135,7 @@ function App() {
           <Route path="/account/create/password" element={<PasswordOfCreateAccount />} />
           <Route path="/account/create/password/check" element={<CheckPasswordOfCreateAccount />} />
           <Route path="/account/create/idverification" element={<IDVerificationOfCreateAccount />} />
+          <Route path="/account/create/request" element={<CreateRequestOfCreateAccount />} />
           <Route path="/account/create/completed" element={<CompletedOfCreateAccount />} />
 
           {/* 모임통장 생성 */}
@@ -150,6 +154,9 @@ function App() {
           <Route path="/joinedmeetingaccount/:id" element={<JoinedMeetingAccountDetail />} />
           <Route path="/meetingaccount/management/:id" element={<MeetingAccountManagement />} />
           <Route path="/meetingaccount/management/:id/groupmember" element={<MeetingAccountGroupMember />} />
+          <Route path="/meetingaccount/update/:id" element={<MeetingAccountUpdate />} />
+
+          {/* 모임 초대 */}
           <Route path="/meeting/invite/:code" element={<InvitationOfMeeting />} />
           <Route path="/meeting/invite/:code/info" element={<InviteInfoOfMeeting />} />
           <Route path="/meeting/invite/participated" element={<AlreadyInviteOfMeeting />} />
@@ -200,6 +207,7 @@ function App() {
           {/* 환율 */}
           <Route path="/exchangerate" element={<ExchangeRate />} />
           <Route path="/exchangerate/:currencyCode" element={<ExchangeDetail />} />
+          <Route path="/exchangerate/forecast-detail" element={<ExchangeRateForecastDetail />} />
 
           {/* 잔액정산 */}
           <Route path="/settlement/balance/amount/:id" element={<SelectSettlementAmount />}></Route>

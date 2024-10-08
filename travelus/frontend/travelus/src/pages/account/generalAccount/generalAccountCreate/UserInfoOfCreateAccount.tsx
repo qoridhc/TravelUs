@@ -6,6 +6,8 @@ import { userApi } from "../../../../api/user";
 import NameInputMui from "../../../../components/meetingAccount/NameInputMui";
 import BirthDateInputMui from "../../../../components/meetingAccount/BirthDateInputMui";
 import GenderInputMui from "../../../../components/meetingAccount/GenderInputMui";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../../../lottie/loadingAnimation.json";
 
 const UserInfoOfCreateAccount = () => {
   const navigate = useNavigate();
@@ -44,14 +46,19 @@ const UserInfoOfCreateAccount = () => {
   return (
     <>
       {isLoading ? (
-        <p>로딩 중...</p>
+        <div className="h-full flex flex-col justify-center items-center">
+          <Lottie animationData={loadingAnimation} />
+        </div>
       ) : (
         <div className="h-full p-5 pb-8 flex flex-col justify-between">
           <div className="grid gap-14">
             <div className="flex items-center">
-                <IoIosArrowBack
-                  onClick={()=>{navigate("/")}}
-                  className="text-2xl" />
+              <IoIosArrowBack
+                onClick={() => {
+                  navigate("/");
+                }}
+                className="text-2xl"
+              />
             </div>
 
             <div className="grid gap-10">
@@ -59,8 +66,8 @@ const UserInfoOfCreateAccount = () => {
                 <div className="flex space-x-2">
                   <p className="text-[#0471E9] font-semibold">01</p>
                   <p className="font-medium">입출금통장 개설</p>
-                  </div>
-                  
+                </div>
+
                 <div className="text-2xl font-semibold">
                   <p>{name}님의 정보를</p>
                   <p>확인해주세요</p>

@@ -34,6 +34,7 @@ import com.goofy.tunabank.v1.util.LogUtil;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -51,6 +52,7 @@ public class AccountService {
   private final AccountMapper accountMapper;
   private final MoneyBoxMapper moneyBoxMapper;
 
+  private final PasswordEncoder passwordEncoder;
   // ==== 계좌 생성 관련 메서드 ====
   public AccountDto postNewAccount(CreateGeneralAccountRequestDto requestDto) {
 
@@ -62,6 +64,10 @@ public class AccountService {
 
     Bank bank = bankRepository.findById(requestDto.getBankId())
         .orElseThrow(() -> new InvalidBankIdException(requestDto.getBankId()));
+
+    // 비밀번호 암호화
+    String plainPassword = requestDto.getAccountPassword();
+    requestDto.setAccountPassword(passwordEncoder.encode(plainPassword));
 
     // 계좌 생성
     Account account = Account.createAccount(requestDto, bank, user);
@@ -133,7 +139,10 @@ public class AccountService {
     Account account = accountRepository.findByAccountNo(requestDto.getAccountNo())
         .orElseThrow(() -> new InvalidAccountNoException(requestDto.getAccountNo()));
 
-    if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
+//    if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
+//      throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
+//    }
+    if (passwordEncoder.matches(requestDto.getAccountPassword(), account.getAccountPassword())) {
       throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
     }
 
@@ -156,7 +165,7 @@ public class AccountService {
     Account account = accountRepository.findByAccountNo(requestDto.getAccountNo())
         .orElseThrow(() -> new InvalidAccountNoException(requestDto.getAccountNo()));
 
-    if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
+    if (!passwordEncoder.matches(requestDto.getAccountPassword(), account.getAccountPassword())) {
       throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
     }
 

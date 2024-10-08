@@ -291,7 +291,7 @@ const MeetingAccountDetail = () => {
             </div>
           </div>
 
-          {account.moneyBoxDtos.length < 1 && (
+          {account.moneyBoxDtos.length === 1 && (
             <div className="p-5 pb-8 flex flex-col items-center justify-center space-y-5">
               <button
                 className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]"

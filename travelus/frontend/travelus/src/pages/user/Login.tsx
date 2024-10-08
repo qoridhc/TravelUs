@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router";
 import { userApi } from "../../api/user";
 import { initializeFcmAndRegisterToken } from "../../utils/notificationUtils";
 
-
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +17,6 @@ const Login = () => {
       navigate("/");
     }
   }, []);
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === "email") {
@@ -42,11 +40,11 @@ const Login = () => {
 
         if (location.state && location.state.type !== null) {
           // 모임 초대장에서 넘어온 로그인일 경우, 초대장으로 연결
-          navigate(`/meeting/invite/${location.state.code}/info`, { state: { groupInfo: location.state.groupInfo } });
+          navigate(
+            `/meeting/invite/${location.state.code}?groupLeader=${location.state.groupInfo.groupLeader}&groupName=${location.state.groupInfo.groupName}`
+          );
         } else {
           // 그냥 로그인일 경우, 메인으로 연결
-          console.log("요기");
-
           navigate("/");
         }
       }
@@ -57,67 +55,68 @@ const Login = () => {
   };
 
   return (
-    <div className="w-full h-full bg-[#F3F4F6]">
-      <div className="w-full h-full flex flex-col justify-center items-center">
-        <div className="w-full h-[50%] flex flex-col justify-between items-center">
-          <div className="w-[90%] h-[78%] flex flex-col items-center justify-around rounded-xl bg-white shadow-sm">
-            <div className="flex items-center space-x-1">
-              <p className="text-[1.4rem] font-bold">TravelUs 로그인</p>
-            </div>
-            <div className="w-[83%] h-[50%] flex flex-col justify-around text-zinc-500">
-              <label htmlFor="email" className="text-sm font-semibold cursor-pointer">
-                아이디
-              </label>
-              <input
-                onChange={(e) => {
-                  handleChange(e);
-                }}
-                id="email"
-                className="focus:outline-none text-zinc-800 border-b border-zinc-300"
-                type="text"
-                name="email"
-                value={email}
-              />
-              <label htmlFor="password" className="text-sm font-semibold cursor-pointer">
-                사용자 암호
-              </label>
-              <input
-                onChange={(e) => {
-                  handleChange(e);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleLogin();
-                  }
-                }}
-                id="password"
-                className="focus:outline-none text-zinc-800 border-b border-zinc-300"
-                type="password"
-                name="password"
-                value={password}
-              />
-            </div>
-            <button
-              onClick={() => {
-                handleLogin();
+    <div className="h-full p-5 bg-[#F3F4F6] flex flex-col justify-center items-center">
+      <div className="w-full p-8 bg-white rounded-lg flex flex-col justify-between items-center space-y-8">
+        <div className="flex items-center space-x-1">
+          <p className="text-2xl font-bold">TravelUs 로그인</p>
+        </div>
+
+        <div className="w-full grid gap-5">
+          <div className="w-full text-[#565656]">
+            <label htmlFor="id" className="w-full font-semibold cursor-pointer">
+              아이디
+            </label>
+            <input
+              onChange={(e) => {
+                handleChange(e);
               }}
-              className="w-[92%] h-12 rounded-md bg-[#1429A0] font-bold text-white text-sm">
-              로그인
-            </button>
+              id="id"
+              className="w-full py-2 text-lg outline-none border-b border-[#cccccc]"
+              type="text"
+              name="email"
+              value={email}
+            />
           </div>
 
-          <div className="w-[90%] h-[18%] flex items-center justify-around rounded-xl bg-white shadow-sm">
-            <div className="flex w-[58%] justify-around items-center">
-              <p className="text-sm font-bold">계정이 없으신가요?</p>
-              <button
-                onClick={() => {
-                  navigate("/signup");
-                }}
-                className="text-[#0046FF] font-bold">
-                가입하기
-              </button>
-            </div>
+          <div className="w-full text-[#565656]">
+            <label htmlFor="password" className="w-full font-semibold cursor-pointer">
+              비밀번호
+            </label>
+            <input
+              onChange={(e) => {
+                handleChange(e);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleLogin();
+                }
+              }}
+              id="password"
+              className="w-full py-2 text-lg outline-none border-b border-[#cccccc]"
+              type="password"
+              name="password"
+              value={password}
+            />
           </div>
+        </div>
+
+        <button
+          onClick={() => {
+            handleLogin();
+          }}
+          className="w-full h-12 text-lg rounded-md tracking-wide text-white bg-[#1429A0]">
+          로그인
+        </button>
+
+        <div className="bg-white rounded-xl flex space-x-3">
+          <p className="font-semibold">계정이 없으신가요?</p>
+          <button
+            onClick={() => {
+              navigate("/signup");
+            }}
+            className="text-[#0046FF] font-semibold">
+            가입하기
+          </button>
         </div>
       </div>
     </div>

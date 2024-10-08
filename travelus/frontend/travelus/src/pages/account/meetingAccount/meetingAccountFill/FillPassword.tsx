@@ -42,7 +42,9 @@ const FillPassword: React.FC<TransferPasswordProps> = (props) => {
         console.error("Error fetching data:", error);
       }
     };
+    
     fetchData();
+    fetchSpecificMeetingAccount();
   }, []);
 
   const formatAccountNumber = (accountNo: string) => {
@@ -68,7 +70,7 @@ const FillPassword: React.FC<TransferPasswordProps> = (props) => {
   };
 
   const handleTransfer = async () => {
-    if (!meeting || !meetingAccountNo || !generalAccountNo || !transferAmount) {
+    if (!meeting) {
       return;
     }
 
