@@ -15,7 +15,7 @@ import { IoMdAdd } from "react-icons/io";
 import Lottie from "lottie-react";
 import loadingAnimation from "../lottie/loadingAnimation.json";
 
-const CURRENCY_CODES = ["USD", "JPY", "EUR", "TWD"];
+const CURRENCY_CODES = ["USD", "JPY", "EUR"];
 
 const MainPage = () => {
   const navigate = useNavigate();
