@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useLocation } from "react-router";
 import { IoIosArrowBack } from "react-icons/io";
 import { AccountInfoNew } from "../../../../types/account";
@@ -10,6 +10,7 @@ import loadingAnimation from "../../../../lottie/loadingAnimation.json";
 const SettlementTransferSetMoney = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { type } = useParams();
   const [account, setAccount] = useState<AccountInfoNew | null>(null);
   const [transferAmount, setTransferAmount] = useState<string>(String(location.state.data.remainingAmount));
   const [exceedsMaxAmount, setExceedsMaxAmount] = useState<boolean>(false);
@@ -78,15 +79,14 @@ const SettlementTransferSetMoney = () => {
   const handleNext = () => {
     const settlement = location.state.data;
     const data = {
-      personalSettlementId: settlement.personalSettlementId,
-      participantId: settlement.participantId,
+      settlementDetailId: settlement.settlementDetailId,
+      depositAccountNo: depositAccountNo,
       remainingAmount: transferAmount,
       groupName: settlement.groupName,
-      groupId: settlement.groupId,
-      depositAccountNo: depositAccountNo,
+      groupId: location.state.data.groupId,
     };
-    navigate("/settlement/expenditure/transfer/confirm", {
-      state: { data },
+    navigate(`/settlement/expenditure/transfer/confirm/${type}`, {
+      state: { data, settlementId: location.state.settlementId },
     });
   };
 
@@ -140,7 +140,11 @@ const SettlementTransferSetMoney = () => {
         <div className="flex flex-col space-y-10">
           <IoIosArrowBack
             onClick={() => {
-              navigate("/settlement/expenditure/list/NOT_COMPLETED");
+              type === "list"
+                ? navigate("/settlement/expenditure/list/NOT_COMPLETED")
+                : navigate(`/settlement/expenditure/detail/${location.state.settlementId}`, {
+                    state: { data: location.state.data },
+                  });
             }}
             className="text-2xl"
           />
