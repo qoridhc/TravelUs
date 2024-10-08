@@ -17,17 +17,30 @@ const SettlementTransferConfirm = () => {
     return new Intl.NumberFormat("ko-KR").format(amount);
   };
 
+  const handleBack = () => {
+    const settlement = location.state.data;
+    const data = {
+      settlementDetailId: settlement.settlementDetailId,
+      depositAccountNo: settlement.depositAccountNo,
+      remainingAmount: settlement.remainingAmount,
+      groupName: settlement.groupName,
+      groupId: settlement.groupId,
+    };
+
+    navigate("/settlement/expenditure/transfer/setMoney", { state: { data } });
+  };
+
   const handleTransfer = () => {
     const settlement = location.state.data;
     const data = {
-      personalSettlementId: settlement.personalSettlementId,
-      participantId: settlement.participantId,
-      depositAccountNo: settlement.depositAccountNo,
+      settlementDetailId: settlement.settlementDetailId,
       withdrawalAccountNo,
+      depositAccountNo: settlement.depositAccountNo,
       transactionBalance: settlement.remainingAmount,
       withdrawalTransactionSummary: userName,
       depositTransactionSummary: settlement.groupName,
     };
+
     navigate("/settlement/expenditure/transfer/password", { state: { data } });
   };
 
@@ -61,12 +74,7 @@ const SettlementTransferConfirm = () => {
     <div className="h-full p-5 pb-8">
       <div className="h-full flex flex-col justify-between">
         <div>
-          <IoIosArrowBack
-            onClick={() => {
-              navigate("/transfer/selectbank");
-            }}
-            className="text-2xl"
-          />
+          <IoIosArrowBack onClick={() => handleBack()} className="text-2xl" />
         </div>
         <div className="mb-16 flex flex-col items-center">
           <p className="text-2xl font-bold">
