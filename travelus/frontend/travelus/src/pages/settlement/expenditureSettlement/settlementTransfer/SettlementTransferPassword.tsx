@@ -22,15 +22,15 @@ const SettlementTransferPassword = () => {
   const handleTransfer = async () => {
     const settlement = location.state.data;
     const data = {
-      personalSettlementId: Number(settlement.personalSettlementId),
-      participantId: Number(settlement.participantId),
-      depositAccountNo: settlement.depositAccountNo,
+      settlementDetailId: settlement.settlementDetailId,
       withdrawalAccountNo: settlement.withdrawalAccountNo,
+      depositAccountNo: settlement.depositAccountNo,
       transactionBalance: Number(settlement.transactionBalance),
       withdrawalTransactionSummary: settlement.withdrawalTransactionSummary,
       accountPassword: password,
       depositTransactionSummary: settlement.depositTransactionSummary,
     };
+    console.log(data);
 
     try {
       setIsLoading(true);

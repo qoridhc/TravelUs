@@ -78,12 +78,11 @@ const SettlementTransferSetMoney = () => {
   const handleNext = () => {
     const settlement = location.state.data;
     const data = {
-      personalSettlementId: settlement.personalSettlementId,
-      participantId: settlement.participantId,
+      settlementDetailId: settlement.settlementDetailId,
+      depositAccountNo: depositAccountNo,
       remainingAmount: transferAmount,
       groupName: settlement.groupName,
-      groupId: settlement.groupId,
-      depositAccountNo: depositAccountNo,
+      groupId: location.state.data.groupId,
     };
     navigate("/settlement/expenditure/transfer/confirm", {
       state: { data },
