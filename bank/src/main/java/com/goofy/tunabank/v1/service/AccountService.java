@@ -40,13 +40,9 @@ import com.goofy.tunabank.v1.repository.CurrencyRepository;
 import com.goofy.tunabank.v1.repository.MoneyBoxRepository;
 import com.goofy.tunabank.v1.repository.account.AccountRepository;
 import com.goofy.tunabank.v1.util.LogUtil;
-import java.util.stream.Collectors;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,10 +63,10 @@ public class AccountService {
     private final AccountMapper accountMapper;
     private final MoneyBoxMapper moneyBoxMapper;
 
-  private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-  // ==== 계좌 생성 관련 메서드 ====
-  public AccountDto postNewAccount(CreateGeneralAccountRequestDto requestDto) {
+    // ==== 계좌 생성 관련 메서드 ====
+    public AccountDto postNewAccount(CreateGeneralAccountRequestDto requestDto) {
 
         // 유저 정보 생성
         User user = userService.findUserByHeader();
@@ -79,15 +75,15 @@ public class AccountService {
         Currency currency = currencyRepository.findByCurrencyCode(CurrencyType.KRW);
         Bank bank = bankRepository.findById(requestDto.getBankId())
             .orElseThrow(() -> new InvalidBankIdException(requestDto.getBankId()));
-        
-    // 비밀번호 암호화
-    String plainPassword = requestDto.getAccountPassword();
-    requestDto.setAccountPassword(passwordEncoder.encode(plainPassword));
 
-    // 계좌 생성
-    Account account = Account.createAccount(requestDto, bank, user);
+        // 비밀번호 암호화
+        String plainPassword = requestDto.getAccountPassword();
+        requestDto.setAccountPassword(passwordEncoder.encode(plainPassword));
 
-         // 계좌 최초 생성 시 KRW 머니박스 기본 생성
+        // 계좌 생성
+        Account account = Account.createAccount(requestDto, bank, user);
+
+        // 계좌 최초 생성 시 KRW 머니박스 기본 생성
         MoneyBox moneyBox = MoneyBox.createMoneyBox(account, currency);
         account.addMoneyBox(moneyBox);
 
@@ -128,7 +124,7 @@ public class AccountService {
 
         return accountDto;
     }
-  
+
 
     // ==== 계좌 삭제 ====
     public DeleteAccountResponseDto deleteAccount(DeleteAccountRequestDto requestDto) {
@@ -138,7 +134,7 @@ public class AccountService {
             .orElseThrow(() -> new InvalidAccountNoException(requestDto.getAccountNo()));
 
         if (!passwordEncoder.matches(requestDto.getAccountPassword(), account.getAccountPassword())) {
-        throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
+            throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
         }
 
         // 계좌 잔액 여부 판단
@@ -223,7 +219,7 @@ public class AccountService {
                 requestDto.getHeader()
             );
 
-            transactionService.processMoneyBoxTransfer(dto);
+            transactionService.processMoneyBoxTransfer(dto, false);
         }
 
         moneyBox.closeMoneyBox();
@@ -258,7 +254,7 @@ public class AccountService {
             refundAmount = moneyBoxes.get(1).getBalance();
             TransferMBRequestDto dto = TransferMBRequestDto.from(account, moneyBoxes.get(1), requestDto.getHeader());
 
-            transactionService.processMoneyBoxTransfer(dto);
+            transactionService.processMoneyBoxTransfer(dto, false);
         }
 
         if (moneyBoxes.get(0).getBalance() > 0) {
@@ -279,20 +275,13 @@ public class AccountService {
         return dto;
     }
 
-    public BalanceResponseDto getBalanceByAccountNo(BalanceRequestDto requestDto) {
+    public PasswordValidateResponseDto validatePassword(PasswordValidateRequestDto requestDto) {
 
-        MoneyBox moneyBox = transactionService.findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountNo(),
-            requestDto.getCurrencyCode());
-        return new BalanceResponseDto(moneyBox.getBalance());
+        PasswordValidateResponseDto responseDto = new PasswordValidateResponseDto();
+        responseDto.setResult(
+            transactionService.validatePassword(requestDto.getAccountPassword(), requestDto.getAccountNo(), false) ? "success"
+                : "fail");
+        return responseDto;
     }
-
-
-
-  public PasswordValidateResponseDto validatePassword(PasswordValidateRequestDto requestDto) {
-
-    PasswordValidateResponseDto responseDto = new PasswordValidateResponseDto();
-    responseDto.setResult(transactionService.validatePassword(requestDto.getAccountPassword(), requestDto.getAccountNo(),false)?"success":"fail");
-    return responseDto;
-  }
 
 }
