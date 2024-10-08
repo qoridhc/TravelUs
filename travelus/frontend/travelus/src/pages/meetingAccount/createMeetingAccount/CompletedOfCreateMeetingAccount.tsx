@@ -72,8 +72,8 @@ const CompletedOfCreateMeetingAccount = () => {
           <div className="text-2xl flex flex-col justify-center">
             {params.type === "travelbox" ? (
               <div className="flex">
-                <p className="text-[#1429A0] font-semibold">트래블박스</p>
-                <p>가</p>
+                <p className="text-[#1429A0] font-semibold">외화저금통</p>
+                <p>이</p>
               </div>
             ) : (
               <div className="flex">

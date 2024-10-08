@@ -38,7 +38,7 @@ const AutoCurrencyExchangeOfCreateTravelBox = () => {
           <div className="grid gap-3">
             <div className="flex space-x-2">
               <p className="text-[#0471E9] font-semibold">02</p>
-              <p className="font-medium">트래블박스 개설</p>
+              <p className="font-medium">외화저금통 개설</p>
             </div>
 
             <div className="text-2xl font-semibold">

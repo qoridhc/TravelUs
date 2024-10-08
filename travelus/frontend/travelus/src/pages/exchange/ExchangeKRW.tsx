@@ -177,7 +177,7 @@ const MeetingAccountExchange: React.FC = () => {
                 disabled={noAccount}>
                 <span>
                   {noAccount ? (
-                    "트래블박스가 없습니다."
+                    "외화저금통이 없습니다."
                   ) : selectedAccount ? (
                     <>
                       <div>{selectedAccount.groupName}</div>

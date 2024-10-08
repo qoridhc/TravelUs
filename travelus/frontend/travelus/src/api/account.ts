@@ -92,7 +92,7 @@ export const accountApi = {
     return api.get(`/transaction/history`, {params: data});
   },
 
-  // 트래블박스 개설
+  // 외화저금통 개설
   fetchCreateTravelBox: (data: TravelboxInfo) => {
     return api.post(`/accounts/addMoneyBox`, data)
   },

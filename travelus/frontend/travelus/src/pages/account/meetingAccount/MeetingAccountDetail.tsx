@@ -267,7 +267,7 @@ const MeetingAccountDetail = () => {
                 {account.moneyBoxDtos.length > 1 ? (
                   <>
                     <div className="flex flex-col space-y-1">
-                      <p>트래블박스</p>
+                      <p>외화저금통</p>
                       <p className="text-2xl font-bold">
                         {formatCurrency(account.moneyBoxDtos[1].balance)}
                         <span>{account.moneyBoxDtos[1].currencyCode}</span>
@@ -298,7 +298,7 @@ const MeetingAccountDetail = () => {
                 onClick={() => {
                   handlleCreateTravelbox();
                 }}>
-                트래블박스 개설하기
+                외화저금통 개설하기
               </button>
             </div>
           )}

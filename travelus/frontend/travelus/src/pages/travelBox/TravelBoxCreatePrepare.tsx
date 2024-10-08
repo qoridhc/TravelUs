@@ -9,7 +9,7 @@ const TravelBoxCreatePrepare = () => {
       <div className="h-full text-2xl font-semibold tracking-wider flex flex-col justify-center items-center">
         <div className="flex">
           <p>이어서,&nbsp;</p>
-          <p className="text-[#1429A0]">트래블박스</p>
+          <p className="text-[#1429A0]">외화저금통</p>
         </div>
         <p className="text-[#1429A0]">개설을 시작할게요</p>
       </div>
