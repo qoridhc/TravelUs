@@ -60,9 +60,10 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private List<Card> cards = new ArrayList<>();
 
+    private String status;
+
     // ==== 엔티티 생성 메서드 ====
-    public static Account createAccount(
-        CreateGeneralAccountRequestDto requestDto, Bank bank, User user) {
+    public static Account createAccount(CreateGeneralAccountRequestDto requestDto, Bank bank, User user) {
 
         Account account = Account.builder()
             .user(user)
@@ -70,8 +71,10 @@ public class Account {
             .accountType(requestDto.getAccountType())
             .accountNo(createAccountNumber(requestDto.getAccountType()))  // 계좌 번호 생성
             .accountPassword(requestDto.getAccountPassword())
+            .moneyBoxes(new ArrayList<>())
             .createdAt(requestDto.getHeader().getTransmissionDateTime())
             .updatedAt(requestDto.getHeader().getTransmissionDateTime())
+            .status("ACTIVE")
             .build();
 
         return account;
@@ -118,6 +121,16 @@ public class Account {
 
         // 10으로 나누어 떨어지게 하는 숫자 반환
         return (10 - (sum % 10)) % 10;
+    }
+
+    public void closeAccount() {
+        if (!this.status.equals("CLOSED")) {
+            this.status = "CLOSED";
+        }
+    }
+
+    public void addMoneyBox(MoneyBox moneyBox) {
+        this.moneyBoxes.add(moneyBox);
     }
 
 }

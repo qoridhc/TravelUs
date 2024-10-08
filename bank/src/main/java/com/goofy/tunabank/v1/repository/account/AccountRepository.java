@@ -8,11 +8,11 @@ import org.springframework.data.repository.query.Param;
 
 public interface AccountRepository extends JpaRepository<Account, Long>, AccountRepositoryCustom {
 
-    // 간단한 JPA 쿼리 메소드
-    Optional<Account> findById(Long accountId);
+    @Query("SELECT a FROM Account a JOIN FETCH a.moneyBoxes mb WHERE a.accountNo = :accountNo AND a.status = 'ACTIVE' AND mb.status = 'ACTIVE'")
+    Optional<Account> findByAccountNo(@Param("accountNo") String accountNo);
 
-    // 계좌번호로 조회
-    Optional<Account> findByAccountNo(String accountNo);
+    @Query("SELECT a FROM Account a JOIN FETCH a.moneyBoxes mb WHERE a.id = :accountId AND a.status = 'ACTIVE' AND mb.status = 'ACTIVE'")
+    Optional<Account> findById(@Param("accountId") Long accountId);
 
     @Query("SELECT a.accountPassword FROM Account a WHERE a.accountNo = :accountNo")
     Optional<String> findPasswordByAccountNo(@Param("accountNo") String accountNo);
