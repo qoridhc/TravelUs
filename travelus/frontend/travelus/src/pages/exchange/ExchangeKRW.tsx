@@ -212,38 +212,42 @@ const MeetingAccountExchange: React.FC = () => {
 
           <div className="grid gap-3">
             <div className="relative">
-              <div className="p-4 bg-[#F3F4F6] rounded-lg grid grid-cols-2">
-                <div className="flex flex-col space-y-2">
-                  <div className="flex items-center">
-                    <img src={getFlagImagePath("KRW")} alt="KRW Flag" className="w-6 h-4 mr-2 border" />
-                    <span>
-                      {koreanCountryNameMapping["KRW"]} {currencyNameMapping["KRW"]}
-                    </span>
+              {getForeignCurrency() && (
+                <div className="p-4 bg-[#F3F4F6] rounded-lg grid grid-cols-2">
+                  <div className="flex flex-col space-y-2">
+                    <div className="flex items-center">
+                      <img src={getFlagImagePath("KRW")} alt="KRW Flag" className="w-6 h-4 mr-2 border" />
+                      <span>
+                        {koreanCountryNameMapping["KRW"]} {currencyNameMapping["KRW"]}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      잔액 {getBalance("KRW").toLocaleString()}
+                      {currencyNameMapping["KRW"]}
+                    </p>
                   </div>
-                  <p className="text-sm text-gray-500">
-                    잔액 {getBalance("KRW").toLocaleString()}
-                    {currencyNameMapping["KRW"]}
-                  </p>
-                </div>
 
-                <div className="flex justify-end items-center">
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    value={krwAmount}
-                    onChange={handleKrwChange}
-                    className="text-right bg-transparent w-28 mr-1 outline-none"
-                    placeholder="0"
-                  />
-                  <span>KRW</span>
+                  <div className="flex justify-end items-center">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={krwAmount}
+                      onChange={handleKrwChange}
+                      className="text-right bg-transparent w-28 mr-1 outline-none"
+                      placeholder="0"
+                    />
+                    <span>KRW</span>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* 양방향 화살표 아이콘 */}
-              <div className="w-8 h-8 bg-white shadow-md border-[0.5px] border-[#cccccc] rounded-full flex justify-center items-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                <TiArrowUnsorted className="text-sm text-[#999999]" />
-              </div>
+              {getForeignCurrency() && (
+                <div className="w-8 h-8 bg-white shadow-md border-[0.5px] border-[#cccccc] rounded-full flex justify-center items-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                  <TiArrowUnsorted className="text-sm text-[#999999]" />
+                </div>
+              )}
 
               <div className="h-5 " />
 
@@ -317,13 +321,13 @@ const MeetingAccountExchange: React.FC = () => {
         </button>
 
         {/* 머니박스 연결된 모임통장 없을시 보이게 */}
-        {noAccount && (
+        {/* {noAccount && (
           <Link
             to="/meeting/create/prepare" // 모임통장 생성 페이지의 경로를 여기에 입력하세요
             className="block text-center mt-4 text-[#1429A0] underline">
             머니박스 개설하러 가기
           </Link>
-        )}
+        )} */}
       </div>
     </div>
   );

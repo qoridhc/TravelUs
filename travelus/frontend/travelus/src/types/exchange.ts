@@ -99,17 +99,17 @@ export interface PredictionCurrencyData {
   recent_rates: RecentRates;
 }
 
-export interface DataCollectionCurrencyData {
-  forecast: {};
-  current_rate: number;
-  recent_rates: RecentRates;
-}
+// export interface DataCollectionCurrencyData {
+//   forecast: {};
+//   current_rate: number;
+//   recent_rates: RecentRates;
+// }
 
 export interface AllDetailedPredictions {
   USD: PredictionCurrencyData;
   JPY: PredictionCurrencyData;
-  EUR: DataCollectionCurrencyData;
-  TWD: DataCollectionCurrencyData;
+  EUR: PredictionCurrencyData;
+  TWD: PredictionCurrencyData;
   last_updated: string;
 }
 

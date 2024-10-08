@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import { accountApi } from "../api/account";
 import { AccountInfoNew, MeetingAccountInfo } from "../types/account";
@@ -23,6 +23,11 @@ const MainPage = () => {
   const [meetingAccountList, setMeetingAccountList] = useState<MeetingAccountInfo[] | null>(null);
 
   const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[] | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleCurrencyClick = (code: string) => {
+    navigate(`exchangerate/${code}`);
+  };
 
   const navigateTransfermation = () => {
     navigate("/transfer/selectbank");
@@ -137,7 +142,7 @@ const MainPage = () => {
             </div>
           </div>
         ) : (
-            // 입출금통장 있을 때
+          // 입출금통장 있을 때
           <div className="w-full p-6 flex flex-col space-y-5 rounded-xl bg-white shadow-md">
             <div className="flex justify-between items-center">
               <div className="flex flex-col space-y-2">
@@ -227,38 +232,55 @@ const MainPage = () => {
           )}
 
           {/* 환율 표시 부분 */}
-          <div
-            className="w-full p-6 flex flex-col space-y-2 rounded-xl bg-white shadow-md"
-            onClick={() => navigate("/exchangerate")}>
-            <div className="flex items-center space-x-1">
+          <div className="w-full p-6 flex flex-col space-y-2 rounded-xl bg-white shadow-md">
+            <div className="flex items-center space-x-1" onClick={() => navigate("/exchangerate")}>
               <p className="text-md font-semibold flex justify-start">환율</p>
               <IoIosArrowForward className="text-[#565656]" />
             </div>
             <div className="flex justify-end">
               <p className="text-sm text-zinc-400">매매기준율 {getLatestUpdateTime()} </p>
             </div>
-            <div className="flex justify-between items-center">
+            <div
+              ref={scrollContainerRef}
+              className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+              style={{
+                scrollSnapType: "x mandatory",
+                scrollBehavior: "smooth",
+                WebkitOverflowScrolling: "touch",
+              }}>
               {CURRENCY_CODES.map((code, index) => (
-                <React.Fragment key={code}>
-                  {index > 0 && <div className="w-[0.8px] h-14 bg-gray-300"></div>}
-                  <div className="w-24 p-1 flex flex-col justify-center items-center space-y-2">
+                <div key={code} className="flex-none w-1/3 snap-start" style={{ scrollSnapAlign: "start" }}>
+                  <div
+                    className="w-full p-1 flex flex-col justify-center items-center space-y-2 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleCurrencyClick(code)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        handleCurrencyClick(code);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`View exchange rate details for ${code}`}>
                     <div className="flex justify-center items-center space-x-1">
                       <img className="w-6 h-4 rounded-sm" src={`/assets/flag/flagOf${code}.png`} alt={code} />
                       <p>{code}</p>
                     </div>
                     <p className="text-lg font-semibold">{getExchangeRate(code)}</p>
                   </div>
-                </React.Fragment>
+                  {index < CURRENCY_CODES.length - 1 && (
+                    <div className="w-[0.8px] h-14 bg-gray-300 absolute right-0 top-1/2 transform -translate-y-1/2"></div>
+                  )}
+                </div>
               ))}
             </div>
-            <button
+            {/* <button
               onClick={(e) => {
                 e.stopPropagation();
                 navigate("/exchange/foreign-currency");
               }}
               className="h-10 rounded-md bg-[#1429A0] text-white font-semibold text-sm">
               환전하기
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -286,7 +308,7 @@ const MainPage = () => {
         <div className="w-full grid grid-cols-2 gap-5">
           <div
             onClick={() => {
-              navigate("/exchange");
+              navigate("/exchange/foreign-currency");
             }}
             className="w-full h-40 p-5 rounded-xl bg-white shadow-md flex flex-col justify-between items-start space-y-8">
             <img className="w-12" src="/assets/exchangeMoneyIcon.png" alt="환전아이콘" />
