@@ -87,6 +87,7 @@ import SettlementTransferSuccess from "./pages/settlement/expenditureSettlement/
 import CreateRequestOfCreateMeetingAccount from "./pages/meetingAccount/createMeetingAccount/CreateRequestOfCreateMeetingAccount";
 import CreateRequestOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/CreateRequestOfCreateAccount";
 import ExpenditureSettlementGroupList from "./pages/account/meetingAccount/expenditureSettlement/ExpenditureSettlementGroupList";
+import ExpenditureSettlementGroupDetail from "./pages/account/meetingAccount/expenditureSettlement/ExpenditureSettlementGroupDetail";
 
 function App() {
   return (
@@ -227,7 +228,12 @@ function App() {
           <Route path="/settlement/expenditure/detail/:id" element={<ExpenditureSettlementDetail />}></Route>
 
           {/* 모임의 지출정산 내역 */}
-          <Route path="/settlement/expenditure/group/list/:id" element={<ExpenditureSettlementGroupList />}></Route>
+          <Route
+            path="/settlement/expenditure/group/list/:id/:status"
+            element={<ExpenditureSettlementGroupList />}></Route>
+          <Route
+            path="/settlement/expenditure/group/detail/:id/:status"
+            element={<ExpenditureSettlementGroupDetail />}></Route>
 
           {/* 지출정산 이체 */}
           <Route

@@ -150,7 +150,7 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
                 <div
                   className="flex items-center"
                   onClick={() => {
-                    navigate(`/settlement/expenditure/group/list/${id}`);
+                    navigate(`/settlement/expenditure/group/list/${id}/NOT_COMPLETED`);
                   }}>
                   <p className="text-[#0471E9]">내역보기</p>
                   <MdKeyboardArrowRight className="text-2xl text-zinc-600" />

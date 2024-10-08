@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ExpenditureSettlementDetailInfo } from "../../../../types/settlement";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../../../lottie/loadingAnimation.json";
 import { settlementApi } from "../../../../api/settle";
@@ -10,8 +10,9 @@ import { AxiosError } from "axios";
 
 const ExpenditureSettlementGroupList = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const [isTab, setIsTab] = useState("NOT_COMPLETED"); // 진행 중 : NOT_COMPLETED, 완료 : COMPLETED
+  const location = useLocation();
+  const { id, status } = useParams();
+  const [isTab, setIsTab] = useState(status); // 진행 중 : NOT_COMPLETED, 완료 : COMPLETED
   const [isEmpty, setIsEmpty] = useState(false);
   const [dateList, setDateList] = useState<string[]>([]);
   const [settlementList, setSettlementList] = useState<{ [date: string]: ExpenditureSettlementDetailInfo[] }>({});
@@ -30,12 +31,15 @@ const ExpenditureSettlementGroupList = () => {
     });
   };
 
+  const handleNext = (settlementId: number) => {
+    navigate(`/settlement/expenditure/group/detail/${settlementId}/${isTab}`, { state: { groupId: id } });
+  };
+
   const fetchSettlementList = async () => {
     if (id === undefined) return;
 
     try {
       const response = await settlementApi.fetchSettlementPersonalGroupList(id);
-      console.log(response);
 
       // 거래내역을 날짜별로 그룹화하여 병합
       const temp = response.data.reduce(
@@ -89,7 +93,7 @@ const ExpenditureSettlementGroupList = () => {
     <div className="h-full p-5">
       <div className="grid gap-14">
         <div className="flex items-center">
-          <IoIosArrowBack className="text-2xl" onClick={() => navigate("/")} />
+          <IoIosArrowBack className="text-2xl" onClick={() => navigate(`/meetingaccount/management/${id}`)} />
         </div>
 
         <div className="grid gap-10">
@@ -112,7 +116,7 @@ const ExpenditureSettlementGroupList = () => {
             </p>
           </div>
 
-          {isEmpty ? (
+          {isEmpty || dateList.length === 0 ? (
             <p className="text-center">정산 내역이 없습니다.</p>
           ) : dateList.length === 0 ? (
             <div className="flex flex-col justify-center items-center">
@@ -128,7 +132,8 @@ const ExpenditureSettlementGroupList = () => {
                       className={`grid ${
                         isTab === "NOT_COMPLETED" ? "grid-rows[2fr_1fr]" : ""
                       } grid-cols-[1fr_5fr_1fr] gap-y-2`}
-                      key={index}>
+                      key={index}
+                      onClick={() => handleNext(settlement.personalSettlementId)}>
                       <div className="flex items-center">
                         <img className="w-10 h-10" src="/assets/user/userIconSample.png" alt="" />
                       </div>
