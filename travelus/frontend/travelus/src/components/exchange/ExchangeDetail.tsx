@@ -174,7 +174,7 @@ const ExchangeDetail: React.FC = () => {
                   currencyCode
                 )}
               </span>
-              <span
+              {/* <span
                 className={`${
                   filteredPredictionData[0]?.rate < filteredPredictionData[filteredPredictionData.length - 1]?.rate
                     ? "text-red-500"
@@ -190,7 +190,7 @@ const ExchangeDetail: React.FC = () => {
                 {filteredPredictionData[0]?.rate < filteredPredictionData[filteredPredictionData.length - 1]?.rate
                   ? "▲"
                   : "▼"}
-              </span>
+              </span> */}
             </div>
           </div>
           {renderChart()}
