@@ -34,12 +34,14 @@ import com.ssafy.soltravel.v2.repository.BillingHistoryDetailRepository;
 import com.ssafy.soltravel.v2.repository.BillingHistoryRepository;
 import com.ssafy.soltravel.v2.repository.GroupRepository;
 import com.ssafy.soltravel.v2.repository.ParticipantRepository;
+import com.ssafy.soltravel.v2.service.NotificationService;
 import com.ssafy.soltravel.v2.service.account.AccountService;
 import com.ssafy.soltravel.v2.service.group.GroupService;
 import com.ssafy.soltravel.v2.service.transaction.TransactionService;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -51,232 +53,255 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SettlementService {
 
-  private final TransactionService transactionService;
-  private final AccountService accountService;
-  private final GroupService groupService;
-  private final BillingHistoryRepository billingHistoryRepository;
-  private final BillingHistoryDetailRepository billingHistoryDetailRepository;
-  private final ParticipantRepository participantRepository;
-  private final GroupRepository groupRepository;
+    private final TransactionService transactionService;
+    private final AccountService accountService;
+    private final GroupService groupService;
+    private final BillingHistoryRepository billingHistoryRepository;
+    private final BillingHistoryDetailRepository billingHistoryDetailRepository;
+    private final ParticipantRepository participantRepository;
+    private final GroupRepository groupRepository;
 
-  private final SecurityUtil securityUtil;
-  private final SettlementMapper settlementMapper;
+    private final SecurityUtil securityUtil;
+    private final SettlementMapper settlementMapper;
+    private final NotificationService notificationService;
 
-  @Transactional
-  public String executeSettlement(SettlementRequestDto settlementRequestDto) {
+    @Transactional
+    public String executeSettlement(SettlementRequestDto settlementRequestDto) {
 
-    SettlementType type = settlementRequestDto.getSettlementType();
-    AccountDto account = accountService.getByAccountNo(settlementRequestDto.getAccountNo());
+        SettlementType type = settlementRequestDto.getSettlementType();
+        AccountDto account = accountService.getByAccountNo(settlementRequestDto.getAccountNo());
 
-    GroupDto group = groupService.getGroupInfo(settlementRequestDto.getGroupId());
-    List<ParticipantDto> participants = group.getParticipants();
-    long masterUserId = participants.stream().filter(ParticipantDto::isMaster).findFirst()
-        .orElseThrow(() -> new GroupMasterNotFoundException(group.getGroupId())).getUserId();
+        GroupDto group = groupService.getGroupInfo(settlementRequestDto.getGroupId());
+        List<ParticipantDto> participants = group.getParticipants();
+        long masterUserId = participants.stream().filter(ParticipantDto::isMaster).findFirst()
+            .orElseThrow(() -> new GroupMasterNotFoundException(group.getGroupId())).getUserId();
 
-    String response = "success";
-    switch (type) {
-      case G -> {
-        settleOnlyKRW(settlementRequestDto, masterUserId);
-      }
-      case F -> {
-        settleOnlyForeign(settlementRequestDto, account.getMoneyBoxDtos().get(1).getCurrencyCode(), masterUserId);
-      }
-      case BOTH -> response = settleBoth(settlementRequestDto, account.getMoneyBoxDtos().get(1).getCurrencyCode(), masterUserId);
+        String response = "success";
+        switch (type) {
+            case G -> {
+                settleOnlyKRW(settlementRequestDto, masterUserId);
+            }
+            case F -> {
+                settleOnlyForeign(settlementRequestDto, account.getMoneyBoxDtos().get(1).getCurrencyCode(),
+                    masterUserId);
+            }
+            case BOTH -> response = settleBoth(settlementRequestDto, account.getMoneyBoxDtos().get(1).getCurrencyCode(),
+                masterUserId);
+        }
+
+        paySettlementToMembers(group.getGroupName(), participants, settlementRequestDto.getParticipants());
+
+        return response;
     }
-
-    paySettlementToMembers(group.getGroupName(), participants, settlementRequestDto.getParticipants());
-
-    return response;
-  }
-
-  /**
-   * 1. 원화만 정산
-   */
-  @Transactional
-  public void settleOnlyKRW(SettlementRequestDto settlementRequestDto, long masterUserId) {
 
     /**
-     * 2.원화 출금
-     * 3.개인 입금
+     * 1. 원화만 정산
      */
-    transactionService.postAccountWithdrawal(
-        new TransactionRequestDto(settlementRequestDto.getAccountNo(), settlementRequestDto.getAccountPassword(),
-            CurrencyType.KRW, TransactionType.SW, settlementRequestDto.getAmounts().get(0), "자동 정산 출금"), masterUserId);
-  }
+    @Transactional
+    public void settleOnlyKRW(SettlementRequestDto settlementRequestDto, long masterUserId) {
 
-  /**
-   * 2. 외화만 정산
-   */
-  @Transactional
-  public void settleOnlyForeign(SettlementRequestDto settlementRequestDto, CurrencyType currencyCode, long masterUserId) {
+        /**
+         * 2.원화 출금
+         * 3.개인 입금
+         */
+        transactionService.postAccountWithdrawal(
+            new TransactionRequestDto(settlementRequestDto.getAccountNo(), settlementRequestDto.getAccountPassword(),
+                CurrencyType.KRW, TransactionType.SW, settlementRequestDto.getAmounts().get(0), "자동 정산 출금"),
+            masterUserId);
+    }
 
     /**
-     * 2.외화 정산출금
-     * 3.개인 정산입금
+     * 2. 외화만 정산
      */
-    transactionService.postAccountWithdrawal(
-        new TransactionRequestDto(settlementRequestDto.getAccountNo(), settlementRequestDto.getAccountPassword(), currencyCode,
-            TransactionType.SW, settlementRequestDto.getAmounts().get(1), "자동 정산 출금"), masterUserId);
-  }
+    @Transactional
+    public void settleOnlyForeign(SettlementRequestDto settlementRequestDto, CurrencyType currencyCode,
+        long masterUserId) {
 
-  /**
-   * 모두 정산
-   */
-  @Transactional
-  public String settleBoth(SettlementRequestDto settlementRequestDto, CurrencyType currencyCode, long masterUserId) {
+        /**
+         * 2.외화 정산출금
+         * 3.개인 정산입금
+         */
+        transactionService.postAccountWithdrawal(
+            new TransactionRequestDto(settlementRequestDto.getAccountNo(), settlementRequestDto.getAccountPassword(),
+                currencyCode,
+                TransactionType.SW, settlementRequestDto.getAmounts().get(1), "자동 정산 출금"), masterUserId);
+    }
 
     /**
-     * 1.재환전
-     * 2.원화 정산출금
-     * 3.개인 정산입금
+     * 모두 정산
      */
+    @Transactional
+    public String settleBoth(SettlementRequestDto settlementRequestDto, CurrencyType currencyCode, long masterUserId) {
 
-    List<TransferHistoryResponseDto> response = transactionService.postMoneyBoxTransfer(
-        MoneyBoxTransferRequestDto.create(TransferType.M, settlementRequestDto.getAccountNo(),
-            settlementRequestDto.getAccountPassword(), currencyCode, CurrencyType.KRW, settlementRequestDto.getAmounts().get(1)),
-        false, -1).getBody();
+        /**
+         * 1.재환전
+         * 2.원화 정산출금
+         * 3.개인 정산입금
+         */
 
-    BigDecimal transactionAmount = new BigDecimal(response.get(1).getTransactionAmount()); // 재환전된 원화 금액
-    BigDecimal krwAmount = new BigDecimal(settlementRequestDto.getAmounts().get(0)); // 원화 금액
-    BigDecimal transactionBalance = transactionAmount.add(krwAmount);
+        List<TransferHistoryResponseDto> response = transactionService.postMoneyBoxTransfer(
+            MoneyBoxTransferRequestDto.create(TransferType.M, settlementRequestDto.getAccountNo(),
+                settlementRequestDto.getAccountPassword(), currencyCode, CurrencyType.KRW,
+                settlementRequestDto.getAmounts().get(1)),
+            false, -1).getBody();
 
-    transactionService.postAccountWithdrawal(
-        new TransactionRequestDto(settlementRequestDto.getAccountNo(), settlementRequestDto.getAccountPassword(),
-            CurrencyType.KRW, TransactionType.SW, transactionBalance.doubleValue(), "자동 정산 출금"), masterUserId);
+        BigDecimal transactionAmount = new BigDecimal(response.get(1).getTransactionAmount()); // 재환전된 원화 금액
+        BigDecimal krwAmount = new BigDecimal(settlementRequestDto.getAmounts().get(0)); // 원화 금액
+        BigDecimal transactionBalance = transactionAmount.add(krwAmount);
 
-    return response.get(0).getTransactionSummary();
-  }
+        transactionService.postAccountWithdrawal(
+            new TransactionRequestDto(settlementRequestDto.getAccountNo(), settlementRequestDto.getAccountPassword(),
+                CurrencyType.KRW, TransactionType.SW, transactionBalance.doubleValue(), "자동 정산 출금"), masterUserId);
 
-  /**
-   * 개인 정산금 지급
-   */
-  @Transactional
-  public void paySettlementToMembers(String groupName, List<ParticipantDto> participants,
-      List<SettlementParticipantRequestDto> requestDtos) {
-
-    for (SettlementParticipantRequestDto requestDto : requestDtos) {
-
-      long participantId = requestDto.getParticipantId();
-      ParticipantDto participant = participants.stream().filter(p -> p.getParticipantId().equals(participantId)).findFirst()
-          .orElseThrow(() -> new ParticipantNotFoundException(participantId));
-
-      String accountNo = participant.getPersonalAccountNo();
-
-      transactionService.postAccountDeposit(
-          new TransactionRequestDto(accountNo, null, CurrencyType.KRW, TransactionType.SD, requestDto.getAmount(),
-              String.format("[%s] 자동 정산 입금", groupName)), participant.getUserId());
-    }
-  }
-
-  /**
-   * 개별 정산 알림 요청 메서드
-   */
-  @Transactional
-  public String registerPersonalSettlement(PersonalSettlementRegisterRequestDto requestDto) {
-
-    List<SettlementParticipantRequestDto> participants = requestDto.getParticipants();
-    LocalDateTime now = LocalDateTime.now();
-
-    long groupId = requestDto.getGroupId();
-    TravelGroup group = groupRepository.findById(groupId).orElseThrow(() -> new InvalidGroupIdException());
-    List<Participant> realParticipants = group.getParticipants();
-
-    BillingHistory billingHistory = BillingHistory.createBillingHistory(group, requestDto.getTotalAmount(), now);
-    BillingHistory billingHistorySaved = billingHistoryRepository.save(billingHistory);
-
-    double totalAmount = 0;
-    for (SettlementParticipantRequestDto request : participants) {
-
-      Participant participant = participantRepository.findById(request.getParticipantId())
-          .orElseThrow(() -> new ParticipantNotFoundException(request.getParticipantId()));
-
-      totalAmount += request.getAmount();
-      //TODO: 그룹의 참여자가 맞는지 확인할 예정
-
-      BillingHistoryDetail detail = BillingHistoryDetail.createBillingHistoryDetail(billingHistorySaved, participant,
-          request.getAmount(), now);
-      billingHistoryDetailRepository.save(detail);
+        return response.get(0).getTransactionSummary();
     }
 
-    if (totalAmount != requestDto.getTotalAmount()) {
-      throw new InvalidSettlementAmountException(totalAmount);
+    /**
+     * 개인 정산금 지급
+     */
+    @Transactional
+    public void paySettlementToMembers(String groupName, List<ParticipantDto> participants,
+        List<SettlementParticipantRequestDto> requestDtos) {
+
+        for (SettlementParticipantRequestDto requestDto : requestDtos) {
+
+            long participantId = requestDto.getParticipantId();
+            ParticipantDto participant = participants.stream().filter(p -> p.getParticipantId().equals(participantId))
+                .findFirst()
+                .orElseThrow(() -> new ParticipantNotFoundException(participantId));
+
+            String accountNo = participant.getPersonalAccountNo();
+
+            transactionService.postAccountDeposit(
+                new TransactionRequestDto(accountNo, null, CurrencyType.KRW, TransactionType.SD, requestDto.getAmount(),
+                    String.format("[%s] 자동 정산 입금", groupName)), participant.getUserId());
+        }
     }
 
-    //TODO: 알림 보내기(for문 도시게)
-    return "success";
-  }
+    /**
+     * 개별 정산 알림 요청 메서드
+     */
+    @Transactional
+    public String registerPersonalSettlement(PersonalSettlementRegisterRequestDto requestDto) {
 
-  /**
-   * 개인별 - 개별 정산 내역 조회 메서드
-   */
-  public List<PersonalSettlementDto> getPersonalSettlementHistory(PersonalSettlementHistoryRequestDto requestDto) {
+        List<SettlementParticipantRequestDto> participants = requestDto.getParticipants();
+        LocalDateTime now = LocalDateTime.now();
 
-    long userId = securityUtil.getCurrentUserId();
+        long groupId = requestDto.getGroupId();
+        TravelGroup group = groupRepository.findById(groupId).orElseThrow(() -> new InvalidGroupIdException());
+        List<Participant> realParticipants = group.getParticipants();
 
-    List<BillingHistoryDetail> response = billingHistoryDetailRepository.findByDynamicSettlementStatus(userId,
-        requestDto.getSettlementStatus()).orElseThrow(() -> new BillingHistoryDetailNotFoundException(userId));
+        BillingHistory billingHistory = BillingHistory.createBillingHistory(group, requestDto.getTotalAmount(), now);
+        BillingHistory billingHistorySaved = billingHistoryRepository.save(billingHistory);
 
-    return settlementMapper.toPersonalSettlementDtos(response);
-  }
+        // 알림 메시지를 보낼 정보를 담은 detail 리스트
+        List<BillingHistoryDetail> details = new ArrayList<>();
 
-  /**
-   * 모임별 - 개별 정산 내역 조회
-   */
-  public List<GroupSettlementResponseDto> getGroupSettlementHistory(GroupSettlementHistoryRequestDto requestDto) {
+        double totalAmount = 0;
 
-    long groupId = requestDto.getGroupId();
-    List<BillingHistory> response = billingHistoryRepository.findByGroup_GroupId(groupId)
-        .orElseThrow(() -> new BillingHistoryNotFoundException(groupId));
+        for (SettlementParticipantRequestDto request : participants) {
 
-    return settlementMapper.toGroupSettlementResponseDtos(response);
-  }
+            Participant participant = participantRepository.findById(request.getParticipantId())
+                .orElseThrow(() -> new ParticipantNotFoundException(request.getParticipantId()));
 
-  /**
-   * 개별 정산 요청 건당 조회 메서드
-   */
-  public GroupSettlementResponseDto getSettlementHistory(long settlementId) {
+            totalAmount += request.getAmount();
+            //TODO: 그룹의 참여자가 맞는지 확인할 예정
 
-    BillingHistory history = billingHistoryRepository.findById(settlementId)
-        .orElseThrow(() -> new BillingHistoryNotFoundException(settlementId));
+            BillingHistoryDetail detail = BillingHistoryDetail.createBillingHistoryDetail(billingHistorySaved,
+                participant,
+                request.getAmount(), now);
 
-    return settlementMapper.toGroupSettlementResponseDto(history);
-  }
+            details.add(detail);
 
-  /**
-   * 개별 정산금 이체 메서드
-   */
-  @Transactional
-  public ResponseEntity<List<TransferHistoryResponseDto>> postPersonalSettlementTransfer(
-      PersonalSettlementTransferRequestDto requestDto) {
+            billingHistoryDetailRepository.save(detail);
+        }
 
-    double transactionBalance = requestDto.getTransactionBalance();
-    LocalDateTime now = LocalDateTime.now();
+        if (totalAmount != requestDto.getTotalAmount()) {
+            throw new InvalidSettlementAmountException(totalAmount);
+        }
 
-    ResponseEntity<List<TransferHistoryResponseDto>> response = transactionService.postGeneralTransfer(
-        TransferRequestDto.builder().transferType(TransferType.G).withdrawalAccountNo(requestDto.getWithdrawalAccountNo())
-            .withdrawalTransactionSummary(requestDto.getWithdrawalTransactionSummary())
-            .depositAccountNo(requestDto.getDepositAccountNo())
-            .depositTransactionSummary(requestDto.getDepositTransactionSummary()).accountPassword(requestDto.getAccountPassword())
-            .transactionBalance(transactionBalance).build());
+        //TODO: 알림 보내기(for문 도시게)
 
-    long detailId = requestDto.getSettlementDetailId();
-    BillingHistoryDetail detail = billingHistoryDetailRepository.findById(detailId)
-        .orElseThrow(() -> new BillingHistoryDetailNotFoundException(detailId));
+        for (BillingHistoryDetail detail : details) {
+            notificationService.sendPersonalSettlementNotification(group, detail);
+        }
 
-    double currentRemainingAmount = detail.getRemainingAmount();
-    double afterDetailRemainingAmount = currentRemainingAmount - transactionBalance;
+        return "success";
+    }
 
-    detail.setRemainingAmount((afterDetailRemainingAmount) > 0 ? afterDetailRemainingAmount : 0);
-    detail.setUpdatedAt(now);
-    billingHistoryDetailRepository.save(detail);
+    /**
+     * 개인별 - 개별 정산 내역 조회 메서드
+     */
+    public List<PersonalSettlementDto> getPersonalSettlementHistory(PersonalSettlementHistoryRequestDto requestDto) {
 
-    BillingHistory history = detail.getBillingHistory();
-    double totalRemainingAmount = history.getRemainingAmount();
-    double afterHistoryRemainingAmount = totalRemainingAmount - transactionBalance;
-    history.setRemainingAmount(afterHistoryRemainingAmount > 0 ? afterHistoryRemainingAmount : 0);
-    history.setUpdatedAt(now);
-    billingHistoryRepository.save(history);
+        long userId = securityUtil.getCurrentUserId();
 
-    return response;
-  }
+        List<BillingHistoryDetail> response = billingHistoryDetailRepository.findByDynamicSettlementStatus(userId,
+            requestDto.getSettlementStatus()).orElseThrow(() -> new BillingHistoryDetailNotFoundException(userId));
+
+        return settlementMapper.toPersonalSettlementDtos(response);
+    }
+
+    /**
+     * 모임별 - 개별 정산 내역 조회
+     */
+    public List<GroupSettlementResponseDto> getGroupSettlementHistory(GroupSettlementHistoryRequestDto requestDto) {
+
+        long groupId = requestDto.getGroupId();
+        List<BillingHistory> response = billingHistoryRepository.findByGroup_GroupId(groupId)
+            .orElseThrow(() -> new BillingHistoryNotFoundException(groupId));
+
+        return settlementMapper.toGroupSettlementResponseDtos(response);
+    }
+
+    /**
+     * 개별 정산 요청 건당 조회 메서드
+     */
+    public GroupSettlementResponseDto getSettlementHistory(long settlementId) {
+
+        BillingHistory history = billingHistoryRepository.findById(settlementId)
+            .orElseThrow(() -> new BillingHistoryNotFoundException(settlementId));
+
+        return settlementMapper.toGroupSettlementResponseDto(history);
+    }
+
+    /**
+     * 개별 정산금 이체 메서드
+     */
+    @Transactional
+    public ResponseEntity<List<TransferHistoryResponseDto>> postPersonalSettlementTransfer(
+        PersonalSettlementTransferRequestDto requestDto) {
+
+        double transactionBalance = requestDto.getTransactionBalance();
+        LocalDateTime now = LocalDateTime.now();
+
+        ResponseEntity<List<TransferHistoryResponseDto>> response = transactionService.postGeneralTransfer(
+            TransferRequestDto.builder().transferType(TransferType.G)
+                .withdrawalAccountNo(requestDto.getWithdrawalAccountNo())
+                .withdrawalTransactionSummary(requestDto.getWithdrawalTransactionSummary())
+                .depositAccountNo(requestDto.getDepositAccountNo())
+                .depositTransactionSummary(requestDto.getDepositTransactionSummary())
+                .accountPassword(requestDto.getAccountPassword())
+                .transactionBalance(transactionBalance).build());
+
+        long detailId = requestDto.getSettlementDetailId();
+        BillingHistoryDetail detail = billingHistoryDetailRepository.findById(detailId)
+            .orElseThrow(() -> new BillingHistoryDetailNotFoundException(detailId));
+
+        double currentRemainingAmount = detail.getRemainingAmount();
+        double afterDetailRemainingAmount = currentRemainingAmount - transactionBalance;
+
+        detail.setRemainingAmount((afterDetailRemainingAmount) > 0 ? afterDetailRemainingAmount : 0);
+        detail.setUpdatedAt(now);
+        billingHistoryDetailRepository.save(detail);
+
+        BillingHistory history = detail.getBillingHistory();
+        double totalRemainingAmount = history.getRemainingAmount();
+        double afterHistoryRemainingAmount = totalRemainingAmount - transactionBalance;
+        history.setRemainingAmount(afterHistoryRemainingAmount > 0 ? afterHistoryRemainingAmount : 0);
+        history.setUpdatedAt(now);
+        billingHistoryRepository.save(history);
+
+        return response;
+    }
 }
