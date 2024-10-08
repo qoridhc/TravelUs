@@ -2,6 +2,7 @@ import { FilledInput, FormControl, FormHelperText, Input, InputAdornment, TextFi
 import React from "react";
 import { BsDot } from "react-icons/bs";
 import { currencyTypeList } from "../../types/exchange";
+import { useNavigate } from "react-router";
 
 interface Props {
   currency: string;

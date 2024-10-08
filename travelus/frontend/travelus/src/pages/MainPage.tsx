@@ -137,7 +137,7 @@ const MainPage = () => {
             </div>
           </div>
         ) : (
-            // 입출금통장 있을 때
+          // 입출금통장 있을 때
           <div className="w-full p-6 flex flex-col space-y-5 rounded-xl bg-white shadow-md">
             <div className="flex justify-between items-center">
               <div className="flex flex-col space-y-2">
@@ -286,7 +286,7 @@ const MainPage = () => {
         <div className="w-full grid grid-cols-2 gap-5">
           <div
             onClick={() => {
-              navigate("/exchange");
+              navigate("/exchange/foreign-currency");
             }}
             className="w-full h-40 p-5 rounded-xl bg-white shadow-md flex flex-col justify-between items-start space-y-8">
             <img className="w-12" src="/assets/exchangeMoneyIcon.png" alt="환전아이콘" />
