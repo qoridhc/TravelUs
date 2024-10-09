@@ -36,7 +36,7 @@ const AutoCurrencyExchangeRateOfCreateTravelBox = () => {
         <div className="p-5 pb-32 grid gap-10 overflow-y-auto">
           <div className="grid gap-3">
             <div className="flex space-x-2">
-              <p className="text-[#0471E9] font-semibold">01</p>
+              <p className="text-[#0471E9] font-semibold">02</p>
               <p className="font-medium">희망 환율 설정</p>
             </div>
 

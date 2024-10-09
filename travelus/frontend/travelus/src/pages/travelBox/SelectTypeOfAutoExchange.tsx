@@ -55,8 +55,8 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
         <div className="grid gap-10">
           <div className="grid gap-3">
             <div className="flex space-x-2">
-              <p className="text-[#0471E9] font-semibold">02</p>
-              <p className="font-medium">외화저금통 개설</p>
+              <p className="text-[#0471E9] font-semibold">01</p>
+              <p className="font-medium">자동환전 종류 선택</p>
             </div>
 
             <p className="text-2xl font-semibold">
