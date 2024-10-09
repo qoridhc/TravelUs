@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { IoIosArrowDown } from "react-icons/io";
 import { accountApi } from "../../api/account";
 import { AccountInfo } from "../../types/account";
+import Loading from "../../components/loading/Loading";
 
 // 에시 데이터들, axios로 백에서 데이터 받아와야 함
 const SelectAccount = (): React.ReactElement => {
@@ -55,7 +56,7 @@ const SelectAccount = (): React.ReactElement => {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Loading />;
   if (error) return <div>{error}</div>;
   if (generalAccounts.length === 0 && foreignAccounts.length === 0) return <div>계좌 정보를 찾을 수 없습니다.</div>;
 

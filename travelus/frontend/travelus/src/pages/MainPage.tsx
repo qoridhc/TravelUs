@@ -13,8 +13,9 @@ import "swiper/css";
 import { ExchangeRateInfo } from "../types/exchange";
 import { exchangeRateApi } from "../api/exchange";
 import { IoMdAdd } from "react-icons/io";
-import Lottie from "lottie-react";
-import loadingAnimation from "../lottie/loadingAnimation.json";
+// import Lottie from "lottie-react";
+// import loadingAnimation from "../lottie/loadingAnimation.json";
+import Loading from "../components/loading/Loading";
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -105,11 +106,7 @@ const MainPage = () => {
   };
 
   if ((!account && !meetingAccountList) || !exchangeRates) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

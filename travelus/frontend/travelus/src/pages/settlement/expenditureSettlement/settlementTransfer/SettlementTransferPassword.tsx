@@ -4,8 +4,7 @@ import { useLocation, useNavigate } from "react-router";
 import { settlementApi } from "../../../../api/settle";
 import { AxiosError } from "axios";
 import { AxiosErrorResponseData } from "../../../../types/axiosError";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../../lottie/loadingAnimation.json";
+import Loading from "../../../../components/loading/Loading";
 
 const SettlementTransferPassword = () => {
   const navigate = useNavigate();
@@ -55,11 +54,7 @@ const SettlementTransferPassword = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

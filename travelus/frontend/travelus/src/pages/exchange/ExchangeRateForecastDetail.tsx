@@ -7,6 +7,7 @@ import { exchangeApi } from "../../api/exchange";
 import { AllDetailedPredictions, PredictionCurrencyData } from "../../types/exchange";
 import { forecastChartSetup } from "../../utils/forecastChartSetup";
 import { formatExchangeRate } from "../../utils/currencyUtils";
+import Loading from "../../components/loading/Loading";
 
 const ExchangeRateForecastDetail: React.FC = () => {
   const [predictions, setPredictions] = useState<AllDetailedPredictions | null>(null);
@@ -211,7 +212,7 @@ const ExchangeRateForecastDetail: React.FC = () => {
     );
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading />;
   if (error) return <div>Error: {error}</div>;
   if (!predictions) return <div>No predictions available</div>;
 

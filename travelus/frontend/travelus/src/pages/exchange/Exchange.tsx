@@ -8,6 +8,7 @@ import { IoIosArrowBack, IoIosArrowDown } from "react-icons/io";
 import { FcMoneyTransfer } from "react-icons/fc";
 import { TiArrowUnsorted } from "react-icons/ti";
 import { formatCurrency } from "../../utils/currencyUtils";
+import Loading from "../../components/loading/Loading";
 
 const koreanCountryNameMapping: { [key: string]: string } = {
   EUR: "유럽",
@@ -216,7 +217,7 @@ const MeetingAccountExchange: React.FC = () => {
     });
 
     if (accounts.length === 0) {
-      return <div>Loading...</div>;
+      return <Loading />;
     }
   };
 

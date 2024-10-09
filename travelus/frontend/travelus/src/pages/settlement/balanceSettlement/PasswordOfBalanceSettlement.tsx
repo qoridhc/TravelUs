@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import SecurityNumberKeyboard from "../../../components/common/SecurityNumberKeyboard";
 import { settlementApi } from "../../../api/settle";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../lottie/loadingAnimation.json";
+import Loading from "../../../components/loading/Loading";
 
 const PasswordOfBalanceSettlement = () => {
   const navigate = useNavigate();
@@ -45,11 +44,7 @@ const PasswordOfBalanceSettlement = () => {
   }, [password]);
 
   if (isLoading) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

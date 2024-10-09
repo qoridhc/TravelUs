@@ -10,6 +10,7 @@ import { userApi } from "../../../api/user";
 import { cardApi } from "../../../api/card";
 import { accountApi } from "../../../api/account";
 import { MeetingAccountInfo } from "../../../types/account";
+import Loading from "../../../components/loading/Loading";
 
 const AddressOfCreateCard = () => {
   const navigate = useNavigate();

@@ -3,8 +3,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { accountApi } from "../../../api/account";
 import { GroupInfo } from "../../../types/meetingAccount";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../lottie/loadingAnimation.json";
+import Loading from "../../../components/loading/Loading";
 import { settlementApi } from "../../../api/settle";
 
 interface Member {
@@ -110,11 +109,7 @@ const ExpenditureSettlementInfo = () => {
   }, [groupInfo]);
 
   if (isLoading) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

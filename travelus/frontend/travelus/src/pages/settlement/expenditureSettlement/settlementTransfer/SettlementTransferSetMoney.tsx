@@ -4,8 +4,7 @@ import { useLocation } from "react-router";
 import { IoIosArrowBack } from "react-icons/io";
 import { AccountInfoNew } from "../../../../types/account";
 import { accountApi } from "../../../../api/account";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../../lottie/loadingAnimation.json";
+import Loading from "../../../../components/loading/Loading";
 
 const SettlementTransferSetMoney = () => {
   const navigate = useNavigate();
@@ -127,11 +126,7 @@ const SettlementTransferSetMoney = () => {
   }, []);
 
   if (!account || !userAmount || depositAccountNo === "") {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

@@ -6,8 +6,7 @@ import { userApi } from "../../../../api/user";
 import NameInputMui from "../../../../components/meetingAccount/NameInputMui";
 import BirthDateInputMui from "../../../../components/meetingAccount/BirthDateInputMui";
 import GenderInputMui from "../../../../components/meetingAccount/GenderInputMui";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../../lottie/loadingAnimation.json";
+import Loading from "../../../../components/loading/Loading";
 
 const UserInfoOfCreateAccount = () => {
   const navigate = useNavigate();
@@ -46,9 +45,7 @@ const UserInfoOfCreateAccount = () => {
   return (
     <>
       {isLoading ? (
-        <div className="h-full flex flex-col justify-center items-center">
-          <Lottie animationData={loadingAnimation} />
-        </div>
+        <Loading />
       ) : (
         <div className="h-full p-5 pb-8 flex flex-col justify-between">
           <div className="grid gap-14">

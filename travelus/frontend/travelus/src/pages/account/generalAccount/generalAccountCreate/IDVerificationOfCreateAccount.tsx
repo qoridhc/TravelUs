@@ -5,8 +5,8 @@ import { accountApi } from "../../../../api/account";
 import { userApi } from "../../../../api/user";
 import { UserInfo } from "../../../../types/userInformation";
 import Lottie from "lottie-react";
-import loadingAnimation from "../../../../lottie/loadingAnimation.json";
 import idcardLoadingAnimation from "../../../../lottie/idcardLoadingAnimation.json";
+import Loading from "../../../../components/loading/Loading";
 import { IoIosArrowBack } from "react-icons/io";
 
 const IDVerificationOfCreateAccount = () => {
@@ -24,6 +24,7 @@ const IDVerificationOfCreateAccount = () => {
     "빛이 반사되지 않는 곳에서 촬영해주세요.",
     "훼손되지 않은 신분증을 촬영해주세요.",
   ];
+
   const loadingText = [
     ["신분증이 잘 찍혔는지", "확인하고 있어요"],
     [`${userInfo?.name}님의 정보가 맞는지`, "확인하고 있어요"],
@@ -110,11 +111,7 @@ const IDVerificationOfCreateAccount = () => {
   }, [isLoading]);
 
   if (!userInfo) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   if (isLoading) {

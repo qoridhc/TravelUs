@@ -3,8 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router";
 import { accountApi } from "../../../../api/account";
 import { userApi } from "../../../../api/user";
 import { IoIosArrowBack } from "react-icons/io";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../../lottie/loadingAnimation.json";
+import Loading from "../../../../components/loading/Loading";
 
 const SettlementTransferConfirm = () => {
   const navigate = useNavigate();
@@ -66,11 +65,7 @@ const SettlementTransferConfirm = () => {
   }, []);
 
   if (withdrawalAccountNo === "" || userName === "") {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

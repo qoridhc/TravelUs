@@ -5,8 +5,7 @@ import { accountApi } from "../../../api/account";
 import { GroupInfo } from "../../../types/meetingAccount";
 import { exchangeRateApi } from "../../../api/exchange";
 import { ExchangeRateInfo } from "../../../types/exchange";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../lottie/loadingAnimation.json";
+import Loading from "../../../components/loading/Loading";
 
 interface Member {
   participantId: number;
@@ -139,11 +138,7 @@ const SettlementInfo = () => {
   }, [totalAmount]);
 
   if (isLoading) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

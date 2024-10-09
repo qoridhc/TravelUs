@@ -9,6 +9,7 @@ import { IoCamera } from "react-icons/io5";
 import { UserInfo } from "../../types/userInformation";
 import api from "../../lib/axios";
 import { notificationApi } from "../../api/notification";
+import Loading from "../../components/loading/Loading";
 
 const MyPage = () => {
   const navigate = useNavigate();

@@ -4,8 +4,7 @@ import { useLocation } from "react-router";
 import { AccountInfoNew, MeetingAccountInfo } from "../../../../types/account";
 import { accountApi } from "../../../../api/account";
 import { IoIosArrowBack } from "react-icons/io";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../../lottie/loadingAnimation.json";
+import Loading from "../../../../components/loading/Loading";
 
 interface TransferSetMoneyProps {}
 
@@ -136,12 +135,8 @@ const FillSetMoney: React.FC<TransferSetMoneyProps> = (props) => {
     }
   };
 
-  if ((!account && !meeting)) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+  if (!account && !meeting) {
+    return <Loading />;
   }
 
   return (
