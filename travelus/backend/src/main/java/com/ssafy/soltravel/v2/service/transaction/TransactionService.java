@@ -221,10 +221,10 @@ public class TransactionService {
             .map(value -> modelMapper.map(value, TransferHistoryResponseDto.class))
             .collect(Collectors.toList());
       }
+      responseDto.addAll(exchangeResponseDto);
     }
 
     notificationService.sendTransferNotification(user, requestDto);
-    responseDto.addAll(exchangeResponseDto);
     return ResponseEntity.status(HttpStatus.OK).body(responseDto);
   }
 
