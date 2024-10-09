@@ -106,7 +106,7 @@ const ExchangeRateForecast: React.FC = () => {
       <div className="flex flex-col space-y-3">
         <div className="flex flex-col space-y-2">
           <div>
-            <p className="text-2xl font-semibold">자동환전 희망 환율 추천</p>
+            <p className="text-2xl font-semibold">자동환전 희망 환율 설정</p>
             {/* <p className="text-2xl font-semibold">희망 환율을 선택해주세요</p> */}
           </div>
           <p className="text-sm text-zinc-500">환율 예측을 토대로 자동환전 희망 환율을 추천해요</p>
@@ -121,7 +121,7 @@ const ExchangeRateForecast: React.FC = () => {
 
           <div className="flex justify-between items-center">
             <div className="space-y-1">
-              <p className="text-sm text-zinc-500">내일 환율 예측</p>
+              <p className="text-sm text-zinc-500">실시간 환율</p>
               <p className="text-xl font-semibold">1,346.14원</p>
             </div>
             <div className="text-sm flex items-center space-x-1">
