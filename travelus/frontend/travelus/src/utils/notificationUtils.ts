@@ -53,7 +53,7 @@ export const initializeFcmAndRegisterToken = async () => {
     if (permissionGranted) {
       const token = await fetchAndStoreFcmToken();
 
-      console.log("토큰 저장 성공 : ", token);
+      console.log("토큰 저장 성공 : ");
 
 
     } else {
