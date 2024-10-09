@@ -10,14 +10,19 @@ import { IoPerson } from "react-icons/io5";
 
 const SelectTypeOfAutoExchange: React.FC = (props) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const travelboxInfo = useSelector((state: RootState) => state.meetingAccount.travelboxInfo);
   const [type, setType] = useState<number | null>(null);
 
   const handleNext = () => {
-    // const updatedTravelboxInfo = { ...travelboxInfo, currencyCode: currency };
-    // dispatch(setTravelboxInfo(updatedTravelboxInfo));
-    // navigate("/autocurrencyexchangeofcreatetravelbox", { state: { currency: currency } });
+    if (type === 1) {
+      navigate("/travelbox/create/auto/exchange/rate", { state: { currency: location.state.currency } });
+    } else if (type === 3) {
+      navigate(`/travelbox/transaction/${location.state.accountNo}/detail`, {
+        state: { currencyCode: location.state.currencyCode },
+      });
+    }
   };
 
   const handleSelectType = (type: number) => {
