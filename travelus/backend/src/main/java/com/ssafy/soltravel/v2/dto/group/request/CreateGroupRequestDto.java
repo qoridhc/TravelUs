@@ -1,5 +1,6 @@
 package com.ssafy.soltravel.v2.dto.group.request;
 
+import com.ssafy.soltravel.v2.domain.Enum.ExchangeType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import lombok.Data;
@@ -25,7 +26,8 @@ public class CreateGroupRequestDto {
     @Schema(description = "정산 받은 개인 계좌번호", example = "002-4561621-209")
     private String personalAccountNo;
 
-
+    @Schema(description = "환전 타입", example="AUTO")
+    private ExchangeType exchangeType;
 }
 
 

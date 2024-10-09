@@ -1,6 +1,7 @@
 package com.ssafy.soltravel.v2.dto.group;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ssafy.soltravel.v2.domain.Enum.ExchangeType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,6 +22,9 @@ public class GroupDto {
 
     @Schema(description = "모임 계좌 번호", example = "001-93381440-209")
     private String groupAccountNo;
+
+    @Schema(description = "환전 타입", example = "AUTO")
+    private ExchangeType exchangeType;
 
     @Schema(description = "카드 번호", example = "4000001679635483")
     private String cardNumber;
