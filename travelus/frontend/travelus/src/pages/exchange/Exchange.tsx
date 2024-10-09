@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { accountApi } from "../../api/account";
 import { exchangeRateApi } from "../../api/exchange";
 import { MeetingAccountInfo } from "../../types/account";
@@ -31,6 +31,7 @@ const getFlagImagePath = (currencyCode: string) => {
 
 const MeetingAccountExchange: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [accounts, setAccounts] = useState<MeetingAccountInfo[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<MeetingAccountInfo | null>(null);
   const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[]>([]);
@@ -67,7 +68,19 @@ const MeetingAccountExchange: React.FC = () => {
         );
         setAccounts(allAccounts);
         setExchangeRates(rates);
-        if (allAccounts.length > 0) {
+
+        // 환전하기 페이지를 그냥 들어갔을때는 첫 번째 모임통장이 나오게 하기 위한 조건문
+        const { selectedAccount } = location.state || {};
+        if (selectedAccount) {
+          const matchingAccount = allAccounts.find(
+            (account) => account.groupAccountNo === selectedAccount.groupAccountNo
+          );
+          if (matchingAccount) {
+            setSelectedAccount(matchingAccount);
+          } else if (allAccounts.length > 0) {
+            setSelectedAccount(allAccounts[0]);
+          }
+        } else if (allAccounts.length > 0) {
           setSelectedAccount(allAccounts[0]);
         }
       } catch (error) {
@@ -75,7 +88,7 @@ const MeetingAccountExchange: React.FC = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [location]);
 
   // 숫자를 세 자리마다 쉼표로 구분하여 표시
   const formatCurrency = (amount: number) => {
@@ -98,6 +111,14 @@ const MeetingAccountExchange: React.FC = () => {
     return `1 ${currencyCode} = ${rateInfo.exchangeRate.toFixed(2)} 원`;
   };
 
+  const formatNumber = (value: number, currencyCode: string): string => {
+    if (currencyCode === "KRW") {
+      return Math.round(value).toLocaleString("ko-KR");
+    } else {
+      return value.toLocaleString("ko-KR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+  };
+
   const handleKrwChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // 사용자가 입력하는 input 값
     const rawValue = e.target.value.replace(/[^0-9]/g, "");
@@ -118,7 +139,7 @@ const MeetingAccountExchange: React.FC = () => {
         } else {
           calculatedForeign = adjustedValue / rateInfo.exchangeRate;
         }
-        setForeignAmount(calculatedForeign.toFixed(2));
+        setForeignAmount(formatNumber(calculatedForeign, foreignCurrency.currencyCode));
       }
     } else {
       setForeignAmount("");
@@ -136,9 +157,9 @@ const MeetingAccountExchange: React.FC = () => {
       if (rateInfo) {
         let calculatedKRW: number;
         if (foreignCurrency.currencyCode === "JPY") {
-          calculatedKRW = parseFloat(rawValue) * (rateInfo.exchangeRate / 100);
+          calculatedKRW = Number(rawValue) * (rateInfo.exchangeRate / 100);
         } else {
-          calculatedKRW = parseFloat(rawValue) * rateInfo.exchangeRate;
+          calculatedKRW = Number(rawValue) * rateInfo.exchangeRate;
         }
         // 원화 금액을 10원 단위로 내림
         const adjustedKRW = Math.floor(calculatedKRW / 10) * 10;

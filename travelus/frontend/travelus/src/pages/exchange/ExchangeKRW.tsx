@@ -82,6 +82,14 @@ const MeetingAccountExchange: React.FC = () => {
     return `1 ${currencyCode} = ${rateInfo.exchangeRate.toFixed(2)}원`;
   };
 
+  const formatNumber = (value: number, currencyCode: string): string => {
+    if (currencyCode === "KRW") {
+      return Math.round(value).toLocaleString("ko-KR");
+    } else {
+      return value.toLocaleString("ko-KR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+  };
+
   const handleKrwChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/[^0-9]/g, "");
     const value = Number(rawValue).toLocaleString();
@@ -96,7 +104,7 @@ const MeetingAccountExchange: React.FC = () => {
         } else {
           calculatedForeign = parseInt(rawValue) / rateInfo.exchangeRate;
         }
-        setForeignAmount(calculatedForeign.toFixed(2));
+        setForeignAmount(formatNumber(calculatedForeign, foreignCurrency.currencyCode));
       }
     } else {
       setForeignAmount("");
