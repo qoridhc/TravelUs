@@ -2,24 +2,17 @@ import React, { useState } from "react";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
-import { AccountInfo } from "../../types/account";
+import Select from "@mui/material/Select";
+import { MeetingAccountInfo } from "../../types/account";
 
 interface DropdownInputProps {
-  accountList: AccountInfo[];
-  selectedOption: string;
-  onChange: (accountName: string, accountIndex: number, foreignAccountNo: string) => void;
+  meetingAccountList: MeetingAccountInfo[];
+  accountNo: string;
+  setAccountNo: (accountNo: string) => void;
 }
 
-const DropdownInput: React.FC<DropdownInputProps> = ({ accountList, selectedOption, onChange }) => {
-  const foreignAccountList = useSelector((state: RootState) => state.account.foreignAccountList);
-  const handleChange = (selected: string) => {
-    const selectedIndex = accountList.findIndex((account) => account.groupName === selected);
-    onChange(selected, selectedIndex, foreignAccountList[selectedIndex - 1].accountNo);
-  };
-
+const DropdownInput: React.FC<DropdownInputProps> = ({ meetingAccountList, accountNo, setAccountNo }) => {
+  console.log(meetingAccountList);
   return (
     <FormControl
       variant="filled"
@@ -42,12 +35,12 @@ const DropdownInput: React.FC<DropdownInputProps> = ({ accountList, selectedOpti
           display: "none",
         },
       }}>
-      <InputLabel id="demo-simple-select-filled-label">모임명을 선택해주세요</InputLabel>
+      <InputLabel id="demo-simple-select-filled-label">모임통장을 선택해주세요</InputLabel>
       <Select
         labelId="demo-simple-select-filled-label"
         id="demo-simple-select-filled"
-        value={selectedOption}
-        onChange={(e) => handleChange(e.target.value)}
+        value={accountNo}
+        onChange={(e) => setAccountNo(e.target.value)}
         MenuProps={{
           PaperProps: {
             style: {
@@ -56,15 +49,11 @@ const DropdownInput: React.FC<DropdownInputProps> = ({ accountList, selectedOpti
             },
           },
         }}>
-        {accountList.map((account, index) =>
-          index !== 0 ? (
-            <MenuItem value={account.groupName} key={index}>
-              {account.groupName}
-            </MenuItem>
-          ) : (
-            <></>
-          )
-        )}
+        {meetingAccountList.map((account, index) => (
+          <MenuItem value={account.groupAccountNo} key={index}>
+            {account.groupName} ({account.groupAccountNo})
+          </MenuItem>
+        ))}
       </Select>
     </FormControl>
   );

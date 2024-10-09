@@ -11,8 +11,10 @@ export interface getAccountBookDayQuery {
 }
 
 export interface DayHistory {
-  totalExpenditure : number;
-  totalIncome: number;
+  totalExpenditureForeign : number;
+  totalExpenditureKRW: number;
+  totalIncomeForeign : number;
+  totalIncomeKRW: number;
 }
 
 export interface DayHistoryDetail {
