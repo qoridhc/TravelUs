@@ -82,6 +82,14 @@ const MeetingAccountExchange: React.FC = () => {
     return `1 ${currencyCode} = ${rateInfo.exchangeRate.toFixed(2)}원`;
   };
 
+  const formatNumber = (value: number, currencyCode: string): string => {
+    if (currencyCode === "KRW") {
+      return Math.round(value).toLocaleString("ko-KR");
+    } else {
+      return value.toLocaleString("ko-KR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+  };
+
   const handleKrwChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/[^0-9]/g, "");
     const value = Number(rawValue).toLocaleString();
@@ -96,7 +104,7 @@ const MeetingAccountExchange: React.FC = () => {
         } else {
           calculatedForeign = parseInt(rawValue) / rateInfo.exchangeRate;
         }
-        setForeignAmount(calculatedForeign.toFixed(2));
+        setForeignAmount(formatNumber(calculatedForeign, foreignCurrency.currencyCode));
       }
     } else {
       setForeignAmount("");
@@ -139,13 +147,23 @@ const MeetingAccountExchange: React.FC = () => {
     if (!selectedAccount || !getForeignCurrency() || !krwAmount) return;
 
     const foreignCurrency = getForeignCurrency()!;
+    console.log(foreignCurrency);
+    const cleanedForeignAmount = foreignAmount.replace(/,/g, "");
+
+    const numericForeignAmount = Number(cleanedForeignAmount);
+    const currentBalance = getBalance(getForeignCurrency()!.currencyCode);
+
+    if (numericForeignAmount > currentBalance) {
+      alert("외화 저금통 잔액이 부족합니다.");
+      return;
+    }
 
     navigate("/exchange/account-password-input", {
       state: {
         accountNo: selectedAccount.groupAccountNo,
         sourceCurrencyCode: foreignCurrency.currencyCode,
         targetCurrencyCode: "KRW",
-        transactionBalance: foreignAmount,
+        transactionBalance: cleanedForeignAmount,
       },
     });
   };
@@ -292,7 +310,7 @@ const MeetingAccountExchange: React.FC = () => {
               )}
             </div>
 
-            {getForeignCurrency() && (
+            {/* {getForeignCurrency() && (
               <p className="text-sm text-right text-[#565656]">
                 최소 환전 금액&nbsp;
                 {formatCurrency(
@@ -302,7 +320,7 @@ const MeetingAccountExchange: React.FC = () => {
                 )}
                 {getForeignCurrency()!.currencyCode}
               </p>
-            )}
+            )} */}
           </div>
         </div>
       </div>

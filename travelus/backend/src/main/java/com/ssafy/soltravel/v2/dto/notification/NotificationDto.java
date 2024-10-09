@@ -33,6 +33,9 @@ public class NotificationDto {
     @Schema(description = "발생 발생 계좌", example = "001-1637835-209")
     private String accountNo;
 
+    @Schema(description = "정산 ID", example = "3")
+    private String settlementId;
+
     @Schema(description = "읽음 여부", example = "false")
     private boolean isRead;
 

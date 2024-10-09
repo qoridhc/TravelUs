@@ -1,10 +1,13 @@
 package com.ssafy.soltravel.v2.domain;
 
+import com.ssafy.soltravel.v2.domain.Enum.ExchangeType;
 import com.ssafy.soltravel.v2.dto.group.request.CreateGroupRequestDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -45,6 +48,9 @@ public class TravelGroup {
 
   private String icon;
 
+  @Enumerated(EnumType.STRING)
+  private ExchangeType exchangeType;
+
   @CreatedDate
   private LocalDateTime createdAt;
 
@@ -63,6 +69,7 @@ public class TravelGroup {
   public static TravelGroup createGroupEntity(String accountNo, CreateGroupRequestDto requestDto) {
     TravelGroup travelGroup = TravelGroup.builder()
         .groupAccountNo(accountNo)
+        .exchangeType(requestDto.getExchangeType())
         .travelStartDate(requestDto.getTravelStartDate())
         .travelEndDate(requestDto.getTravelEndDate())
         .groupName(requestDto.getGroupName())

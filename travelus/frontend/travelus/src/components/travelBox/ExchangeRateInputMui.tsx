@@ -34,6 +34,7 @@ const ExchangeRateInputMui = ({
     if (value === "" || /^\d+$/.test(value)) {
       setExchangeRateFront(Number(value));
     }
+    console.log(value)
   };
 
   return (

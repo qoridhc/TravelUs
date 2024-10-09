@@ -33,7 +33,7 @@ export interface ExchangeRequest {
   accountPassword: string;
   sourceCurrencyCode: string;
   targetCurrencyCode: string;
-  transactionBalance: string;
+  transactionBalance: number;
 }
 
 export interface ExchangeResponse {

@@ -51,6 +51,8 @@ public class Notification {
 
     private boolean isRead;
 
+    private Long settlementId;
+
     @CreatedDate
     private LocalDateTime createdAt;
 
@@ -75,6 +77,7 @@ public class Notification {
             .accountNo(requestDto.getAccountNo())  // 계좌 번호 (null 가능)
             .isRead(false)  // 처음 알림이 생성될 때는 읽지 않은 상태로 설정
             .currencyType(requestDto.getCurrencyType())
+            .settlementId(requestDto.getSettlementId())
             .build();
     }
 }
