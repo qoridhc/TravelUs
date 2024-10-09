@@ -13,7 +13,7 @@ interface Props {
 }
 
 const AccountBookDetailModal = ({ accountNo, isModalOpen, setIsModalOpen, selectedDate }: Props) => {
-  const [dayHistoryDetail, setDayHistoryDetail] = useState<DayHistoryDetail[]>([]);
+  const [dayHistoryDetail, setDayHistoryDetail] = useState<DayHistoryDetail[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchDateDetailInfo = async () => {
