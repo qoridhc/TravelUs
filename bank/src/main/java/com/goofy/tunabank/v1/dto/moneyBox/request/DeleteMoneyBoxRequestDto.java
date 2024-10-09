@@ -13,6 +13,8 @@ public class DeleteMoneyBoxRequestDto {
 
     private String accountNo;
 
+    private String accountPassword;
+
     private CurrencyType currencyCode;
 
 }
