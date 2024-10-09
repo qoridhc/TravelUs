@@ -56,6 +56,7 @@ import CurrencyInfoOfCreateTravelBox from "./pages/travelBox/CurrencyInfoOfCreat
 import AutoCurrencyExchangeOfCreateTravelBox from "./pages/travelBox/AutoCurrencyExchangeOfCreateTravelBox";
 import DeleteTravelBox from "./pages/travelBox/travelBoxDelete/DeleteTravelbox";
 import DeleteTravelBoxPassword from "./pages/travelBox/travelBoxDelete/DeleteTravelboxPassword";
+import CompletedOfDeleteTravelBox from "./pages/travelBox/travelBoxDelete/CompletedOfDeleteTravelBox";
 import SelectSettlementAmount from "./pages/settlement/balanceSettlement/SelectSettlementAmount";
 import BalanceSettlementCompleted from "./pages/settlement/balanceSettlement/BalanceSettlementCompleted";
 import SettlementInfo from "./pages/settlement/balanceSettlement/SettlementInfo";
@@ -189,6 +190,7 @@ function App() {
           {/* 외화저금통 해지 */}
           <Route path="/travelbox/delete/:accountNo/:groupId" element={<DeleteTravelBox />} />
           <Route path="/travelbox/delete/:accountNo/:groupId/password" element={<DeleteTravelBoxPassword />} />
+          <Route path="/travelbox/delete/:accountNo/:groupId/completed" element={<CompletedOfDeleteTravelBox />} />
 
           {/* 카드 개설 */}
           <Route path="/card/:groupId/create/englishname" element={<EnglishNameOfCreateCard />} />
