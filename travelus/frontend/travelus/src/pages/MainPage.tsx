@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import { accountApi } from "../api/account";
 import { AccountInfoNew, MeetingAccountInfo } from "../types/account";
+import { currencyNames } from "../types/exchange";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import { IoIosArrowForward } from "react-icons/io";
@@ -15,8 +16,6 @@ import { IoMdAdd } from "react-icons/io";
 import Lottie from "lottie-react";
 import loadingAnimation from "../lottie/loadingAnimation.json";
 
-const CURRENCY_CODES = ["USD", "JPY", "EUR"];
-
 const MainPage = () => {
   const navigate = useNavigate();
   const [account, setAccount] = useState<AccountInfoNew | null>(null);
@@ -25,7 +24,10 @@ const MainPage = () => {
   const [exchangeRates, setExchangeRates] = useState<ExchangeRateInfo[] | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const handleCurrencyClick = (code: string) => {
+  const CURRENCY_CODES = ["USD", "JPY", "EUR"] as const;
+  type CurrencyCode = (typeof CURRENCY_CODES)[number];
+
+  const handleCurrencyClick = (code: CurrencyCode) => {
     navigate(`exchangerate/${code}`);
   };
 
@@ -78,7 +80,7 @@ const MainPage = () => {
     fetchData();
   }, []);
 
-  const getExchangeRate = (currencyCode: string) => {
+  const getExchangeRate = (currencyCode: CurrencyCode) => {
     if (!exchangeRates) {
       return;
     }
@@ -263,7 +265,7 @@ const MainPage = () => {
                     aria-label={`View exchange rate details for ${code}`}>
                     <div className="flex justify-center items-center space-x-1">
                       <img className="w-6 h-4 rounded-sm" src={`/assets/flag/flagOf${code}.png`} alt={code} />
-                      <p>{code}</p>
+                      <p>{currencyNames[code]}</p>
                     </div>
                     <p className="text-lg font-semibold">{getExchangeRate(code)}</p>
                   </div>

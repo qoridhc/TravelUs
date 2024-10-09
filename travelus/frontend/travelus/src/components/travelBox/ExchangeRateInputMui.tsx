@@ -1,8 +1,6 @@
-import { FilledInput, FormControl, FormHelperText, Input, InputAdornment, TextField } from "@mui/material";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BsDot } from "react-icons/bs";
 import { currencyTypeList } from "../../types/exchange";
-import { useNavigate } from "react-router";
 
 interface Props {
   currency: string;
@@ -19,6 +17,25 @@ const ExchangeRateInputMui = ({
   exchangeRateBack,
   setExchangeRateBack,
 }: Props) => {
+  const [isFocusedFront, setIsFocusedFront] = useState(false);
+  const [isFocusedBack, setIsFocusedBack] = useState(false);
+  const [displayFront, setDisplayFront] = useState("");
+
+  const formatNumber = (num: number) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  useEffect(() => {
+    setDisplayFront(exchangeRateFront === 0 ? "" : formatNumber(exchangeRateFront));
+  }, [exchangeRateFront]);
+
+  const handleFrontChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/,/g, "");
+    if (value === "" || /^\d+$/.test(value)) {
+      setExchangeRateFront(Number(value));
+    }
+  };
+
   return (
     <div className="grid gap-3">
       <div className="flex justify-between">
@@ -32,22 +49,32 @@ const ExchangeRateInputMui = ({
         <div className="flex items-end space-x-2">
           <input
             className="w-32 text-right border-b-2 border-[#D7D7D7] placeholder:text-black outline-none"
-            type="number"
+            type="text"
             placeholder="0"
-            value={exchangeRateFront}
-            onChange={(e) => setExchangeRateFront(Number(e.target.value))}
+            value={isFocusedFront && exchangeRateFront === 0 ? "" : displayFront}
+            onChange={handleFrontChange}
+            onFocus={() => setIsFocusedFront(true)}
+            onBlur={() => {
+              setIsFocusedFront(false);
+              if (exchangeRateFront === 0) setExchangeRateFront(0);
+            }}
           />
           <BsDot />
           <input
             className="w-16 text-right border-b-2 border-[#D7D7D7] placeholder:text-black outline-none"
             type="number"
             placeholder="0"
-            value={exchangeRateBack}
+            value={isFocusedBack && exchangeRateBack === 0 ? "" : exchangeRateBack}
             onChange={(e) => {
               const value = e.target.value;
               if (value.length <= 2) {
                 setExchangeRateBack(Number(value));
               }
+            }}
+            onFocus={() => setIsFocusedBack(true)}
+            onBlur={() => {
+              setIsFocusedBack(false);
+              if (exchangeRateBack === 0) setExchangeRateBack(0);
             }}
           />
         </div>

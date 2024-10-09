@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import { IoIosArrowForward } from "react-icons/io";
 import { GoHome } from "react-icons/go";
 import { exchangeRateApi } from "../../api/exchange";
 import { ExchangeRateInfo, currencyNames } from "../../types/exchange";
@@ -29,7 +29,7 @@ const ExchangeRateItem: React.FC<ExchangeRateInfo> = ({ currencyCode, exchangeRa
       <div className="text-right">
         <p className="font-bold">{exchangeRate.toFixed(2)}원</p>
       </div>
-      <ChevronRight className="ml-2 text-gray-400" />
+      <IoIosArrowForward className="ml-2 text-gray-400" />
     </div>
   );
 };
@@ -69,9 +69,9 @@ const ExchangeRateList: React.FC = () => {
   return (
     <div className="flex flex-col bg-gray-100 h-full p-5 pb-8">
       <div>
-        <Link to="/" className="inline-block mb-4">
+        {/* <Link to="/" className="inline-block mb-4">
           <GoHome className="w-6 h-6 text-gray-600" />
-        </Link>
+        </Link> */}
         <div className="bg-white rounded-lg shadow mb-4">
           {exchangeRates.map((rate, index) => (
             <ExchangeRateItem key={index} {...rate} />

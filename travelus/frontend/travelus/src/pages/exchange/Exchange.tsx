@@ -4,7 +4,7 @@ import { accountApi } from "../../api/account";
 import { exchangeRateApi } from "../../api/exchange";
 import { MeetingAccountInfo } from "../../types/account";
 import { currencyTypeList, ExchangeRateInfo } from "../../types/exchange";
-import { ChevronLeft, ChevronDown } from "lucide-react";
+import { IoIosArrowBack, IoIosArrowDown } from "react-icons/io";
 import { FcMoneyTransfer } from "react-icons/fc";
 import { TiArrowUnsorted } from "react-icons/ti";
 import { formatCurrency } from "../../utils/currencyUtils";
@@ -186,14 +186,17 @@ const MeetingAccountExchange: React.FC = () => {
     }
   };
 
-  // 머니박스가 연결된 그룹통장이 없을 때
+  // 머니박스가 연결된 그룹통장이 없거나 하나 일때
   const noAccount = accounts.length === 0;
+  const oneAccount = accounts.length === 1;
+
+  const isButtonDisabled = noAccount || oneAccount;
 
   return (
     <div className="h-full p-5 pb-8 flex flex-col justify-between">
       <div className="grid gap-14">
         <button onClick={() => navigate(-1)}>
-          <ChevronLeft className="w-6 h-6" />
+          <IoIosArrowBack className="w-6 h-6" />
         </button>
 
         <div className="grid gap-8">
@@ -210,7 +213,7 @@ const MeetingAccountExchange: React.FC = () => {
               <button
                 className="w-full p-3 text-left border rounded-lg flex justify-between items-center"
                 onClick={() => !noAccount && setIsAccountMenuOpen(!isAccountMenuOpen)}
-                disabled={noAccount}>
+                disabled={isButtonDisabled}>
                 <span>
                   {noAccount ? (
                     "외화저금통이 없습니다."
@@ -223,7 +226,7 @@ const MeetingAccountExchange: React.FC = () => {
                     "모임을 선택하세요"
                   )}
                 </span>
-                {!noAccount && <ChevronDown className="w-5 h-5" />}
+                {!noAccount && <IoIosArrowDown className="w-5 h-5" />}
               </button>
 
               {isAccountMenuOpen && !noAccount && (

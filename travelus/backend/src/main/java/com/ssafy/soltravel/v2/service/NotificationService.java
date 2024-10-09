@@ -108,6 +108,7 @@ public class NotificationService {
             .putData("accountNo", requestDto.getAccountNo() != null ? requestDto.getAccountNo() : "")
             .putData("currencyCode",
                 requestDto.getCurrencyType() != null ? requestDto.getCurrencyType().getCurrencyCode() : "")
+            .putData("settlementId", requestDto.getSettlementId() != null ? String.valueOf(requestDto.getSettlementId()) : null)
             .build();
     }
 
@@ -310,7 +311,8 @@ public class NotificationService {
             message,
             targetAccountDto.getAccountNo(),
             group.getGroupId(),
-            requestDto.getTargetCurrencyCode()
+            requestDto.getTargetCurrencyCode(),
+            null
         );
 
         // 알림 전송
@@ -340,7 +342,8 @@ public class NotificationService {
             message,
             requestDto.getAccountNo(),
             group.getGroupId(),
-            requestDto.getTargetCurrencyCode()
+            requestDto.getTargetCurrencyCode(),
+            null
         );
 
         // 알림 전송
@@ -353,7 +356,7 @@ public class NotificationService {
      *  개별 정산 알림
      */
     public ResponseEntity<?> sendPersonalSettlementNotification(
-        TravelGroup group, BillingHistoryDetail requestDto
+        TravelGroup group, BillingHistoryDetail requestDto, Long settlementId
     ) {
 
         String title = "새로운 정산 요청이 들어왔어요!";
@@ -373,7 +376,9 @@ public class NotificationService {
             title,
             message,
             group.getGroupAccountNo(),
-            group.getGroupId()
+            group.getGroupId(),
+            null,
+            settlementId
         );
 
         // 알림 전송

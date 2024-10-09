@@ -1,12 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { IoIosArrowBack } from "react-icons/io";
 import { RiErrorWarningFill } from "react-icons/ri";
 import { RiExchangeDollarLine } from "react-icons/ri";
+import { MeetingAccountDetailInfo } from "../../../types/account";
+import { accountApi } from "../../../api/account";
 
 const DeleteTravelBox = () => {
   const navigate = useNavigate();
   const { groupId } = useParams();
+  const { accountNo } = useParams();
+  const [account, setAccount] = useState<MeetingAccountDetailInfo | null>(null);
+
+  useEffect(() => {
+    if (!accountNo) return;
+
+    fetchSpecificAccountInfo(accountNo);
+  }, [accountNo]);
+
+  // 특정 모임 통장 조회 API 호출
+  const fetchSpecificAccountInfo = async (groupAccountNo: string) => {
+    try {
+      const response = await accountApi.fetchSpecificAccountInfo(groupAccountNo);
+      setAccount(response.data);
+    } catch (error) {
+      console.error("모임 통장 조회 에러", error);
+    }
+  };
+
+  const handleNext = () => {
+    navigate(`/meetingaccount/management/${groupId}`);
+  };
 
   return (
     <div className="min-h-screen h-full flex flex-col">

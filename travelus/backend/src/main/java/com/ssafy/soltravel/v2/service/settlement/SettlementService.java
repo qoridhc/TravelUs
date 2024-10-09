@@ -223,7 +223,7 @@ public class SettlementService {
         //TODO: 알림 보내기(for문 도시게)
 
         for (BillingHistoryDetail detail : details) {
-            notificationService.sendPersonalSettlementNotification(group, detail);
+            notificationService.sendPersonalSettlementNotification(group, detail, billingHistory.getId());
         }
 
         return "success";

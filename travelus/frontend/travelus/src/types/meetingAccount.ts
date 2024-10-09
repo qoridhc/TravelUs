@@ -11,6 +11,12 @@ export interface TravelboxInfo {
   currencyCode: string;
 }
 
+export interface TravelboxDeleteInfo {
+  accountPassword: string;
+  accountNo: string;
+  currencyCode: string;
+}
+
 export interface ExchangeTargetInfo {
   transactionBalance: number;
   targetRate: number;

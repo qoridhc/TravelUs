@@ -38,10 +38,13 @@ public class PushNotificationRequestDto {
     @Schema(description = "통화 코드", example = "KRW")
     private CurrencyType currencyType;
 
+    @Schema(description = "정산 ID", example = "98765")
+    private Long settlementId;
+
     // 정적 팩토리 메서드
     public static PushNotificationRequestDto createDto(
         Long userId, NotificationType notificationType, String title,
-        String message, String accountNo, Long groupId, CurrencyType currencyType) {
+        String message, String accountNo, Long groupId, CurrencyType currencyType, Long settlementId) {
         return PushNotificationRequestDto.builder()
             .targetUserId(userId)
             .notificationType(notificationType)
@@ -51,13 +54,21 @@ public class PushNotificationRequestDto {
             .accountNo(accountNo)
             .groupId(groupId)
             .currencyType(currencyType)
+            .settlementId(settlementId)
             .build();
     }
 
-    // currencyType 제외
+    // settlementId 및 currencyType 제외
     public static PushNotificationRequestDto createDto(
         Long userId, NotificationType notificationType, String title, String message, String accountNo, Long groupId) {
-        return createDto(userId, notificationType, title, message, accountNo, groupId, null);
+        return createDto(userId, notificationType, title, message, accountNo, groupId, null, null);
+    }
+
+    // currencyType만 제외하고 settlementId 포함
+    public static PushNotificationRequestDto createDto(
+        Long userId, NotificationType notificationType, String title, String message,
+        String accountNo, Long groupId, Long settlementId) {
+        return createDto(userId, notificationType, title, message, accountNo, groupId, null, settlementId);
     }
 
 }

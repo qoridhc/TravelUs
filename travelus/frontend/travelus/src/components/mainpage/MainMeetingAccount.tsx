@@ -85,12 +85,12 @@ const MainMeetingAccount = ({ index, account }: Props) => {
     <>
       {account && (
         <div className="w-full p-5 flex flex-col rounded-xl bg-white shadow-md">
-          <div className="flex flex-col space-y-6">
-            <div
-              className="flex flex-col space-y-4"
-              onClick={() => {
-                navigate(`/meetingaccount/${account.groupId}`);
-              }}>
+          <div
+            onClick={() => {
+              navigate(`/meetingaccount/${account.groupId}`);
+            }}
+            className="flex flex-col space-y-6">
+            <div className="flex flex-col space-y-4">
               <div className="flex items-center space-x-1">
                 <p className="font-semibold">모임통장</p>
                 <IoIosArrowForward className="text-[#565656]" />
@@ -118,21 +118,31 @@ const MainMeetingAccount = ({ index, account }: Props) => {
 
               <hr />
 
-              <div
-                className="flex justify-between"
-                onClick={() =>
-                  account?.moneyBoxDtoList?.[1] ? navigate(`/meetingaccount/${account.groupId}`) : handleCreate()
-                }>
-                <p className="text-sm">외화저금통</p>
-                {account?.moneyBoxDtoList?.[1] ? (
+              {account?.moneyBoxDtoList?.[1] ? (
+                <div
+                  className="flex justify-between"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/meetingaccount/${account.groupId}`);
+                  }}>
+                  <p className="text-sm">외화저금통</p>
+
                   <div className="flex space-x-1">
                     <p className="font-semibold">{formatCurrency(account.moneyBoxDtoList[1].balance)}</p>
                     <p>{account.moneyBoxDtoList[1].currencyCode}</p>
                   </div>
-                ) : (
+                </div>
+              ) : (
+                <div
+                  className="flex justify-between"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCreate();
+                  }}>
+                  <p className="text-sm">외화저금통</p>
                   <button className="font-semibold">개설하기</button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

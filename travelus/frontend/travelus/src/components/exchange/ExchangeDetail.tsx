@@ -14,9 +14,9 @@ import {
   ChartOptions,
   TimeScale,
 } from "chart.js";
-import { ChevronLeft } from "lucide-react";
+import { IoIosArrowBack } from "react-icons/io";
 import { exchangeApi } from "../../api/exchange";
-import { AllDetailedPredictions, PredictionCurrencyData, currencyTypeList } from "../../types/exchange";
+import { AllDetailedPredictions, currencyNames } from "../../types/exchange";
 import { setupChart } from "../../utils/chartSetup";
 import { forecastChartSetup } from "../../utils/forecastChartSetup";
 import { calculateDailyChange, formatExchangeRate } from "../../utils/currencyUtils";
@@ -88,6 +88,8 @@ const ExchangeDetail: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodKey>("1주");
   const [activeTab, setActiveTab] = useState<TabType>("exchange");
 
+  const currencyName = currencyNames[currencyCode] || "알 수 없는 통화";
+
   const getFilteredData = (data: typeof historicalData) => {
     const now = new Date();
     let startDate: Date;
@@ -140,11 +142,10 @@ const ExchangeDetail: React.FC = () => {
         <h2 className="mb-1">실시간 환율</h2>
         <div className="flex justify-between">
           <span className="font-semibold">
-            {exchangeData && formatExchangeRate(exchangeData.current_rate, currencyCode)}
+            {exchangeData && formatExchangeRate(exchangeData.current_rate, currencyCode)} 원
           </span>
           <span className={`${isIncreasing ? "text-[#DD5257]" : "text-[#4880EE]"}`}>
-            전일대비 {formatExchangeRate(Math.abs(dailyChange), currencyCode)}
-            {isIncreasing ? "▲" : "▼"}
+            전일대비 {formatExchangeRate(Math.abs(dailyChange), currencyCode)} 원{isIncreasing ? "▲" : "▼"}
           </span>
         </div>
       </div>
@@ -166,7 +167,8 @@ const ExchangeDetail: React.FC = () => {
               {formatExchangeRate(
                 filteredPredictionData.reduce((sum, data) => sum + data.rate, 0) / filteredPredictionData.length,
                 currencyCode
-              )}
+              )}{" "}
+              원
             </span>
             {/* <span
                 className={`${
@@ -265,11 +267,11 @@ const ExchangeDetail: React.FC = () => {
   return (
     <div className="container mx-auto max-w-md h-full p-5 pb-8 flex flex-col">
       <button onClick={() => navigate(-1)} className="flex items-center text-blue-600 mb-6">
-        <ChevronLeft className="w-5 h-5 mr-1" />
+        <IoIosArrowBack className="w-5 h-5 mr-1" />
       </button>
       <div className="flex items-center mb-4">
         <img src={flagImagePath} alt={`${currencyCode} Flag`} className="w-8 h-6 mr-2" />
-        <h1 className="text-2xl font-bold">{currencyCode}</h1>
+        <h1 className="text-2xl font-bold">{currencyName}</h1>
       </div>
       <hr className="mb-4" />
       <div className="mb-3 flex justify-center items-center bg-gray-200 rounded-full p-1">

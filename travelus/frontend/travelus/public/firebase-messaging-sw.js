@@ -41,9 +41,9 @@ self.addEventListener("notificationclick", function (event) {
   const accountNo = data?.accountNo;
   const groupId = data?.groupId;
   const currencyCode = data?.currencyCode;
+  const settlementId = data?.settlementId;
 
-
-  const urlToOpen = generateUrl(notificationType, accountNo, groupId, currencyCode);
+  const urlToOpen = generateUrl(notificationType, accountNo, groupId, currencyCode, settlementId);
 
   event.waitUntil(
     (async () => {
@@ -58,12 +58,10 @@ self.addEventListener("notificationclick", function (event) {
 
       let rootClient = allClients.find(client => client.url.includes("/") && 'focus' in client);
 
-
-
       if (rootClient) {
         try {
           // 페이지에 메시지를 보내서 URL로 이동시키도록 요청
-          rootClient.postMessage({ action: 'navigate', url: urlToOpen });
+          // rootClient.postMessage({ action: 'navigate', url: urlToOpen });
           return rootClient.focus(); // 포커스는 그대로
         } catch (e) {
           console.log("포커스할 수 없습니다: ", e);
@@ -76,7 +74,7 @@ self.addEventListener("notificationclick", function (event) {
 });
 
 // URL 생성 헬퍼 함수
-const generateUrl = (type, accountNo, groupId, currencyCode) => {
+const generateUrl = (type, accountNo, groupId, currencyCode, settlementId) => {
   if (!accountNo) {
     console.log("Error : 계좌 정보가 없습니다.");
     return "/";
@@ -89,13 +87,8 @@ const generateUrl = (type, accountNo, groupId, currencyCode) => {
       return `${baseUrl}/meetingtransaction/${accountNo}}/notification`;
     case "E":
       return `${baseUrl}/travelbox/transaction/${accountNo}/notification?groupId=${groupId}&currencyCode=${currencyCode}`;
-
-    // return `${baseUrl}/travelbox/transaction/${accountNo}?groupId=${groupId}&currencyCode=${currencyCode}/notification`;
-
-    // 정산 추후 추가
-    // case "S":
-    //   return `${baseUrl}/travelbox/transaction/${accountNo}?groupId=${groupId}`;
-
+    case "S":
+      return `${baseUrl}/settlement/expenditure/group/detail/${settlementId}/NOT_COMPLETED`;
     default:
       return "/";
   }

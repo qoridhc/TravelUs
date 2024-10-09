@@ -162,9 +162,9 @@ public class AccountService {
         Account account = accountRepository.findByAccountNo(requestDto.getAccountNo())
             .orElseThrow(() -> new InvalidAccountNoException(requestDto.getAccountNo()));
 
-        if (!account.getAccountPassword().equals(requestDto.getAccountPassword())) {
-            throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
-        }
+        if (!passwordEncoder.matches(requestDto.getAccountPassword(), account.getAccountPassword())) {
+      throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
+    }
 
         if (!account.getAccountType().equals(AccountType.G)) {
             throw new InvalidGroupAccountIdException();
