@@ -115,6 +115,9 @@ function App() {
                       {/* 가계부 */}
                       <Route path="/accountbookdetail" element={<AccountBookDetail />} />
 
+                      {/* 전체 환율 */}
+                      <Route path="/exchangerate" element={<ExchangeRate />} />
+
                       {/* Add other protected routes here */}
                     </Route>
                   </Routes>
@@ -215,7 +218,7 @@ function App() {
           {/* <Route path="/selectaccount/:userId" element={<SelectAccount />}></Route> */}
 
           {/* 환율 */}
-          <Route path="/exchangerate" element={<ExchangeRate />} />
+
           <Route path="/exchangerate/:currencyCode" element={<ExchangeDetail />} />
           <Route path="/exchangerate/forecast-detail" element={<ExchangeRateForecastDetail />} />
 

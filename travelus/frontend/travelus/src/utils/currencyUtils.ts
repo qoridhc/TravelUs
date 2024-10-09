@@ -33,10 +33,16 @@ export const calculateDailyChange = (todayRate: number, yesterdayRate: number): 
 }
 
 export const formatExchangeRate = (rate: number, currencyCode: string): string => {
-  return new Intl.NumberFormat('ko-KR', {
-    style: 'currency',
-    currency: currencyCode,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(rate);
+  let formattedRate: number;
+  
+  if (currencyCode === 'JPY') {
+    formattedRate = rate * 100;
+    return formattedRate.toFixed(2);
+  } else if (currencyCode === 'KRW') {
+    formattedRate = rate;
+    return formattedRate.toFixed(0);
+  } else {
+    formattedRate = rate;
+    return formattedRate.toFixed(2);
+  }
 }

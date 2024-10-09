@@ -33,9 +33,6 @@ export const setupChart = (currencyCode: string, formatExchangeRate: (value: num
         type: 'time',
         time: {
           unit: 'month',
-          displayFormats: {
-            month: 'M월'
-          },
         },
         adapters: {
           date: {
@@ -43,8 +40,7 @@ export const setupChart = (currencyCode: string, formatExchangeRate: (value: num
           },
         },
         ticks: {
-          autoSkip: true,
-          maxTicksLimit: 6,
+          display: false,
         },
         grid: {
           display: false,
