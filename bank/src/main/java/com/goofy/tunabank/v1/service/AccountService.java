@@ -219,6 +219,7 @@ public class AccountService {
                 requestDto.getHeader()
             );
 
+            dto.setAccountPassword(requestDto.getAccountPassword());
             transactionService.processMoneyBoxTransfer(dto, false);
         }
 
