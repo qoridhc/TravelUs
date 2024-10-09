@@ -131,7 +131,7 @@ const DeleteTravelBox = () => {
             className={`w-full h-14 text-lg rounded-xl tracking-wide font-semibold ${
               isvalid ? "text-[#DD1F36] bg-[#FFE4E5]" : "text-[#565656] bg-[#E3E4E4]"
             }`}
-            // disabled={!isvalid}
+            disabled={!isvalid}
           >
             {
               isvalid ? "해지하기" : "해지 불가"

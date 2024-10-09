@@ -127,7 +127,7 @@ const MeetingAccountExchange: React.FC = () => {
 
   const handleForeignChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/[^0-9.]/g, "");
-    const value = rawValue.includes(".") ? rawValue : Number(rawValue).toLocaleString();
+    const value = Number(rawValue).toLocaleString();
     setForeignAmount(value);
 
     if (rawValue && getForeignCurrency()) {
@@ -170,6 +170,7 @@ const MeetingAccountExchange: React.FC = () => {
     const rateInfo = exchangeRates.find((rate) => rate.currencyCode === foreignCurrency.currencyCode);
 
     if (rateInfo && parseFloat(foreignAmount) < parseFloat(rateInfo.exchangeMin)) {
+      console.log(parseFloat(foreignAmount));
       alert(`최소 환전 금액은 ${formatCurrency(Number(rateInfo.exchangeMin))} ${foreignCurrency.currencyCode}입니다.`);
       return;
     }
@@ -362,7 +363,7 @@ const MeetingAccountExchange: React.FC = () => {
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-[#1429A0]"
           }`}
-          onClick={handleConfirm}
+          onClick={() => handleConfirm()}
           disabled={noAccount || !selectedAccount || !getForeignCurrency() || !krwAmount || parseFloat(krwAmount) <= 0}>
           외화 채우기
         </button>

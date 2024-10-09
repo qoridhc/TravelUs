@@ -14,4 +14,5 @@ export interface NotificationListInfo {
   accountNo: string;
   createdAt: string;
   read: boolean;
+  settlementId?: string;
 }
