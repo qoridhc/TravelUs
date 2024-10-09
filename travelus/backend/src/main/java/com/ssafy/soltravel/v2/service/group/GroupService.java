@@ -136,6 +136,12 @@ public class GroupService {
         return dto;
     }
 
+    public GroupDto getGroupByAccountNo(String accountNo){
+
+        TravelGroup group=groupRepository.findByGroupAccountNo(accountNo);
+        return groupMapper.toDto(group);
+    }
+
     public ResponseDto updateGroupInfo(Long groupId, GroupUpdateRequestDto requestDto) {
 
         TravelGroup group = groupRepository.findById(groupId).orElseThrow(InvalidGroupIdException::new);

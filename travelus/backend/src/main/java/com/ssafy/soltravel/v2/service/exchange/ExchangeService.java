@@ -148,7 +148,6 @@ public class ExchangeService {
   @Transactional
   public void updateTargetRate(TargetRateUpdateRequestDto requestDto) {
 
-    //TODO: 삭제
     long groupId = requestDto.getGroupId();
     TargetRate targetRate = targetRateRepository.findByGroupId(groupId)
         .orElseThrow(() -> new TargetRateNotFoundException(groupId));

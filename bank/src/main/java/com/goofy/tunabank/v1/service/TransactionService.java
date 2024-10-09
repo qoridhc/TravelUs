@@ -115,7 +115,7 @@ public class TransactionService {
     validateUserAccess(user, moneyBox);
 
     //비밀번호 검증
-    validatePassword(requestDto.getAccountPassword(), accountNo,false);
+    validatePassword(requestDto.getAccountPassword(), accountNo, false);
 
     TransactionType transactionType = requestDto.getTransactionType();
     double amount = requestDto.getTransactionBalance();
@@ -151,7 +151,7 @@ public class TransactionService {
     validateUserAccess(user, withdrawalBox);
 
     //비밀번호 검증
-    validatePassword(requestDto.getAccountPassword(), requestDto.getWithdrawalAccountNo(),false);
+    validatePassword(requestDto.getAccountPassword(), requestDto.getWithdrawalAccountNo(), false);
 
     // 입금 머니박스
     MoneyBox depositBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getDepositAccountNo(), CurrencyType.KRW);
@@ -163,17 +163,6 @@ public class TransactionService {
         .transmissionDateTime(requestDto.getHeader().getTransmissionDateTime()).build();
 
     List<TransactionResponseDto> responseDtos = processTransferLogic(transferDetailDto);
-
-    /**
-     * 1. 입금 머니박스와 연결된 계좌의 accountType을 가져오면 -> 일반인지 그룹인지 알겠지
-     * 2. 일반이다? 그냥 여기서 끝내면 됨
-     * 3. 그룹이면 어떤 환전타입인지 가져와
-     *  1) 환전타입(자동환전, 입금시마다환전, 그냥 입금)
-     *    2) 자동환전인경우- 입금한 상태로 끝내면 됨
-     *    3) 임금시마다환전- 환전 호출
-     *    4) 그냥 끝내면됨
-     */
-
     return responseDtos;
   }
 
@@ -183,7 +172,7 @@ public class TransactionService {
   public List<TransactionResponseDto> processAutoExchange(TransferMBRequestDto requestDto) {
 
     requestDto.setAccountPassword(getPassword(requestDto.getAccountNo()));
-    return processMoneyBoxTransfer(requestDto,true);
+    return processMoneyBoxTransfer(requestDto, true);
   }
 
   /**
@@ -200,7 +189,7 @@ public class TransactionService {
    * 머니박스 이체(환전)
    */
   @Transactional
-  public List<TransactionResponseDto> processMoneyBoxTransfer(TransferMBRequestDto requestDto,boolean isAuto) {
+  public List<TransactionResponseDto> processMoneyBoxTransfer(TransferMBRequestDto requestDto, boolean isAuto) {
 
     double beforeAmount = requestDto.getTransactionBalance();//해당 머니박스의 통화단위임
     String summary = (requestDto.getSourceCurrencyCode() == CurrencyType.KRW) ? "환전" : "재환전";
@@ -245,7 +234,7 @@ public class TransactionService {
     validateUserAccess(user, withdrawalBox);
 
     //비밀번호 검증
-    validatePassword(requestDto.getAccountPassword(), requestDto.getAccountNo(),isAuto);
+    validatePassword(requestDto.getAccountPassword(), requestDto.getAccountNo(), isAuto);
 
     // 입금 머니박스
     MoneyBox depositBox = findMoneyBoxByAccountAndCurrencyCode(requestDto.getAccountNo(), requestDto.getTargetCurrencyCode());
@@ -309,7 +298,6 @@ public class TransactionService {
     Page<AbstractHistory> transactionHistories = transactionHistoryRepository.findHistoryByAccountNo(requestDto,
             pageable) // pageable이 null일 경우 전체 데이터를 조회
         .orElseThrow(TransactionHistoryNotFoundException::new);
-
 
     return transactionHistories.map(history -> {
 
@@ -400,8 +388,7 @@ public class TransactionService {
   public boolean validatePassword(String password, String accountNo, boolean isAuto) {
 
     String accountPassword = getPassword(accountNo);
-    LogUtil.info("password:", password);
-    LogUtil.info("accountPassword:", accountPassword);
+
     if (!isAuto && !passwordEncoder.matches(password, accountPassword)) {
       throw new InvalidAccountPasswordException(password);
     } else if (isAuto && !password.equals(accountPassword)) {
