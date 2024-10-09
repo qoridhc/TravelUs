@@ -7,6 +7,9 @@ export const registerServiceWorker = async () => {
   try {
     const registration = await navigator.serviceWorker.register("firebase-messaging-sw.js");
     console.log("Service Worker 등록 성공:", registration);
+
+    // initializeFcmAndRegisterToken();
+
   } catch (error) {
     console.error("Service Worker 등록 실패:", error);
   }
@@ -33,8 +36,6 @@ export const fetchAndStoreFcmToken = async () => {
       return null;
     }
 
-    // console.log("FCM Token:", currentToken);
-
     // FCM 토큰을 서버에 저장
     await notificationApi.fetchFcmToken(currentToken);
 
@@ -50,9 +51,9 @@ export const initializeFcmAndRegisterToken = async () => {
   try {
     const permissionGranted = await requestPermission();
     if (permissionGranted) {
-      await fetchAndStoreFcmToken();
+      const token = await fetchAndStoreFcmToken();
 
-      console.log("토큰 저장 성공");
+      console.log("토큰 저장 성공 : ", token);
 
 
     } else {
