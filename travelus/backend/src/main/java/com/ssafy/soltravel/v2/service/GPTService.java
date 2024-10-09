@@ -40,6 +40,7 @@ public class GPTService {
         + "      }\n"
         + "   ]\n"
         + "}\n"
+        + "and Please exclude any symbols other than numbers and periods (.) in the price, quantity, and paid fields."
     );
 
     ICBasePrompt.put("role", "system");
