@@ -1,17 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { format, parseISO } from "date-fns";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { accountBookApi } from "../../api/accountBook";
+import { DayHistoryDetail } from "../../types/accountBook";
+import Lottie from "lottie-react";
+import loadingAnimation from "../../lottie/loadingAnimation.json";
 
 interface Props {
   accountNo: string;
   isModalOpen: boolean;
   setIsModalOpen: (isModalOpen: boolean) => void;
-  selectedDate: Date | null;
+  selectedDate: string;
 }
 
 const AccountBookDetailModal = ({ accountNo, isModalOpen, setIsModalOpen, selectedDate }: Props) => {
-  const dayHistoryDetail = useSelector((state: RootState) => state.accountBook.dayHistoryDetail);
+  const [dayHistoryDetail, setDayHistoryDetail] = useState<DayHistoryDetail[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchDateDetailInfo = async () => {
+    console.log(accountNo, " ", selectedDate);
+    if (accountNo === "" || selectedDate === "") return;
+
+    try {
+      setIsLoading(true);
+      const response = await accountBookApi.fetchAccountBookDayInfo(accountNo, selectedDate, "A");
+      console.log(response);
+      setDayHistoryDetail(response.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleModalToggle = () => {
     setIsModalOpen(!isModalOpen);
@@ -23,16 +42,29 @@ const AccountBookDetailModal = ({ accountNo, isModalOpen, setIsModalOpen, select
     }
   };
 
+  useEffect(() => {
+    fetchDateDetailInfo();
+  }, [selectedDate]);
+
   // 수입과 지출 합계 계산
-  const totalIncome = dayHistoryDetail
-    .filter((item) => item.transactionType === "G" || item.transactionType === "1")
-    .reduce((sum, item) => sum + parseFloat(item.amount), 0);
+  // const totalIncome = dayHistoryDetail
+  //   .filter((item) => item.transactionType === "G" || item.transactionType === "1")
+  //   .reduce((sum, item) => sum + parseFloat(item.amount), 0);
 
-  const totalExpenditure = dayHistoryDetail
-    .filter((item) => item.transactionType === "P")
-    .reduce((sum, item) => sum + parseFloat(item.amount), 0);
+  // const totalExpenditure = dayHistoryDetail
+  //   .filter((item) => item.transactionType === "P")
+  //   .reduce((sum, item) => sum + parseFloat(item.amount), 0);
 
-  console.log(dayHistoryDetail);
+  if (accountNo === "" || selectedDate === "") return <></>;
+
+  if (isLoading || !dayHistoryDetail) {
+    return (
+      <div className="h-full flex flex-col justify-center items-center">
+        <Lottie animationData={loadingAnimation} />
+      </div>
+    );
+  }
+
   return (
     <>
       <input type="checkbox" id="detail-modal" className="modal-toggle" checked={isModalOpen} readOnly />
@@ -46,8 +78,8 @@ const AccountBookDetailModal = ({ accountNo, isModalOpen, setIsModalOpen, select
               <div className="flex justify-between">
                 <p className="text-sm text-zinc-700">총 {dayHistoryDetail.length}건</p>
                 <div className="flex space-x-2">
-                  <p className="text-green-600">+ {totalIncome.toLocaleString()} USD</p>
-                  <p className="text-[#df4646]">- {totalExpenditure.toLocaleString()} USD</p>
+                  <p className="text-green-600">+ 123 USD</p>
+                  <p className="text-[#df4646]">- 123 USD</p>
                 </div>
               </div>
               <hr className="border border-zinc-400" />
@@ -55,7 +87,7 @@ const AccountBookDetailModal = ({ accountNo, isModalOpen, setIsModalOpen, select
                 <div key={index} className="flex flex-col space-y-4">
                   <div className="flex justify-between items-center">
                     <div className="flex flex-col justify-center">
-                      {item.transactionType === "1" ? (
+                      {item.store === "" ? (
                         <p className="font-bold">모임통장 이체</p>
                       ) : (
                         <p className="font-bold">{item.store}</p>
@@ -63,9 +95,9 @@ const AccountBookDetailModal = ({ accountNo, isModalOpen, setIsModalOpen, select
                       <p className="text-sm">{format(parseISO(item.transactionAt), "HH:mm:ss")}</p>
                     </div>
                     <p className="text-lg font-bold flex justify-end">
-                      {item.transactionType === "P"
-                        ? `- ${parseFloat(item.amount).toLocaleString()}`
-                        : `+ ${parseFloat(item.amount).toLocaleString()}`}{" "}
+                      {item.store === ""
+                        ? `- ${parseFloat(String(item.paid)).toLocaleString()}`
+                        : `+ ${parseFloat(String(item.paid)).toLocaleString()}`}
                       USD
                     </p>
                   </div>

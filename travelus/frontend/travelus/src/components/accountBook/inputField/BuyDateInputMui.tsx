@@ -7,7 +7,7 @@ interface Props {
   setSelectCurrency: (currency: string) => void;
 }
 
-const BuyDateInputMui = ({ currency, selectCurrency, setSelectCurrency }: Props) => {
+const BuyCurrency = ({ currency, selectCurrency, setSelectCurrency }: Props) => {
   return (
     <FormControl
       variant="standard"
@@ -67,4 +67,4 @@ const BuyDateInputMui = ({ currency, selectCurrency, setSelectCurrency }: Props)
   );
 };
 
-export default BuyDateInputMui;
+export default BuyCurrency;

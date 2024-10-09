@@ -14,27 +14,22 @@ interface DropdownInputProps {
 const DropdownInput: React.FC<DropdownInputProps> = ({ meetingAccountList, accountNo, setAccountNo }) => {
   return (
     <FormControl
-      variant="filled"
+      variant="standard"
       sx={{
         width: "100%",
-        "& .MuiInputBase-root": {
-          backgroundColor: "#e6e6e6",
-          border: "1px solid #9E9E9E",
-          borderRadius: "10px",
-        },
-        "& .MuiInputBase-input": {
-          fontSize: "16px",
-          fontWeight: 700,
-        },
         "& .MuiInputLabel-root": {
           color: "#565656",
-          fontSize: "16px",
+          fontSize: "18px",
         },
-        "& .MuiFilledInput-underline:before, & .MuiFilledInput-underline:after": {
-          display: "none",
+        "& .MuiInputLabel-shrink": {
+          fontSize: "20px",
+        },
+        "& .MuiInputBase-input": {
+          padding: "10px 0",
+          fontSize: "18px",
         },
       }}>
-      <InputLabel id="demo-simple-select-filled-label">모임통장을 선택해주세요</InputLabel>
+      <InputLabel id="demo-simple-select-filled-label">모임 선택</InputLabel>
       <Select
         labelId="demo-simple-select-filled-label"
         id="demo-simple-select-filled"
@@ -50,7 +45,7 @@ const DropdownInput: React.FC<DropdownInputProps> = ({ meetingAccountList, accou
         }}>
         {meetingAccountList.map((account, index) => (
           <MenuItem value={account.groupAccountNo} key={index}>
-            {account.groupName} ({account.groupAccountNo})
+            {account.groupName}
           </MenuItem>
         ))}
       </Select>

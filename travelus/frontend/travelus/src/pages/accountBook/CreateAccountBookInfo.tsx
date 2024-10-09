@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { accountBookApi } from "../../api/accountBook";
 import { BuyItemInfo } from "../../types/accountBook";
+import { IoIosArrowBack } from "react-icons/io";
+import { accountApi } from "../../api/account";
+import { useNavigate, useParams } from "react-router";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../lottie/loadingAnimation.json";
 import idcardLoadingAnimation from "../../lottie/idcardLoadingAnimation.json";
@@ -11,10 +14,7 @@ import BuyItemPriceInputMui from "../../components/accountBook/inputField/BuyIte
 import BuyItemQuantityInputMui from "../../components/accountBook/inputField/BuyItemQuantityInputMui";
 import BuyItemTable from "../../components/accountBook/BuyItemTable";
 import DateInputMui from "../../components/accountBook/inputField/DateInputMui";
-import BuyDateInputMui from "../../components/accountBook/inputField/BuyDateInputMui";
-import { IoIosArrowBack } from "react-icons/io";
-import { accountApi } from "../../api/account";
-import { useNavigate, useParams } from "react-router";
+import BuyCurrency from "../../components/accountBook/inputField/BuyDateInputMui";
 
 const CreateAccountBookInfo = () => {
   const navigate = useNavigate();
@@ -223,7 +223,7 @@ const CreateAccountBookInfo = () => {
           ) : (
             <>
               <div className="flex flex-col space-y-3">
-                <BuyDateInputMui
+                <BuyCurrency
                   currency={currency}
                   selectCurrency={selectCurrency}
                   setSelectCurrency={setSelectCurrency}

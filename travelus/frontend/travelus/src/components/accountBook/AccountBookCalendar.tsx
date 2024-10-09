@@ -20,12 +20,21 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
   const [firstDate, setFirstDate] = useState<Date | null>(null);
   const [lastDate, setLastDate] = useState<Date | null>(null);
   const [monthlyTransaction, setMonthlyTransaction] = useState<DayHistory[]>([]);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleActiveStartDateChange = (activeStartDate: Date) => {
     const firstDay = startOfMonth(activeStartDate);
     const lastDay = endOfMonth(activeStartDate);
     setFirstDate(firstDay);
     setLastDate(lastDay);
+  };
+
+  const handleDateDetail = (date: Date) => {
+    if (accountNo === "") return;
+
+    setIsModalOpen(true);
+    setSelectedDate(format(date, "yyyyMMdd"));
   };
 
   const fetchAccountBookInfo = async () => {
@@ -63,7 +72,7 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
     fetchAccountBookInfo();
   }, [accountNo]);
 
-  if (isLoading || !monthlyTransaction) {
+  if ((accountNo !== "" && isLoading) || !monthlyTransaction) {
     return (
       <div className="h-full flex flex-col justify-center items-center">
         <Lottie animationData={loadingAnimation} />
@@ -84,6 +93,7 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
         onActiveStartDateChange={({ activeStartDate }) =>
           activeStartDate && handleActiveStartDateChange(activeStartDate)
         }
+        onClickDay={handleDateDetail}
         tileContent={({ date }) => {
           if (!monthlyTransaction[date.getDate()]) return;
           const day = date.getDate();
@@ -104,20 +114,22 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
         }}
       />
 
-      <button
-        className="btn px-5 py-2 text-center text-[#EEF4FC] text-md font-semibold bg-[#5FA0F4] rounded-xl"
-        onClick={() => navigate(`/accountBook/create/info/${accountNo}`)}>
-        추가
-      </button>
-
-      {/* 
+      {accountNo === "" ? (
+        <></>
+      ) : (
+        <button
+          className="px-5 py-2 text-center text-white bg-[#1429A0] rounded-lg tracking-wider"
+          onClick={() => navigate(`/accountBook/create/info/${accountNo}`)}>
+          내역 추가하기
+        </button>
+      )}
 
       <AccountBookDetailModal
         accountNo={accountNo}
-        isModalOpen={isDetailModalOpen}
-        setIsModalOpen={setIsDetailModalOpen}
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
         selectedDate={selectedDate}
-      /> */}
+      />
     </div>
   );
 };

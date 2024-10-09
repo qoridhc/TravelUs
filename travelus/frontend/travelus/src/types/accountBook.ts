@@ -18,11 +18,14 @@ export interface DayHistory {
 }
 
 export interface DayHistoryDetail {
-  amount: string;
-  transactionType: string;
-  transactionAt: string;
-  balance: string;
   store: string;
+  payeeName: string;
+  address: string;
+  transactionSummary: string;
+  paid: number;
+  currency: string;
+  transactionAt: string;
+  items: BuyItemInfo[];
 }
 
 export interface DayHistoryCreateInfo {
