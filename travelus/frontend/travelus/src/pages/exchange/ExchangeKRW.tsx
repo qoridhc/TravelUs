@@ -292,7 +292,7 @@ const MeetingAccountExchange: React.FC = () => {
               )}
             </div>
 
-            {getForeignCurrency() && (
+            {/* {getForeignCurrency() && (
               <p className="text-sm text-right text-[#565656]">
                 최소 환전 금액&nbsp;
                 {formatCurrency(
@@ -302,7 +302,7 @@ const MeetingAccountExchange: React.FC = () => {
                 )}
                 {getForeignCurrency()!.currencyCode}
               </p>
-            )}
+            )} */}
           </div>
         </div>
       </div>

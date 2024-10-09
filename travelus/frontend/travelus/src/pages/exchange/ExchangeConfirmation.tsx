@@ -51,8 +51,6 @@ const AccountPasswordInput = () => {
       transactionBalance: stateData.transactionBalance,
     };
 
-    console.log(exchangeRequest);
-
     try {
       const response: ExchangeResponse[] = await exchangeRateApi.requestExchange(exchangeRequest);
 
