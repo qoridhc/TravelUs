@@ -2,7 +2,7 @@
 import api from "../lib/axios";
 import { AccountInfo, MeetingAccountInfo, AccountParticipants, GeneralAccountCreate, MeetingAccountCreate, MeetingAccountUpdateInfo, AccountPassword } from "../types/account";
 import { AccountHistoryRequest } from "../types/accountHistory";
-import { NewParticipant, TravelboxInfo } from "../types/meetingAccount";
+import { NewParticipant, TravelboxInfo, TravelboxDeleteInfo } from "../types/meetingAccount";
 
 export const accountApi = {
   // 일반 계좌 정보 가져오기
@@ -95,6 +95,17 @@ export const accountApi = {
   // 외화저금통 개설
   fetchCreateTravelBox: (data: TravelboxInfo) => {
     return api.post(`/accounts/addMoneyBox`, data)
+  },
+
+  // 외화저금통 해지
+  fetchDeleteTravelBox: (accountPassword: string, accountNo: string, currencyCode: string) => {
+    return api.delete(`/accounts/moneyBox`, {
+      data: {
+        accountPassword: accountPassword,
+        accountNo: accountNo,
+        currencyCode: currencyCode
+      }
+    })
   },
 
   // 계좌 비밀번호 검증
