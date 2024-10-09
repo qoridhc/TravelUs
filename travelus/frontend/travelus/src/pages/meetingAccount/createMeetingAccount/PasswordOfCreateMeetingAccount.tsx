@@ -13,10 +13,9 @@ const PasswordOfCreateMeetingAccount = () => {
   const params = useParams();
 
   const [password, setPassword] = useState("");
-  const [isTravelboxCreated, setIsTravelboxCreated] = useState(false);
-  const [isTargetRateCreated, setIsTargetRateCreated] = useState(false);
   const travelboxInfo = useSelector((state: RootState) => state.meetingAccount.travelboxInfo);
   const exchangeTargetInfo = useSelector((state: RootState) => state.meetingAccount.exchangeTargetInfo);
+  const groupId = useSelector((state: RootState) => state.meetingAccount.meetingAccounInfo);
 
   const createTravelbox = async () => {
     const travelboxData = {
@@ -27,7 +26,9 @@ const PasswordOfCreateMeetingAccount = () => {
     try {
       const response = await accountApi.fetchCreateTravelBox(travelboxData);
       if (response.status === 201) {
-        setIsTravelboxCreated(true);
+        navigate("/meeting/create/completed/travelbox", {
+          state: { currencyCode: travelboxInfo.currencyCode, accountNo: travelboxInfo.accountNo },
+        });
       }
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -48,11 +49,14 @@ const PasswordOfCreateMeetingAccount = () => {
       currencyCode: travelboxInfo.currencyCode,
       transactionBalance: exchangeTargetInfo.transactionBalance,
       targetRate: exchangeTargetInfo.targetRate,
+      groupId: Number(groupId),
+      dueDate: "2024-10-11",
     };
+    console.log(targetRate);
     try {
       const response = await exchangeRateApi.postExchangeTargetRate(targetRate);
       if (response.status === 200) {
-        setIsTargetRateCreated(true);
+        navigate("/meeting/create/completed/travelbox");
       }
     } catch (error) {
       console.log("exchangeRateApi의 postExchangeTargetRate : ", error);
@@ -63,18 +67,13 @@ const PasswordOfCreateMeetingAccount = () => {
     if (password.length === 4) {
       if (params.type === "travelbox") {
         createTravelbox();
+      } else if (params.type === "exchangeSetting") {
         createTargetRate();
       } else {
         navigate("/meeting/create/password/check", { state: { originalPassword: password, type: params.type } });
       }
     }
   }, [password]);
-
-  useEffect(() => {
-    if (isTravelboxCreated && isTargetRateCreated) {
-      navigate("/meeting/create/completed/travelbox");
-    }
-  }, [isTravelboxCreated, isTargetRateCreated]);
 
   return (
     <div className="h-full grid grid-rows-[2fr_1fr]">

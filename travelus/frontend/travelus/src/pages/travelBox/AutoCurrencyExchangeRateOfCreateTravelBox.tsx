@@ -4,23 +4,22 @@ import { useLocation, useNavigate } from "react-router";
 import ExchangeRateInputMui from "../../components/travelBox/ExchangeRateInputMui";
 import ExchangeAmmountInput from "../../components/travelBox/ExchangeAmmountInput";
 import { useDispatch, useSelector } from "react-redux";
-import { setExchangeTargetRate, setTravelboxInfo } from "../../redux/meetingAccountSlice";
+import { setExchangeTargetRate } from "../../redux/meetingAccountSlice";
 import { RootState } from "../../redux/store";
 import ForecastWarningDrawer from "../../components/exchange/ExchangeRateForecastWarning";
+import ExchangeRateForecast from "../exchange/ExchangeRateForecast";
 
-const AutoCurrencyExchangeOfCreateTravelBox = () => {
+const AutoCurrencyExchangeRateOfCreateTravelBox = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
   const [exchangeRate, setExchangeRate] = useState(0);
   const [exchangeRateFront, setExchangeRateFront] = useState(0);
   const [exchangeRateBack, setExchangeRateBack] = useState(0);
-  const [exchangeAmount, setExchangeAmount] = useState(0);
-  const travelboxInfo = useSelector((state: RootState) => state.meetingAccount.travelboxInfo);
 
   const handleNext = () => {
-    dispatch(setExchangeTargetRate({ transactionBalance: exchangeAmount, targetRate: exchangeRate }));
-    navigate("/meeting/create/password/travelbox");
+    dispatch(setExchangeTargetRate({ transactionBalance: 0, targetRate: exchangeRate }));
+    navigate("/travelbox/create/auto/exchange/amount");
   };
 
   useEffect(() => {
@@ -28,17 +27,17 @@ const AutoCurrencyExchangeOfCreateTravelBox = () => {
   }, [exchangeRateFront, exchangeRateBack]);
 
   return (
-    <div className="h-full p-5 pb-8 flex flex-col justify-between relative">
-      <div className="grid gap-14">
-        <div className="flex items-center">
+    <div className="h-full">
+      <div>
+        <div className="p-5 bg-white flex items-center sticky top-0">
           <IoIosArrowBack onClick={() => navigate(-1)} className="text-2xl" />
         </div>
 
-        <div className="grid gap-10">
+        <div className="p-5 pb-32 grid gap-10 overflow-y-auto">
           <div className="grid gap-3">
             <div className="flex space-x-2">
-              <p className="text-[#0471E9] font-semibold">02</p>
-              <p className="font-medium">외화저금통 개설</p>
+              <p className="text-[#0471E9] font-semibold">01</p>
+              <p className="font-medium">희망 환율 설정</p>
             </div>
 
             <div className="text-2xl font-semibold">
@@ -54,17 +53,20 @@ const AutoCurrencyExchangeOfCreateTravelBox = () => {
             exchangeRateBack={exchangeRateBack}
             setExchangeRateBack={setExchangeRateBack}
           />
-          <ExchangeAmmountInput exchangeAmount={exchangeAmount} setExchangeAmount={setExchangeAmount} />
+          <ExchangeRateForecast setExchangeRateFront={setExchangeRateFront} setExchangeRateBack={setExchangeRateBack} />
+          {/* <ExchangeAmmountInput exchangeAmount={exchangeAmount} setExchangeAmount={setExchangeAmount} /> */}
         </div>
       </div>
 
-      <button
-        className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
-        onClick={() => handleNext()}>
-        다음
-      </button>
+      <div className="w-full p-5 pb-8 bg-white fixed bottom-0 z-50">
+        <button
+          className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
+          onClick={() => handleNext()}>
+          다음
+        </button>
+      </div>
     </div>
   );
 };
 
-export default AutoCurrencyExchangeOfCreateTravelBox;
+export default AutoCurrencyExchangeRateOfCreateTravelBox;
