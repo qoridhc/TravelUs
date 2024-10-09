@@ -72,7 +72,7 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
                 <div
                   onClick={() => handleSelectType(index)}
                   className={`w-full p-4 py-6 rounded-lg bg-[#eef4ff] flex flex-col transition-all duration-300 ease-in-out ${
-                    type === 1 ? "border-2 border-[#1429A0] shadow-lg" : "border-2 border-transparent"
+                    type === index ? "border-2 border-[#1429A0] shadow-lg" : "border-2 border-transparent"
                   }`}>
                   <div className="flex justify-between items-center">
                     <div className="space-y-1">
