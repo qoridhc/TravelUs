@@ -107,7 +107,6 @@ const MeetingAccountExchange: React.FC = () => {
     // 실제로 계산 되는 값
     const adjustedValue = Math.floor(parseInt(rawValue) / 10) * 10;
     setAdjustedKrwAmount(adjustedValue.toLocaleString());
-    console.log(adjustedValue);
 
     if (rawValue && getForeignCurrency()) {
       const foreignCurrency = getForeignCurrency()!;
@@ -141,10 +140,15 @@ const MeetingAccountExchange: React.FC = () => {
         } else {
           calculatedKRW = parseFloat(rawValue) * rateInfo.exchangeRate;
         }
-        setKrwAmount(Math.round(calculatedKRW).toLocaleString());
+        // 원화 금액을 10원 단위로 내림
+        const adjustedKRW = Math.floor(calculatedKRW / 10) * 10;
+
+        setKrwAmount(adjustedKRW.toLocaleString());
+        setAdjustedKrwAmount(adjustedKRW.toLocaleString());
       }
     } else {
       setKrwAmount("");
+      setAdjustedKrwAmount("");
     }
   };
 
@@ -171,7 +175,6 @@ const MeetingAccountExchange: React.FC = () => {
     }
 
     const cleanedKrwAmount = adjustedKrwAmount.replace(/,/g, "");
-    console.log(cleanedKrwAmount);
 
     navigate("/exchange/account-password-input", {
       state: {
