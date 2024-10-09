@@ -139,13 +139,15 @@ const MeetingAccountExchange: React.FC = () => {
     if (!selectedAccount || !getForeignCurrency() || !krwAmount) return;
 
     const foreignCurrency = getForeignCurrency()!;
+    console.log(foreignCurrency);
+    const cleanedForeignAmount = foreignAmount.replace(/,/g, "");
 
     navigate("/exchange/account-password-input", {
       state: {
         accountNo: selectedAccount.groupAccountNo,
         sourceCurrencyCode: foreignCurrency.currencyCode,
         targetCurrencyCode: "KRW",
-        transactionBalance: foreignAmount,
+        transactionBalance: cleanedForeignAmount,
       },
     });
   };

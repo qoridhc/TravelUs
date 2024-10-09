@@ -167,14 +167,23 @@ const MeetingAccountExchange: React.FC = () => {
     if (!selectedAccount || !getForeignCurrency() || !krwAmount) return;
 
     const foreignCurrency = getForeignCurrency()!;
+    console.log(foreignCurrency);
     const rateInfo = exchangeRates.find((rate) => rate.currencyCode === foreignCurrency.currencyCode);
 
-    if (rateInfo && parseFloat(foreignAmount) < parseFloat(rateInfo.exchangeMin)) {
+    if (rateInfo && Number(foreignAmount) < Number(rateInfo.exchangeMin)) {
       alert(`최소 환전 금액은 ${formatCurrency(Number(rateInfo.exchangeMin))} ${foreignCurrency.currencyCode}입니다.`);
       return;
     }
 
     const cleanedKrwAmount = adjustedKrwAmount.replace(/,/g, "");
+
+    const numericKrwAmount = Number(cleanedKrwAmount);
+    const currentBalance = getBalance("KRW");
+
+    if (numericKrwAmount > currentBalance) {
+      alert("잔액이 부족합니다.");
+      return;
+    }
 
     navigate("/exchange/account-password-input", {
       state: {
