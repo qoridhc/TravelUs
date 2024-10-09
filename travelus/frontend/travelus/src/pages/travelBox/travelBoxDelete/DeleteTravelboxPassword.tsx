@@ -52,9 +52,7 @@ const DeleteTravelBoxPassword: React.FC = (props) => {
         accountNo,
         account?.moneyBoxDtos[1].currencyCode
       );
-      if (response.status === 200) {
-        navigate(`/meetingaccount/${groupId}`);
-      }
+      navigate(`/travelbox/delete/${accountNo}/${groupId}/completed`);
     } catch (error) {
       const axiosError = error as AxiosError;
       if (axiosError.response && axiosError.response.data) {
@@ -64,7 +62,7 @@ const DeleteTravelBoxPassword: React.FC = (props) => {
           alert("비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
         }
       }
-      console.error("이체 에러", error);
+      console.error("외화저금통 해지 에러", error);
     }
   };
 
