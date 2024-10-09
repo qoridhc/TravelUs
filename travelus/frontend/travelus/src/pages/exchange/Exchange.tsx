@@ -181,7 +181,7 @@ const MeetingAccountExchange: React.FC = () => {
     const currentBalance = getBalance("KRW");
 
     if (numericKrwAmount > currentBalance) {
-      alert("잔액이 부족합니다.");
+      alert("모임 통장 잔액이 부족합니다.");
       return;
     }
 

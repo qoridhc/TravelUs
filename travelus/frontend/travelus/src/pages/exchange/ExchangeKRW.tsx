@@ -142,6 +142,14 @@ const MeetingAccountExchange: React.FC = () => {
     console.log(foreignCurrency);
     const cleanedForeignAmount = foreignAmount.replace(/,/g, "");
 
+    const numericForeignAmount = Number(cleanedForeignAmount);
+    const currentBalance = getBalance(getForeignCurrency()!.currencyCode);
+
+    if (numericForeignAmount > currentBalance) {
+      alert("외화 저금통 잔액이 부족합니다.");
+      return;
+    }
+
     navigate("/exchange/account-password-input", {
       state: {
         accountNo: selectedAccount.groupAccountNo,
