@@ -3,6 +3,7 @@ import { accountBookApi } from "../../api/accountBook";
 import { BuyItemInfo } from "../../types/accountBook";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../lottie/loadingAnimation.json";
+import idcardLoadingAnimation from "../../lottie/idcardLoadingAnimation.json";
 import BuyStoreInputMui from "../../components/accountBook/inputField/BuyStoreInputMui";
 import BuyPaidInputMui from "../../components/accountBook/inputField/BuyPaidInputMui";
 import BuyItemNameInputMui from "../../components/accountBook/inputField/BuyItemNameInputMui";
@@ -34,6 +35,18 @@ const CreateAccountBookInfo = () => {
   const [isAccountLoading, setAccountIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const loadingText = ["영수증을 확인하고 있어요", "거의 다 확인했어요", "조금만 더 기다려주세요"];
+  const [loadingTextIdx, setLoadingTextIdx] = useState(0);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
   const fetchAccountInfo = async (accountNo: string) => {
     try {
       setAccountIsLoading(true);
@@ -60,7 +73,7 @@ const CreateAccountBookInfo = () => {
       setReceiptFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        const result = reader.result as string;
+        reader.result as string;
       };
       reader.readAsDataURL(file);
     }
@@ -78,9 +91,12 @@ const CreateAccountBookInfo = () => {
     setQuantity(0);
   };
 
+  // 머니로그 등록
   const handleCreateAccountBook = async () => {
+    if (!accountNo) return;
+
     const data = {
-      accountNo: "accountNo",
+      accountNo: accountNo,
       store: buyStore,
       paid: Number(paid),
       items: buyItems,
@@ -88,7 +104,7 @@ const CreateAccountBookInfo = () => {
       address: buyAddress,
       currency: selectCurrency,
     };
-
+    console.log(data);
     try {
       const response = await accountBookApi.createAccountBook(data);
       console.log(response);
@@ -111,11 +127,10 @@ const CreateAccountBookInfo = () => {
       const response = await accountBookApi.fetchReceiptInfo(formData);
       if (response.status === 200) {
         const data = response.data;
-        console.log(data);
         setBuyStore(data.store);
         setBuyAddress(data.address);
         setPaid(data.paid);
-        setBuyDate(data.transactionAt);
+        setBuyDate(formatDate(data.transactionAt));
         setBuyItems(data.items);
         setReceiptFile(null);
       }
@@ -128,7 +143,6 @@ const CreateAccountBookInfo = () => {
 
   useEffect(() => {
     if (accountNo) {
-      console.log(accountNo);
       fetchAccountInfo(accountNo);
     }
   }, []);
@@ -148,6 +162,14 @@ const CreateAccountBookInfo = () => {
     const totalPaid = buyItems.reduce((acc, cur) => acc + cur.price * cur.quantity, 0);
     setPaid(totalPaid.toFixed(2).toString());
   }, [buyItems]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setLoadingTextIdx((prev) => (prev + 1) % 3);
+    }, 3000);
+
+    return () => clearInterval(intervalId); // 컴포넌트가 언마운트될 때 interval 정리
+  }, [isLoading]);
 
   if (isAccountLoading) {
     return (
@@ -193,8 +215,9 @@ const CreateAccountBookInfo = () => {
           </div>
 
           {isLoading ? (
-            <div className="h-full flex flex-col justify-center items-center">
-              <Lottie animationData={loadingAnimation} />
+            <div className="h-full py-5 flex flex-col justify-center items-center space-y-3">
+              <p className="text-lg font-semibold">{loadingText[loadingTextIdx]}</p>
+              <Lottie className="w-1/2" animationData={idcardLoadingAnimation} />
             </div>
           ) : (
             <>
@@ -239,7 +262,7 @@ const CreateAccountBookInfo = () => {
       <div className="w-full p-5 pb-8 bg-white fixed bottom-0 z-50">
         <button
           className={`w-full h-14 text-lg rounded-xl tracking-wide ${
-            buyStore === "" || paid === "" || buyItems.length === 0
+            selectCurrency === "" || buyDate === "" || buyStore === "" || paid === ""
               ? "text-[#565656] bg-[#E3E4E4]"
               : "text-white bg-[#1429A0]"
           }`}
