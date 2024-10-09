@@ -76,6 +76,7 @@ public class AccountBookService {
 
         // 챗지피티한테 정리시키기
         String receiptInfoString = gptService.askChatGPT(response.getBody().toString());
+        LogUtil.info("RECeipte", receiptInfoString);
 
         // String(JSON) -> 객체 변환후 return
         return AccountBookMapper.convertJSONToItemAnalysisDto(receiptInfoString);
