@@ -93,6 +93,9 @@ public class NotificationService {
 
     // 공통 푸시 알림 생성 메서드
     private Message createMessage(String token, PushNotificationRequestDto requestDto) {
+
+        LogUtil.info("requestDto", requestDto);
+
         return Message.builder()
             .setToken(token)  // 대상 사용자 토큰
             .setWebpushConfig(WebpushConfig.builder()
@@ -108,7 +111,7 @@ public class NotificationService {
             .putData("accountNo", requestDto.getAccountNo() != null ? requestDto.getAccountNo() : "")
             .putData("currencyCode",
                 requestDto.getCurrencyType() != null ? requestDto.getCurrencyType().getCurrencyCode() : "")
-            .putData("settlementId", requestDto.getSettlementId() != null ? String.valueOf(requestDto.getSettlementId()) : null)
+            .putData("settlementId", requestDto.getSettlementId() != null ? String.valueOf(requestDto.getSettlementId()) : "")
             .build();
     }
 
@@ -116,6 +119,8 @@ public class NotificationService {
     public ResponseEntity<?> pushNotification(PushNotificationRequestDto requestDto) {
         Map<String, Object> resultMap = new HashMap<>();
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        LogUtil.info("requestDto", requestDto);
 
         try {
             // FCM 토큰 조회

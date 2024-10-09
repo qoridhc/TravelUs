@@ -61,14 +61,14 @@ public class PushNotificationRequestDto {
     // settlementId 및 currencyType 제외
     public static PushNotificationRequestDto createDto(
         Long userId, NotificationType notificationType, String title, String message, String accountNo, Long groupId) {
-        return createDto(userId, notificationType, title, message, accountNo, groupId, null, null);
+        return createDto(userId, notificationType, title, message, accountNo, groupId, CurrencyType.KRW, null);
     }
 
     // currencyType만 제외하고 settlementId 포함
     public static PushNotificationRequestDto createDto(
         Long userId, NotificationType notificationType, String title, String message,
         String accountNo, Long groupId, Long settlementId) {
-        return createDto(userId, notificationType, title, message, accountNo, groupId, null, settlementId);
+        return createDto(userId, notificationType, title, message, accountNo, groupId, CurrencyType.KRW, settlementId);
     }
 
 }

@@ -61,7 +61,7 @@ self.addEventListener("notificationclick", function (event) {
       if (rootClient) {
         try {
           // 페이지에 메시지를 보내서 URL로 이동시키도록 요청
-          // rootClient.postMessage({ action: 'navigate', url: urlToOpen });
+          rootClient.postMessage({ action: 'navigate', url: urlToOpen });
           return rootClient.focus(); // 포커스는 그대로
         } catch (e) {
           console.log("포커스할 수 없습니다: ", e);
@@ -84,7 +84,7 @@ const generateUrl = (type, accountNo, groupId, currencyCode, settlementId) => {
     case "PT":
       return `${baseUrl}/transaction/${accountNo}`;
     case "GT":
-      return `${baseUrl}/meetingtransaction/${accountNo}}/notification`;
+      return `${baseUrl}/meetingtransaction/${accountNo}/notification`;
     case "E":
       return `${baseUrl}/travelbox/transaction/${accountNo}/notification?groupId=${groupId}&currencyCode=${currencyCode}`;
     case "S":
