@@ -30,6 +30,7 @@ import Exchange from "./pages/exchange/Exchange";
 import ExchangeKRWFlow from "./pages/exchange/ExchangeKRW";
 import ExchangeCompletion from "./pages/exchange/ExchangeCompletion";
 import ExchangeRateForecastDetail from "./pages/exchange/ExchangeRateForecastDetail";
+import ExchangeRateForecast from "./pages/exchange/ExchangeRateForecast";
 import AccountPasswordInput from "./pages/exchange/ExchangeConfirmation";
 import SelectAccount from "./pages/ver1/SelectAccount";
 import AccountCreateComplete from "./pages/ver1/AccountCreateComplete";
@@ -223,6 +224,9 @@ function App() {
 
           <Route path="/exchangerate/:currencyCode" element={<ExchangeDetail />} />
           <Route path="/exchangerate/forecast-detail" element={<ExchangeRateForecastDetail />} />
+
+          {/* 환율 예측 */}
+          <Route path="/exchangerate/forecast" element={<ExchangeRateForecast />} />
 
           {/* 잔액정산 */}
           <Route path="/settlement/balance/amount/:id" element={<SelectSettlementAmount />}></Route>

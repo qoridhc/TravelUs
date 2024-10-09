@@ -29,6 +29,7 @@ const NotificationList: React.FC<NotificationListProps> = (props) => {
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           );
           setNotificationList(sortedNotifications);
+          console.log("알림 리스트", sortedNotifications);
         }
       } catch (error) {
         console.error(error);
@@ -61,7 +62,7 @@ const NotificationList: React.FC<NotificationListProps> = (props) => {
     }
   };
 
-  const navigateToDetail = async (type: string, accountNo: string, notificationId: number) => {
+  const navigateToDetail = async (type: string, accountNo: string, notificationId: number, settlementId?: string) => {
     try {
       const response = await notificationApi.deleteSpecificNotification(notificationId);
     } catch (error) {
@@ -70,7 +71,7 @@ const NotificationList: React.FC<NotificationListProps> = (props) => {
 
     switch (type) {
       case "S":
-        navigate("/");
+        navigate(`/settlement/expenditure/group/detail/${settlementId}/NOT_COMPLETED`);
         break;
       case "E":
         navigate(`/travelbox/transaction/${accountNo}/notification`);
@@ -100,7 +101,18 @@ const NotificationList: React.FC<NotificationListProps> = (props) => {
             notificationList.map((notification) => (
               <div
                 onClick={() =>
-                  navigateToDetail(notification.notificationType, notification.accountNo, notification.notificationId)
+                  notification.settlementId
+                    ? navigateToDetail(
+                        notification.notificationType,
+                        notification.accountNo,
+                        notification.notificationId,
+                        notification.settlementId
+                      )
+                    : navigateToDetail(
+                        notification.notificationType,
+                        notification.accountNo,
+                        notification.notificationId
+                      )
                 }
                 key={notification.notificationId}
                 className="space-y-1">

@@ -129,10 +129,6 @@ const ExchangeRateForecastDetail: React.FC = () => {
           <h2 className="mb-1">환율 예측</h2>
           <div className="flex justify-between">
             <span className="font-semibold">{formatExchangeRate(latestForecastRate, currency)}</span>
-            {/* <span className={`${isIncreasing ? "text-[#DD5257]" : "text-[#4880EE]"}`}>
-              예측 변화 {formatExchangeRate(Math.abs(forecastChange), currency)}
-              {isIncreasing ? "▲" : "▼"}
-            </span> */}
           </div>
         </div>
 
