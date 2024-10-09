@@ -93,6 +93,7 @@ import CreateRequestOfCreateMeetingAccount from "./pages/meetingAccount/createMe
 import CreateRequestOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/CreateRequestOfCreateAccount";
 import ExpenditureSettlementGroupList from "./pages/account/meetingAccount/expenditureSettlement/ExpenditureSettlementGroupList";
 import ExpenditureSettlementGroupDetail from "./pages/account/meetingAccount/expenditureSettlement/ExpenditureSettlementGroupDetail";
+import CreateAccountBookInfo from "./pages/accountBook/CreateAccountBookInfo";
 
 function App() {
   return (
@@ -114,7 +115,7 @@ function App() {
                       {/* 모임통장 목록 */}
                       <Route path="/meetingaccountlist" element={<MeetingAccountList />} />
 
-                      {/* 가계부 */}
+                      {/* 머니로그 */}
                       <Route path="/accountbookdetail" element={<AccountBookDetail />} />
 
                       {/* 전체 환율 */}
@@ -262,6 +263,9 @@ function App() {
 
           {/* 알림 */}
           <Route path="/notification" element={<NotificationList />} />
+
+          {/* 머니로그 */}
+          <Route path="/accountBook/create/info/:accountNo" element={<CreateAccountBookInfo />} />
 
           {/* ver1 */}
           <Route path="/accountcreate" element={<AccountCreate />} />

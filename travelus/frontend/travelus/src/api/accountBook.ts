@@ -13,16 +13,12 @@ export const accountBookApi = {
   },
 
   // 영수증 업로드 후 OCR 정보 가져오기
-  fetchReceiptInfo: (formData: FormData) => {
-    return api.post(`/account-book/upload/receipt`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+  fetchReceiptInfo: (data: FormData) => {
+    return api.post(`/account-book/upload/receipt`, data);
   },
 
   // 가계부 등록
   createAccountBook: (data: DayHistoryCreateInfo) => {
-    return api.post(`/account-book/save/history`, data, {})
+    return api.post(`/account-book/save/history`, data)
   }
 }

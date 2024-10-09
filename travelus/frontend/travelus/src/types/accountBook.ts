@@ -25,15 +25,27 @@ export interface DayHistoryDetail {
   store: string;
 }
 
-export interface BuyItemInfo {
-  item: string;
-  price: number;
-  quantity: number
-}
-
 export interface DayHistoryCreateInfo {
   accountNo: string;
   store: string;
   paid: number;
-  items: Array<BuyItemInfo>;
+  transactionAt: string;
+  address: string;
+  items: BuyItemInfo[];
+  currency: string;
+}
+
+export interface ReceiptInfo {
+  store: string;
+  paid: number;
+  transactionAt: string;
+  address: string;
+  currency: string;
+  items: BuyItemInfo[];
+}
+
+export interface BuyItemInfo {
+  item: string;
+  price: number;
+  quantity: number;
 }

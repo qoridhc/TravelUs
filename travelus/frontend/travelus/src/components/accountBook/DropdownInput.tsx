@@ -12,7 +12,6 @@ interface DropdownInputProps {
 }
 
 const DropdownInput: React.FC<DropdownInputProps> = ({ meetingAccountList, accountNo, setAccountNo }) => {
-  console.log(meetingAccountList);
   return (
     <FormControl
       variant="filled"

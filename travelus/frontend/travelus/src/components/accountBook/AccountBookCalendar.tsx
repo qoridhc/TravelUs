@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { endOfMonth, format, startOfMonth } from "date-fns";
@@ -15,6 +16,7 @@ interface Props {
 }
 
 const AccountBookCalendar = ({ accountNo }: Props) => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [firstDate, setFirstDate] = useState<Date | null>(null);
   const [lastDate, setLastDate] = useState<Date | null>(null);
@@ -40,7 +42,6 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
     try {
       setIsLoading(true);
       const response = await accountBookApi.fetchAccountBookInfo(accountNo, data);
-      console.log(response);
       setMonthlyTransaction(response.data.monthHistoryList);
     } catch (error) {
       console.log("accountBookApi의 fetchAccountBookInfo : ", error);
@@ -70,8 +71,6 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
       </div>
     );
   }
-
-  console.log(monthlyTransaction);
 
   return (
     <div className="w-full flex flex-col justify-center items-end space-y-3 relative">
@@ -106,12 +105,13 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
         }}
       />
 
-      {/* <AccountBookInputModal
-        accountNo={accountNo}
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-        getAccountBookInfo={getAccountBookInfo}
-      />
+      <button
+        className="btn px-5 py-2 text-center text-[#EEF4FC] text-md font-semibold bg-[#5FA0F4] rounded-xl"
+        onClick={() => navigate(`/accountBook/create/info/${accountNo}`)}>
+        추가
+      </button>
+
+      {/* 
 
       <AccountBookDetailModal
         accountNo={accountNo}
