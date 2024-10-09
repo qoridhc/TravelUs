@@ -10,7 +10,7 @@ interface LocationState {
   accountNo: string;
   sourceCurrencyCode: string;
   targetCurrencyCode: string;
-  transactionBalance: string;
+  transactionBalance: number;
 }
 
 const AccountPasswordInput = () => {
@@ -50,6 +50,8 @@ const AccountPasswordInput = () => {
       targetCurrencyCode: stateData.targetCurrencyCode,
       transactionBalance: stateData.transactionBalance,
     };
+
+    console.log(exchangeRequest);
 
     try {
       const response: ExchangeResponse[] = await exchangeRateApi.requestExchange(exchangeRequest);
