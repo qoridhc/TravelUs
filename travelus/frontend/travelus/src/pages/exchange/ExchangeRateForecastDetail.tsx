@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Line } from "react-chartjs-2";
 import { ChartData } from "chart.js";
-import { ChevronLeft } from "lucide-react";
+import { IoIosArrowBack } from "react-icons/io";
 import { exchangeApi } from "../../api/exchange";
 import { AllDetailedPredictions, PredictionCurrencyData } from "../../types/exchange";
 import { forecastChartSetup } from "../../utils/forecastChartSetup";
@@ -222,7 +222,7 @@ const ExchangeRateForecastDetail: React.FC = () => {
   return (
     <div className="h-full p-5 pb-8">
       <button onClick={() => navigate(-1)} className="flex items-center text-blue-600 mb-6">
-        <ChevronLeft className="w-5 h-5 mr-1" />
+        <IoIosArrowBack className="w-5 h-5 mr-1" />
       </button>
       <div className="exchange-rate-forecast-detail">
         <h1 className="text-2xl font-bold mb-4">희망 환율 추천</h1>

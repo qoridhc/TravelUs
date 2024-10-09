@@ -7,12 +7,31 @@ interface Props {
 
 const ExchangeAmountInput = ({ exchangeAmount, setExchangeAmount }: Props) => {
   // const [transferAmount, setTransferAmount] = useState<string>(""); // 금액 상태
+  const [formattedAmount, setFormattedAmount] = useState<string>("");
   const [isFullExchange, setIsFullExchange] = useState<boolean>(false); // 전액 환전 체크박스 상태
 
+  const formatNumber = (num: number): string => {
+    return num.toLocaleString("ko-KR");
+  };
+
+  // const parseFormattedNumber = (str: string): number => {
+  //   return parseInt(str.replace(/,/g, ""), 10);
+  // };
+
+  useEffect(() => {
+    setFormattedAmount(formatNumber(exchangeAmount));
+  }, [exchangeAmount]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^\d]/g, "");
+    const numValue = parseInt(value, 10);
+    setExchangeAmount(isNaN(numValue) ? 0 : numValue);
+  };
+
   const handleIncrement = (incrementValue: number) => {
-    const currentAmount = Number(exchangeAmount) || 0;
-    const newAmount = currentAmount + incrementValue;
-    setExchangeAmount(newAmount);
+    // const currentAmount = Number(exchangeAmount) || 0;
+    // const newAmount = currentAmount + incrementValue;
+    setExchangeAmount(exchangeAmount + incrementValue);
   };
 
   return (
@@ -27,9 +46,9 @@ const ExchangeAmountInput = ({ exchangeAmount, setExchangeAmount }: Props) => {
             className={`w-full text-right outline-none ${
               isFullExchange ? "text-[#9e9e9e] placeholder:text-[#9e9e9e]" : "placeholder:text-black "
             }`}
-            type="number"
-            value={exchangeAmount}
-            onChange={(e) => setExchangeAmount(Number(e.target.value))}
+            type="text"
+            value={formattedAmount}
+            onChange={handleInputChange}
             placeholder="0"
             disabled={isFullExchange}
           />
