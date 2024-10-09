@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { MeetingAccountInfo, TransactionNew, AccountInfoNew } from "../../../types/account";
 import { accountApi } from "../../../api/account";
+import Loading from "../../../components/loading/Loading";
 
 const CardDetail: React.FC = (props) => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const CardDetail: React.FC = (props) => {
   const [transactionList, setTransactionList] = useState<TransactionNew[]>([]);
   const [domesticTotal, setDomesticTotal] = useState(0); // 국내 금액 누적 합계
   const [foreignTotal, setForeignTotal] = useState(0); // 해외 금액 누적 합계
+  const [isLoading, setIsLoading] = useState(true);
 
   const currencySymbols: { [key: string]: string } = {
     KRW: "원",
@@ -24,6 +26,7 @@ const CardDetail: React.FC = (props) => {
   };
 
   const fetchSpecificMeetingAccount = () => {
+    setIsLoading(true);
     accountApi
       .fetchSpecificMeetingAccount(Number(groupId))
       .then((response) => {
@@ -42,6 +45,9 @@ const CardDetail: React.FC = (props) => {
       })
       .catch((error) => {
         console.error("모임 조회 에러", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -113,6 +119,10 @@ const CardDetail: React.FC = (props) => {
   const formatCurrencyNum = (amount: number) => {
     return new Intl.NumberFormat("ko-KR").format(amount);
   };
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <>

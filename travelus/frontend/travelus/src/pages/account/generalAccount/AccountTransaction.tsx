@@ -5,8 +5,7 @@ import { accountApi } from "../../../api/account";
 import { IoIosArrowBack } from "react-icons/io";
 import { AccountInfoNew } from "../../../types/account";
 import { AccountHistoryResponse } from "../../../types/accountHistory";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../lottie/loadingAnimation.json";
+import Loading from "../../../components/loading/Loading";
 
 const AccountTransaction = () => {
   const navigate = useNavigate();
@@ -132,11 +131,7 @@ const AccountTransaction = () => {
   }, [isLoading]);
 
   if (!account) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   const formatCurrency = (amount: string) => {

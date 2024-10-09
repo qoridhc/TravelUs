@@ -6,8 +6,7 @@ import { useEffect } from "react";
 import { accountApi } from "../../../api/account";
 import { IoMdAdd } from "react-icons/io";
 import { MeetingAccountInfo } from "../../../types/account";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../lottie/loadingAnimation.json";
+import Loading from "../../../components/loading/Loading";
 
 const MeetingAccountListNew = () => {
   const navigate = useNavigate();
@@ -35,11 +34,7 @@ const MeetingAccountListNew = () => {
   }, []); // 의존성 배열에 필요한 값 추가
 
   if (isLoading) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

@@ -17,6 +17,8 @@ import { RiHome5Line } from "react-icons/ri";
 import AccountDetail from "../../../components/account/AccountDetail";
 import { AccountInfo } from "../../../types/account";
 
+import Loading from "../../../components/loading/Loading";
+
 const MeetingAccountDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -143,7 +145,7 @@ const MeetingAccountDetail = () => {
             <div className="w-full flex flex-col items-center space-y-5">
               <div className="w-full p-2 flex justify-center space-x-2">
                 {loading ? (
-                  <p>로딩 중...</p> // 로딩 중일 때 표시할 내용
+                  <Loading />
                 ) : (
                   <Swiper
                     slidesPerView={3.7}

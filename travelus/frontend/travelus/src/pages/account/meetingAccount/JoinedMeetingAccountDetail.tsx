@@ -16,6 +16,7 @@ import { FaUserFriends, FaBriefcase, FaHeart } from "react-icons/fa";
 import { RiHome5Line } from "react-icons/ri";
 import AccountDetail from "../../../components/account/AccountDetail";
 import { MeetingAccountInfo } from "../../../types/account";
+import Loading from "../../../components/loading/Loading";
 
 const JoinedMeetingAccountDetail = () => {
   const navigate = useNavigate();
@@ -153,7 +154,7 @@ const JoinedMeetingAccountDetail = () => {
             <div className="w-full flex flex-col items-center space-y-5">
               <div className="w-full p-2 flex justify-center space-x-2">
                 {loading ? (
-                  <p>로딩 중...</p> // 로딩 중일 때 표시할 내용
+                  <Loading />
                 ) : (
                   <Swiper
                     slidesPerView={3.7}

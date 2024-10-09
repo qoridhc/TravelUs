@@ -9,6 +9,7 @@ import { forecastChartSetup } from "../../utils/forecastChartSetup";
 import { formatExchangeRate } from "../../utils/currencyUtils";
 import { IoCaretUpOutline } from "react-icons/io5";
 import { IoCaretDownOutline } from "react-icons/io5";
+import Loading from "../../components/loading/Loading";
 
 const ExchangeRateForecast: React.FC = () => {
   const [predictions, setPredictions] = useState<AllDetailedPredictions | null>(null);
@@ -138,7 +139,6 @@ const ExchangeRateForecast: React.FC = () => {
         {/* 추천 환율 */}
         <div>
           <div className="flex flex-col space-y-5">
-
             <div
               className={`w-full p-3 rounded-lg bg-[#f4f4f4] flex flex-col border-2 border-transparent
                 `}>

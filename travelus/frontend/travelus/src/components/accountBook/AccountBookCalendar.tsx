@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { setDayHistoryDetailList } from "../../redux/accountBookSlice";
 import AccountBookInputModal from "./AccountBookInputModal";
 import AccountBookDetailModal from "./AccountBookDetailModal";
+import Loading from "../loading/Loading";
 
 type ValuePiece = Date | null;
 
@@ -92,7 +93,7 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
   }, [accountNo, getAccountBookInfo]);
 
   return isLoading ? (
-    <p>Loading...</p>
+    <Loading />
   ) : (
     <div className="w-full flex flex-col justify-center items-end space-y-3 relative">
       <Calendar

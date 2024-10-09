@@ -5,8 +5,7 @@ import { accountApi } from "../../../api/account";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 import { MeetingAccountInfo } from "../../../types/account";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../lottie/loadingAnimation.json";
+import Loading from "../../../components/loading/Loading";
 
 const CompletedOfDeleteTravelBox = () => {
   const navigate = useNavigate();
@@ -35,11 +34,7 @@ const CompletedOfDeleteTravelBox = () => {
   };
 
   if (!meeting) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

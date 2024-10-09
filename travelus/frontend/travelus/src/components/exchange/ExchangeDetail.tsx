@@ -20,6 +20,7 @@ import { AllDetailedPredictions, currencyNames } from "../../types/exchange";
 import { setupChart } from "../../utils/chartSetup";
 import { forecastChartSetup } from "../../utils/forecastChartSetup";
 import { calculateDailyChange, formatExchangeRate } from "../../utils/currencyUtils";
+import Loading from "../loading/Loading";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale);
 
@@ -257,7 +258,7 @@ const ExchangeDetail: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return <Loading />;
   }
 
   if (error) {

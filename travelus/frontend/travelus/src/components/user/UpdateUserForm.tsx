@@ -7,6 +7,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import { IoIosArrowForward } from "react-icons/io";
+import Loading from "../loading/Loading";
 
 interface UpdateUserFormProps {
   inputs: {
@@ -31,6 +32,7 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({ inputs, setInputs }) =>
   const userData = useSelector((state: RootState) => state.userInformation.UserInfo);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(true);
 
   const [errors, setErrors] = useState({
     id: false,
@@ -41,16 +43,21 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({ inputs, setInputs }) =>
   });
 
   useEffect(() => {
-    dispatch(
-      editUserInformation({
-        ...userData,
-        name: inputs.name,
-        birth: inputs.birth,
-        phone: inputs.phone,
-        address: inputs.address,
-      })
-    );
-  }, [inputs, dispatch]);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      dispatch(
+        editUserInformation({
+          ...userData,
+          name: inputs.name,
+          birth: inputs.birth,
+          phone: inputs.phone,
+          address: inputs.address,
+        })
+      );
+    }, 500); // 1초 후에 로딩 상태 해제
+
+    return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 클리어
+  }, [inputs, dispatch, userData]);
 
   const handleValidation = (id: string, value: string) => {
     let error = false;
@@ -124,6 +131,10 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({ inputs, setInputs }) =>
       console.log("Form submitted:", inputs);
     }
   };
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <>

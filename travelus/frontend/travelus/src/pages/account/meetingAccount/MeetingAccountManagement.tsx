@@ -10,8 +10,7 @@ import { AiFillSmile } from "react-icons/ai";
 import { IoPerson } from "react-icons/io5";
 import { IoIosListBox } from "react-icons/io";
 import { RiHandCoinFill } from "react-icons/ri";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../lottie/loadingAnimation.json";
+import Loading from "../../../components/loading/Loading";
 
 interface MeetingAccountManagementProps {
   // Define the props for your component here
@@ -52,11 +51,7 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
   };
 
   if (!account || !accountInfo) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
@@ -195,7 +190,9 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
         <div className="w-full h-5 bg-[#F6F6F8]"></div>
 
         <div
-          onClick={() => {navigate(`/travelbox/delete/${account.accountNo}/${accountInfo.groupId}`)}}
+          onClick={() => {
+            navigate(`/travelbox/delete/${account.accountNo}/${accountInfo.groupId}`);
+          }}
           className="p-6">
           {account.moneyBoxDtos.length > 1 && <button className="text-zinc-400">외화저금통 해지하기</button>}
         </div>

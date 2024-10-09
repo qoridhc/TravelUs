@@ -5,8 +5,7 @@ import { AxiosError } from "axios";
 import { AxiosErrorResponseData } from "../../../types/axiosError";
 import { useNavigate, useParams } from "react-router";
 import { SettlementPersonalInfo } from "../../../types/settlement";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../lottie/loadingAnimation.json";
+import Loading from "../../../components/loading/Loading";
 
 const ExpenditureSettlementList = () => {
   const navigate = useNavigate();
@@ -130,9 +129,7 @@ const ExpenditureSettlementList = () => {
           {isEmpty ? (
             <p className="text-center">정산 내역이 없습니다.</p>
           ) : dateList.length === 0 ? (
-            <div className="flex flex-col justify-center items-center">
-              <Lottie animationData={loadingAnimation} />
-            </div>
+            <Loading />
           ) : (
             dateList.map((date, index) => (
               <div className="grid gap-5" key={index}>

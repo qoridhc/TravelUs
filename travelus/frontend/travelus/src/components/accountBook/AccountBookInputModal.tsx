@@ -3,6 +3,7 @@ import { TextField } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { setBuyItems } from "../../redux/accountBookSlice";
 import { accountBookApi } from "../../api/accountBook";
+import Loading from "../loading/Loading";
 
 interface Props {
   accountNo: string;
@@ -127,7 +128,7 @@ const AccountBookInputModal = ({ accountNo, isModalOpen, setIsModalOpen, getAcco
       <div className="modal" role="dialog">
         <div className="modal-box grid gap-5">
           {loading ? ( // 로딩 중일 때 렌더링할 화면
-            <p className="text-center">로딩 중...</p>
+            <Loading />
           ) : (
             <>
               <div className="flex justify-between items-end">
