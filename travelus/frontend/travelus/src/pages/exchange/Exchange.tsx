@@ -104,9 +104,10 @@ const MeetingAccountExchange: React.FC = () => {
     const value = Number(rawValue).toLocaleString();
     setKrwAmount(value);
 
-    // 실제로 계산기 되는 값
+    // 실제로 계산 되는 값
     const adjustedValue = Math.floor(parseInt(rawValue) / 10) * 10;
     setAdjustedKrwAmount(adjustedValue.toLocaleString());
+    console.log(adjustedValue);
 
     if (rawValue && getForeignCurrency()) {
       const foreignCurrency = getForeignCurrency()!;
@@ -170,6 +171,7 @@ const MeetingAccountExchange: React.FC = () => {
     }
 
     const cleanedKrwAmount = adjustedKrwAmount.replace(/,/g, "");
+    console.log(cleanedKrwAmount);
 
     navigate("/exchange/account-password-input", {
       state: {
@@ -179,7 +181,6 @@ const MeetingAccountExchange: React.FC = () => {
         transactionBalance: cleanedKrwAmount,
       },
     });
-    console.log(foreignCurrency);
 
     if (accounts.length === 0) {
       return <div>Loading...</div>;
