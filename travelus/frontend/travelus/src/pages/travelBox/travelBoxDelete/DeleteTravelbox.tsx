@@ -6,8 +6,7 @@ import { RiExchangeDollarLine } from "react-icons/ri";
 import { MeetingAccountDetailInfo, MeetingAccountInfo } from "../../../types/account";
 import { accountApi } from "../../../api/account";
 import { currencyTypeList } from "../../../types/exchange";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../lottie/loadingAnimation.json";
+import Loading from "../../../components/loading/Loading";
 import { tr } from "date-fns/locale";
 
 const DeleteTravelBox = () => {
@@ -62,11 +61,7 @@ const DeleteTravelBox = () => {
   };
 
   if (!account || !meeting) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
@@ -131,11 +126,8 @@ const DeleteTravelBox = () => {
             className={`w-full h-14 text-lg rounded-xl tracking-wide font-semibold ${
               isvalid ? "text-[#DD1F36] bg-[#FFE4E5]" : "text-[#565656] bg-[#E3E4E4]"
             }`}
-            disabled={!isvalid}
-          >
-            {
-              isvalid ? "해지하기" : "해지 불가"
-            }
+            disabled={!isvalid}>
+            {isvalid ? "해지하기" : "해지 불가"}
           </button>
         </div>
       </div>

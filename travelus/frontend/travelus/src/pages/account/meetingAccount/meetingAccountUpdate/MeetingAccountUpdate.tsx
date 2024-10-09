@@ -6,8 +6,7 @@ import { useNavigate, useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import { accountApi } from "../../../../api/account";
 import { MeetingAccountInfo, MeetingAccountDetailInfo } from "../../../../types/account";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../../lottie/loadingAnimation.json";
+import Loading from "../../../../components/loading/Loading";
 
 const MeetingAccountUpdate = () => {
   const navigate = useNavigate();
@@ -72,11 +71,7 @@ const MeetingAccountUpdate = () => {
   };
 
   if (!meeting) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

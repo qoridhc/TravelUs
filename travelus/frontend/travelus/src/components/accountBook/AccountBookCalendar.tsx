@@ -5,8 +5,7 @@ import "react-calendar/dist/Calendar.css";
 import { endOfMonth, format, startOfMonth } from "date-fns";
 import "../../css/calendar.css";
 import AccountBookDetailModal from "./AccountBookDetailModal";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../lottie/loadingAnimation.json";
+import Loading from "../loading/Loading";
 import { accountBookApi } from "../../api/accountBook";
 import { DayHistory } from "../../types/accountBook";
 
@@ -73,11 +72,7 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
   }, [accountNo]);
 
   if ((accountNo !== "" && isLoading) || !monthlyTransaction) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    <Loading />;
   }
 
   return (

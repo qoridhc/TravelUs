@@ -5,6 +5,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { userApi } from "../../../api/user";
 import LastNameInputMui from "../../../components/card/LastNameInputMui";
 import FirstNameInputMui from "../../../components/card/FirstNameInputMui";
+import Loading from "../../../components/loading/Loading";
 
 const EnglishNameOfCreateCard = () => {
   const navigate = useNavigate();
@@ -13,6 +14,14 @@ const EnglishNameOfCreateCard = () => {
   const [isvalid, setIsValid] = useState(false);
   const [lastname, setLastName] = useState("");
   const [firstname, setFirstName] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000); // 1초 후에 로딩 상태 해제
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     // 유효성 검사
@@ -26,6 +35,10 @@ const EnglishNameOfCreateCard = () => {
   const handleNext = () => {
     navigate(`/card/${groupId}/create/password/meeting`);
   };
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="h-full p-5 pb-8 flex flex-col justify-between">

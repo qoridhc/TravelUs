@@ -5,6 +5,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import { GoHome } from "react-icons/go";
 import { exchangeRateApi } from "../../api/exchange";
 import { ExchangeRateInfo, currencyNames } from "../../types/exchange";
+import Loading from "../../components/loading/Loading";
 
 const ExchangeRateItem: React.FC<ExchangeRateInfo> = ({ currencyCode, exchangeRate }) => {
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ const ExchangeRateList: React.FC = () => {
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (error) {
@@ -69,9 +70,6 @@ const ExchangeRateList: React.FC = () => {
   return (
     <div className="flex flex-col bg-[#F3F4F6] h-full p-5 pb-8">
       <div>
-        {/* <Link to="/" className="inline-block mb-4">
-          <GoHome className="w-6 h-6 text-gray-600" />
-        </Link> */}
         <div className="bg-white rounded-lg shadow mb-4">
           {exchangeRates.map((rate, index) => (
             <ExchangeRateItem key={index} {...rate} />

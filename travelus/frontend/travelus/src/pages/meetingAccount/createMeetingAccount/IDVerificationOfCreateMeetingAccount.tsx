@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router";
 import { userApi } from "../../../api/user";
 import { UserInfo } from "../../../types/userInformation";
 import Lottie from "lottie-react";
-import loadingAnimation from "../../../lottie/loadingAnimation.json";
+import Loading from "../../../components/loading/Loading";
 import idcardLoadingAnimation from "../../../lottie/idcardLoadingAnimation.json";
 import { IoIosArrowBack } from "react-icons/io";
 
@@ -107,11 +107,7 @@ const IDVerificationOfCreateMeetingAccount = () => {
   }, [isLoading]);
 
   if (!userInfo) {
-    return (
-      <div className="flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   if (isLoading) {

@@ -3,8 +3,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { settlementApi } from "../../../api/settle";
 import { ExpenditureSettlementDetailInfo } from "../../../types/settlement";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../lottie/loadingAnimation.json";
+import Loading from "../../../components/loading/Loading";
 
 const ExpenditureSettlementDetail = () => {
   const navigate = useNavigate();
@@ -57,11 +56,7 @@ const ExpenditureSettlementDetail = () => {
   }, []);
 
   if (isLoading || !settlement) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

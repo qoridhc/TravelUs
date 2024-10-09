@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FcMoneyTransfer } from "react-icons/fc";
 import { ExchangeResponse } from "../../types/exchange";
+import Loading from "../../components/loading/Loading";
 
 interface LocationState {
   sourceCurrencyCode: string;
@@ -40,9 +41,26 @@ const ExchangeCompletion: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as LocationState;
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!state) {
+      navigate("/");
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000); // 2초 동안 로딩 화면 표시
+
+    return () => clearTimeout(timer);
+  }, [state, navigate]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   if (!state) {
-    navigate("/");
     return null;
   }
 

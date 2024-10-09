@@ -1,9 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { IoMdCheckmark } from "react-icons/io";
 import { useNavigate } from "react-router";
+import Loading from "../../components/loading/Loading";
 
 const AccountCreateComplete = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="h-full p-5 grid grid-rows-3">

@@ -6,6 +6,7 @@ import BirthDateInputMui from "../../../components/meetingAccount/BirthDateInput
 import GenderInputMui from "../../../components/meetingAccount/GenderInputMui";
 import { useNavigate } from "react-router";
 import { userApi } from "../../../api/user";
+import Loading from "../../../components/loading/Loading";
 
 const UserInfoOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ const UserInfoOfCreateMeetingAccount = () => {
   return (
     <>
       {isLoading ? (
-        <p>loading</p>
+        <Loading />
       ) : (
         <div className="h-full p-5 pb-8 flex flex-col justify-between">
           <div className="grid gap-14">

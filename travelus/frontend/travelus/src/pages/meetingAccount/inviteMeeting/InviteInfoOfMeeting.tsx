@@ -9,8 +9,7 @@ import { AxiosError } from "axios";
 import { AxiosErrorResponseData } from "../../../types/axiosError";
 import { userApi } from "../../../api/user";
 import { ParticipantInfo } from "../../../types/account";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../lottie/loadingAnimation.json";
+import Loading from "../../../components/loading/Loading";
 
 const InviteInfoOfMeeting = () => {
   const navigate = useNavigate();
@@ -98,17 +97,13 @@ const InviteInfoOfMeeting = () => {
   }, [userId]);
 
   if (isLoading) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
     <>
       {isLoading ? (
-        <p>loading...</p>
+        <Loading />
       ) : (
         <div className="h-full p-5 pb-8 flex flex-col justify-between">
           <div className="grid gap-14">

@@ -16,6 +16,7 @@ const MeetingAccountGroupMember = () => {
   const [userId, setUserId] = useState<number | null>(null);
   const [groupCode, setGroupCode] = useState("");
   const [participantId, setParticipantId] = useState<number | null>(null);
+  const [isUserMaster, setIsUserMaster] = useState(false);
 
   const handleExit = async () => {
     if (!participantId) return;
@@ -88,12 +89,19 @@ const MeetingAccountGroupMember = () => {
     }
   }, [groupCode]);
 
+  // useEffect(() => {
+  //   if (memberList) {
+  //     const storedUserId = localStorage.getItem("userId");
+  //     setParticipantId(memberList.find((member) => member.userId === Number(storedUserId))?.participantId ?? null);
+  //   }
+  // }, [memberList]);
+
   useEffect(() => {
-    if (memberList) {
-      const storedUserId = localStorage.getItem("userId");
-      setParticipantId(memberList.find((member) => member.userId === Number(storedUserId))?.participantId ?? null);
+    if (memberList && userId) {
+      const currentUser = memberList.find((member) => member.userId === userId);
+      setIsUserMaster(currentUser?.master || false);
     }
-  }, [memberList]);
+  }, [memberList, userId]);
 
   return (
     <div className="h-full flex flex-col justify-between">
@@ -141,11 +149,13 @@ const MeetingAccountGroupMember = () => {
           className="w-full h-14 text-lg rounded-xl tracking-wide text-white font-semibold bg-[#1429A0]">
           초대하기
         </button>
-        <button
-          className="w-full h-14 text-lg text-[#DD1F36] text-center font-semibold tracking-wide"
-          onClick={() => handleExit()}>
-          모임 나가기
-        </button>
+        {!isUserMaster && (
+          <button
+            className="w-full h-14 text-lg text-[#DD1F36] text-center font-semibold tracking-wide"
+            onClick={() => handleExit()}>
+            모임 나가기
+          </button>
+        )}
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { accountApi } from "../../../api/account";
 import { GroupInfo } from "../../../types/meetingAccount";
 import { AccountHistoryResponse } from "../../../types/accountHistory";
 import { currencyTypeList } from "../../../types/exchange";
+import Loading from "../../../components/loading/Loading";
 
 const ExpenditureTransactionDetail = () => {
   const navigate = useNavigate();

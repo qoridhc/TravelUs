@@ -15,8 +15,7 @@ import { GoHome } from "react-icons/go";
 import { FiPlus } from "react-icons/fi";
 import { MeetingAccountInfo, MeetingAccountDetailInfo } from "../../../types/account";
 import { setTravelboxInfo } from "../../../redux/meetingAccountSlice";
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../lottie/loadingAnimation.json";
+import Loading from "../../../components/loading/Loading";
 
 const MeetingAccountDetail = () => {
   const navigate = useNavigate();
@@ -144,11 +143,7 @@ const MeetingAccountDetail = () => {
   };
 
   if (!account && !meeting) {
-    return (
-      <div className="h-full flex flex-col justify-center items-center">
-        <Lottie animationData={loadingAnimation} />
-      </div>
-    );
+    return <Loading />;
   }
 
   // 클릭하는 통장으로 환전 및 재환전 페이지 라우팅
