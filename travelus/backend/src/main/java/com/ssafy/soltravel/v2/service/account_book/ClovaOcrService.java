@@ -37,37 +37,28 @@ public class ClovaOcrService {
   @PostConstruct
   public void init() {
     webClient = WebClient.builder()
-        .baseUrl(apiKeys.get("NCP_CLOVA_OCR_URL"))
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        .defaultHeader("X-OCR-SECRET", apiKeys.get("NCP_CLOVA_OCR_SECRET_KEY"))
         .build();
 
     webClientIC = WebClient.builder()
         .baseUrl(apiKeys.get("NCP_CLOVA_ID_OCR_URL"))
-        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_FORM_DATA_VALUE)
         .defaultHeader("X-OCR-SECRET", apiKeys.get("NCP_CLOVA_ID_OCR_SECRET_KEY"))
         .build();
   }
 
-  public ResponseEntity<Map<String, Object>> execute(ReceiptUploadRequestDto requestDto, String url) throws IOException {
-
-    // 요청 바디 생성
-    NCPClovaRequestBody requestBody = createRequestBody(
-        requestDto.getFile(),
-        url,
-        requestDto.getFormat(),
-        requestDto.getFile().getName(),
-        requestDto.getLang()
-    );
-
-    // 요청
-    ResponseEntity<Map<String, Object>> response = webClient.post()
-        // 바디 설정
-        .body(Mono.just(requestBody), NCPClovaRequestBody.class)
-
-        // 요청 송신
+  private <T> ResponseEntity<Map<String, Object>> request(
+      String url,
+      String key,
+      T requestBody,
+      Class<T> bodyClass
+  ) {
+    return webClient.post()
+        .uri(url)
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .header("X-OCR-SECRET", key)
+        .body(Mono.just(requestBody), bodyClass)
         .retrieve()
-
         // 에러 처리
         .onStatus(HttpStatusCode::is4xxClientError, clientResponse ->
             clientResponse.bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
@@ -83,10 +74,33 @@ public class ClovaOcrService {
                   ));
                 })
         )
-
-        // 응답값 파싱
-        .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {})
+        .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
+        })
         .block();
+  }
+
+  public ResponseEntity<Map<String, Object>> execute(ReceiptUploadRequestDto requestDto, String url) throws IOException {
+
+    // 요청 바디 생성
+    NCPClovaRequestBody requestBody = createRequestBody(
+        requestDto.getFile(),
+        url,
+        requestDto.getFormat(),
+        requestDto.getFile().getName(),
+        requestDto.getLang()
+    );
+
+    // 요청
+    String requestUrl = requestDto.getLang().equals("ko") ? apiKeys.get("NCP_CLOVA_KR_OCR_URL") : apiKeys.get("NCP_CLOVA_OCR_URL");
+    String requestKey = requestDto.getLang().equals("ko") ? apiKeys.get("NCP_CLOVA_KR_OCR_SECRET_KEY") : apiKeys.get("NCP_CLOVA_OCR_SECRET_KEY");
+    LogUtil.info("NAVER CLOVA OCR REQUEST", requestUrl, requestKey);
+
+    ResponseEntity<Map<String, Object>> response = request(
+        requestUrl,
+        requestKey,
+        requestBody,
+        NCPClovaRequestBody.class
+    );
     return response;
   }
 
@@ -103,7 +117,6 @@ public class ClovaOcrService {
 
     // WebClient를 사용한 multipart/form-data 요청
     ResponseEntity<Map<String, Object>> response = webClientIC.post()
-        .contentType(MediaType.MULTIPART_FORM_DATA)
         .body(BodyInserters.fromMultipartData(body))
         .retrieve()
 

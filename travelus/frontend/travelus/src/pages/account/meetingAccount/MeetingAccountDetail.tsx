@@ -151,6 +151,27 @@ const MeetingAccountDetail = () => {
     );
   }
 
+  // 클릭하는 통장으로 환전 및 재환전 페이지 라우팅
+  const handleExchange = (currencyCode: string) => {
+    const selectedAccount = {
+      groupId: meeting?.groupId,
+      groupName: meeting?.groupName,
+      groupAccountNo: meeting?.groupAccountNo,
+      currencyCode: currencyCode,
+    };
+    navigate("/exchange/foreign-currency", { state: { selectedAccount } });
+  };
+
+  const handleReExchange = (currencyCode: string) => {
+    const selectedAccount = {
+      groupId: meeting?.groupId,
+      groupName: meeting?.groupName,
+      groupAccountNo: meeting?.groupAccountNo,
+      currencyCode: currencyCode,
+    };
+    navigate("/exchange/korean-currency", { state: { selectedAccount } });
+  };
+
   return (
     account &&
     meeting && (
@@ -235,7 +256,7 @@ const MeetingAccountDetail = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate("/exchange/foreign-currency");
+                      handleExchange("KRW");
                     }}
                     className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
                     환전
@@ -246,7 +267,7 @@ const MeetingAccountDetail = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/meeting/${meeting.groupId}/fill/setmoney`);
+                      handleReExchange(account.moneyBoxDtos[1].currencyCode);
                     }}
                     className="w-full h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
                     채우기

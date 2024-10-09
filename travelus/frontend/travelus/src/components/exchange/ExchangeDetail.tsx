@@ -289,7 +289,7 @@ const ExchangeDetail: React.FC = () => {
       {activeTab === "exchange" ? renderExchangeTab() : renderPredictionTab()}
 
       {/* 채우기 버튼은 아래에 고정 */}
-      <div className="flex justify-between mt-auto bottom-0 w-full fixed left-0 px-5 pb-8 bg-white">
+      <div className="flex justify-between mt-auto bottom-0 w-full left-0 bg-white">
         <button
           onClick={() => navigate("/exchange/korean-currency")}
           className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">

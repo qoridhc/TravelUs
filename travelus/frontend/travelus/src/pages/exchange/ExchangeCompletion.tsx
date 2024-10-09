@@ -30,7 +30,9 @@ const formatNumber = (value: string, currencyCode: string): string => {
     return Math.round(num).toLocaleString("ko-KR");
   } else {
     // 다른 통화의 경우 소수점 둘째 자리까지 표시 및 천 단위 쉼표 추가
-    return num.toLocaleString("ko-KR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const formattedNum = num.toLocaleString("ko-KR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    return formattedNum.replace(/\.00$/, "");
   }
 };
 
