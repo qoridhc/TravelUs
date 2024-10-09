@@ -14,9 +14,10 @@ import DateInputMui from "../../components/accountBook/inputField/DateInputMui";
 import BuyDateInputMui from "../../components/accountBook/inputField/BuyDateInputMui";
 import { IoIosArrowBack } from "react-icons/io";
 import { accountApi } from "../../api/account";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 const CreateAccountBookInfo = () => {
+  const navigate = useNavigate();
   const { accountNo } = useParams();
   const [currency, setCurrency] = useState("");
   const [selectCurrency, setSelectCurrency] = useState("");
@@ -183,7 +184,7 @@ const CreateAccountBookInfo = () => {
     <div className="h-full pb-8 flex flex-col justify-between items-end">
       <div>
         <div className="p-5 bg-white flex items-center sticky top-0 z-50">
-          <IoIosArrowBack className="text-2xl" />
+          <IoIosArrowBack className="text-2xl" onClick={() => navigate("/accountbookdetail")} />
         </div>
 
         <div className="p-5 pb-32 grid gap-8 overflow-y-auto">
