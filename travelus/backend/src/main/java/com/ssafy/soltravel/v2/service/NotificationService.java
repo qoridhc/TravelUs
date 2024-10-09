@@ -49,7 +49,7 @@ import org.springframework.stereotype.Service;
 public class NotificationService {
 
     // 기본 알림 아이콘
-    private static final String DEFAULT_ICON_URL = "/sol_favicon.ico";
+    private static final String DEFAULT_ICON_URL = "/icons/favicon.ico";
     // 소술점 0인경우 떼기 ex) 1000.00 -> 1000
     private static final DecimalFormat df = new DecimalFormat("#,###.##");
 
@@ -103,7 +103,7 @@ public class NotificationService {
                 .setNotification(WebpushNotification.builder() // 알림 내용 생성
                     .setTitle(requestDto.getTitle())
                     .setBody(requestDto.getMessage())
-                    .setIcon(requestDto.getIcon())
+                    .setIcon(DEFAULT_ICON_URL)
                     .build())
                 .build())
             .putData("notificationType", requestDto.getNotificationType().toString()) // 알림 외 필요 데이터 추가
