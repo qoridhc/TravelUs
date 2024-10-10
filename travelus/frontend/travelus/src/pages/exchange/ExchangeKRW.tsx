@@ -7,7 +7,7 @@ import { currencyTypeList, ExchangeRateInfo } from "../../types/exchange";
 import { IoIosArrowBack, IoIosArrowDown } from "react-icons/io";
 import { FcMoneyTransfer } from "react-icons/fc";
 import { TiArrowUnsorted } from "react-icons/ti";
-import { formatCurrency } from "../../utils/currencyUtils";
+import Loading from "../../components/loading/Loading";
 
 const koreanCountryNameMapping: { [key: string]: string } = {
   EUR: "유럽",
@@ -38,16 +38,18 @@ const MeetingAccountExchange: React.FC = () => {
   const [krwAmount, setKrwAmount] = useState<string>("");
   const [foreignAmount, setForeignAmount] = useState<string>("");
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
-        const [joined, created, rates] = await Promise.all([
-          accountApi.fetchJoinedMeetingAccount(),
+        const [created, rates] = await Promise.all([
+          // accountApi.fetchJoinedMeetingAccount(), 모임주만 환전 및 재환전 가능
           accountApi.fetchCreatedMeetingAccount(),
           exchangeRateApi.getExchangeRates(),
         ]);
-        const allAccounts = [...joined, ...created].filter((account) =>
+        const allAccounts = [...created].filter((account) =>
           account.moneyBoxDtoList.some((box) => box.currencyCode !== "KRW")
         );
         setAccounts(allAccounts);
@@ -69,10 +71,16 @@ const MeetingAccountExchange: React.FC = () => {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
   }, [location]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   // 숫자를 세 자리마다 쉼표로 구분하여 표시
   const formatCurrency = (amount: number) => {
@@ -177,8 +185,13 @@ const MeetingAccountExchange: React.FC = () => {
         sourceCurrencyCode: foreignCurrency.currencyCode,
         targetCurrencyCode: "KRW",
         transactionBalance: cleanedForeignAmount,
+        groupId: selectedAccount.groupId,
       },
     });
+
+    if (accounts.length === 0) {
+      return <Loading />;
+    }
   };
 
   // 머니박스가 연결된 그룹통장이 없거나 하나 일때

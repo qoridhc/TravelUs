@@ -12,6 +12,7 @@ interface LocationState {
   sourceCurrencyCode: string;
   targetCurrencyCode: string;
   transactionBalance: number;
+  groupId: number;
 }
 
 const AccountPasswordInput = () => {
@@ -52,7 +53,7 @@ const AccountPasswordInput = () => {
       transactionBalance: stateData.transactionBalance,
     };
 
-    console.log(exchangeRequest)
+    console.log(exchangeRequest);
 
     try {
       const response: ExchangeResponse[] = await exchangeRateApi.requestExchange(exchangeRequest);
@@ -67,9 +68,9 @@ const AccountPasswordInput = () => {
           sourceAmount: stateData.transactionBalance,
           targetAmount: targetTransactionAmount,
           transactionSummary: exchangeSummary,
+          groupId: stateData.groupId,
         },
       });
-
     } catch (error: any) {
       console.log("Exchange failed:", error);
       if (error.response && error.response.data) {

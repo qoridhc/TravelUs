@@ -11,6 +11,7 @@ interface LocationState {
   targetAmount: string;
   exchangeRate?: number;
   transactionSummary: string;
+  groupId: number;
 }
 
 const currencyNameMapping: { [key: string]: string } = {
@@ -51,7 +52,7 @@ const ExchangeCompletion: React.FC = () => {
 
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000); // 2초 동안 로딩 화면 표시
+    }, 1500); // 1.5초 동안 로딩 화면 표시
 
     return () => clearTimeout(timer);
   }, [state, navigate]);
@@ -64,8 +65,8 @@ const ExchangeCompletion: React.FC = () => {
     return null;
   }
 
-  const { sourceCurrencyCode, targetCurrencyCode, sourceAmount, targetAmount, transactionSummary } = state;
-
+  const { sourceCurrencyCode, targetCurrencyCode, sourceAmount, targetAmount, transactionSummary, groupId } = state;
+  console.log(groupId);
   const extractExchangeRate = (summary: string): string => {
     const match = summary.match(/(\d+(\.\d+)?)/);
     return match ? match[1] : "N/A";
@@ -78,7 +79,9 @@ const ExchangeCompletion: React.FC = () => {
   };
 
   const handleClose = () => {
-    navigate("/");
+    // navigate("/");
+    // 모임통장 상세 페이지로 이동
+    navigate(`/meetingaccount/${groupId}`);
   };
 
   return (
