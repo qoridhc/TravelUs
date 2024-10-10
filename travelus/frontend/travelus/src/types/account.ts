@@ -227,3 +227,11 @@ export interface ExchangeMode {
   groupId: number;
   exchangeType: string;
 }
+
+// 자동환전 환율 정보
+export interface AutoExchangeInfo {
+  targetRateId: number;
+  amount: number;
+  rate: number;
+  status: string;
+}

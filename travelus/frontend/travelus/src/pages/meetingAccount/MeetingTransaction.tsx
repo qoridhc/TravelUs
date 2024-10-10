@@ -6,6 +6,7 @@ import { accountApi } from "../../api/account";
 import { AccountInfoNew, TransactionNew } from "../../types/account";
 import { AccountHistoryResponse } from "../../types/accountHistory";
 import Loading from "../../components/loading/Loading";
+import { tr } from "date-fns/locale";
 
 const MeetingTransaction = () => {
   const navigate = useNavigate();
@@ -206,6 +207,8 @@ const MeetingTransaction = () => {
                       <div className="w-full flex justify-between">
                         {transaction.transactionType === "EW" ? (
                           <p className="text-lg font-semibold">외화저금통 환전</p>
+                        ) : transaction.transactionType === "SW" ? (
+                          <p className="text-lg font-semibold">{transaction.transactionSummary}</p>
                         ) : (
                           <p className="text-lg font-semibold">{transaction.payeeName}</p>
                         )}

@@ -56,7 +56,6 @@ const CompletedOfCreateMeetingAccount = () => {
       navigate("/travelbox/create/type", {
         state: {
           currencyCode: location.state.currencyCode,
-          accountNo: location.state.accountNo,
           groupId: location.state.groupId,
         },
       });

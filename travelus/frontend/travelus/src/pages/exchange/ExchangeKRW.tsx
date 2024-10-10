@@ -38,7 +38,7 @@ const MeetingAccountExchange: React.FC = () => {
   const [krwAmount, setKrwAmount] = useState<string>("");
   const [foreignAmount, setForeignAmount] = useState<string>("");
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isFullExchange, setIsFullExchange] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,9 +78,14 @@ const MeetingAccountExchange: React.FC = () => {
     fetchData();
   }, [location]);
 
-  if (isLoading) {
-    return <Loading />;
-  }
+  useEffect(() => {
+    if (isFullExchange) {
+      handleFullAmount();
+    } else {
+      setForeignAmount("0");
+      setKrwAmount("0");
+    }
+  }, [isFullExchange]);
 
   // 숫자를 세 자리마다 쉼표로 구분하여 표시
   const formatCurrency = (amount: number) => {
@@ -92,6 +97,7 @@ const MeetingAccountExchange: React.FC = () => {
     setIsAccountMenuOpen(false);
     setKrwAmount("");
     setForeignAmount("");
+    setIsFullExchange(false);
   };
 
   const getExchangeRateDisplay = (currencyCode: string) => {
@@ -104,7 +110,7 @@ const MeetingAccountExchange: React.FC = () => {
   };
 
   const formatNumber = (value: number, currencyCode: string): string => {
-    if (currencyCode === "KRW") {
+    if (currencyCode === "KRW" || currencyCode === "JPY" || currencyCode === "TWD") {
       return Math.round(value).toLocaleString("ko-KR");
     } else {
       return value.toLocaleString("ko-KR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -133,6 +139,9 @@ const MeetingAccountExchange: React.FC = () => {
   };
 
   const handleForeignChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isFullExchange) {
+      setIsFullExchange(false);
+    }
     const rawValue = e.target.value.replace(/[^0-9.]/g, "");
     const value = rawValue.includes(".") ? rawValue : Number(rawValue).toLocaleString();
     setForeignAmount(value);
@@ -191,6 +200,26 @@ const MeetingAccountExchange: React.FC = () => {
 
     if (accounts.length === 0) {
       return <Loading />;
+    }
+  };
+
+  const handleFullAmount = () => {
+    const foreignCurrency = getForeignCurrency();
+    if (foreignCurrency) {
+      const fullBalance = getBalance(foreignCurrency.currencyCode);
+      setForeignAmount(formatNumber(fullBalance, foreignCurrency.currencyCode));
+
+      // Calculate and set the corresponding KRW amount
+      const rateInfo = exchangeRates.find((rate) => rate.currencyCode === foreignCurrency.currencyCode);
+      if (rateInfo) {
+        let calculatedKRW: number;
+        if (foreignCurrency.currencyCode === "JPY") {
+          calculatedKRW = fullBalance * (rateInfo.exchangeRate / 100);
+        } else {
+          calculatedKRW = fullBalance * rateInfo.exchangeRate;
+        }
+        setKrwAmount(Math.round(calculatedKRW).toLocaleString());
+      }
     }
   };
 
@@ -296,6 +325,7 @@ const MeetingAccountExchange: React.FC = () => {
                 </div>
               )}
 
+              {/* 여백 만들기 */}
               <div className="h-5 " />
 
               {getForeignCurrency() && (
@@ -335,18 +365,17 @@ const MeetingAccountExchange: React.FC = () => {
                 </div>
               )}
             </div>
-
-            {/* {getForeignCurrency() && (
-              <p className="text-sm text-right text-[#565656]">
-                최소 환전 금액&nbsp;
-                {formatCurrency(
-                  Number(
-                    exchangeRates.find((rate) => rate.currencyCode === getForeignCurrency()!.currencyCode)?.exchangeMin
-                  )
-                )}
-                {getForeignCurrency()!.currencyCode}
-              </p>
-            )} */}
+            <div className="flex justify-end">
+              <label className="flex justify-between items-center space-x-2">
+                <input
+                  type="checkbox"
+                  className="w-5 aspect-1 appearance-none bg-[url('./assets/check/nochecked.png')] checked:bg-[url('./assets/check/checked.png')] bg-cover rounded-full"
+                  checked={isFullExchange}
+                  onChange={() => setIsFullExchange(!isFullExchange)}
+                />
+                <p>전액 환전</p>
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -366,15 +395,6 @@ const MeetingAccountExchange: React.FC = () => {
           disabled={noAccount || !selectedAccount || !getForeignCurrency() || !krwAmount || parseFloat(krwAmount) <= 0}>
           원화 채우기
         </button>
-
-        {/* 머니박스 연결된 모임통장 없을시 보이게 */}
-        {/* {noAccount && (
-          <Link
-            to="/meeting/create/prepare" // 모임통장 생성 페이지의 경로를 여기에 입력하세요
-            className="block text-center mt-4 text-[#1429A0] underline">
-            머니박스 개설하러 가기
-          </Link>
-        )} */}
       </div>
     </div>
   );
