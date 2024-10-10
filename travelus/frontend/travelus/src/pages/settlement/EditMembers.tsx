@@ -110,7 +110,7 @@ const EditMembers = () => {
                   </div>
                   <input
                     type="checkbox"
-                    className="w-6 aspect-1 appearance-none bg-[url('./assets/check/nochecked.png')] checked:bg-[url('./assets/check/checked.png')] bg-cover rounded-full"
+                    className="w-6 h-6 appearance-none bg-[url('./assets/check/nochecked.png')] checked:bg-[url('./assets/check/checked.png')] bg-cover rounded-full"
                     checked={selectedMembers.some((member) => member.name === item.userName)}
                     onChange={() => toggleMemberSelection(item.participantId, item.userName)}
                   />

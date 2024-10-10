@@ -361,7 +361,7 @@ const MeetingAccountExchange: React.FC = () => {
               <label className="flex justify-between items-center space-x-2">
                 <input
                   type="checkbox"
-                  className="w-5 aspect-1 appearance-none bg-[url('./assets/check/nochecked.png')] checked:bg-[url('./assets/check/checked.png')] bg-cover rounded-full"
+                  className="w-5 h-5 appearance-none bg-[url('./assets/check/nochecked.png')] checked:bg-[url('./assets/check/checked.png')] bg-cover rounded-full"
                   checked={isFullExchange}
                   onChange={() => setIsFullExchange(!isFullExchange)}
                 />
