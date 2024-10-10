@@ -53,7 +53,7 @@ const AutoCurrencyExchangeRateOfCreateTravelBox = () => {
             exchangeRateBack={exchangeRateBack}
             setExchangeRateBack={setExchangeRateBack}
           />
-          <ExchangeRateForecast setExchangeRateFront={setExchangeRateFront} setExchangeRateBack={setExchangeRateBack} />
+          <ExchangeRateForecast setExchangeRateFront={setExchangeRateFront} setExchangeRateBack={setExchangeRateBack} currencyCode={location.state.currencyCode} />
         </div>
       </div>
 

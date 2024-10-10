@@ -5,7 +5,6 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushNotification;
 import com.ssafy.soltravel.v1.dto.user.UserDetailDto;
-import com.ssafy.soltravel.v1.util.LogUtil;
 import com.ssafy.soltravel.v2.domain.BillingHistoryDetail;
 import com.ssafy.soltravel.v2.domain.Enum.AccountType;
 import com.ssafy.soltravel.v2.domain.Enum.NotificationType;
@@ -32,6 +31,7 @@ import com.ssafy.soltravel.v2.repository.NotificationRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.repository.redis.FcmTokenRepository;
 import com.ssafy.soltravel.v2.service.account.AccountService;
+import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -124,8 +124,7 @@ public class NotificationService {
 
         try {
             // FCM 토큰 조회
-            RedisFcm redisFcm = fcmTokenRepository.findById(requestDto.getTargetUserId())
-                .orElse(null);
+            RedisFcm redisFcm = fcmTokenRepository.findById(requestDto.getTargetUserId()).orElse(null);
 
             if (redisFcm == null) {
                 // 토큰이 없는 경우 로그만 남기고 알림 전송 건너뜀
@@ -176,28 +175,34 @@ public class NotificationService {
         String message;
         String formattedAmount = df.format(requestDto.getTransactionBalance());
 
+        LogUtil.info("TransactionRequestDto", requestDto);
+
         // 트랜잭션 타입에 따라 switch-case로 알림 제목 및 메시지 설정
         switch (requestDto.getTransactionType()) {
             case D -> {
                 title = "입금 완료";
-                message = String.format("입금 금액: %s원이 입금되었습니다.", formattedAmount);
+                message = String.format("입금 금액: %s %s이 입금되었습니다.", formattedAmount, requestDto.getCurrencyCode());
             }
             case W -> {
                 title = "출금 완료";
-                message = String.format("출금 금액: %s원이 출금되었습니다.", formattedAmount);
+                message = String.format("출금 금액: %s %s이 출금되었습니다.", formattedAmount, requestDto.getCurrencyCode());
             }
             case SD -> {
                 title = "정산 입금 완료";
-                message = String.format("정산 입금 금액: %s원이 입금되었습니다.", formattedAmount);
+                message = String.format("정산 입금 금액: %s %s이 입금되었습니다.", formattedAmount,
+                    requestDto.getCurrencyCode());
             }
             case SW -> {
                 title = "정산 출금 완료";
-                message = String.format("정산 출금 금액: %s원이 출금되었습니다.", formattedAmount);
+                message = String.format("정산 출금 금액: %s %s이 출금되었습니다.", formattedAmount,
+                    requestDto.getCurrencyCode());
             }
             default -> {
                 throw new IllegalArgumentException("지원되지 않는 트랜잭션 타입입니다.");
             }
         }
+
+        LogUtil.info("message", message);
 
         AccountDto accountDto = accountService.getByAccountNo(requestDto.getAccountNo());
 
@@ -205,7 +210,7 @@ public class NotificationService {
 
         TravelGroup group = null;
 
-        if (accountDto.getAccountType().equals(AccountType.G)) {
+        if (accountDto.getAccountType() == AccountType.G) {
             title = "모임통장 " + title;
             message = "모임통장 " + message;
             notificationType = NotificationType.GT;
@@ -213,15 +218,15 @@ public class NotificationService {
             group = groupRepository.findByGroupAccountNo(requestDto.getAccountNo());
         }
 
-        // 알림 전송을 위한 Dto 생성 및 전송
-        PushNotificationRequestDto notificationRequestDto = PushNotificationRequestDto.createDto(
-            userId,
-            notificationType,
-            title,
-            message,
-            requestDto.getAccountNo(),
-            (group != null) ? group.getGroupId() : null
-        );
+        PushNotificationRequestDto notificationRequestDto = PushNotificationRequestDto.builder()
+            .targetUserId(userId)
+            .notificationType(notificationType)
+            .title(title)
+            .message(message)
+            .accountNo(requestDto.getAccountNo())
+            .groupId((group != null) ? group.getGroupId() : null)
+            .currencyType(requestDto.getCurrencyCode())
+            .build();
 
         return pushNotification(notificationRequestDto);
     }
@@ -240,13 +245,17 @@ public class NotificationService {
         String message = String.format("%s님에게 %s원을 보냈어요.", depositUser.getName(), formattedAmount);
 
         AccountDto senderAccount = accountService.getByAccountNo(requestDto.getWithdrawalAccountNo());
+        AccountDto depositAccount = accountService.getByAccountNo(requestDto.getDepositAccountNo());
 
         NotificationType notificationType = NotificationType.PT;
         TravelGroup group = null;
 
-        if (senderAccount.getAccountType().equals(AccountType.G)) {
+        if (depositAccount.getAccountType().equals(AccountType.G)) {
+            group = groupRepository.findByGroupAccountNo(requestDto.getDepositAccountNo());
+
             title = "모임통장 " + title;
-            group = groupRepository.findByGroupAccountNo(requestDto.getWithdrawalAccountNo());
+            message = String.format("\"%s\" 모임통장 으로 %s원을 보냈어요.", group.getGroupName(), formattedAmount);
+
             notificationType = NotificationType.GT;
         }
 
@@ -266,7 +275,6 @@ public class NotificationService {
         title = user.getName() + "님이 돈을 보냈어요";
         message = String.format("%s원이 튜나은행 계좌로 입금되었어요.", formattedAmount);
 
-        AccountDto depositAccount = accountService.getByAccountNo(requestDto.getDepositAccountNo());
         notificationType = NotificationType.PT;
 
         TravelGroup depositGroup = null;
@@ -274,7 +282,7 @@ public class NotificationService {
         if (depositAccount.getAccountType().equals(AccountType.G)) {
             depositGroup = groupRepository.findByGroupAccountNo(requestDto.getDepositAccountNo());
 
-            message = String.format("%s원이 %s 모임통장으로 입금되었어요.", formattedAmount, depositGroup.getGroupName());
+            message = String.format("%s원이 \"%s\" 모임통장으로 입금되었어요.", formattedAmount, depositGroup.getGroupName());
             notificationType = NotificationType.GT;
         }
 
@@ -388,6 +396,20 @@ public class NotificationService {
 
         // 알림 전송
         pushNotification(notificationRequestDto);
+
+        return ResponseEntity.ok().body(new ResponseDto());
+    }
+
+    /*
+     *  여행 전 환전 여부 알림 -> 7일 전인데 환전 안했으면 알림 보냄
+     */
+    public ResponseEntity<?> sendExchangeSuggestNotification(
+        PushNotificationRequestDto requestDto
+    ) {
+
+        TravelGroup group = groupRepository.findByGroupAccountNo(requestDto.getAccountNo());
+        // 알림 전송
+        pushNotification(requestDto);
 
         return ResponseEntity.ok().body(new ResponseDto());
     }
