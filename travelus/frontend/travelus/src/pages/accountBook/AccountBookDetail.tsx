@@ -7,10 +7,12 @@ import { accountApi } from "../../api/account";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../lottie/loadingAnimation.json";
 import { MeetingAccountInfo } from "../../types/account";
+import { useLocation } from "react-router";
 
 const AccountBookDetail = () => {
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
-  const [accountNo, setAccountNo] = useState<string>("");
+  const [accountNo, setAccountNo] = useState<string>(location.state && location.state.accountNo);
   const [meetingAccountList, setMeetingAccountList] = useState<MeetingAccountInfo[] | null>(null);
 
   const fetchGroupList = async () => {
@@ -47,7 +49,6 @@ const AccountBookDetail = () => {
           <DropdownInput meetingAccountList={meetingAccountList} accountNo={accountNo} setAccountNo={setAccountNo} />
 
           <AccountBookCalendar accountNo={accountNo} />
-          <AccountBookDayDetail />
         </div>
       </div>
     </div>
