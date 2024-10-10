@@ -12,22 +12,34 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ExchangeBatchTriggerService {
 
-  private final JobLauncher jobLauncher;
-  private final Job exchangeRateJob;
+    private final JobLauncher jobLauncher;
+    private final Job exchangeRateJob;
+    private final Job travelNotificationJob;
 
-  /**
-   * RabbitMQ 메시지 수신
-   */
-  @RabbitListener(queues = RabbitMQConfig.EXCHANGE_RATE_QUEUE)
-  public void receiveMessage(String message) {
-    try {
-      jobLauncher.run(exchangeRateJob,
-          new JobParametersBuilder()
-              .addString("message", message)
-              .addLong("timestamp", System.currentTimeMillis())
-              .toJobParameters());
-    } catch (Exception e) {
-      e.printStackTrace();
+    /**
+     * RabbitMQ 메시지 수신
+     */
+    @RabbitListener(queues = RabbitMQConfig.EXCHANGE_RATE_QUEUE)
+    public void receiveMessage(String message) {
+        try {
+            jobLauncher.run(exchangeRateJob,
+                new JobParametersBuilder()
+                    .addString("message", message)
+                    .addLong("timestamp", System.currentTimeMillis())
+                    .toJobParameters());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-  }
+
+    public void sendTravelNotification() {
+        try {
+            jobLauncher.run(travelNotificationJob,
+                new JobParametersBuilder()
+                    .addLong("timestamp", System.currentTimeMillis())
+                    .toJobParameters());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
