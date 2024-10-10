@@ -121,5 +121,10 @@ export const accountApi = {
   // 환전 모드 변경
   fetchChangeExchangeMode: (data: ExchangeMode) => {
     return api.put(`/exchange/mode`, data);
-  }, 
+  },
+
+  // 희망 환율 조회
+  fetchAutoExchangeType: (groupId: number) => {
+    return api.get(`/exchange/rate/target-rate/${groupId}`);
+  },
 };
