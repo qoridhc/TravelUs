@@ -98,14 +98,14 @@ const ExchangeRateForecast: React.FC<Props> = ({ setExchangeRateFront, setExchan
     const multiplier = currencyCode === "JPY" ? 100 : 1;
 
     const safeData: RecommendedRate[] = [
-      { rate: forecast_stats.p90, percent: 90 },
-      { rate: forecast_stats.p80, percent: 80 },
-      { rate: forecast_stats.p70, percent: 70 },
+      { rate: forecast_stats.p90 * multiplier, percent: 90 },
+      { rate: forecast_stats.p80 * multiplier, percent: 80 },
+      { rate: forecast_stats.p70 * multiplier, percent: 70 },
     ];
     const cheapData: RecommendedRate[] = [
-      { rate: forecast_stats.p30, percent: 30 },
-      { rate: forecast_stats.p20, percent: 20 },
-      { rate: forecast_stats.p10, percent: 10 },
+      { rate: forecast_stats.p30 * multiplier, percent: 30 },
+      { rate: forecast_stats.p20 * multiplier, percent: 20 },
+      { rate: forecast_stats.p10 * multiplier, percent: 10 },
     ];
     return { safeData, cheapData };
   };
@@ -140,7 +140,7 @@ const ExchangeRateForecast: React.FC<Props> = ({ setExchangeRateFront, setExchan
     datasets: [
       {
         label: `${currencyCode} 예측`,
-        data: Object.values(currencyData.forecast).map((value) => (currencyCode === "JPY" ? value * 100 : value)),
+        data: Object.values(currencyData.forecast),
         borderColor: currencyData.trend === TrendType.UPWARD ? "rgb(221, 82, 87)" : "rgb(72, 128, 238)",
         tension: 0.1,
       },
@@ -155,25 +155,19 @@ const ExchangeRateForecast: React.FC<Props> = ({ setExchangeRateFront, setExchan
 
       {/* 환율 추세 및 현재 환율 */}
       <div className="w-full p-3 rounded-lg bg-[#f4f4f4] flex flex-col border-2 border-transparent">
-        <div className="flex flex-col space-y-4">
+        <div className="flex justify-between space-y-1">
           <div className="ml-1 flex items-center">
             <img src={flagImagePath} alt={`${currencyCode} Flag`} className="w-6 h-5 mr-2 rounded-sm" />
             <h1 className="text-xl font-semibold">{currencyCode}</h1>
           </div>
-
-          <div className="flex justify-between items-center">
-            <div className="space-y-1">
-              <p className="text-sm text-zinc-500">실시간 환율</p>
-              <p className="text-xl font-semibold">
-                {formatRate(currencyData.current_rate)}원
-                {currencyCode === "JPY" && <span className="text-sm ml-1"></span>}
-              </p>
+          <div>
+            <p className="text-sm text-zinc-500 text-right">실시간 환율</p>
+            <div className="text-xl font-semibold text-right">
+              {formatRate(currencyData.current_rate)}원
+              {currencyCode === "JPY" && <span className="text-sm ml-1"></span>}
             </div>
             <div className="text-sm flex items-center space-x-1">
-              <p className="text-zinc-400">2주 간</p>
-              {currencyData.trend === TrendType.UPWARD && <IoCaretUpOutline className="text-red-500" />}
-              {currencyData.trend === TrendType.DOWNWARD && <IoCaretDownOutline className="text-blue-500" />}
-              {currencyData.trend === TrendType.STABLE && <TbEqual className="text-gray-500" />}
+              <p>2주 간</p>
               <p
                 className={
                   currencyData.trend === TrendType.UPWARD
@@ -184,6 +178,9 @@ const ExchangeRateForecast: React.FC<Props> = ({ setExchangeRateFront, setExchan
                 }>
                 {trendInKorean} 것으로 예측
               </p>
+              {currencyData.trend === TrendType.UPWARD && <IoCaretUpOutline className="text-red-500" />}
+              {currencyData.trend === TrendType.DOWNWARD && <IoCaretDownOutline className="text-blue-500" />}
+              {currencyData.trend === TrendType.STABLE && <TbEqual className="text-gray-500" />}
             </div>
           </div>
         </div>
