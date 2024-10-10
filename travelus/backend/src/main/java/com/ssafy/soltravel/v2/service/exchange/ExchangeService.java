@@ -155,8 +155,7 @@ public class ExchangeService {
     TargetRate targetRate = targetRateRepository.findByGroupId(groupId)
         .orElseThrow(() -> new TargetRateNotFoundException(groupId));
     removePreferenceRateFromRedis(requestDto.getCurrencyCode(), targetRate.getId());
-
-    targetRate.setRate(Double.valueOf(requestDto.getTargetRate()));
+    targetRate.setRate(BigDecimal.valueOf(requestDto.getTargetRate()).setScale(2, RoundingMode.HALF_UP).doubleValue());
     targetRate.setAmount(requestDto.getTransactionBalance());
     targetRateRepository.save(targetRate);
 
