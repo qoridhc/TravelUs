@@ -187,11 +187,11 @@ public class TransactionService {
 
     String depositAccountNo = requestDto.getDepositAccountNo();
     AccountDto accountDto = accountService.getByAccountNo(depositAccountNo);
-    List<TransferHistoryResponseDto> exchangeResponseDto=null;
+    List<TransferHistoryResponseDto> exchangeResponseDto = null;
     if (accountDto.getAccountType() == AccountType.G) {
 
       GroupDto group = groupService.getGroupByAccountNo(depositAccountNo);
-      if(group.getExchangeType()== ExchangeType.NOW){
+      if (group.getExchangeType() == ExchangeType.NOW) {
 
         Map<String, Object> exchangeBody = new HashMap<>();
 
@@ -203,25 +203,27 @@ public class TransactionService {
         exchangeBody.put("targetCurrencyCode", accountDto.getMoneyBoxDtos().get(1).getCurrencyCode());
         exchangeBody.put("transactionBalance", accountDto.getMoneyBoxDtos().get(0).getBalance());
 
-        ResponseEntity<Map<String, Object>> exchangeResponse = webClient.post()
-            .uri(BASE_URL + "transfer/moneybox/auto")
-            .contentType(MediaType.APPLICATION_JSON)
-            .bodyValue(exchangeBody)
-            .retrieve()
-            .onStatus(status -> status.isError(), clientResponse -> {
-              LogUtil.info("환전 실패(잔액 부족)");
-              return clientResponse.createException();
-            })
-            .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {})
-            .block();
+        try {
+          ResponseEntity<Map<String, Object>> exchangeResponse = webClient.post()
+              .uri(BASE_URL + "transfer/moneybox/auto")
+              .contentType(MediaType.APPLICATION_JSON)
+              .bodyValue(exchangeBody)
+              .retrieve()
+              .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
+              })
+              .block();
 
-        List<Object> exchangeRecObject = (List<Object>) exchangeResponse.getBody().get("REC");
+          List<Object> exchangeRecObject = (List<Object>) exchangeResponse.getBody().get("REC");
 
-        exchangeResponseDto = exchangeRecObject.stream()
-            .map(value -> modelMapper.map(value, TransferHistoryResponseDto.class))
-            .collect(Collectors.toList());
+          exchangeResponseDto = exchangeRecObject.stream()
+              .map(value -> modelMapper.map(value, TransferHistoryResponseDto.class))
+              .collect(Collectors.toList());
+
+          responseDto.addAll(exchangeResponseDto);
+        } catch (Exception e) {
+          LogUtil.info("환전 실패(잔액 부족): ", e.getMessage());
+        }
       }
-      responseDto.addAll(exchangeResponseDto);
     }
 
     notificationService.sendTransferNotification(user, requestDto);
