@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router";
 import CurrencyInputMui from "../../components/travelBox/CurrencyInputMui";
@@ -11,12 +11,21 @@ const CurrencyInfoOfCreateTravelBox = () => {
   const dispatch = useDispatch();
   const [currency, setCurrency] = useState("");
   const travelboxInfo = useSelector((state: RootState) => state.meetingAccount.travelboxInfo);
+  const [isValid, setIsValid] = useState(false);
 
   const handleNext = () => {
     const updatedTravelboxInfo = { ...travelboxInfo, currencyCode: currency };
     dispatch(setTravelboxInfo(updatedTravelboxInfo));
     navigate("/meeting/create/password/travelbox");
   };
+
+  useEffect(() => {
+    if (currency !== "") {
+      setIsValid(true);
+    } else {
+      setIsValid(false);
+    }
+  }, [currency]);
 
   return (
     <div className="h-full p-5 pb-8 flex flex-col justify-between">
@@ -48,8 +57,11 @@ const CurrencyInfoOfCreateTravelBox = () => {
       </div>
 
       <button
-        className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
-        onClick={() => handleNext()}>
+        className={`w-full h-14 text-lg rounded-xl tracking-wide ${
+          isValid ? "text-white bg-[#1429A0]" : "text-[#565656] bg-[#E3E4E4]"
+        } `}
+        onClick={() => handleNext()}
+        disabled={!isValid}>
         다음
       </button>
     </div>

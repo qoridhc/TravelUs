@@ -70,7 +70,7 @@ public class TravelGroup {
     TravelGroup travelGroup = TravelGroup.builder()
         .groupAccountNo(accountNo)
         .exchangeType(requestDto.getExchangeType())
-        .travelStartDate(requestDto.getTravelStartDate())
+        .travelStartDate(LocalDate.now().plusDays(1))
         .travelEndDate(requestDto.getTravelEndDate())
         .groupName(requestDto.getGroupName())
         .icon(requestDto.getIcon())

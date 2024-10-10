@@ -53,15 +53,10 @@ const CreateRequestOfCreateMeetingAccount = () => {
     }
   };
 
-
   return (
     <div className="h-full p-5 pb-8 flex flex-col justify-between">
       <div className="grid gap-14">
-        <div className="flex items-center">
-          <IoIosArrowBack className="text-2xl" />
-        </div>
-
-        <div className="flex flex-col items-center space-y-3">
+        <div className="mt-28 flex flex-col items-center space-y-3">
           <img className="w-2/3" src="/assets/IDSuccess.png" alt="" />
 
           <div className="text-center grid gap-3">
