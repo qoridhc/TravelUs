@@ -77,12 +77,16 @@ public class BatchConfig {
                     new ExchangeRateCacheDto(currencyCode, exchangeRate, timeLastUpdateUtc, String.valueOf(exchangeMin))
                 );
 
-                exchangeService.processCurrencyConversions(currencyCode, exchangeRate);
+//                exchangeService.processCurrencyConversions(currencyCode, exchangeRate);
             } else {
 
                 LogUtil.info(String.format("환율 변동 없음. 통화 코드: %s, 기존 환율: %s, 새로운 환율: %s",
                     currencyCode, cachedDto.getExchangeRate(), exchangeRate));
             }
+            /**
+             * 시연테스트용
+             */
+            exchangeService.processCurrencyConversions(currencyCode, exchangeRate);
             return RepeatStatus.FINISHED;
         };
     }

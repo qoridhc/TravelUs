@@ -38,7 +38,7 @@ public class ExchangeService {
 
 
   //  @PostConstruct
-  @Scheduled(cron = "30 0 * * * ?")
+//  @Scheduled(cron = "30 0 * * * ?")
   public List<ExchangeRateCacheDTO> updateExchangeRates() {
     String url = "/latest/KRW";
 

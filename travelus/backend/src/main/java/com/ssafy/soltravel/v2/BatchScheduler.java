@@ -22,7 +22,7 @@ public class BatchScheduler {
     private final JobRegistry jobRegistry;
 
     //    @Scheduled(cron = "0/10 * * * * *") // 10초마다 실행
-    @Scheduled(cron = "0 0 10 * * *") // 매일 오전 10시 실행
+//    @Scheduled(cron = "0 0 10 * * *") // 매일 오전 10시 실행
     public void runJob() {
         String time = LocalDateTime.now().toString();
         try {
