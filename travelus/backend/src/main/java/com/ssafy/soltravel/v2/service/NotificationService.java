@@ -239,13 +239,17 @@ public class NotificationService {
         String message = String.format("%s님에게 %s원을 보냈어요.", depositUser.getName(), formattedAmount);
 
         AccountDto senderAccount = accountService.getByAccountNo(requestDto.getWithdrawalAccountNo());
+        AccountDto depositAccount = accountService.getByAccountNo(requestDto.getDepositAccountNo());
 
         NotificationType notificationType = NotificationType.PT;
         TravelGroup group = null;
 
-        if (senderAccount.getAccountType().equals(AccountType.G)) {
+        if (depositAccount.getAccountType().equals(AccountType.G)) {
+            group = groupRepository.findByGroupAccountNo(requestDto.getDepositAccountNo());
+
             title = "모임통장 " + title;
-            group = groupRepository.findByGroupAccountNo(requestDto.getWithdrawalAccountNo());
+            message = String.format("\"%s\" 모임통장 으로 %s원을 보냈어요.", group.getGroupName(), formattedAmount);
+
             notificationType = NotificationType.GT;
         }
 
@@ -265,7 +269,6 @@ public class NotificationService {
         title = user.getName() + "님이 돈을 보냈어요";
         message = String.format("%s원이 튜나은행 계좌로 입금되었어요.", formattedAmount);
 
-        AccountDto depositAccount = accountService.getByAccountNo(requestDto.getDepositAccountNo());
         notificationType = NotificationType.PT;
 
         TravelGroup depositGroup = null;
@@ -273,7 +276,7 @@ public class NotificationService {
         if (depositAccount.getAccountType().equals(AccountType.G)) {
             depositGroup = groupRepository.findByGroupAccountNo(requestDto.getDepositAccountNo());
 
-            message = String.format("%s원이 %s 모임통장으로 입금되었어요.", formattedAmount, depositGroup.getGroupName());
+            message = String.format("%s원이 \"%s\" 모임통장으로 입금되었어요.", formattedAmount, depositGroup.getGroupName());
             notificationType = NotificationType.GT;
         }
 
