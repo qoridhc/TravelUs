@@ -36,6 +36,9 @@ public class NotificationDto {
     @Schema(description = "정산 ID", example = "3")
     private String settlementId;
 
+    @Schema(description = "currencyCode", example = "KRW")
+    private String currencyCode;
+
     @Schema(description = "읽음 여부", example = "false")
     private boolean isRead;
 
