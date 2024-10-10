@@ -78,7 +78,7 @@ const MainMeetingAccount = ({ index, account }: Props) => {
         currencyCode: "",
       })
     );
-    navigate("/currencyinfoofcreatetravelbox");
+    navigate("/travelbox/create/currency");
   };
 
   return (

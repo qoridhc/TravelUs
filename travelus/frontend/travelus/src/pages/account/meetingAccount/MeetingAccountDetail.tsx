@@ -34,7 +34,7 @@ const MeetingAccountDetail = () => {
         currencyCode: "",
       })
     );
-    navigate("/currencyinfoofcreatetravelbox");
+    navigate("/travelbox/create/currency");
   };
 
   // 특정 모임 조회 API 호출

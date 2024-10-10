@@ -54,7 +54,7 @@ import IDVerificationOfCreateMeetingAccount from "./pages/meetingAccount/createM
 import TravelBoxTransaction from "./pages/travelBox/TravelBoxTransaction";
 import MeetingTransaction from "./pages/meetingAccount/MeetingTransaction";
 import CurrencyInfoOfCreateTravelBox from "./pages/travelBox/CurrencyInfoOfCreateTravelBox";
-import AutoCurrencyExchangeOfCreateTravelBox from "./pages/travelBox/AutoCurrencyExchangeOfCreateTravelBox";
+import AutoCurrencyExchangeRateOfCreateTravelBox from "./pages/travelBox/AutoCurrencyExchangeRateOfCreateTravelBox";
 import DeleteTravelBox from "./pages/travelBox/travelBoxDelete/DeleteTravelbox";
 import DeleteTravelBoxPassword from "./pages/travelBox/travelBoxDelete/DeleteTravelboxPassword";
 import CompletedOfDeleteTravelBox from "./pages/travelBox/travelBoxDelete/CompletedOfDeleteTravelBox";
@@ -93,6 +93,7 @@ import CreateRequestOfCreateMeetingAccount from "./pages/meetingAccount/createMe
 import CreateRequestOfCreateAccount from "./pages/account/generalAccount/generalAccountCreate/CreateRequestOfCreateAccount";
 import ExpenditureSettlementGroupList from "./pages/account/meetingAccount/expenditureSettlement/ExpenditureSettlementGroupList";
 import ExpenditureSettlementGroupDetail from "./pages/account/meetingAccount/expenditureSettlement/ExpenditureSettlementGroupDetail";
+import AutoCurrencyExchangeAmountOfCreateTravelBox from "./pages/travelBox/AutoCurrencyExchangeAmountOfCreateTravelBox";
 
 function App() {
   return (
@@ -183,10 +184,11 @@ function App() {
           <Route path="/travelbox/transaction/:accountNo/:type" element={<TravelBoxTransaction />} />
 
           {/* 외화저금통 생성 */}
-          <Route path="/travelbox/create/type" element={<SelectTypeOfAutoExchange />} />
           <Route path="/travelbox/create/prepare" element={<TravelBoxCreatePrepare />} />
-          <Route path="/currencyinfoofcreatetravelbox" element={<CurrencyInfoOfCreateTravelBox />} />
-          <Route path="/autocurrencyexchangeofcreatetravelbox" element={<AutoCurrencyExchangeOfCreateTravelBox />} />
+          <Route path="/travelbox/create/currency" element={<CurrencyInfoOfCreateTravelBox />} />
+          <Route path="/travelbox/create/type" element={<SelectTypeOfAutoExchange />} />
+          <Route path="/travelbox/create/auto/exchange/rate" element={<AutoCurrencyExchangeRateOfCreateTravelBox />} />
+          <Route path="/travelbox/create/auto/exchange/amount" element={<AutoCurrencyExchangeAmountOfCreateTravelBox />} />
 
           {/* 외화저금통 해지 */}
           <Route path="/travelbox/delete/:accountNo/:groupId" element={<DeleteTravelBox />} />
@@ -226,7 +228,7 @@ function App() {
           <Route path="/exchangerate/forecast-detail" element={<ExchangeRateForecastDetail />} />
 
           {/* 환율 예측 */}
-          <Route path="/exchangerate/forecast" element={<ExchangeRateForecast />} />
+          {/* <Route path="/exchangerate/forecast" element={<ExchangeRateForecast />} /> */}
 
           {/* 잔액정산 */}
           <Route path="/settlement/balance/amount/:id" element={<SelectSettlementAmount />}></Route>

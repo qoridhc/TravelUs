@@ -15,7 +15,7 @@ const CurrencyInfoOfCreateTravelBox = () => {
   const handleNext = () => {
     const updatedTravelboxInfo = { ...travelboxInfo, currencyCode: currency };
     dispatch(setTravelboxInfo(updatedTravelboxInfo));
-    navigate("/autocurrencyexchangeofcreatetravelbox", { state: { currency: currency } });
+    navigate("/meeting/create/password/travelbox");
   };
 
   return (
