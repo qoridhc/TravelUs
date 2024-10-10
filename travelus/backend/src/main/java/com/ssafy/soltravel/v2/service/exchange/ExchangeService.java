@@ -110,7 +110,7 @@ public class ExchangeService {
    * 목표 환율 설정
    */
   @Transactional
-  public void setPreferenceRate(ExchangeRateRegisterRequestDto dto, boolean isUpdate, long targetId) {
+  public ResponseDto setPreferenceRate(ExchangeRateRegisterRequestDto dto, boolean isUpdate, long targetId) {
 
     CurrencyType currencyCode = dto.getCurrencyCode();
     double targetRate = BigDecimal.valueOf(dto.getTargetRate()).setScale(2, RoundingMode.HALF_UP).doubleValue();
@@ -142,13 +142,14 @@ public class ExchangeService {
         redisTemplate.expire(key, 0, TimeUnit.SECONDS);
       }
     }
+    return new ResponseDto();
   }
 
   /**
    * 희망환율 수정
    */
   @Transactional
-  public void updateTargetRate(TargetRateUpdateRequestDto requestDto) {
+  public ResponseDto updateTargetRate(TargetRateUpdateRequestDto requestDto) {
 
     long groupId = requestDto.getGroupId();
     TargetRate targetRate = targetRateRepository.findByGroupId(groupId)
@@ -161,6 +162,8 @@ public class ExchangeService {
 
     setPreferenceRate(new ExchangeRateRegisterRequestDto(groupId, getCurrencyType(requestDto.getCurrencyCode()),
         requestDto.getTransactionBalance(), requestDto.getTargetRate(), requestDto.getDueDate()), true, targetRate.getId());
+
+    return new ResponseDto();
   }
 
   /**

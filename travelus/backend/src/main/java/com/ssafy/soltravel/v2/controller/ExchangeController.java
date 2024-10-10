@@ -68,13 +68,13 @@ public class ExchangeController {
    */
   @PostMapping("/rate/target-rate")
   @Operation(summary = "희망 환율 설정", description = "희망 환율을 설정합니다.", responses = {
-      @ApiResponse(responseCode = "200", description = "성공적으로 환율을 저장했습니다.", content = @Content(schema = @Schema(implementation = String.class))),
+      @ApiResponse(responseCode = "200", description = "성공적으로 환율을 저장했습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
       @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @Content),
       @ApiResponse(responseCode = "500", description = "서버 오류입니다.", content = @Content)})
-  public ResponseEntity<String> setTargetRate(
+  public ResponseEntity<ResponseDto> setTargetRate(
       @RequestBody ExchangeRateRegisterRequestDto requestDto) {
-    exchangeService.setPreferenceRate(requestDto, false, -1);
-    return ResponseEntity.ok().body("register success");
+    ResponseDto response=exchangeService.setPreferenceRate(requestDto, false, -1);
+    return ResponseEntity.ok().body(response);
   }
 
   /**
@@ -82,13 +82,13 @@ public class ExchangeController {
    */
   @PutMapping("/rate/target-rate")
   @Operation(summary = "희망 환율 수정", description = "희망 환율을 수정합니다.", responses = {
-      @ApiResponse(responseCode = "200", description = "성공적으로 희망 환율을 수정했습니다.", content = @Content(schema = @Schema(implementation = ExchangeRateRegisterRequestDto.class))),
+      @ApiResponse(responseCode = "200", description = "성공적으로 희망 환율을 수정했습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
       @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @Content),
       @ApiResponse(responseCode = "500", description = "서버 오류입니다.", content = @Content)})
-  public ResponseEntity<String> updateTargetRate(
+  public ResponseEntity<ResponseDto> updateTargetRate(
       @RequestBody TargetRateUpdateRequestDto requestDto) {
-    exchangeService.updateTargetRate(requestDto);
-    return ResponseEntity.ok().body("update success");
+    ResponseDto response=exchangeService.updateTargetRate(requestDto);
+    return ResponseEntity.ok().body(response);
   }
 
   /**
