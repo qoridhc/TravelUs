@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { MeetingAccountInfo, MeetingAccountDetailInfo } from "../../../types/account";
+import { ParticipantInfo } from "../../../types/meetingAccount";
 import { accountApi } from "../../../api/account";
+import { userApi } from "../../../api/user";
 import { IoIosArrowBack } from "react-icons/io";
 import { IoPeopleSharp } from "react-icons/io5";
 import { MdKeyboardArrowRight } from "react-icons/md";
@@ -12,6 +14,7 @@ import { IoIosListBox } from "react-icons/io";
 import { RiHandCoinFill } from "react-icons/ri";
 import { RiExchangeDollarLine } from "react-icons/ri";
 import Loading from "../../../components/loading/Loading";
+import { is } from "date-fns/locale";
 
 interface MeetingAccountManagementProps {
   // Define the props for your component here
@@ -23,6 +26,9 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
   const numId = Number(id);
   const [accountInfo, setAccountInfo] = useState<MeetingAccountInfo | null>(null);
   const [account, setAccount] = useState<MeetingAccountDetailInfo | null>(null);
+  const [memberList, setMemberList] = useState<ParticipantInfo[] | null>(null);
+  const [isUserMaster, setIsUserMaster] = useState(false);
+  const [userId, setUserId] = useState<number | null>(null);
 
   useEffect(() => {
     // 해당 모임 조회 API 호출
@@ -31,6 +37,7 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
         const response = await accountApi.fetchSpecificMeetingAccount(numId);
         if (response.status === 200) {
           setAccountInfo(response.data);
+          setMemberList(response.data.participants);
           fetchSpecificAccountInfo(response.data.groupAccountNo);
         }
       } catch (error) {
@@ -39,6 +46,7 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
     };
 
     fetchSpecificMeetingAccount();
+    fetchUser();
   }, [id]);
 
   // 특정 모임 통장 조회 API 호출
@@ -51,7 +59,27 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
     }
   };
 
-  if (!account || !accountInfo) {
+  // 모임 참여자가 userId로 본인인지 확인
+  const fetchUser = async () => {
+    try {
+      const response = await userApi.fetchUser();
+      if (response.status === 200) {
+        const myId = response.data.userId;
+        setUserId(myId);
+      }
+    } catch (error) {
+      console.error("유저 정보 조회 에러", error);
+    }
+  };
+
+  useEffect(() => {
+    if (memberList && userId) {
+      const currentUser = memberList.find((member) => member.userId === userId);
+      setIsUserMaster(currentUser?.master || false);
+    }
+  }, [memberList, userId]);
+
+  if (!account || !accountInfo || !memberList || !userId) {
     return <Loading />;
   }
 
@@ -164,44 +192,67 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
         <div className="p-6 pb-8 flex flex-col space-y-4">
           <p className="font-semibold">정산하기</p>
           <div className="flex flex-col space-y-4">
-            <div className="flex items-center space-x-3">
-              <IoPerson className="text-3xl text-[#5e91ff]" />
-              <div className="w-full flex justify-between">
-                <p className="text-zinc-500">개별 지출 정산</p>
-                <div
-                  onClick={() => {
-                    navigate(`/settlement/expenditure/transaction/detail/${id}`);
-                  }}
-                  className="flex items-center">
-                  <p className="text-[#0471E9]">정산하기</p>
-                  <MdKeyboardArrowRight className="text-2xl text-zinc-600" />
+            {/* 모임장일 경우에만 정산하기 표시 */}
+            {isUserMaster ? (
+              <>
+                <div className="flex items-center space-x-3">
+                  <IoPerson className="text-3xl text-[#5e91ff]" />
+                  <div className="w-full flex justify-between">
+                    <p className="text-zinc-500">개별 지출 정산</p>
+                    <div
+                      onClick={() => {
+                        navigate(`/settlement/expenditure/transaction/detail/${id}`);
+                      }}
+                      className="flex items-center">
+                      <p className="text-[#0471E9]">정산하기</p>
+                      <MdKeyboardArrowRight className="text-2xl text-zinc-600" />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <IoIosListBox className="text-3xl text-[#adb3be]" />
-              <div className="w-full flex justify-between">
-                <p className="text-zinc-500">개별 지출 내역</p>
-                <div
-                  className="flex items-center"
-                  onClick={() => {
-                    navigate(`/settlement/expenditure/group/list/${id}/NOT_COMPLETED`);
-                  }}>
-                  <p className="text-[#0471E9]">내역보기</p>
-                  <MdKeyboardArrowRight className="text-2xl text-zinc-600" />
+                <div className="flex items-center space-x-3">
+                  <IoIosListBox className="text-3xl text-[#adb3be]" />
+                  <div className="w-full flex justify-between">
+                    <p className="text-zinc-500">개별 지출 내역</p>
+                    <div
+                      className="flex items-center"
+                      onClick={() => {
+                        navigate(`/settlement/expenditure/group/list/${id}/NOT_COMPLETED`);
+                      }}>
+                      <p className="text-[#0471E9]">내역보기</p>
+                      <MdKeyboardArrowRight className="text-2xl text-zinc-600" />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <RiHandCoinFill className="text-3xl text-[#f3ba4f]" />
-              <div className="w-full flex justify-between">
-                <p className="text-zinc-500">모임통장 잔액 정산</p>
-                <div onClick={() => navigate(`/settlement/balance/amount/${id}`)} className="flex items-center">
-                  <p className="text-[#0471E9]">정산하기</p>
-                  <MdKeyboardArrowRight className="text-2xl text-zinc-600" />
+                <div className="flex items-center space-x-3">
+                  <RiHandCoinFill className="text-3xl text-[#f3ba4f]" />
+                  <div className="w-full flex justify-between">
+                    <p className="text-zinc-500">모임통장 잔액 정산</p>
+                    <div onClick={() => navigate(`/settlement/balance/amount/${id}`)} className="flex items-center">
+                      <p className="text-[#0471E9]">정산하기</p>
+                      <MdKeyboardArrowRight className="text-2xl text-zinc-600" />
+                    </div>
+                  </div>
                 </div>
+              </>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <IoIosListBox className="text-3xl text-[#adb3be]" />
+                  <div className="w-full flex justify-between">
+                    <p className="text-zinc-500">개별 지출 내역</p>
+                    <div
+                      className="flex items-center"
+                      onClick={() => {
+                        navigate(`/settlement/expenditure/group/list/${id}/NOT_COMPLETED`);
+                      }}>
+                      <p className="text-[#0471E9]">내역보기</p>
+                      <MdKeyboardArrowRight className="text-2xl text-zinc-600" />
+                    </div>
+                  </div>
+                </div>
+                <p className="text-sm text-zinc-600 text-left">모임장만 정산을 시작할 수 있어요</p>
               </div>
-            </div>
+            )}
           </div>
         </div>
 

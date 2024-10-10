@@ -4,7 +4,9 @@ import { useNavigate, useLocation } from "react-router";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { MeetingAccountInfo, TransactionNew, AccountInfoNew } from "../../../types/account";
 import { accountApi } from "../../../api/account";
+import { cardApi } from "../../../api/card";
 import Loading from "../../../components/loading/Loading";
+import { set } from "date-fns";
 
 const CardDetail: React.FC = (props) => {
   const navigate = useNavigate();
@@ -33,6 +35,7 @@ const CardDetail: React.FC = (props) => {
         if (response.status === 200) {
           const meetingData = response.data;
           setMeeting(meetingData);
+          fetchTotalAmount(meetingData.cardNumber);
 
           // 두 개의 비동기 요청을 순차적으로 호출
           return Promise.all([
@@ -76,12 +79,10 @@ const CardDetail: React.FC = (props) => {
         transactionType: "CW",
       };
 
-      console.log(data);
       const response = await accountApi.fetchTracsactionHistory(data);
 
       if (response.status === 200) {
         setTransactionList(response.data.content);
-        calculateTotals(response.data.content);
       }
     } catch (error) {
       console.error("카드 내역 조회 실패", error);
@@ -93,27 +94,25 @@ const CardDetail: React.FC = (props) => {
       const response = await accountApi.fetchSpecificAccountInfo(accountNo);
       if (response.status === 201) {
         setAccount(response.data);
-        console.log("계좌 조회 성공", response.data);
       }
     } catch (error) {
       console.error("계좌 조회 에러", error);
     }
   };
 
-  const calculateTotals = (transactions: TransactionNew[]) => {
-    let domesticSum = 0;
-    let foreignSum = 0;
-
-    transactions.forEach((transaction) => {
-      if (transaction.currencyCode === "KRW") {
-        domesticSum += Number(transaction.transactionAmount);
-      } else {
-        foreignSum += Number(transaction.transactionAmount);
+  const fetchTotalAmount = async (cardNo: string) => {
+    setIsLoading(true);
+    try {
+      const response = await cardApi.fetchTotalAmount(cardNo);
+      if (response.status === 200) {
+        setDomesticTotal(response.data.krwAmount);
+        setForeignTotal(response.data.foreignAmount);
       }
-    });
-
-    setDomesticTotal(domesticSum);
-    setForeignTotal(foreignSum);
+    } catch (error) {
+      console.error("총 사용 금액 조회 에러", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const formatCurrencyNum = (amount: number) => {
