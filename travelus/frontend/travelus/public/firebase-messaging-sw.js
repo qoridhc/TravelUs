@@ -1,5 +1,5 @@
-const baseUrl = "http://localhost:3000"; // 로컬
-// const baseUrl = "https://j11d209.p.ssafy.io"; // 서비스
+// const baseUrl = "http://localhost:3000"; // 로컬
+const baseUrl = "https://j11d209.p.ssafy.io"; // 서비스
 
 self.addEventListener("install", function (e) {
   console.log("fcm sw install..");
