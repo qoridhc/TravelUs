@@ -16,7 +16,7 @@ public class TargetRateUpdateRequestDto {
   @Schema(description = "환전할 금액", example = "1700000")
   private Double transactionBalance;
 
-  @Schema(description = "목표 환율", example = "1500.01")
+  @Schema(description = "목표 환율", example = "1500.11")
   private float targetRate;
 
   @Schema(description = "만료일", example = "2024-10-10")
