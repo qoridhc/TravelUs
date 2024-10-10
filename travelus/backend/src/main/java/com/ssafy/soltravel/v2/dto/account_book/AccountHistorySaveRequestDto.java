@@ -24,8 +24,8 @@ public class AccountHistorySaveRequestDto {
   @Schema(description = "총 사용 금액", example = "9.35")
   private Double paid;
 
-  @Schema(description = "사용 일시", example = "2024-08-29T20:51:21")
-  private LocalDateTime transactionAt;
+  @Schema(description = "사용 일시", example = "2024-10-10T20:51, 2024-10-10")
+  private String transactionAt;
 
   @Schema(description = "주소", example = "169 Euston Road, London")
   private String address;
