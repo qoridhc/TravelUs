@@ -1,17 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { AccountInfo, GeneralMeetingAccountDetail } from "../types/account";
+import { AccountInfo, AccountInfoNew, MeetingAccountInfo, GeneralMeetingAccountDetail } from "../types/account";
 
 export interface AccountState {
+  currentFooterMenu: string;
   isKeyboard: boolean;
   accountPassword: string;
   accountList: Array<AccountInfo>;
   foreignAccountList: Array<AccountInfo>;
-  joinedAccountList: Array<AccountInfo>;
+  joinedAccountList: Array<MeetingAccountInfo>;
   generalMeetingAccountDetail: GeneralMeetingAccountDetail;
 }
 
 const initialState: AccountState = {
+  currentFooterMenu: "홈",
   isKeyboard: false,
   accountPassword: "",
   accountList: [],
@@ -31,6 +33,9 @@ export const userSilce = createSlice({
   name: "account",
   initialState,
   reducers: {
+    setCurrentFooterMenu: (state, action: PayloadAction<string>) => {
+      state.currentFooterMenu = action.payload;
+    },
     setIsKeyboard: (state, action: PayloadAction<boolean>) => {
       state.isKeyboard = action.payload;
     },
@@ -43,7 +48,7 @@ export const userSilce = createSlice({
     editForeingAccountList: (state, action: PayloadAction<Array<AccountInfo>>) => {
       state.foreignAccountList = action.payload;
     },
-    editJoinedAccountList: (state, action: PayloadAction<Array<AccountInfo>>) => {
+    editJoinedAccountList: (state, action: PayloadAction<Array<MeetingAccountInfo>>) => {
       state.joinedAccountList = action.payload;
     },
     editGeneralMeetingAccountList: (state, action: PayloadAction<GeneralMeetingAccountDetail>) => {
@@ -52,6 +57,6 @@ export const userSilce = createSlice({
   },
 });
 
-export const { setIsKeyboard, setAccountPassword, editAccountList, editForeingAccountList, editGeneralMeetingAccountList, editJoinedAccountList } = userSilce.actions;
+export const { setCurrentFooterMenu, setIsKeyboard, setAccountPassword, editAccountList, editForeingAccountList, editGeneralMeetingAccountList, editJoinedAccountList } = userSilce.actions;
 
 export default userSilce.reducer;

@@ -20,6 +20,61 @@ export interface AccountInfo {
   preferenceExchange: string;
 }
 
+// 계좌 정보 (신규 ver)
+export interface AccountInfoNew {
+  accountId: number,
+  userName: string,
+  accountNo: string,
+  accountPassword: string,
+  accountType: string,
+  bankCode: number,
+  moneyBoxDtos: Array<{
+    moneyBoxId: number,
+    balance: number,
+    currencyCode: string
+  }>,
+  createdAt: string,
+  updatedAt: string
+}
+
+// 모임 정보
+export interface MeetingAccountInfo {
+  cardNumber: string;
+  groupId: number;
+  groupAccountNo: string;
+  groupName: string;
+  icon: string;
+  moneyBoxDtoList: Array<{
+    moneyBoxId: number;
+    balance: number;
+    currencyCode: string
+  }>;
+  participants: Array<{
+    createdAt: string;
+    master: boolean;
+    participantId: number;
+    personalAccountNo: string;
+    updatedAt: string;
+    userId: number;
+  }>
+};
+
+// 모임통장 상세 정보
+export interface MeetingAccountDetailInfo {
+  accountId: number;
+  accountNo: string;
+  accountPassword: string;
+  accountType: string;
+  bankCode: number;
+  moneyBoxDtos: Array<{
+    moneyBoxId: number;
+    balance: number;
+    currencyCode: string
+  }>;
+  updatedAt: string;
+  userName: string;
+};
+
 
 // 거래 내역 조회
 export interface Transaction {
@@ -64,6 +119,16 @@ export interface MeetingAccountListDetail {
   updatedAt: string;
 }
 
+// 모임 정보 수정
+export interface MeetingAccountUpdateInfo {
+  groupAccountNo: string;
+  travelStartDate: string;
+  travelEndDate: string;
+  groupName: string;
+  icon: string;
+  }
+
+
 // 참여자 조회 정보
 export interface UserInfo {
   userId: number;
@@ -94,6 +159,13 @@ export interface ParticipantInfo {
   accountNo: string;
 }
 
+// 입출금통장 개설 정보
+export interface GeneralAccountCreate {
+  accountType: string;
+  accountPassword: string;
+  bankId: number;
+}
+
 // 모임통장 개설 정보
 export interface MeetingAccountCreate {
   accountType: string;
@@ -119,9 +191,47 @@ export interface GeneralMeetingAccountDetail {
 
 // 모임통장 모임종류 아이콘 
 export const meetingAccountIconList: Array<{text: string, value: string}> = [
-  { text: "선택안함", value: "none" },
+  { text: "선택안함", value: "airPlane" },
   { text: "친구", value: "friend" },
   { text: "가족", value: "family" },
   { text: "연인", value: "lover" },
   { text: "직장", value: "job" },
 ];
+
+// 모임통장 초대 코드
+export interface meetingInvitationCode {
+  groupCode: string;
+}
+
+// 거래 내역 조회 (New ver.)
+export interface TransactionNew {
+  transactionUniqueNo: string;
+  transactionType: string;
+  accountNo: string;
+  transactionDate: string;
+  transactionAmount: string;
+  transactionBalance: string;
+  transactionSummary: string;
+  payeeName: string;
+  currencyCode: string;
+}
+
+// 계좌 비밀번호 확인
+export interface AccountPassword {
+  accountNo: string;
+  accountPassword: string;
+}
+
+// 환전 모드 변경
+export interface ExchangeMode {
+  groupId: number;
+  exchangeType: string;
+}
+
+// 자동환전 환율 정보
+export interface AutoExchangeInfo {
+  targetRateId: number;
+  amount: number;
+  rate: number;
+  status: string;
+}

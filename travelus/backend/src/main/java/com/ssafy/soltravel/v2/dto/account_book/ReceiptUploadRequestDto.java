@@ -19,6 +19,6 @@ public class ReceiptUploadRequestDto {
   @Schema(description = "사진 형식(jpg, png, pdf)", example = "jpg")
   String format;
 
-  @Schema(description = "영수증 언어('', ja)", example = "''는 영어(빈 문자열), ja는 일본어입니다.")
+  @Schema(description = "영수증 언어('', ja, kr)", example = "영어: ''(빈문자열), 한글: ko, 일본어: ja")
   String lang;
 }

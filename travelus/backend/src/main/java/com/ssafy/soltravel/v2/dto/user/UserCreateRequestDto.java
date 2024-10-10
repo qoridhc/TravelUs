@@ -1,6 +1,7 @@
 package com.ssafy.soltravel.v2.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ssafy.soltravel.v2.domain.Enum.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.web.multipart.MultipartFile;
 
 @Data
@@ -17,9 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 public class UserCreateRequestDto {
 
-    @Schema(description = "사용자의 프로필 이미지", example = "file")
-    MultipartFile file;
-
     @NotNull
     @NotBlank
     @Schema(description = "사용자의 이름", example = "홍길동")
@@ -27,11 +26,13 @@ public class UserCreateRequestDto {
 
     @NotNull
     @NotBlank
-    @Schema(description = "사용자의 이메일 주소", example = "hong@google.com")
-    private String email;
+    @Length(min = 6, max = 13)
+    @Schema(description = "사용자의 아이디", example = "hdw123")
+    private String id;
 
     @NotNull
     @NotBlank
+    @Length(min = 8, max = 15)
     @Schema(description = "사용자의 비밀번호", example = "password123!")
     private String password;
 
@@ -49,8 +50,6 @@ public class UserCreateRequestDto {
     @Schema(description = "사용자의 생년월일", example = "1990-01-01")
     private LocalDate birth;
 
-    @NotNull
-    @NotBlank
-    @Schema(description = "새로 생성할 계좌 비밀번호", example = "1234")
-    private String accountPwd;
+    @Schema(description = "사용자의 성별(MALE , FEMALE)", example = "MALE")
+    private Gender gender;
 }

@@ -1,31 +1,52 @@
 package com.ssafy.soltravel.v2.domain;
 
+
+import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Table;
+import java.time.LocalDate;
+import lombok.Getter;
 
-@Data
-@Entity(name = "exchange_rate")
-@Builder(toBuilder = true)
-@AllArgsConstructor
-@NoArgsConstructor
+@Entity
+@Getter
+@Table(
+    name = "exchange_rate",
+    uniqueConstraints = {
+        @jakarta.persistence.UniqueConstraint(columnNames = {"date", "currency"})
+    }
+)
 public class ExchangeRate {
 
-    @Id
-    @Column(name="currency_code")
-    private String currencyCode;
+  @Id
+  @Column(name = "exchange_rate_id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(name = "exchange_rate")
-    private Double exchangeRate;
+  @Column(nullable = false)
+  private LocalDate date;
 
-    @Column(name = "exchange_min")
-    private Double exchangeMin;
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private CurrencyType currency;
 
-    @Column
-    private LocalDateTime created;
+  @Column
+  private Double rate;
+
+  public static ExchangeRate create(LocalDate date, CurrencyType currency, Double rate) {
+    ExchangeRate forecast = new ExchangeRate();
+    forecast.date = date;
+    forecast.currency = currency;
+    forecast.rate = rate;
+    return forecast;
+  }
+
+  public void updateRate(Double newRate) {
+    this.rate = newRate;
+  }
 }

@@ -1,546 +1,287 @@
 package com.ssafy.soltravel.v2.service.account;
 
 
-import com.ssafy.soltravel.v2.common.Header;
-import com.ssafy.soltravel.v2.domain.Enum.AccountType;
-import com.ssafy.soltravel.v2.domain.ForeignAccount;
-import com.ssafy.soltravel.v2.domain.GeneralAccount;
-import com.ssafy.soltravel.v2.domain.Participant;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.soltravel.v1.dto.user.UserDetailDto;
+import com.ssafy.soltravel.v2.common.BankHeader;
+import com.ssafy.soltravel.v2.domain.TravelGroup;
 import com.ssafy.soltravel.v2.domain.User;
-import com.ssafy.soltravel.v2.dto.ResponseDto;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
+import com.ssafy.soltravel.v2.dto.account.request.AddMoneyBoxRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.DeleteAccountRequestDto;
-import com.ssafy.soltravel.v2.dto.account.response.CreateAccountResponseDto;
+import com.ssafy.soltravel.v2.dto.account.request.InquireAccountListRequestDto;
+import com.ssafy.soltravel.v2.dto.account.request.PasswordValidateRequestDto;
 import com.ssafy.soltravel.v2.dto.account.response.DeleteAccountResponseDto;
-import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateRegisterRequestDto;
-import com.ssafy.soltravel.v2.dto.participants.ParticipantDto;
-import com.ssafy.soltravel.v2.dto.participants.request.AddParticipantRequestDto;
-import com.ssafy.soltravel.v2.dto.participants.request.ParticipantListResponseDto;
-import com.ssafy.soltravel.v2.dto.user.EmailValidationDto;
-import com.ssafy.soltravel.v2.exception.RefundAccountNotFoundException;
+import com.ssafy.soltravel.v2.dto.account.response.PasswordValidateResponseDto;
+import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
+import com.ssafy.soltravel.v2.dto.moneyBox.response.AddMoneyBoxResponseDto;
+import com.ssafy.soltravel.v2.dto.moneyBox.response.DeleteMoneyBoxResponseDto;
+import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.AccountMapper;
-import com.ssafy.soltravel.v2.mapper.ParticipantMapper;
-import com.ssafy.soltravel.v2.repository.ForeignAccountRepository;
 import com.ssafy.soltravel.v2.repository.GeneralAccountRepository;
+import com.ssafy.soltravel.v2.repository.GroupRepository;
 import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
-import com.ssafy.soltravel.v2.util.LogUtil;
+import com.ssafy.soltravel.v2.service.WebClientService;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class AccountService {
 
-  private final Map<String, String> apiKeys;
-  private final WebClient webClient;
-  private final ModelMapper modelMapper;
-  private final AccountMapper accountMapper;
+    private final Map<String, String> apiKeys;
 
-  private final UserRepository userRepository;
-  private final ParticipantRepository participantRepository;
-  private final GeneralAccountRepository generalAccountRepository;
-  private final ForeignAccountRepository foreignAccountRepository;
-  private final AccountExchangeService accountExchangeService;
+    private final WebClientService webClientService;
 
-  private final String BASE_URL = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit";
+    private final UserRepository userRepository;
+    private final ParticipantRepository participantRepository;
+    private final GeneralAccountRepository generalAccountRepository;
 
-  public CreateAccountResponseDto createGeneralAccount(
-      Long userId,
-      CreateAccountRequestDto requestDto
-  ) {
+    private final AccountMapper accountMapper;
+    private final ObjectMapper objectMapper;
 
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
+    private final SecurityUtil securityUtil;
 
-    String API_NAME = "createDemandDepositAccount";
+    private final String BASE_URL = "/accounts/";
+    //    private final GroupService groupService;
+    private final GroupRepository groupRepository;
 
-    Map<String, Object> body = new HashMap<>();
+    // 신규 계좌 생성
+    public AccountDto createGeneralAccount(
+        CreateAccountRequestDto requestDto
+    ) {
 
-    String API_URL = BASE_URL + "/" + API_NAME;
+        User user = securityUtil.getUserByToken();
 
-    Header header = Header.builder()
-        .apiName(API_NAME)
-        .apiServiceCode(API_NAME)
-        .apiKey(apiKeys.get("API_KEY"))
-        .userKey(user.getUserKey())
-        .build();
+        Map<String, Object> body = new HashMap<>();
+        String API_URL = BASE_URL + "postAccount";
 
-    body.put("Header", header);
+        BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
 
-    if (requestDto.getAccountType().equals(AccountType.INDIVIDUAL)) {
-      body.put("accountTypeUniqueNo", apiKeys.get("INDIVIDUAL_ACCOUNT_UNIQUE_NO"));
-    } else {
-      body.put("accountTypeUniqueNo", apiKeys.get("ACCOUNT_UNIQUE_NO"));
+        body.put("Header", header);
+        body.put("accountType", requestDto.getAccountType());
+        body.put("accountPassword", requestDto.getAccountPassword());
+        body.put("bankId", requestDto.getBankId());
+
+        // 일반 계좌 DB 저장 로직 유저 완성 시 추가
+        ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+
+        // REC 부분을 Object 타입으로 받기
+        Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
+
+        // recObject -> AccountDto 매핑
+        AccountDto accountDto = objectMapper.convertValue(recObject, AccountDto.class);
+
+        return accountDto;
     }
 
-    // 일반 계좌 DB 저장 로직 유저 완성 시 추가
-    ResponseEntity<Map<String, Object>> response = webClient.post()
-        .uri(API_URL)
-        .contentType(MediaType.APPLICATION_JSON)
-        .bodyValue(body)
-        .retrieve()
-        .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
-        })
-        .block();
-
-    // REC 부분을 Object 타입으로 받기
-    Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
-
-    // generalAccount 생성 & 저장
-    GeneralAccount generalAccount = accountMapper.toGeneralAccountEntitiy(recObject, user,requestDto);
-
-    GeneralAccount savedAccount = generalAccountRepository.save(generalAccount);
-
-    ExchangeRateRegisterRequestDto exchangeRateRegisterRequestDto = new ExchangeRateRegisterRequestDto();
-    exchangeRateRegisterRequestDto.setGeneralAccountId(savedAccount.getId());
-    exchangeRateRegisterRequestDto.setExchangeRate(requestDto.getExchangeRate());
-    exchangeRateRegisterRequestDto.setCurrencyCode(requestDto.getCurrencyCode());
-
-    accountExchangeService.setPreferenceRate(generalAccount.getAccountNo(),
-        exchangeRateRegisterRequestDto);
-
-    CreateAccountResponseDto responseDto = new CreateAccountResponseDto();
-
-    AccountDto generalAccountDto = accountMapper.toCreateAccountDto(generalAccount);
-
-    responseDto.setGeneralAccount(generalAccountDto);
-
-    // 모임 통장인경우 -> 외화 모임통장 자동 생성 & 그룹장으로 본인 참여자에 추가
-    if (requestDto.getAccountType().equals(AccountType.GROUP)) {
-
-      // foreingAccount 생성 & 저장
-      ForeignAccount foreignAccount = createForeignAccount(user, requestDto,
-          generalAccount.getId());
-
-      List<EmailValidationDto> participantInfos = requestDto.getParticipantInfos();
-
-      // 요청으로 넘어온 참여자 정보 돌면서 모임 참여자로 추가
-
-      if (participantInfos != null && !participantInfos.isEmpty()) {
-
-        boolean isMaster = true;
-        for (int i = 0; i < participantInfos.size(); i++) {
-
-          EmailValidationDto info = participantInfos.get(i);
-          User infoUser = userRepository.findByUserId(info.getUserId())
-              .orElseThrow(() -> new IllegalArgumentException(
-                  "User ID does not exist: " + info.getUserId()));
-
-          GeneralAccount personalAccount = generalAccountRepository.findByAccountNo(
-              info.getAccountNo()).orElseThrow(() -> new IllegalArgumentException(
-              "Account No does not exist: " + info.getAccountNo()));
-
-          Participant newParticipant = Participant.builder()
-              .isMaster(isMaster)
-              .user(infoUser)
-              .generalAccount(generalAccount)
-              .personalAccount(personalAccount)
-              .build();
-
-          participantRepository.save(newParticipant);  // Save the participant to the database
-
-          if (i == 0)
-            isMaster = false;
-        }
-      }
-      // dto 변환
-      AccountDto foreignAccountDto = accountMapper.toCreateAccountDto(foreignAccount);
-
-      responseDto.setForeignAccount(foreignAccountDto);
+    // 현재 유저의 계좌 조회
+    public AccountDto getByAccountNo(String accountNo) {
+        User user = securityUtil.getUserByToken();
+        return fetchAccountDto(accountNo, user);
     }
 
-    return responseDto;
-  }
-
-  public ForeignAccount createForeignAccount(User user, CreateAccountRequestDto requestDto,
-      Long accountId) {
-
-    String API_NAME = "createForeignCurrencyDemandDepositAccount";
-
-    String API_URL = BASE_URL + "/foreignCurrency/" + API_NAME;
-
-    // 추후에 userId 받아서 userKey 수정
-    // 현재는 유저 구현 안되서 임시로 처리함
-    Header header = Header.builder()
-        .apiName(API_NAME)
-        .apiServiceCode(API_NAME)
-        .apiKey(apiKeys.get("API_KEY"))
-        .userKey(user.getUserKey())
-        .build();
-
-    Map<String, Object> body = new HashMap<>();
-    body.put("Header", header);
-    body.put("accountTypeUniqueNo", apiKeys.get("FOREIGN_UNIQUE_ACCOUNT_NO"));
-    body.put("currency", requestDto.getCurrencyCode());
-
-    try {
-      // 일반 계좌 DB 저장 로직 유저 완성 시 추가
-      ResponseEntity<Map<String, Object>> response = webClient.post()
-          .uri(API_URL)
-          .contentType(MediaType.APPLICATION_JSON)
-          .bodyValue(body)
-          .retrieve()
-          .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
-          })
-          .block();
-
-      // REC 부분을 Object 타입으로 받기
-      Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
-
-      GeneralAccount generalAccount = generalAccountRepository.findById(accountId)
-          .orElseThrow(() -> new RuntimeException());
-
-      ForeignAccount foreignAccount = accountMapper.toForeignAccountEntitiy(
-          recObject,
-          generalAccount,
-          requestDto
-      );
-
-      ForeignAccount savedAccount = foreignAccountRepository.save(foreignAccount);
-
-      return savedAccount;
-    } catch (WebClientResponseException e) {
-      throw e;
-    }
-  }
-
-  // 계좌 단건 조회 (AccountNo로) - 상세 정보 X
-  public ResponseEntity<AccountDto> getByAccountNo(String accountNo, boolean isForeign) {
-
-    Long userId = SecurityUtil.getCurrentUserId();
-
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
-
-    AccountDto accountDto = null;
-
-    if (isForeign) {
-      ForeignAccount foreignAccount = foreignAccountRepository.findByAccountNo(accountNo)
-          .orElseThrow(
-              () -> new IllegalArgumentException("The accountNo does not exist: " + accountNo));
-
-      accountDto = accountMapper.toCreateAccountDto(foreignAccount);
-    } else {
-      GeneralAccount generalAccount = generalAccountRepository.findByAccountNo(accountNo)
-          .orElseThrow(
-              () -> new IllegalArgumentException("The accountNo does not exist: " + accountNo));
-
-      accountDto = accountMapper.toCreateAccountDto(generalAccount);
-
-    }
-    return ResponseEntity.status(HttpStatus.OK).body(accountDto);
-  }
-
-
-  // 외화 계좌 단건 조회 (AccountID로)- 상세 정보 X
-  public ResponseEntity<AccountDto> getForeignByAccountId(Long accountId) {
-
-    Long userId = SecurityUtil.getCurrentUserId();
-
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
-
-    AccountDto accountDto = null;
-
-      ForeignAccount foreignAccount = foreignAccountRepository.findById(accountId)
-          .orElseThrow(
-              () -> new IllegalArgumentException("The accountId does not exist: " + accountId));
-
-      accountDto = accountMapper.toCreateAccountDto(foreignAccount);
-
-    return ResponseEntity.status(HttpStatus.OK).body(accountDto);
-  }
-
-  /*
-   * 유저 계좌 전체 조회(기본정보)
-   */
-  public ResponseEntity<List<AccountDto>> getAllByUserId(Long userId, boolean isForeign) {
-
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
-
-    List<AccountDto> accountDtos = null;
-
-    if (isForeign) {
-      List<ForeignAccount> foreignAccounts = foreignAccountRepository.findAllByUserId(userId);
-
-      accountDtos = foreignAccounts.stream().map(accountMapper::toCreateAccountDto)
-          .collect(Collectors.toList());
-
-    } else {
-      List<GeneralAccount> generalAccounts = generalAccountRepository.findAllByUser_userId(userId);
-
-      accountDtos = generalAccounts.stream().map(accountMapper::toCreateAccountDto)
-          .collect(Collectors.toList());
+    // 다른 유저 계좌 조회 - 알림용
+    public AccountDto getByAccountNo(String accountNo, User user) {
+        User currentUser = (user != null) ? user : securityUtil.getUserByToken();
+        return fetchAccountDto(accountNo, currentUser);
     }
 
-    return ResponseEntity.status(HttpStatus.OK).body(accountDtos);
-  }
+    // 실제 계좌 조회 로직을 담당하는 메서드
+    private AccountDto fetchAccountDto(String accountNo, User user) {
+        String API_URL = BASE_URL + "inquireAccount";
+        BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
 
-  // 계좌 디테일 조회
-//    public ResponseEntity<AccountDto> getDetailByAccount(String accountNo, boolean isForeign) {
-//
-//        Long userId = SecurityUtil.getCurrentUserId();
-//
-//        User user = userRepository.findByUserId(userId)
-//            .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
-//
-//        String API_NAME = "inquireDemandDepositAccount";
-//        String API_URL = BASE_URL + "/" + API_NAME;
-//
-//        if (isForeign) {
-//            API_NAME = "inquireForeignCurrencyDemandDepositAccount";
-//            API_URL = BASE_URL + "/foreignCurrency/" + API_NAME;
-//        }
-//
-//        // 추후에 userId 받아서 userKey 수정
-//        // 현재는 유저 구현 안되서 임시로 처리함
-//        Header header = Header.builder()
-//            .apiName(API_NAME)
-//            .apiServiceCode(API_NAME)
-//            .apiKey(apiKeys.get("API_KEY"))
-//            .userKey(user.getUserKey())
-//            .build();
-//
-//        Map<String, Object> body = new HashMap<>();
-//        body.put("Header", header);
-//        body.put("accountNo", accountNo);
-//
-//        try {
-//            // 일반 계좌 DB 저장 로직 유저 완성 시 추가
-//            ResponseEntity<Map<String, Object>> response = webClient.post()
-//                .uri(API_URL)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .bodyValue(body)
-//                .retrieve()
-//                .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
-//                })
-//                .block();
-//
-//            // REC 부분을 Object 타입으로 받기
-//            Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
-//
-//            Long accountId = generalAccountRepository.findAccountIdsByAccountNo(accountNo);
-//
-//            AccountDto accountDto = modelMapper.map(recObject, AccountDto.class);
-//            accountDto.setId(accountId);
-//
-//            return ResponseEntity.status(HttpStatus.OK).body(accountDto);
-//        } catch (WebClientResponseException e) {
-//            throw e;
-//        }
-//    }
+        Map<String, Object> body = new HashMap<>();
+        body.put("Header", header);
+        body.put("accountNo", accountNo);
 
+        ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+        Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
 
-  public ResponseEntity<DeleteAccountResponseDto> deleteAccount(
-      String accountNo,
-      boolean isForeign,
-      DeleteAccountRequestDto dto
-  ) {
-    Long userId = SecurityUtil.getCurrentUserId();
-    User user = userRepository.findByUserId(userId)
-        .orElseThrow(() -> new IllegalArgumentException("The userId does not exist: " + userId));
-    String API_NAME = "deleteDemandDepositAccount";
-    String API_URL = BASE_URL + "/" + API_NAME;
-    Double refundAmount = 0.0;
-    if (isForeign) {
-      API_NAME = "deleteForeignCurrencyDemandDepositAccount";
-      API_URL = BASE_URL + "/foreignCurrency/" + API_NAME;
-      ForeignAccount foreignAccount = foreignAccountRepository.findByAccountNo(accountNo)
-          .orElseThrow(() -> new IllegalArgumentException(
-              "The foreignAccountNo does not exist: " + accountNo)
-          );
-      refundAmount = foreignAccount.getBalance();
-      if (refundAmount > 0) {
-        if (dto == null) {
-          throw new RefundAccountNotFoundException();
-        } else if (dto.getRefundAccountNo() == null || dto.getRefundAccountNo().isBlank()) {
-          throw new RefundAccountNotFoundException();
-        }
-      }
-    } else {
-      GeneralAccount generalAccount = generalAccountRepository.findByAccountNo(accountNo)
-          .orElseThrow(() -> new IllegalArgumentException(
-              "The generalAccountNo does not exist: " + accountNo));
-      refundAmount = generalAccount.getBalance();
+        AccountDto accountDto = objectMapper.convertValue(recObject, AccountDto.class);
 
-      LogUtil.info("refundAmount: ", refundAmount);
-      LogUtil.info("refundAmount > 0: ", refundAmount > 0);
+        String email = recObject.get("credentialId");
+        User accountUser = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UserNotFoundException(email));
 
-      // 잔액이 남아 있으면
-      if (refundAmount > 0) {
-        if (dto == null) {
-          throw new RefundAccountNotFoundException();
-        } else if (dto.getRefundAccountNo() == null || dto.getRefundAccountNo().isBlank()) {
-          throw new RefundAccountNotFoundException();
-        }
-      }
+        accountDto.setUserName(accountUser.getName());
+
+        return accountDto;
     }
 
-    Header header = Header.builder()
-        .apiName(API_NAME)
-        .apiServiceCode(API_NAME)
-        .apiKey(apiKeys.get("API_KEY"))
-        .userKey(user.getUserKey())
-        .build();
 
-    Map<String, Object> body = new HashMap<>();
+    // 계좌 소유주 검색 - accountNo 기반
+    public UserDetailDto getUserByAccountNo(String accountNo) {
 
-    body.put("Header", header);
-    body.put("accountNo", accountNo);
+        User user = securityUtil.getUserByToken();
 
-    if (refundAmount > 0) {
-      body.put("refundAccountNo", dto.getRefundAccountNo());
+        String API_URL = BASE_URL + "inquireAccount";
+
+        BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
+
+        Map<String, Object> body = new HashMap<>();
+
+        body.put("Header", header);
+        body.put("accountNo", accountNo);
+
+        // 특정 계좌 조회
+        ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+
+        // REC 부분을 Object 타입으로 받기
+        Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
+
+        // email 로 유저 이름 조회
+        String email = recObject.get("credentialId");
+
+        User accountUser = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
+
+        return UserDetailDto.builder()
+            .id(accountUser.getUserId())
+            .name(accountUser.getName())
+            .build();
     }
 
-    try {
-      ResponseEntity<Map<String, Object>> response = webClient.post()
-          .uri(API_URL)
-          .contentType(MediaType.APPLICATION_JSON)
-          .bodyValue(body)
-          .retrieve()
-          .toEntity(new ParameterizedTypeReference<Map<String, Object>>() {
-          })
-          .block();
+    // 계좌 전체 조회 (userId로)
+    public List<AccountDto> getAllByUserId(InquireAccountListRequestDto requestDto) {
 
-      // REC 부분을 Object 타입으로 받기
-      Object recObject = response.getBody().get("REC");
-      ModelMapper modelMapper = new ModelMapper();
+        User user = securityUtil.getUserByToken();
 
-      // REC 데이터를 GeneralAccount 엔티티로 변환
-      DeleteAccountResponseDto responseDto = modelMapper.map(recObject,
-          DeleteAccountResponseDto.class);
+        String API_URL = BASE_URL + "inquireAccountList";
 
-      if (isForeign) {
-        foreignAccountRepository.deleteByAccountNo(accountNo);
-      } else {
-        generalAccountRepository.deleteByAccountNo(accountNo);
-      }
+        BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
 
-      if (refundAmount > 0) {
-        GeneralAccount generalAccount = generalAccountRepository.findByAccountNo(
-                responseDto.getRefundAccountNo())
-            .orElseThrow(() -> new RuntimeException(
-                "The RefundAccount Does Not Exist : " + responseDto.getRefundAccountNo()));
+        Map<String, Object> body = new HashMap<>();
 
-        generalAccount.setBalance(generalAccount.getBalance() + refundAmount);
-      }
+        body.put("Header", header);
+        body.put("searchType", requestDto.getSearchType());
 
-      return ResponseEntity.status(HttpStatus.OK).body(responseDto);
-    } catch (WebClientResponseException e) {
-      throw e;
+        // 특정 유저 전체 계좌 조회
+        ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+
+        // REC 부분을 Object 타입으로 받기
+        List<Map<String, Object>> recObjectList = (List<Map<String, Object>>) response.getBody().get("REC");
+
+        List<AccountDto> accountDtoList = objectMapper.convertValue(recObjectList,
+            new TypeReference<List<AccountDto>>() {
+            });
+
+        return accountDtoList;
     }
-  }
 
-  public ResponseEntity<ResponseDto> addParticipant(Long accountId,
-      AddParticipantRequestDto requestDto) {
+    // 계좌 신규 머니박스 추가
+    public AddMoneyBoxResponseDto addMoneyBox(AddMoneyBoxRequestDto requestDto) {
 
-    GeneralAccount generalAccount = generalAccountRepository.findById(accountId).orElseThrow(
-        () -> new IllegalArgumentException("The generalAccountId does not exist: " + accountId));
+        User user = securityUtil.getUserByToken();
 
-    GeneralAccount personalAccount =
-        generalAccountRepository.findByAccountNo(requestDto.getParticipantAccountNo()).orElseThrow(
-            () -> new IllegalArgumentException(
-                "The personalAccountId does not exist: " + requestDto.getParticipantAccountNo()));
-    User user = userRepository.findByUserId(requestDto.getParticipantId()).orElseThrow(
-        () -> new IllegalArgumentException(
-            "The participantId does not exist: " + requestDto.getParticipantId()));
+        String API_URL = BASE_URL + "addMoneyBox";
 
-    Participant participant = Participant.builder()
-        .isMaster(false)
-        .generalAccount(generalAccount)
-        .personalAccount(personalAccount)
-        .user(user)
-        .build();
+        BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
 
-    participantRepository.save(participant);
+        Map<String, Object> body = new HashMap<>();
 
-    return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto());
-  }
+        body.put("Header", header);
+        body.putAll(objectMapper.convertValue(requestDto, Map.class));
 
-  public ResponseEntity<ResponseDto> deleteParticipants(Long participantId) {
+        // 머니박스 추가
+        ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
 
-    participantRepository.deleteById(participantId);
+        // WebClient 응답에서 REC 부분을 가져오기
+        List<Map<String, Object>> recObjectList = (List<Map<String, Object>>) response.getBody().get("REC");
 
-    return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto());
-  }
+        // REC 데이터를 MoneyBoxDto 리스트로 변환
+        List<MoneyBoxDto> moneyBoxDtos = objectMapper.convertValue(recObjectList,
+            new TypeReference<List<MoneyBoxDto>>() {
+            });
 
-  public ResponseEntity<ParticipantListResponseDto> getParticipants(Long accountId) {
+        TravelGroup group = groupRepository.findByGroupAccountNo(requestDto.getAccountNo());
 
-    List<Participant> participants = participantRepository.findAllByGeneralAccountId(accountId);
+        return new AddMoneyBoxResponseDto(group.getGroupId(), moneyBoxDtos);
+    }
 
-    List<ParticipantDto> participantDtoList = participants.stream()
-        .map(ParticipantMapper::toDto)
-        .collect(Collectors.toList());
+    public PasswordValidateResponseDto validatePassword(PasswordValidateRequestDto requestDto) {
 
-    ParticipantListResponseDto responseDto = ParticipantListResponseDto.builder()
-        .accountId(accountId)
-        .participants(participantDtoList)
-        .build();
+        User user = securityUtil.getUserByToken();
+        String API_URL = BASE_URL + "validate-password";
 
-    return ResponseEntity.status(HttpStatus.OK).body(responseDto);
-  }
+        BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
 
-  public ResponseEntity<List<AccountDto>> getAllGroupInfoByUserId(Long userId) {
-    List<GeneralAccount> allByParticipantUserId = generalAccountRepository.findAllByParticipantUserId(userId);
+        Map<String, Object> body = new HashMap<>();
 
-    List<AccountDto> response = allByParticipantUserId.stream().map(accountMapper::toCreateAccountDto).toList();
+        body.put("Header", header);
+        body.put("accountNo", requestDto.getAccountNo());
+        body.put("accountPassword", requestDto.getAccountPassword());
 
-    return ResponseEntity.status(HttpStatus.OK).body(response);
-  }
+        ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+        Object recObject = response.getBody().get("REC");
+        PasswordValidateResponseDto responseDto = objectMapper.convertValue(recObject, PasswordValidateResponseDto.class);
+
+        return responseDto;
+    }
+
+    // 머니박스 삭제
+    public DeleteMoneyBoxResponseDto deleteMoneyBox(AddMoneyBoxRequestDto requestDto) {
+
+        User user = securityUtil.getUserByToken();
+
+        String API_URL = BASE_URL + "deleteMoneyBox";
+
+        BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
+
+        Map<String, Object> body = new HashMap<>();
+
+        body.put("Header", header);
+        body.putAll(objectMapper.convertValue(requestDto, Map.class));
+
+        ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
+
+        // WebClient 응답에서 REC 부분을 가져오기
+        Map<String, Object> recObject = (Map<String, Object>) response.getBody().get("REC");
+
+        // REC 데이터를 MoneyBoxDto 리스트로 변환
+        DeleteMoneyBoxResponseDto responseDto = objectMapper.convertValue(recObject, DeleteMoneyBoxResponseDto.class);
+
+        // 변환된 리스트를 반환하거나, 다른 로직에 사용
+        return responseDto;
+
+    }
 
 
-  public List<Long> findUserIdsByGeneralAccountId(Long accountId) {
+    // 계좌 삭제
+    public DeleteAccountResponseDto deleteAccount(DeleteAccountRequestDto requestDto) {
 
-    return participantRepository.findUserIdsByGeneralAccountId(accountId);
-  }
+        User user = securityUtil.getUserByToken();
 
-  public Double getBalanceByAccountId(Long accountId) {
-    return generalAccountRepository.findBalanceByAccountId(accountId);
-  }
+        String API_URL = BASE_URL + "deleteAccount";
 
-  public ForeignAccount getForeignAccount(long accountId) {
+        BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
 
-    return foreignAccountRepository.findById(accountId).get();
-  }
+        Map<String, Object> body = new HashMap<>();
 
+        body.put("Header", header);
+        body.putAll(objectMapper.convertValue(requestDto, Map.class));
 
-  /*
-   * 유저 개인 계좌 전체 조회(기본정보)
-   */
-  public EmailValidationDto getPersonalAccountByEmail(String email) {
+        ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
 
-    User user = userRepository.findByEmail(email).orElseThrow(
-        () -> new RuntimeException(String.format("loadUserByUsername Failed: %s", email))
-    );
+        // WebClient 응답에서 REC 부분을 가져오기
+        Map<String, Object> recObject = (Map<String, Object>) response.getBody().get("REC");
 
-    long userId = user.getUserId();
-    GeneralAccount generalAccount = generalAccountRepository.findFirstByUser_UserIdAndAccountType(
-        userId, AccountType.INDIVIDUAL);
+        // REC 데이터를 DeleteAccountResponseDto로 변환
+        DeleteAccountResponseDto responseDto = objectMapper.convertValue(recObject, DeleteAccountResponseDto.class);
 
-    EmailValidationDto responseDto = EmailValidationDto.builder()
-        .userId(userId)
-        .userName(user.getName())
-        .accountId(generalAccount.getId())
-        .accountNo(generalAccount.getAccountNo())
-        .build();
+        // 변환된 리스트를 반환하거나, 다른 로직에 사용
+        return responseDto;
 
-    return responseDto;
-  }
+    }
+
 }

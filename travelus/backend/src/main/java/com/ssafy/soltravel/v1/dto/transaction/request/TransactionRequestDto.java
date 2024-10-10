@@ -14,5 +14,4 @@ public class TransactionRequestDto {
 
     @Schema(description = "유저 ID", example = "1")
     Long userId;
-
 }

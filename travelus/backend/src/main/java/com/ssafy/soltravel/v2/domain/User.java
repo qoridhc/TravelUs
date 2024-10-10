@@ -1,6 +1,8 @@
 package com.ssafy.soltravel.v2.domain;
 
+import com.ssafy.soltravel.v2.domain.Enum.Gender;
 import com.ssafy.soltravel.v2.domain.Enum.Role;
+import com.ssafy.soltravel.v2.dto.user.UserUpdateRequestDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -62,17 +63,21 @@ public class User {
     private String profile;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GeneralAccount> generalAccounts = new ArrayList<>();
+    private List<Participant> participants;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Participant> participants = new ArrayList<>();
+    private List<Notification> notifications;
+
+    @Column(name = "gender")
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     /*
      * 생성 메서드
      */
     public static User createUser(
         String name, String password, String email, String phone,
-        String address, LocalDate birth, String profileImageUrl, String userKey
+        String address, LocalDate birth, String profileImageUrl, String userKey, Gender gender
     ) {
 
         User user = new User();
@@ -88,8 +93,11 @@ public class User {
 
         user.profile = profileImageUrl;
         user.userKey = userKey;
+        user.gender = gender;
+
         return user;
     }
+
     public static User createUser(
         String name, String password, String email, String phone,
         String address, LocalDate birth, String profileImageUrl
@@ -109,4 +117,24 @@ public class User {
         user.userKey = "";
         return user;
     }
+
+    /*
+     * 수정 메서드
+     */
+    public void updateProfile(String profileImageUrl) {
+        this.profile = profileImageUrl;
+    }
+
+    public void update(UserUpdateRequestDto update) {
+        this.name = update.getName() != null ? update.getName() : this.name;
+        this.phone = update.getPhone() != null ? update.getPhone() : this.phone;
+        this.address = update.getAddress() != null ? update.getAddress() : this.address;
+        this.birth = update.getBirth() != null ? update.getBirth() : this.birth;
+    }
+
+    public void updatePwd(String pwd) {
+        this.password = pwd;
+    }
+
+
 }

@@ -1,6 +1,10 @@
 package com.ssafy.soltravel.v2.domain;
 
+import com.ssafy.soltravel.v1.domain.ForeignAccount;
 import com.ssafy.soltravel.v2.domain.Enum.CashTransactionType;
+import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
+import com.ssafy.soltravel.v2.dto.account_book.AccountHistorySaveRequestDto;
+import com.ssafy.soltravel.v2.util.DateUtil;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,8 +16,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -27,9 +34,8 @@ public class CashHistory {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long cash_history_id;
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @JoinColumn(name = "foreign_account_id")
-  private ForeignAccount foreignAccount;
+  @Column(name = "store")
+  private String store;
 
   @Column
   private Double amount;
@@ -41,51 +47,45 @@ public class CashHistory {
   @Column(name = "transaction_at")
   private LocalDateTime transactionAt;
 
-  @Column(name = "balance")
-  private Double balance;
+  @Column
+  @Enumerated(EnumType.STRING)
+  private CurrencyType currency;
 
-  @Column(name = "store")
-  private String store;
+  @Column
+  private String address;
 
+  @OneToMany(mappedBy = "cashHistory", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ItemHistory> itemHistoryList = new ArrayList<>();
+
+  @Column(name = "account_no")
+  private String accountNo;
 
   /*
   * 생성 메서드
   */
-
-  public void setForeignAccount(ForeignAccount foreignAccount) {
-    this.foreignAccount = foreignAccount;
-  }
-
-  public static CashHistory createCashHistory(
-      ForeignAccount foreignAccount, CashTransactionType transactionType,
-      Double amount, Double balance, String store, LocalDateTime transactionAt
-  ) {
+  public static CashHistory createPaidCashHistory(AccountHistorySaveRequestDto requestDto) {
     CashHistory cashHistory = new CashHistory();
-    foreignAccount.addCashHistory(cashHistory);
-    cashHistory.amount = amount;
-    cashHistory.balance = balance;
-    cashHistory.transactionType = transactionType;
-    cashHistory.transactionAt = transactionAt;
-    cashHistory.store = store;
+    cashHistory.store = requestDto.getStore();
+    cashHistory.amount = requestDto.getPaid();
+    cashHistory.transactionType = CashTransactionType.P;
+    cashHistory.transactionAt = DateUtil.parseTransactionAt(requestDto.getTransactionAt());
+    cashHistory.currency = CurrencyType.valueOf(requestDto.getCurrency());
+    cashHistory.address = requestDto.getAddress();
+    cashHistory.accountNo = requestDto.getAccountNo();
     return cashHistory;
   }
 
-  public static CashHistory createGetCashHistory(
-      ForeignAccount foreignAccount, Double amount, Double balance, String store
-  ) {
-    return createCashHistory(
-        foreignAccount, CashTransactionType.G, amount, balance, store, LocalDateTime.now()
-    );
+  /*
+  * 연관관계 편의 메서드
+  */
+  public void addItemHistory(ItemHistory itemHistory) {
+    itemHistoryList.add(itemHistory);
+    itemHistory.setCashHistory(this);
   }
 
-  public static CashHistory createPaidCashHistory(
-      ForeignAccount foreignAccount, Double amount, Double balance,
-      String store, LocalDateTime transactionAt
-  ) {
-    return createCashHistory(
-        foreignAccount, CashTransactionType.P, amount, balance, store, transactionAt
-    );
+  public void addAllItemHistory(List<ItemHistory> itemHistoryList) {
+    this.itemHistoryList.addAll(itemHistoryList);
+    itemHistoryList.stream().forEach(itemHistory -> itemHistory.setCashHistory(this));
   }
-
 
 }

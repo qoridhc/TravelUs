@@ -12,33 +12,51 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccountHistoryReadResponseDto {
-
   private String accountNo;
-  private Integer transactionCount;
   private List<DayAccountHistory> monthHistoryList;
 
-  public void initList() {
-    monthHistoryList = new ArrayList<>();
+  public static AccountHistoryReadResponseDto create(String accountNo) {
+    AccountHistoryReadResponseDto dto = new AccountHistoryReadResponseDto();
+    dto.accountNo = accountNo;
+    dto.monthHistoryList = new ArrayList<>();
     for (int i = 0; i < 32; i++) {
-      monthHistoryList.add(new DayAccountHistory(0., 0.));
+      dto.monthHistoryList.add(new DayAccountHistory());
     }
+    return dto;
   }
 
   @Data
   @Builder
   @AllArgsConstructor
-  @NoArgsConstructor
   public static class DayAccountHistory {
 
-    private Double totalExpenditure;
-    private Double totalIncome;
+    private Double totalExpenditureKRW;
+    private Double totalExpenditureForeign;
+    private Double totalIncomeKRW;
+    private Double totalIncomeForeign;
 
-    public void addTotalExpenditure(Double expenditure) {
-      totalExpenditure += expenditure;
+    public DayAccountHistory(){
+      totalExpenditureKRW = 0.;
+      totalExpenditureForeign = 0.;
+      totalIncomeKRW = 0.;
+      totalIncomeForeign = 0.;
     }
 
-    public void addTotalIncome(Double income) {
-      totalIncome += income;
+
+    public void addTotalExpenditureKRW(Double expenditureKRW) {
+      this.totalExpenditureKRW += expenditureKRW;
+    }
+
+    public void addTotalExpenditureForeign(Double expenditureForeign) {
+      this.totalExpenditureForeign += expenditureForeign;
+    }
+
+    public void addTotalIncomeKRW(Double totalIncomeKRW) {
+      this.totalIncomeKRW += totalIncomeKRW;
+    }
+
+    public void addTotalIncomeForeign(Double totalIncomeForeign) {
+      this.totalIncomeForeign += totalIncomeForeign;
     }
   }
 

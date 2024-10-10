@@ -1,26 +1,28 @@
 import axios from "axios"
+import { isTokenExpired, parseJwt } from "../utils/jwtUtil";
 
 // Axios 요청
 const api = axios.create({
-  baseURL: 'https://soltravel.shop/api/v1',
-  // baseURL: 'http://3.107.138.21:8080/api/v1',
-  // headers: {
-  //   Authorization: `Bearer ${process.env.REACT_APP_ACCESS_TOKEN}`,
-  // },
+  // baseURL: 'https://soltravel.shop/api/v1',
+  baseURL: 'https://j11d209.p.ssafy.io/api/v2',
+  // baseURL: 'http://localhost:8082/api/v2',
 });
 
 // 요청 인터셉터
 api.interceptors.request.use(
   config => {
     // // accessToken을 sessionStorage에서 가져오고
-    const accessToken = sessionStorage.getItem("accessToken");
-    // // 토큰이 있으면 토큰을 넣어서 요청을 보냄
-    // if (accessToken) {
-    //   config.headers.Authorization = `${accessToken}`
+    const accessToken = localStorage.getItem("accessToken");
 
-    // 로그인 기능이 아직 없으므로 임시로 accessToken 지정 후 사용
-    // const token = process.env.REACT_APP_ACCESS_TOKEN;
     if (accessToken) {
+      if (isTokenExpired(accessToken)) {
+        // 토큰이 만료된 경우 처리
+        console.error("토큰이 만료되었습니다. 다시 로그인해주세요.");
+        localStorage.removeItem("accessToken");
+        window.location.href = "/login"; // 로그인 페이지로 리다이렉트
+        return Promise.reject(new Error("토큰이 만료되었습니다."));
+      }
+
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config
@@ -29,9 +31,31 @@ api.interceptors.request.use(
 );
 
 // 응답 인터셉터
+
+// 응답 인터셉터
 api.interceptors.response.use(
-  response => response,
-  error => Promise.reject(error),
+  (response) => response,
+  async (error) => {
+    if (error.response && error.response.status === 401) {
+      // FCM 토큰 삭제 API 호출
+      try {
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          await api.delete(`/fcmToken/${userId}`);
+          console.log(`FCM token for user ${userId} has been deleted.`);
+        }
+      } catch (deleteError) {
+        console.error("FCM 토큰 삭제 실패:", deleteError);
+      }
+
+      // 토큰이 만료되었거나 유효하지 않은 경우 처리
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("userName");
+      window.location.href = "/login"; // 로그인 페이지로 리다이렉트
+    }
+    return Promise.reject(error);
+  }
 );
 
 export default api

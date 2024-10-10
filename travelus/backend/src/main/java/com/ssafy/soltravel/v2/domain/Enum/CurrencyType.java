@@ -3,9 +3,9 @@ package com.ssafy.soltravel.v2.domain.Enum;
 public enum CurrencyType {
     USD("USD", "달러"),
     EUR("EUR", "유로"),
-    KRW("KRW", "원화"),
-    JPY("JPY", "엔화"),
-    CNY("CNY", "위안");
+    KRW("KRW", "원"),
+    JPY("JPY", "엔"),
+    TWD("TWD", "달러");
 
     private final String currencyCode;
     private final String currencyName;
@@ -15,14 +15,6 @@ public enum CurrencyType {
         this.currencyName = currencyName;
     }
 
-    public String getCurrencyCode() {
-        return currencyCode;
-    }
-
-    public String getCurrencyName() {
-        return currencyName;
-    }
-
     public static CurrencyType fromCode(String code) {
         for (CurrencyType type : CurrencyType.values()) {
             if (type.getCurrencyCode().equals(code)) {
@@ -30,6 +22,14 @@ public enum CurrencyType {
             }
         }
         throw new IllegalArgumentException("Unknown currency code: " + code);
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public String getCurrencyName() {
+        return currencyName;
     }
 
 }

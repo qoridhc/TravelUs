@@ -1,4 +1,5 @@
 export interface AxiosErrorResponseData {
-  responseCode: string;
-  responseMessage: string
+  code: string;
+  errorMessage: string;
+  message: string
 }
