@@ -49,7 +49,8 @@ public class SecurityConfig {
                         new AntPathRequestMatcher("/api/v2/actuator/**"),
                         new AntPathRequestMatcher("/api/v2/card-product/list"),
                         new AntPathRequestMatcher("/api/v2/exchange/forecast/**"),
-                        new AntPathRequestMatcher("/api/v2/groups/code/validation/**")
+                        new AntPathRequestMatcher("/api/v2/groups/code/validation/**"),
+                        new AntPathRequestMatcher("/api/v2/test/**")
                     ).permitAll()
                     .anyRequest()
                     .authenticated()

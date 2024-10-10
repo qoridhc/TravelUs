@@ -89,6 +89,8 @@ const generateUrl = (type, accountNo, groupId, currencyCode, settlementId) => {
       return `${baseUrl}/travelbox/transaction/${accountNo}/notification?groupId=${groupId}&currencyCode=${currencyCode}`;
     case "S":
       return `${baseUrl}/settlement/expenditure/list/NOT_COMPLETED`;
+    case "GD":
+      return `${baseUrl}/meetingtransaction/${accountNo}/detail`;
     default:
       return "/";
   }
