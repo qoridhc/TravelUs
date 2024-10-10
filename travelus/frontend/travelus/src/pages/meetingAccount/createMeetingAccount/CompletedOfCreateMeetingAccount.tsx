@@ -53,9 +53,12 @@ const CompletedOfCreateMeetingAccount = () => {
     if (params.type === "meeting") {
       navigate("/travelbox/create/prepare");
     } else {
-      console.log(location.state.currencyCode);
       navigate("/travelbox/create/type", {
-        state: { currencyCode: location.state.currencyCode, accountNo: location.state.accountNo },
+        state: {
+          currencyCode: location.state.currencyCode,
+          accountNo: location.state.accountNo,
+          groupId: location.state.groupId,
+        },
       });
     }
   };

@@ -1,21 +1,15 @@
 import React, { useState } from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { useLocation, useNavigate } from "react-router";
-import ExchangeRateInputMui from "../../components/travelBox/ExchangeRateInputMui";
-import ExchangeAmmountInput from "../../components/travelBox/ExchangeAmmountInput";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { setTravelboxInfo } from "../../redux/meetingAccountSlice";
-import { IoPerson } from "react-icons/io5";
 import { accountApi } from "../../api/account";
 
 const SelectTypeOfAutoExchange: React.FC = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
-  const travelboxInfo = useSelector((state: RootState) => state.meetingAccount.travelboxInfo);
   const [type, setType] = useState<number | null>(null);
-  const groupId = 1;
+  const groupId = location.state.groupId;
   const guideData = [
     {
       text: ["사용자 설정", "자동환전", "환율, 금액을 직접 선택해 자동환전해요"],
@@ -56,7 +50,9 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
     try {
       const response = await accountApi.fetchChangeExchangeMode(data);
       if (response.status === 200) {
-        navigate("/travelbox/create/auto/exchange/completed/NOW");
+        navigate("/travelbox/create/auto/exchange/completed/NOW", {
+          state: { nextPath: `/meetingaccount/${groupId}` },
+        });
       }
     } catch (error) {
       console.log("accountApi의 fetchChangeExchangeMode : ", error);

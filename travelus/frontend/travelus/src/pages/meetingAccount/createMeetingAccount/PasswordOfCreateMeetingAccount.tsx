@@ -27,7 +27,11 @@ const PasswordOfCreateMeetingAccount = () => {
       const response = await accountApi.fetchCreateTravelBox(travelboxData);
       if (response.status === 201) {
         navigate("/meeting/create/completed/travelbox", {
-          state: { currencyCode: travelboxInfo.currencyCode, accountNo: travelboxInfo.accountNo },
+          state: {
+            currencyCode: travelboxInfo.currencyCode,
+            accountNo: travelboxInfo.accountNo,
+            groupId: response.data.groupId,
+          },
         });
       }
     } catch (error) {
