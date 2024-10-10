@@ -60,7 +60,6 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
   };
 
   const fetchDateDetailInfo = async () => {
-    console.log(accountNo, " ", selectedDate);
     if (accountNo === "" || selectedDate === "") return;
 
     try {
@@ -83,12 +82,6 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
 
   const handleModalToggle = () => {
     setIsModalOpen(!isModalOpen);
-  };
-
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if ((e.target as Element).classList.contains("modal")) {
-      handleModalToggle();
-    }
   };
 
   useEffect(() => {
@@ -172,7 +165,7 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
                     <div className="flex justify-between items-center">
                       <div className="flex flex-col justify-center">
                         {item.store === "" ? (
-                          <p className="font-semibold">모임통장 이체</p>
+                          <p className="font-semibold">{item.payeeName}</p>
                         ) : (
                           <p className="font-semibold">{item.store}</p>
                         )}
