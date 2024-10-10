@@ -13,8 +13,10 @@ const SelectSettlementAmount = () => {
   const [isChecked, setIsChecked] = useState<boolean[]>([]);
   const [accountInfo, setAccountInfo] = useState<MeetingAccountDetailInfo | null>(null);
   const [exchangeRate, setExchangeRate] = useState<ExchangeRateInfo>();
-  const [koreanAmount, setKoreanAmount] = useState<number>(0);
-  const [foreignAmount, setForeignAmount] = useState<number>(0);
+  const [koreanAmount, setKoreanAmount] = useState<string>("");
+  const [foreignAmount, setForeignAmount] = useState<string>("");
+  const [numberKrw, setNumberKrw] = useState<number>(0);
+  const [numberForeign, setNumberForeign] = useState<number>(0);
 
   const guideTextList = [
     "남은 원화는 일반 모임통장의 잔액이에요.",
@@ -25,7 +27,7 @@ const SelectSettlementAmount = () => {
   const handleSettlement = () => {
     // 남은 원화, 남은 외화 모두 정산
     navigate(`/settlement/balance/participants/${id}`, {
-      state: { koreanAmount: koreanAmount, foreignAmount: foreignAmount },
+      state: { koreanAmount: numberKrw, foreignAmount: numberForeign },
     });
   };
 
@@ -36,8 +38,9 @@ const SelectSettlementAmount = () => {
   };
 
   // 금액을 한국 통화 형식으로 포맷(콤마가 포함된 형태)
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("ko-KR").format(amount);
+  const formatCurrency = (amount: number | string): string => {
+    const numericAmount = typeof amount === "string" ? parseFloat(amount.replace(/,/g, "")) : amount;
+    return isNaN(numericAmount) ? "" : numericAmount.toLocaleString("ko-KR");
   };
 
   const formatDate = (dateString: string) => {
@@ -88,6 +91,24 @@ const SelectSettlementAmount = () => {
     fetchExchangeRate();
   }, []);
 
+  const handleAmountChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setCurrency: React.Dispatch<React.SetStateAction<string>>,
+    setNumber: React.Dispatch<React.SetStateAction<number>>,
+    maxAmount: number
+  ) => {
+    const value = e.target.value.replace(/,/g, "");
+    const numericValue = parseFloat(value);
+    if (!isNaN(numericValue)) {
+      const limitedValue = Math.min(numericValue, maxAmount);
+      setCurrency(formatCurrency(limitedValue));
+      setNumber(limitedValue);
+    } else {
+      setCurrency("");
+      setNumber(0);
+    }
+  };
+
   return (
     <>
       {accountInfo && (
@@ -96,8 +117,11 @@ const SelectSettlementAmount = () => {
             <div className="grid grid-cols-3">
               <div className="flex items-center">
                 <IoIosArrowBack
-                  onClick={() => {navigate(`/meetingaccount/management/${id}`);}}
-                  className="text-2xl" />
+                  onClick={() => {
+                    navigate(`/meetingaccount/management/${id}`);
+                  }}
+                  className="text-2xl"
+                />
               </div>
               <p className="text-lg text-center">정산하기</p>
             </div>
@@ -129,16 +153,16 @@ const SelectSettlementAmount = () => {
                       <div className="px-3 py-2 border rounded-md flex justify-end">
                         <input
                           className="text-right outline-none placeholder:text-black"
-                          type="number"
+                          type="text"
                           value={moneyBox.currencyCode === "KRW" ? koreanAmount : foreignAmount}
-                          onChange={(e) => {
-                            const value = Number(e.target.value);
-                            if (moneyBox.currencyCode === "KRW") {
-                              setKoreanAmount(value > moneyBox.balance ? moneyBox.balance : value);
-                            } else {
-                              setForeignAmount(value > moneyBox.balance ? moneyBox.balance : value);
-                            }
-                          }}
+                          onChange={(e) =>
+                            handleAmountChange(
+                              e,
+                              moneyBox.currencyCode === "KRW" ? setKoreanAmount : setForeignAmount,
+                              moneyBox.currencyCode === "KRW" ? setNumberKrw : setNumberForeign,
+                              moneyBox.balance
+                            )
+                          }
                           placeholder="0"
                           disabled={!isChecked[index]}
                         />
@@ -174,7 +198,12 @@ const SelectSettlementAmount = () => {
                             <div className="flex justify-end">
                               <p className="text-right">
                                 {exchangeRate?.exchangeRate &&
-                                  formatCurrency(Math.ceil(foreignAmount * exchangeRate?.exchangeRate))}
+                                  formatCurrency(
+                                    Math.ceil(
+                                      Number(parseFloat(foreignAmount.replace(/,/g, "") || "0")) *
+                                        exchangeRate.exchangeRate
+                                    )
+                                  )}
                               </p>
                               <p className="">&nbsp; 원</p>
                             </div>
@@ -197,7 +226,10 @@ const SelectSettlementAmount = () => {
                 <p className="px-3 text-lg text-right font-semibold">
                   총액&nbsp;
                   {exchangeRate?.exchangeRate &&
-                    formatCurrency(koreanAmount + Math.ceil(foreignAmount * exchangeRate?.exchangeRate))}
+                    formatCurrency(
+                      parseFloat(koreanAmount.replace(/,/g, "") || "0") +
+                        Math.ceil(parseFloat(foreignAmount.replace(/,/g, "") || "0") * exchangeRate?.exchangeRate)
+                    )}
                   &nbsp;원
                 </p>
               </div>

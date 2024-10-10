@@ -3,6 +3,7 @@ import { useLocation, useParams } from "react-router";
 import { IoIosArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router";
 import { accountApi } from "../../../api/account";
+import { cardApi } from "../../../api/card";
 import { AccountInfoNew, TransactionNew, MeetingAccountInfo } from "../../../types/account";
 import { AccountHistoryResponse } from "../../../types/accountHistory";
 import Loading from "../../../components/loading/Loading";
@@ -54,6 +55,7 @@ const CardTransaction = () => {
           setMeeting(meetingData);
           console.log("모임 조회 성공", meetingData);
           fetchSpecificAccountInfo(meetingData.groupAccountNo);
+          fetchTotalAmount(meetingData.cardNumber);
         }
       } catch (error) {
         console.error("모임 조회 에러", error);
@@ -127,6 +129,21 @@ const CardTransaction = () => {
       }
     } catch (error) {
       console.error("계좌 조회 에러", error);
+    }
+  };
+
+  const fetchTotalAmount = async (cardNo: string) => {
+    setIsLoading(true);
+    try {
+      const response = await cardApi.fetchTotalAmount(cardNo);
+      if (response.status === 200) {
+        setDomesticTotal(response.data.krwAmount);
+        setForeignTotal(response.data.foreignAmount);
+      }
+    } catch (error) {
+      console.error("총 사용 금액 조회 에러", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
