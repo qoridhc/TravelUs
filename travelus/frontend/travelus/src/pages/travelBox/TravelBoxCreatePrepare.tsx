@@ -17,7 +17,7 @@ const TravelBoxCreatePrepare = () => {
       <div>
         <button
           className="w-full h-14 text-lg rounded-xl tracking-wide text-white bg-[#1429A0]"
-          onClick={() => navigate("/currencyinfoofcreatetravelbox")}>
+          onClick={() => navigate("/travelbox/create/currency")}>
           개설하기
         </button>
         <button className="w-full h-14 text-lg rounded-xl tracking-wide" onClick={() => navigate("/")}>

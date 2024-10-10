@@ -71,7 +71,7 @@ const NotificationList: React.FC<NotificationListProps> = (props) => {
 
     switch (type) {
       case "S":
-        navigate(`/settlement/expenditure/group/detail/${settlementId}/NOT_COMPLETED`);
+        navigate(`/settlement/expenditure/list/NOT_COMPLETED`);
         break;
       case "E":
         navigate(`/travelbox/transaction/${accountNo}/notification`);

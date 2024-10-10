@@ -68,7 +68,7 @@ const ExchangeRateList: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col bg-gray-100 h-full p-5 pb-8">
+    <div className="flex flex-col bg-[#F3F4F6] h-full p-5 pb-8">
       <div>
         <div className="bg-white rounded-lg shadow mb-4">
           {exchangeRates.map((rate, index) => (
@@ -77,7 +77,7 @@ const ExchangeRateList: React.FC = () => {
         </div>
       </div>
       <div className="mt-auto">
-        <div className="bg-gray-100 rounded-lg p-4 text-sm text-gray-600">
+        <div className="bg-[#F3F4F6] rounded-lg p-4 text-sm text-gray-600">
           <h3 className="font-bold mb-2">튜나뱅크 환율 안내</h3>
           <ul className="list-disc pl-5 space-y-1">
             <li>위 환율은 매매기준율로 1시간마다 업데이트돼요.</li>

@@ -18,6 +18,7 @@ const initialState: meetingAccountState = {
     groupAccountPassword: "",
     groupName: "",
     icon: "",
+    groupId: 0,
   },
   travelboxInfo: {
     accountPassword: "",

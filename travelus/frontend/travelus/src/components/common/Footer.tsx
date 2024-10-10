@@ -6,11 +6,15 @@ import { GoHomeFill } from "react-icons/go";
 import { IoPeople } from "react-icons/io5";
 import { MdOutlineEventNote } from "react-icons/md";
 import { GoGraph } from "react-icons/go";
+import { setCurrentFooterMenu } from "../../redux/accountSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const Footer = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [currentMenu, setCurrentMenu] = useState("홈");
+  const dispatch = useDispatch();
+  const currentMenu = useSelector((state: RootState) => state.account.currentFooterMenu);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -18,22 +22,22 @@ const Footer = () => {
 
   const handleMenuHome = () => {
     navigate("/");
-    setCurrentMenu("홈");
+    dispatch(setCurrentFooterMenu("홈"));
   };
 
   const handleMenuExchange = () => {
     navigate("/meetingaccountlist");
-    setCurrentMenu("모임통장");
+    dispatch(setCurrentFooterMenu("모임통장"));
   };
 
   const handleMenuAccountDiary = () => {
     navigate("/accountbookdetail");
-    setCurrentMenu("머니로그");
+    dispatch(setCurrentFooterMenu("머니로그"));
   };
 
   const handleMenuConversation = () => {
     navigate("/exchangerate");
-    setCurrentMenu("환율");
+    dispatch(setCurrentFooterMenu("환율"));
   };
 
   return (

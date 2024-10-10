@@ -13,12 +13,13 @@ import "swiper/css";
 import { ExchangeRateInfo } from "../types/exchange";
 import { exchangeRateApi } from "../api/exchange";
 import { IoMdAdd } from "react-icons/io";
-// import Lottie from "lottie-react";
-// import loadingAnimation from "../lottie/loadingAnimation.json";
+import { useDispatch } from "react-redux";
+import { setCurrentFooterMenu } from "../redux/accountSlice";
 import Loading from "../components/loading/Loading";
 
 const MainPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [account, setAccount] = useState<AccountInfoNew | null>(null);
   const [meetingAccountList, setMeetingAccountList] = useState<MeetingAccountInfo[] | null>(null);
 
@@ -29,6 +30,7 @@ const MainPage = () => {
   type CurrencyCode = (typeof CURRENCY_CODES)[number];
 
   const handleCurrencyClick = (code: CurrencyCode) => {
+    dispatch(setCurrentFooterMenu("환율"));
     navigate(`exchangerate/${code}`);
   };
 
@@ -37,10 +39,12 @@ const MainPage = () => {
   };
 
   const navigateAccountBook = () => {
+    dispatch(setCurrentFooterMenu("머니로그"));
     navigate("/accountbookdetail");
   };
 
   const navigateExchangeRate = () => {
+    dispatch(setCurrentFooterMenu("환율"));
     navigate("/exchangerate");
   };
 
@@ -232,7 +236,7 @@ const MainPage = () => {
 
           {/* 환율 표시 부분 */}
           <div className="w-full p-6 flex flex-col space-y-2 rounded-xl bg-white shadow-md">
-            <div className="flex items-center space-x-1" onClick={() => navigate("/exchangerate")}>
+            <div className="flex items-center space-x-1" onClick={() => navigateExchangeRate()}>
               <p className="text-md font-semibold flex justify-start">환율</p>
               <IoIosArrowForward className="text-[#565656]" />
             </div>
