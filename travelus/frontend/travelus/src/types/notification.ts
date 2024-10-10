@@ -15,4 +15,6 @@ export interface NotificationListInfo {
   createdAt: string;
   read: boolean;
   settlementId?: string;
+  groupId?: number;
+  currencyCode?: string;
 }
