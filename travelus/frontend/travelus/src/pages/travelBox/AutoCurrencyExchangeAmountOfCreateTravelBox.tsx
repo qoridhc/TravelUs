@@ -8,14 +8,14 @@ import ExchangeAmmountInput from "../../components/travelBox/ExchangeAmmountInpu
 
 const AutoCurrencyExchangeAmountOfCreateTravelBox = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useDispatch();
+  const location = useLocation();
   const [exchangeAmount, setExchangeAmount] = useState(0);
   const exchangeTargetInfo = useSelector((state: RootState) => state.meetingAccount.exchangeTargetInfo);
 
   const handleNext = () => {
     dispatch(setExchangeTargetRate({ ...exchangeTargetInfo, transactionBalance: exchangeAmount }));
-    navigate("/meeting/create/password/exchangeSetting");
+    navigate("/meeting/create/password/exchangeSetting", { state: { exchangeType: location.state.exchangeType } });
   };
 
   return (

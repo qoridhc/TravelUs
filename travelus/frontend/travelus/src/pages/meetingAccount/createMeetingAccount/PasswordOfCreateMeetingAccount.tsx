@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import SecurityNumberKeyboard from "../../../components/common/SecurityNumberKeyboard";
 import { accountApi } from "../../../api/account";
 import { AxiosError } from "axios";
@@ -13,8 +13,8 @@ import { IoMdClose } from "react-icons/io";
 const PasswordOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
   const { type } = useParams();
-
   const [password, setPassword] = useState("");
   const travelboxInfo = useSelector((state: RootState) => state.meetingAccount.travelboxInfo);
   const exchangeTargetInfo = useSelector((state: RootState) => state.meetingAccount.exchangeTargetInfo);
@@ -61,12 +61,24 @@ const PasswordOfCreateMeetingAccount = () => {
       dueDate: "2024-10-30",
       accountPassword: password,
     };
+
     try {
-      const response = await exchangeRateApi.postExchangeTargetRate(targetRate);
-      if (response.status === 200) {
-        navigate("/travelbox/create/auto/exchange/completed/AUTO", {
-          state: { nextPath: `/meetingaccount/${meetingAccountInfo.groupId}` },
-        });
+      if (location.state.exchangeType === "AUTO") {
+        // 사용자 설정 자동환전 설정이 수정인 경우
+        const response = await accountApi.fetchChangeAutoExchangeInfo(targetRate);
+        if (response.status === 200) {
+          navigate("/travelbox/create/auto/exchange/completed/AUTO", {
+            state: { nextPath: `/meetingaccount/${meetingAccountInfo.groupId}` },
+          });
+        }
+      } else {
+        // 사용자 설정 자동환전 설정이 첫 등록인 경우
+        const response = await exchangeRateApi.postExchangeTargetRate(targetRate);
+        if (response.status === 200) {
+          navigate("/travelbox/create/auto/exchange/completed/AUTO", {
+            state: { nextPath: `/meetingaccount/${meetingAccountInfo.groupId}` },
+          });
+        }
       }
     } catch (error) {
       const axiosError = error as AxiosError;

@@ -2,6 +2,7 @@
 import api from "../lib/axios";
 import { AccountInfo, MeetingAccountInfo, AccountParticipants, GeneralAccountCreate, MeetingAccountCreate, MeetingAccountUpdateInfo, AccountPassword, ExchangeMode } from "../types/account";
 import { AccountHistoryRequest } from "../types/accountHistory";
+import { TargetRate } from "../types/exchange";
 import { NewParticipant, TravelboxInfo, TravelboxDeleteInfo } from "../types/meetingAccount";
 
 export const accountApi = {
@@ -23,7 +24,7 @@ export const accountApi = {
   },
 
   // 특정 계좌 조회
-  fetchSpecificAccountInfo:  (accountNo: string)  => {
+  fetchSpecificAccountInfo: (accountNo: string) => {
     return api.post(`/accounts/inquireAccount`, { accountNo });
   },
 
@@ -89,7 +90,7 @@ export const accountApi = {
 
   // 거래 내역 조회
   fetchTracsactionHistory: (data: AccountHistoryRequest) => {
-    return api.get(`/transaction/history`, {params: data});
+    return api.get(`/transaction/history`, { params: data });
   },
 
   // 외화저금통 개설
@@ -121,5 +122,20 @@ export const accountApi = {
   // 환전 모드 변경
   fetchChangeExchangeMode: (data: ExchangeMode) => {
     return api.put(`/exchange/mode`, data);
-  }, 
+  },
+
+  // 희망 환율 조회
+  fetchAutoExchangeType: (groupId: number) => {
+    return api.get(`/exchange/rate/target-rate/${groupId}`);
+  },
+
+  // 희망 환율 수정
+  fetchChangeAutoExchangeInfo: (data: TargetRate) => {
+    return api.put(`/exchange/rate/target-rate`, data);
+  },
+
+  // 희망 환율 삭제
+  deleteAutoExchangeInfo: (groupId: number) => {
+    return api.delete(`/exchange/rate/target-rate/${groupId}`);
+  }
 };
