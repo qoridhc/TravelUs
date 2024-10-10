@@ -95,7 +95,9 @@ const SelectSettlementAmount = () => {
           <div className="grid gap-14">
             <div className="grid grid-cols-3">
               <div className="flex items-center">
-                <IoIosArrowBack className="text-2xl" />
+                <IoIosArrowBack
+                  onClick={() => {navigate(`/meetingaccount/management/${id}`);}}
+                  className="text-2xl" />
               </div>
               <p className="text-lg text-center">정산하기</p>
             </div>

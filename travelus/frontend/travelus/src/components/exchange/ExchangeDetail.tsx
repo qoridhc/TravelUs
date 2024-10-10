@@ -21,6 +21,9 @@ import { setupChart } from "../../utils/chartSetup";
 import { forecastChartSetup } from "../../utils/forecastChartSetup";
 import { calculateDailyChange, formatExchangeRate } from "../../utils/currencyUtils";
 import Loading from "../loading/Loading";
+import { setCurrentFooterMenu } from "../../redux/accountSlice";
+import { useDispatch } from "react-redux";
+
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale);
 
@@ -83,6 +86,7 @@ const ExchangeDetail: React.FC = () => {
   const { currencyCode = "" } = useParams<{ currencyCode: string }>();
   const flagImagePath = `/assets/flag/flagOf${currencyCode}.png`;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   // const chartRef = useRef<ChartJS<"line">>(null);
 
   const { exchangeData, historicalData, predictionData, isLoading, error } = useExchangeData(currencyCode);
@@ -267,7 +271,12 @@ const ExchangeDetail: React.FC = () => {
 
   return (
     <div className="container mx-auto max-w-md h-full p-5 pb-8 flex flex-col">
-      <button onClick={() => navigate(-1)} className="flex items-center text-blue-600 mb-6">
+      <button
+        onClick={() => {
+          dispatch(setCurrentFooterMenu("환율"));
+          navigate("/exchangerate");
+        }}
+        className="flex items-center text-blue-600 mb-6">
         <IoIosArrowBack className="w-5 h-5 mr-1" />
       </button>
       <div className="flex items-center mb-4">

@@ -31,7 +31,9 @@ const CreateRequestOfCreateAccount = () => {
     <div className="h-full p-5 pb-8 flex flex-col justify-between">
       <div className="grid gap-14">
         <div className="flex items-center">
-          <IoIosArrowBack className="text-2xl" />
+          <IoIosArrowBack
+            onClick={() => { navigate("/account/create/userinfo"); }}
+            className="text-2xl" />
         </div>
 
         <div className="flex flex-col items-center space-y-3">

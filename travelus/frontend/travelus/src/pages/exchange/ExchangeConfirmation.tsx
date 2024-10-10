@@ -5,6 +5,7 @@ import SecurityNumberKeyboard from "../../components/common/SecurityNumberKeyboa
 import { setAccountPassword } from "../../redux/accountSlice";
 import { exchangeRateApi } from "../../api/exchange";
 import { ExchangeRequest, ExchangeResponse } from "../../types/exchange";
+import { IoMdClose } from "react-icons/io";
 
 interface LocationState {
   accountNo: string;
@@ -90,7 +91,14 @@ const AccountPasswordInput = () => {
   };
 
   return (
-    <div className="h-full grid grid-rows-[2fr_1fr]">
+    <div className="h-full grid grid-rows-[0.2fr_2fr_1fr]">
+      <div
+        onClick={() => {
+          navigate("/");
+        }}
+        className="p-4">
+        <IoMdClose className="text-3xl" />
+      </div>
       <div className="flex-grow flex flex-col justify-center items-center space-y-10">
         <p className="text-xl text-center font-medium leading-tight">
           채우기를 위한

@@ -7,6 +7,7 @@ import { accountApi } from "../../../api/account";
 import { AxiosError } from "axios";
 import { AxiosErrorResponseData } from "../../../types/axiosError";
 import { exchangeRateApi } from "../../../api/exchange";
+import { IoMdClose } from "react-icons/io";
 
 const PasswordOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
@@ -76,7 +77,14 @@ const PasswordOfCreateMeetingAccount = () => {
   }, [password]);
 
   return (
-    <div className="h-full grid grid-rows-[2fr_1fr]">
+    <div className="h-full grid grid-rows-[0.2fr_2fr_1fr]">
+      <div
+        onClick={() => {
+          navigate("/");
+        }}
+        className="p-4">
+        <IoMdClose className="text-3xl" />
+      </div>
       <div className="flex flex-col justify-center items-center space-y-10">
         <p className="text-xl text-center font-medium leading-tight">
           {params.type === "travelbox"

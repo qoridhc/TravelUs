@@ -4,6 +4,7 @@ import SecurityNumberKeyboard from "../../../components/common/SecurityNumberKey
 import { accountApi } from "../../../api/account";
 import { AxiosError } from "axios";
 import { AxiosErrorResponseData } from "../../../types/axiosError";
+import { IoMdClose } from "react-icons/io";
 
 const PasswordOfCreateCard = () => {
   const navigate = useNavigate();
@@ -64,7 +65,14 @@ const PasswordOfCreateCard = () => {
   }, [accountNo, password]);
 
   return (
-    <div className="h-full grid grid-rows-[2fr_1fr]">
+    <div className="h-full grid grid-rows-[0.2fr_2fr_1fr]">
+      <div
+        onClick={() => {
+          navigate(`/card/${groupId}/create/englishname`);
+        }}
+        className="p-4">
+        <IoMdClose className="text-3xl" />
+      </div>
       <div className="flex flex-col justify-center items-center space-y-10">
         <p className="text-xl text-center font-medium leading-tight">
           {type === "meeting" ? "카드를 개설할 모임통장의" : "모임 카드에서 사용할"}
@@ -80,7 +88,6 @@ const PasswordOfCreateCard = () => {
           ))}
         </div>
       </div>
-
       <SecurityNumberKeyboard password={password} setPassword={setPassword} />
     </div>
   );
