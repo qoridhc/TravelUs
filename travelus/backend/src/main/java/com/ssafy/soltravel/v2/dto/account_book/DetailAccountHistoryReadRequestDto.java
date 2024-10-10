@@ -16,8 +16,4 @@ public class DetailAccountHistoryReadRequestDto {
 
   @Schema(description = "조회할 날짜", example = "2024-10-09")
   private String date;
-
-  @Hidden
-  @Schema(description = "거래 유형 (M:입금, D:출금, A:전체)", example = "A")
-  private String transactionType;
 }
