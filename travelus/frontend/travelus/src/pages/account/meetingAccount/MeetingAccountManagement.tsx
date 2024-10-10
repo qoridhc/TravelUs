@@ -151,12 +151,13 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
                 onClick={() => {
                   exchangeType
                     ? navigate(`/travelbox/detail/auto/exchange/${id}`, {
-                        state: { currencyCode: account.moneyBoxDtos[1].currencyCode },
+                        state: { currencyCode: account.moneyBoxDtos[1].currencyCode, groupId: id },
                       })
                     : navigate("/travelbox/create/type", {
                         state: {
                           currencyCode: account.moneyBoxDtos[1].currencyCode,
                           groupId: id,
+                          exchangeType: exchangeType,
                         },
                       });
                 }}

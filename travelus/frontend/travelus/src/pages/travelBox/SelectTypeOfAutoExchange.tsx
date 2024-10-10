@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { accountApi } from "../../api/account";
-import { setTravelboxInfo } from "../../redux/meetingAccountSlice";
+import { setMeetingAccountInfo, setTravelboxInfo } from "../../redux/meetingAccountSlice";
 
 const SelectTypeOfAutoExchange: React.FC = (props) => {
   const navigate = useNavigate();
@@ -13,6 +13,7 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
   const [type, setType] = useState<number | null>(null);
 
   const travelboxInfo = useSelector((state: RootState) => state.meetingAccount.travelboxInfo);
+  const meetingAccounInfo = useSelector((state: RootState) => state.meetingAccount.meetingAccounInfo);
   const guideData = [
     {
       text: ["사용자 설정", "자동환전", "환율, 금액을 직접 선택해 자동환전해요"],
@@ -32,13 +33,22 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
     if (type === 0) {
       const updatedTravelboxInfo = { ...travelboxInfo, currencyCode: location.state.currencyCode };
       dispatch(setTravelboxInfo(updatedTravelboxInfo));
+      const updatedMeetingAccounInfo = { ...meetingAccounInfo, groupId: location.state.groupId };
+      dispatch(setMeetingAccountInfo(updatedMeetingAccounInfo));
+
       navigate("/travelbox/create/auto/exchange/rate", {
-        state: { currencyCode: location.state.currencyCode, nextPath: `/meetingaccount/${location.state.groupId}` },
+        state: {
+          currencyCode: location.state.currencyCode,
+          nextPath: `/meetingaccount/${location.state.groupId}`,
+          exchangeType: location.state.exchangeType ? location.state.exchangeType : "",
+        },
       });
     } else if (type === 1) {
       changeExchangeMode("NOW");
+      deleteExchangeInfo();
     } else {
       changeExchangeMode("NONE");
+      deleteExchangeInfo();
       navigate(`/travelbox/create/auto/exchange/completed/NONE`, {
         state: { nextPath: `/meetingaccount/${location.state.groupId}` },
       });
@@ -56,7 +66,7 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
       groupId: location.state.groupId,
       exchangeType: type,
     };
-
+    console.log(data);
     try {
       const response = await accountApi.fetchChangeExchangeMode(data);
       if (response.status === 200) {
@@ -66,6 +76,15 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
       }
     } catch (error) {
       console.log("accountApi의 fetchChangeExchangeMode : ", error);
+    }
+  };
+
+  const deleteExchangeInfo = async () => {
+    try {
+      const response = await accountApi.deleteAutoExchangeInfo(Number(location.state.groupId));
+      console.log(response);
+    } catch (error) {
+      console.log("accountApi의 deleteAutoExchangeInfo : ", error);
     }
   };
 

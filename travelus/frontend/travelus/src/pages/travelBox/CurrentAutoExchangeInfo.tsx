@@ -47,6 +47,7 @@ const CurrentAutoExchangeInfo = () => {
     dispatch(setMeetingAccountInfo(updatedMeetingAccountInfo));
     navigate("/travelbox/create/type", {
       state: {
+        exchangeType: type,
         currencyCode: location.state.currencyCode,
         groupId: location.state.groupId,
       },
@@ -71,7 +72,6 @@ const CurrentAutoExchangeInfo = () => {
     try {
       setIsLoading(true);
       const response = await accountApi.fetchAutoExchangeType(Number(groupId));
-      console.log(response);
       setAutoExchangeInfo(response.data);
     } catch (error) {
       console.log("accountApi의 fetchAutoExchangeType : ", error);

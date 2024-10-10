@@ -122,4 +122,5 @@ export interface TargetRate {
   transactionBalance: number;
   targetRate: number;
   dueDate: string;
+  accountPassword: string;
 }
