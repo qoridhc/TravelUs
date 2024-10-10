@@ -11,10 +11,10 @@ import com.ssafy.soltravel.v2.dto.account.request.AddMoneyBoxRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.DeleteAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.InquireAccountListRequestDto;
-import com.ssafy.soltravel.v2.dto.account.response.DeleteAccountResponseDto;
-import com.ssafy.soltravel.v2.dto.moneyBox.DeleteMoneyBoxResponseDto;
 import com.ssafy.soltravel.v2.dto.account.request.PasswordValidateRequestDto;
+import com.ssafy.soltravel.v2.dto.account.response.DeleteAccountResponseDto;
 import com.ssafy.soltravel.v2.dto.account.response.PasswordValidateResponseDto;
+import com.ssafy.soltravel.v2.dto.moneyBox.DeleteMoneyBoxResponseDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.AccountMapper;
@@ -81,36 +81,41 @@ public class AccountService {
         return accountDto;
     }
 
-    // 계좌 단건 조회 (AccountNo로) - 상세 정보 X
+    // 현재 유저의 계좌 조회
     public AccountDto getByAccountNo(String accountNo) {
         User user = securityUtil.getUserByToken();
+        return fetchAccountDto(accountNo, user);
+    }
 
+    // 다른 유저 계좌 조회 - 알림용
+    public AccountDto getByAccountNo(String accountNo, User user) {
+        User currentUser = (user != null) ? user : securityUtil.getUserByToken();
+        return fetchAccountDto(accountNo, currentUser);
+    }
+
+    // 실제 계좌 조회 로직을 담당하는 메서드
+    private AccountDto fetchAccountDto(String accountNo, User user) {
         String API_URL = BASE_URL + "inquireAccount";
-
         BankHeader header = BankHeader.createHeader(apiKeys.get("API_KEY"), user.getUserKey());
 
         Map<String, Object> body = new HashMap<>();
-
         body.put("Header", header);
         body.put("accountNo", accountNo);
 
-        // 특정 계좌 조회
         ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
-
-        // REC 부분을 Object 타입으로 받기
         Map<String, String> recObject = (Map<String, String>) response.getBody().get("REC");
 
-        // recObject -> AccountDto 매핑
         AccountDto accountDto = objectMapper.convertValue(recObject, AccountDto.class);
 
-        // email 로 유저 이름 조회
         String email = recObject.get("credentialId");
-        User accountUser = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
+        User accountUser = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UserNotFoundException(email));
 
         accountDto.setUserName(accountUser.getName());
 
         return accountDto;
     }
+
 
     // 계좌 소유주 검색 - accountNo 기반
     public UserDetailDto getUserByAccountNo(String accountNo) {
@@ -218,12 +223,11 @@ public class AccountService {
         Object recObject = response.getBody().get("REC");
         PasswordValidateResponseDto responseDto = objectMapper.convertValue(recObject, PasswordValidateResponseDto.class);
 
-
-        LogUtil.info("recObject: " , recObject);
-        LogUtil.info("responseDto: " , responseDto);
+        LogUtil.info("recObject: ", recObject);
+        LogUtil.info("responseDto: ", responseDto);
         return responseDto;
     }
-    
+
     // 머니박스 삭제
     public DeleteMoneyBoxResponseDto deleteMoneyBox(AddMoneyBoxRequestDto requestDto) {
 

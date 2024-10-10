@@ -124,8 +124,7 @@ public class NotificationService {
 
         try {
             // FCM 토큰 조회
-            RedisFcm redisFcm = fcmTokenRepository.findById(requestDto.getTargetUserId())
-                .orElse(null);
+            RedisFcm redisFcm = fcmTokenRepository.findById(requestDto.getTargetUserId()).orElse(null);
 
             if (redisFcm == null) {
                 // 토큰이 없는 경우 로그만 남기고 알림 전송 건너뜀
@@ -388,6 +387,20 @@ public class NotificationService {
 
         // 알림 전송
         pushNotification(notificationRequestDto);
+
+        return ResponseEntity.ok().body(new ResponseDto());
+    }
+
+    /*
+     *  여행 전 환전 여부 알림 -> 7일 전인데 환전 안했으면 알림 보냄
+     */
+    public ResponseEntity<?> sendExchangeSuggestNotification(
+        PushNotificationRequestDto requestDto
+    ) {
+
+        TravelGroup group = groupRepository.findByGroupAccountNo(requestDto.getAccountNo());
+        // 알림 전송
+        pushNotification(requestDto);
 
         return ResponseEntity.ok().body(new ResponseDto());
     }
