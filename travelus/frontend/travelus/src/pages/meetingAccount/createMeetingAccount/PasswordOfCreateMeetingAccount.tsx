@@ -7,15 +7,17 @@ import { accountApi } from "../../../api/account";
 import { AxiosError } from "axios";
 import { AxiosErrorResponseData } from "../../../types/axiosError";
 import { exchangeRateApi } from "../../../api/exchange";
+import { setMeetingAccountInfo } from "../../../redux/meetingAccountSlice";
 
 const PasswordOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
-  const params = useParams();
+  const dispatch = useDispatch();
+  const { type } = useParams();
 
   const [password, setPassword] = useState("");
   const travelboxInfo = useSelector((state: RootState) => state.meetingAccount.travelboxInfo);
   const exchangeTargetInfo = useSelector((state: RootState) => state.meetingAccount.exchangeTargetInfo);
-  const groupId = useSelector((state: RootState) => state.meetingAccount.meetingAccounInfo);
+  const meetingAccountInfo = useSelector((state: RootState) => state.meetingAccount.meetingAccounInfo);
 
   const createTravelbox = async () => {
     const travelboxData = {
@@ -25,6 +27,8 @@ const PasswordOfCreateMeetingAccount = () => {
     };
     try {
       const response = await accountApi.fetchCreateTravelBox(travelboxData);
+      const updatedMeetingAccountInfo = { ...meetingAccountInfo, groupId: response.data.groupId };
+      dispatch(setMeetingAccountInfo(updatedMeetingAccountInfo));
       if (response.status === 201) {
         navigate("/meeting/create/completed/travelbox", {
           state: {
@@ -49,32 +53,50 @@ const PasswordOfCreateMeetingAccount = () => {
 
   const createTargetRate = async () => {
     const targetRate = {
-      accountNo: travelboxInfo.accountNo,
+      groupId: Number(meetingAccountInfo.groupId),
       currencyCode: travelboxInfo.currencyCode,
       transactionBalance: exchangeTargetInfo.transactionBalance,
       targetRate: exchangeTargetInfo.targetRate,
-      groupId: Number(groupId),
-      dueDate: "2024-10-11",
+      dueDate: "2024-10-30",
     };
-    console.log(targetRate);
     try {
       const response = await exchangeRateApi.postExchangeTargetRate(targetRate);
       if (response.status === 200) {
-        navigate("/meeting/create/completed/travelbox");
+        navigate("/travelbox/create/auto/exchange/completed/AUTO", {
+          state: { nextPath: `/meetingaccount/${meetingAccountInfo.groupId}` },
+        });
       }
     } catch (error) {
       console.log("exchangeRateApi의 postExchangeTargetRate : ", error);
     }
   };
 
+  const changeExchangeMode = async () => {
+    if (meetingAccountInfo.groupId === undefined) return;
+
+    const data = {
+      groupId: meetingAccountInfo.groupId,
+      exchangeType: "AUTO",
+    };
+
+    try {
+      const response = await accountApi.fetchChangeExchangeMode(data);
+      if (response.status === 200) {
+      }
+    } catch (error) {
+      console.log("accountApi의 fetchChangeExchangeMode : ", error);
+    }
+  };
+
   useEffect(() => {
     if (password.length === 4) {
-      if (params.type === "travelbox") {
+      if (type === "travelbox") {
         createTravelbox();
-      } else if (params.type === "exchangeSetting") {
+      } else if (type === "exchangeSetting") {
         createTargetRate();
+        changeExchangeMode();
       } else {
-        navigate("/meeting/create/password/check", { state: { originalPassword: password, type: params.type } });
+        navigate("/meeting/create/password/check", { state: { originalPassword: password, type: type } });
       }
     }
   }, [password]);
@@ -83,13 +105,13 @@ const PasswordOfCreateMeetingAccount = () => {
     <div className="h-full grid grid-rows-[2fr_1fr]">
       <div className="flex flex-col justify-center items-center space-y-10">
         <p className="text-xl text-center font-medium leading-tight">
-          {params.type === "travelbox"
+          {type === "travelbox" || type === "exchangeSetting"
             ? "모임통장의 비밀번호를"
-            : params.type === "meeting"
+            : type === "meeting"
             ? "모임통장에서 사용할"
             : "튜나뱅크에서 사용할"}
           <br />
-          {params.type === "travelbox" ? "입력해주세요" : "비밀번호를 입력해주세요"}
+          {type === "travelbox" ? "입력해주세요" : "비밀번호를 입력해주세요"}
         </p>
 
         <div className="flex space-x-3">

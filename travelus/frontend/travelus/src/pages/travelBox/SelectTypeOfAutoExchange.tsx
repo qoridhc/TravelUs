@@ -9,7 +9,7 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [type, setType] = useState<number | null>(null);
-  const groupId = location.state.groupId;
+  const meetingAccountInfo = useSelector((state: RootState) => state.meetingAccount.meetingAccounInfo);
   const guideData = [
     {
       text: ["사용자 설정", "자동환전", "환율, 금액을 직접 선택해 자동환전해요"],
@@ -27,12 +27,14 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
 
   const handleNext = () => {
     if (type === 0) {
-      navigate("/travelbox/create/auto/exchange/rate", { state: { currency: location.state.currency } });
+      navigate("/travelbox/create/auto/exchange/rate", {
+        state: { currency: location.state.currency, nextPath: `/meetingaccount/${meetingAccountInfo.groupId}` },
+      });
     } else if (type === 1) {
       changeExchangeMode();
     } else {
       navigate(`/travelbox/create/auto/exchange/completed/NONE`, {
-        state: { nextPath: `/meetingaccount/${groupId}` },
+        state: { nextPath: `/meetingaccount/${meetingAccountInfo.groupId}` },
       });
     }
   };
@@ -42,8 +44,10 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
   };
 
   const changeExchangeMode = async () => {
+    if (meetingAccountInfo.groupId === undefined) return;
+
     const data = {
-      groupId: groupId,
+      groupId: meetingAccountInfo.groupId,
       exchangeType: "NOW",
     };
 
@@ -51,7 +55,7 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
       const response = await accountApi.fetchChangeExchangeMode(data);
       if (response.status === 200) {
         navigate("/travelbox/create/auto/exchange/completed/NOW", {
-          state: { nextPath: `/meetingaccount/${groupId}` },
+          state: { nextPath: `/meetingaccount/${meetingAccountInfo.groupId}` },
         });
       }
     } catch (error) {
