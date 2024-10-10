@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import { accountApi } from "../../../api/account";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
+import { setCurrentFooterMenu } from "../../../redux/accountSlice";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/free-mode";
@@ -176,6 +177,7 @@ const MeetingAccountDetail = () => {
             <div className="flex justify-between items-center">
               <GoHome
                 onClick={() => {
+                  dispatch(setCurrentFooterMenu("홈"));
                   navigate("/");
                 }}
                 className="text-2xl text-zinc-600 cursor-pointer"

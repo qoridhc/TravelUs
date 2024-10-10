@@ -3,6 +3,7 @@ import SecurityNumberKeyboard from "../../../components/common/SecurityNumberKey
 import { useLocation, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
+import { IoMdClose } from "react-icons/io";
 
 const CheckPasswordOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
@@ -21,7 +22,14 @@ const CheckPasswordOfCreateMeetingAccount = () => {
   }, [password]);
 
   return (
-    <div className="h-full grid grid-rows-[2fr_1fr]">
+    <div className="h-full grid grid-rows-[0.2fr_2fr_1fr]">
+      <div
+        onClick={() => {
+          navigate("/meeting/create/userinfo");
+        }}
+        className="p-4">
+        <IoMdClose className="text-3xl" />
+      </div>
       <div className="flex flex-col justify-center items-center space-y-10">
         <p className="text-xl text-center font-medium leading-tight">
           비밀번호를

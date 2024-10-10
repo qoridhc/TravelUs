@@ -68,7 +68,9 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
     <div className="h-full p-5 pb-8 flex flex-col justify-between">
       <div className="grid gap-14">
         <div className="flex items-center">
-          <IoIosArrowBack className="text-2xl" />
+          <IoIosArrowBack
+            onClick={() => {navigate("/")}}
+            className="text-2xl" />
         </div>
 
         <div className="grid gap-10">

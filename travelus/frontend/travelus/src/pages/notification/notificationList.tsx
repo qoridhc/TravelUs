@@ -8,6 +8,7 @@ import { BsFillPeopleFill } from "react-icons/bs";
 import { RiExchangeDollarLine } from "react-icons/ri";
 import { notificationApi } from "../../api/notification";
 import { NotificationListInfo } from "../../types/notification";
+import Loading from "../../components/loading/Loading";
 import { tr } from "date-fns/locale";
 
 interface NotificationListProps {
@@ -85,8 +86,12 @@ const NotificationList: React.FC<NotificationListProps> = (props) => {
     }
   };
 
+  if (!notificationList) {
+    return <Loading />;
+  }
+
   return (
-    <div className="min-h-screen h-full p-6 pb-8">
+    <div className="min-h-screen p-6 pb-8">
       <div className="flex flex-col space-y-10">
         <IoIosArrowBack
           onClick={() => {
@@ -97,7 +102,7 @@ const NotificationList: React.FC<NotificationListProps> = (props) => {
 
         <div className="w-full space-y-9">
           <p className="text-3xl font-bold">알림</p>
-          {notificationList &&
+          {notificationList.length > 0 ? (
             notificationList.map((notification) => (
               <div
                 onClick={() =>
@@ -114,7 +119,7 @@ const NotificationList: React.FC<NotificationListProps> = (props) => {
                         notification.notificationId
                       )
                 }
-                key={notification.notificationId}
+                key={notification.notificationId} // Fragment 제거하고 key 유지
                 className="space-y-1">
                 <div className="flex items-start space-x-2">
                   {renderIcon(notification.notificationType)}
@@ -127,13 +132,20 @@ const NotificationList: React.FC<NotificationListProps> = (props) => {
                   </div>
                 </div>
               </div>
-            ))}
+            ))
+          ) : (
+            <div className="pt-64 text-lg text-zinc-700 flex justify-center items-center">
+              <p>아직 받은 알림이 없어요</p>
+            </div>
+          )}
 
-          <div className="pb-16 pt-3 grid grid-cols-[20%_60%_20%] items-center">
-            <div className="w-full h-[0.1rem] bg-zinc-200"></div>
-            <p className="w-full text-center text-sm text-zinc-400">7일전 알림까지 확인할 수 있어요</p>
-            <div className="w-full h-[0.1rem] bg-zinc-200"></div>
-          </div>
+          {notificationList.length > 0 && (
+            <div className="pb-16 pt-3 grid grid-cols-[20%_60%_20%] items-center">
+              <div className="w-full h-[0.1rem] bg-zinc-200"></div>
+              <p className="w-full text-center text-sm text-zinc-400">7일전 알림까지 확인할 수 있어요</p>
+              <div className="w-full h-[0.1rem] bg-zinc-200"></div>
+            </div>
+          )}
         </div>
       </div>
     </div>
