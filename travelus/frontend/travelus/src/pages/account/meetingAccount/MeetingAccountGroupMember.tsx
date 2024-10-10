@@ -89,15 +89,11 @@ const MeetingAccountGroupMember = () => {
     }
   }, [groupCode]);
 
-  // useEffect(() => {
-  //   if (memberList) {
-  //     const storedUserId = localStorage.getItem("userId");
-  //     setParticipantId(memberList.find((member) => member.userId === Number(storedUserId))?.participantId ?? null);
-  //   }
-  // }, [memberList]);
-
   useEffect(() => {
     if (memberList && userId) {
+      const storedUserId = localStorage.getItem("userId");
+      setParticipantId(memberList.find((member) => member.userId === Number(storedUserId))?.participantId ?? null);
+
       const currentUser = memberList.find((member) => member.userId === userId);
       setIsUserMaster(currentUser?.master || false);
     }
