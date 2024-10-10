@@ -117,8 +117,9 @@ export interface AllDetailedPredictions {
 export type DetailedPrediction = PredictionCurrencyData;
 
 export interface TargetRate {
-  accountNo: string;
+  groupId: number;
   currencyCode: string;
   transactionBalance: number;
   targetRate: number;
+  dueDate: string;
 }

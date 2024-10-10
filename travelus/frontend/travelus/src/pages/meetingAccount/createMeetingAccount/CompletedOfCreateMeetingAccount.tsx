@@ -7,12 +7,12 @@ import { RootState } from "../../../redux/store";
 
 const CompletedOfCreateMeetingAccount = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const params = useParams();
 
   const [userName, setUserName] = useState("");
   const [groupCode, setGroupCode] = useState("");
   const meetingAccountInfo = useSelector((state: RootState) => state.meetingAccount.meetingAccounInfo);
-
   const getUserName = async () => {
     try {
       const response = await userApi.fetchUser();
@@ -53,7 +53,10 @@ const CompletedOfCreateMeetingAccount = () => {
     if (params.type === "meeting") {
       navigate("/travelbox/create/prepare");
     } else {
-      navigate("/");
+      console.log(location.state.currencyCode);
+      navigate("/travelbox/create/type", {
+        state: { currencyCode: location.state.currencyCode, accountNo: location.state.accountNo },
+      });
     }
   };
 
