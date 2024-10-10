@@ -7,6 +7,8 @@ import com.ssafy.soltravel.v2.domain.Enum.SettlementStatus;
 import com.ssafy.soltravel.v2.domain.Enum.TransferType;
 import com.ssafy.soltravel.v2.domain.TargetRate;
 import com.ssafy.soltravel.v2.domain.TravelGroup;
+import com.ssafy.soltravel.v2.dto.ResponseDto;
+import com.ssafy.soltravel.v2.dto.exchange.ExchangeModeUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateCacheDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateRegisterRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateResponseDto;
@@ -143,7 +145,7 @@ public class ExchangeService {
   }
 
   /**
-   * 목표 환율 수정
+   * 희망환율 수정
    */
   @Transactional
   public void updateTargetRate(TargetRateUpdateRequestDto requestDto) {
@@ -170,6 +172,21 @@ public class ExchangeService {
         .orElseThrow(() -> new TargetRateNotFoundException(groupId));
 
     return targetRateMapper.toTargetRateDto(response);
+  }
+
+  /**
+   * 환전 모드 변경 메서드
+   */
+  public ResponseDto updateExchangeMode(ExchangeModeUpdateRequestDto requestDto) {
+
+    TravelGroup group = groupRepository.findById(requestDto.getGroupId())
+        .orElseThrow(() -> new GroupNotFoundException(requestDto.getGroupId()));
+
+    group.setExchangeType(requestDto.getExchangeType());
+    group.setUpdatedAt(LocalDateTime.now());
+    groupRepository.save(group);
+
+    return new ResponseDto();
   }
 
   /**
