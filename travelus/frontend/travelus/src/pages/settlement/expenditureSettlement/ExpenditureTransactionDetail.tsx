@@ -15,7 +15,7 @@ const ExpenditureTransactionDetail = () => {
   const [checkedNum, setCheckedNum] = useState(0); // 하나라도 체크 돼있는지 확인
   const [groupInfo, setGroupInfo] = useState<GroupInfo | null>(null); // 모임정보
   const [transactions, setTransactions] = useState<{ [date: string]: AccountHistoryResponse[] }>({}); // 거래내역 배열
-  const [dateList, setDateList] = useState<string[]>([]); // 날짜 리스트
+  const [dateList, setDateList] = useState<string[] | null>(null); // 날짜 리스트
 
   // 무한 스크롤 관련 상태변수
   const [page, setPage] = useState(0);
@@ -110,6 +110,8 @@ const ExpenditureTransactionDetail = () => {
 
         // 새로운 날짜들을 기존 dateList에 추가
         setDateList((prev) => {
+          if (!prev) return Object.keys(newGroupedTransactions);
+
           const newDates = Object.keys(newGroupedTransactions);
           const uniqueDates = newDates.filter((date) => !prev.includes(date));
           return [...prev, ...uniqueDates];
@@ -146,6 +148,10 @@ const ExpenditureTransactionDetail = () => {
     }
   }, [isLoading]);
 
+  if (!dateList) {
+    return <Loading />;
+  }
+
   return (
     <div className="h-full pb-8">
       <div className="flex flex-col">
@@ -167,69 +173,78 @@ const ExpenditureTransactionDetail = () => {
         <div className="w-full h-5 bg-[#F6F6F8]"></div>
 
         <div className="p-5 overflow-y-auto">
-          {dateList.map((date) => (
-            <div className="grid gap-3" key={date}>
-              <p className="mb-3 text-[#565656] font-semibold">{date}</p>
+          {dateList.length > 0 ? (
+            dateList.map((date) => (
+              <div className="grid gap-3" key={date}>
+                <p className="mb-3 text-[#565656] font-semibold">{date}</p>
 
-              {transactions[date].map((transaction, index) => (
-                <label key={index} className="grid grid-rows-2 grid-cols-[1fr_9fr]">
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      className="w-6 h-6 appearance-none bg-[url('./assets/check/nochecked.png')] checked:bg-[url('./assets/check/checked.png')] bg-cover rounded-full"
-                      onChange={(e) =>
-                        handleChecked(
-                          e.target.checked,
-                          Number(transaction.transactionSummary.slice(-7)) === 0
-                            ? Number(transaction.transactionAmount)
-                            : Math.ceil(
+                {transactions[date].map((transaction, index) => (
+                  <label key={index} className="grid grid-rows-2 grid-cols-[1fr_9fr]">
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        className="w-6 h-6 appearance-none bg-[url('./assets/check/nochecked.png')] checked:bg-[url('./assets/check/checked.png')] bg-cover rounded-full"
+                        onChange={(e) =>
+                          handleChecked(
+                            e.target.checked,
+                            Number(transaction.transactionSummary.slice(-7)) === 0
+                              ? Number(transaction.transactionAmount)
+                              : Math.ceil(
+                                  Number(transaction.transactionAmount) *
+                                    Number(transaction.transactionSummary.slice(-7))
+                                )
+                          )
+                        }
+                      />
+                    </div>
+
+                    <div className="row-span-2 grid grid-rows-2 grid-cols-2">
+                      <p className="text-lg font-semibold tracking-wider">
+                        {transaction.currencyCode === "KRW"
+                          ? transaction.payeeName.slice(0, 9)
+                          : transaction.payeeName.slice(0, 13)}
+                      </p>
+
+                      <p className="text-lg font-semibold text-right tracking-wider">
+                        - {formatCurrency(Number(transaction.transactionAmount))}
+                        {transaction.currencyCode === "KRW"
+                          ? "원"
+                          : currencyTypeList
+                              .find((item) => item.value === transaction.currencyCode)
+                              ?.text.slice(-2, -1)}
+                      </p>
+
+                      {transaction.currencyCode === "KRW" ? (
+                        <></>
+                      ) : (
+                        <>
+                          <p className="text-sm text-[#565656] tracking-wider">
+                            환율&nbsp;
+                            {Number(transaction.transactionSummary.slice(-7))}원
+                          </p>
+                          <p className="text-sm text-[#565656] text-right tracking-wider">
+                            &nbsp;=&nbsp;
+                            {formatCurrency(
+                              Math.ceil(
                                 Number(transaction.transactionAmount) * Number(transaction.transactionSummary.slice(-7))
                               )
-                        )
-                      }
-                    />
-                  </div>
+                            )}
+                            원
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  </label>
+                ))}
 
-                  <div className="row-span-2 grid grid-rows-2 grid-cols-2">
-                    <p className="text-lg font-semibold tracking-wider">
-                      {transaction.currencyCode === "KRW"
-                        ? transaction.payeeName.slice(0, 9)
-                        : transaction.payeeName.slice(0, 13)}
-                    </p>
-
-                    <p className="text-lg font-semibold text-right tracking-wider">
-                      - {formatCurrency(Number(transaction.transactionAmount))}
-                      {transaction.currencyCode === "KRW"
-                        ? "원"
-                        : currencyTypeList.find((item) => item.value === transaction.currencyCode)?.text.slice(-2, -1)}
-                    </p>
-
-                    {transaction.currencyCode === "KRW" ? (
-                      <></>
-                    ) : (
-                      <>
-                        <p className="text-sm text-[#565656] tracking-wider">
-                          환율&nbsp;
-                          {Number(transaction.transactionSummary.slice(-7))}원
-                        </p>
-                        <p className="text-sm text-[#565656] text-right tracking-wider">
-                          &nbsp;=&nbsp;
-                          {formatCurrency(
-                            Math.ceil(
-                              Number(transaction.transactionAmount) * Number(transaction.transactionSummary.slice(-7))
-                            )
-                          )}
-                          원
-                        </p>
-                      </>
-                    )}
-                  </div>
-                </label>
-              ))}
-
-              <hr className="mb-5" />
+                <hr className="mb-5" />
+              </div>
+            ))
+          ) : (
+            <div className="mt-56 flex justify-center">
+              <p className="text-lg font-semibold">거래 내역이 없어요</p>
             </div>
-          ))}
+          )}
 
           {/* 무한스크롤에서 인식할 마지막 타겟 */}
           <div ref={pageEnd} className="h-24 bg-transparent"></div>
