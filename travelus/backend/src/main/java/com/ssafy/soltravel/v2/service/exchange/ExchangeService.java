@@ -7,6 +7,8 @@ import com.ssafy.soltravel.v2.domain.Enum.SettlementStatus;
 import com.ssafy.soltravel.v2.domain.Enum.TransferType;
 import com.ssafy.soltravel.v2.domain.TargetRate;
 import com.ssafy.soltravel.v2.domain.TravelGroup;
+import com.ssafy.soltravel.v2.dto.ResponseDto;
+import com.ssafy.soltravel.v2.dto.exchange.ExchangeModeUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateCacheDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateRegisterRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateResponseDto;
@@ -108,7 +110,7 @@ public class ExchangeService {
      * 목표 환율 설정
      */
     @Transactional
-    public void setPreferenceRate(ExchangeRateRegisterRequestDto dto, boolean isUpdate, long targetId) {
+    public ResponseDto setPreferenceRate(ExchangeRateRegisterRequestDto dto, boolean isUpdate, long targetId) {
 
         CurrencyType currencyCode = dto.getCurrencyCode();
         double targetRate = BigDecimal.valueOf(dto.getTargetRate()).setScale(2, RoundingMode.HALF_UP).doubleValue();
@@ -140,25 +142,27 @@ public class ExchangeService {
                 redisTemplate.expire(key, 0, TimeUnit.SECONDS);
             }
         }
+        return new ResponseDto();
     }
 
     /**
-     * 목표 환율 수정
+     * 희망환율 수정
      */
     @Transactional
-    public void updateTargetRate(TargetRateUpdateRequestDto requestDto) {
+    public ResponseDto updateTargetRate(TargetRateUpdateRequestDto requestDto) {
 
         long groupId = requestDto.getGroupId();
         TargetRate targetRate = targetRateRepository.findByGroupId(groupId)
             .orElseThrow(() -> new TargetRateNotFoundException(groupId));
         removePreferenceRateFromRedis(requestDto.getCurrencyCode(), targetRate.getId());
-
-        targetRate.setRate(Double.valueOf(requestDto.getTargetRate()));
+        targetRate.setRate(BigDecimal.valueOf(requestDto.getTargetRate()).setScale(2, RoundingMode.HALF_UP).doubleValue());
         targetRate.setAmount(requestDto.getTransactionBalance());
         targetRateRepository.save(targetRate);
 
         setPreferenceRate(new ExchangeRateRegisterRequestDto(groupId, getCurrencyType(requestDto.getCurrencyCode()),
             requestDto.getTransactionBalance(), requestDto.getTargetRate(), requestDto.getDueDate()), true, targetRate.getId());
+
+        return new ResponseDto();
     }
 
     /**
@@ -170,6 +174,21 @@ public class ExchangeService {
             .orElseThrow(() -> new TargetRateNotFoundException(groupId));
 
         return targetRateMapper.toTargetRateDto(response);
+    }
+
+    /**
+     * 환전 모드 변경 메서드
+     */
+    public ResponseDto updateExchangeMode(ExchangeModeUpdateRequestDto requestDto) {
+
+        TravelGroup group = groupRepository.findById(requestDto.getGroupId())
+            .orElseThrow(() -> new GroupNotFoundException(requestDto.getGroupId()));
+
+        group.setExchangeType(requestDto.getExchangeType());
+        group.setUpdatedAt(LocalDateTime.now());
+        groupRepository.save(group);
+
+        return new ResponseDto();
     }
 
     /**

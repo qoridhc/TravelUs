@@ -262,7 +262,7 @@ const MeetingAccountDetail = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleReExchange(account.moneyBoxDtos[1].currencyCode);
+                      navigate(`/meeting/${meeting.groupId}/fill/setmoney`);
                     }}
                     className="w-full h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
                     채우기
@@ -294,7 +294,7 @@ const MeetingAccountDetail = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate("/exchange/korean-currency");
+                          handleReExchange(account.moneyBoxDtos[1].currencyCode);
                         }}
                         className="w-full h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
                         재환전
