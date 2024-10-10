@@ -3,11 +3,13 @@ package com.ssafy.soltravel.v2.service.exchange;
 
 import com.ssafy.soltravel.v2.common.Header;
 import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
+import com.ssafy.soltravel.v2.domain.Enum.ExchangeType;
 import com.ssafy.soltravel.v2.domain.Enum.SettlementStatus;
 import com.ssafy.soltravel.v2.domain.Enum.TransferType;
 import com.ssafy.soltravel.v2.domain.TargetRate;
 import com.ssafy.soltravel.v2.domain.TravelGroup;
 import com.ssafy.soltravel.v2.dto.ResponseDto;
+import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.PasswordValidateRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeModeUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateCacheDto;
@@ -183,12 +185,35 @@ public class ExchangeService {
   }
 
   /**
+   * 희망환율 삭제
+   */
+  @Transactional
+  public ResponseDto deleteTargetRate(Long groupId) {
+
+    TravelGroup group = groupRepository.findById(groupId)
+        .orElseThrow(() -> new GroupNotFoundException(groupId));
+
+    AccountDto account = accountService.getByAccountNo(group.getGroupAccountNo());
+
+    removePreferenceRateFromRedis(account.getMoneyBoxDtos().get(1).getCurrencyCode().toString(), group.getTargetRate().getId());
+    targetRateRepository.deleteByGroupId(groupId);
+    return new ResponseDto();
+  }
+
+  /**
    * 환전 모드 변경 메서드
    */
   public ResponseDto updateExchangeMode(ExchangeModeUpdateRequestDto requestDto) {
 
     TravelGroup group = groupRepository.findById(requestDto.getGroupId())
         .orElseThrow(() -> new GroupNotFoundException(requestDto.getGroupId()));
+
+    AccountDto account = accountService.getByAccountNo(group.getGroupAccountNo());
+
+    //원래 환전모드가 자동환전이었다면 대기열에서 삭제
+    if (group.getExchangeType() == ExchangeType.AUTO) {
+      removePreferenceRateFromRedis(account.getMoneyBoxDtos().get(1).getCurrencyCode().toString(), group.getTargetRate().getId());
+    }
 
     group.setExchangeType(requestDto.getExchangeType());
     group.setUpdatedAt(LocalDateTime.now());
