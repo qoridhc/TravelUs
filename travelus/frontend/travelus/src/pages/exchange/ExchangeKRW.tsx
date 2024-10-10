@@ -83,8 +83,8 @@ const MeetingAccountExchange: React.FC = () => {
     if (isFullExchange) {
       handleFullAmount();
     } else {
-      setForeignAmount("0");
-      setKrwAmount("0");
+      setForeignAmount("");
+      setKrwAmount("");
     }
   }, [isFullExchange]);
 
