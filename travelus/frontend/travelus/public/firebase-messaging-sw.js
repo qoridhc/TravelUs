@@ -1,5 +1,5 @@
-// const baseUrl = "http://localhost:3000"; // 로컬
-const baseUrl = "https://j11d209.p.ssafy.io"; // 서비스
+const baseUrl = "http://localhost:3000"; // 로컬
+// const baseUrl = "https://j11d209.p.ssafy.io"; // 서비스
 
 self.addEventListener("install", function (e) {
   console.log("fcm sw install..");
@@ -89,6 +89,8 @@ const generateUrl = (type, accountNo, groupId, currencyCode, settlementId) => {
       return `${baseUrl}/travelbox/transaction/${accountNo}/notification?groupId=${groupId}&currencyCode=${currencyCode}`;
     case "S":
       return `${baseUrl}/settlement/expenditure/list/NOT_COMPLETED`;
+    case "GD":
+      return `${baseUrl}/meetingtransaction/${accountNo}/detail`;
     default:
       return "/";
   }
