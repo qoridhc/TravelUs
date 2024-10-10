@@ -17,6 +17,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -92,6 +93,20 @@ public class ExchangeController {
   }
 
   /**
+   * 희망 환율 삭제
+   */
+  @DeleteMapping("/rate/target-rate/{groupId}")
+  @Operation(summary = "희망 환율 삭제", description = "희망 환율을 삭제합니다.", responses = {
+      @ApiResponse(responseCode = "200", description = "성공적으로 희망 환율을 삭제했습니다.", content = @Content(schema = @Schema(implementation = ResponseDto.class))),
+      @ApiResponse(responseCode = "400", description = "잘못된 요청입니다.", content = @Content),
+      @ApiResponse(responseCode = "500", description = "서버 오류입니다.", content = @Content)})
+  public ResponseEntity<ResponseDto> deleteTargetRate(
+      @PathVariable Long groupId) {
+    ResponseDto response=exchangeService.deleteTargetRate(groupId);
+    return ResponseEntity.ok().body(response);
+  }
+
+  /**
    * 희망 환율 조회
    */
   @GetMapping("/rate/target-rate/{groupId}")
@@ -118,4 +133,5 @@ public class ExchangeController {
     ResponseDto response = exchangeService.updateExchangeMode(requestDto);
     return ResponseEntity.ok().body(response);
   }
+
 }

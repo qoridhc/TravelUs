@@ -21,6 +21,14 @@ const AccountPasswordInput = () => {
   const [stateData, setStateData] = useState<LocationState | null>(null);
   const [password, setPassword] = useState<string>("");
 
+  const formatNumber = (num: number | string | undefined) => {
+    return Number(num).toLocaleString();
+  };
+
+  const getCurrencyUnit = (code: string | undefined) => {
+    return code === "KRW" ? "원" : code;
+  };
+
   useEffect(() => {
     if (location.state) {
       setStateData(location.state as LocationState);
@@ -52,7 +60,7 @@ const AccountPasswordInput = () => {
       transactionBalance: stateData.transactionBalance,
     };
 
-    console.log(exchangeRequest)
+    console.log(exchangeRequest);
 
     try {
       const response: ExchangeResponse[] = await exchangeRateApi.requestExchange(exchangeRequest);
@@ -69,7 +77,6 @@ const AccountPasswordInput = () => {
           transactionSummary: exchangeSummary,
         },
       });
-
     } catch (error: any) {
       console.log("Exchange failed:", error);
       if (error.response && error.response.data) {
@@ -101,7 +108,8 @@ const AccountPasswordInput = () => {
       </div>
       <div className="flex-grow flex flex-col justify-center items-center space-y-10">
         <p className="text-xl text-center font-medium leading-tight">
-          채우기를 위한
+          {formatNumber(stateData?.transactionBalance)}
+          {getCurrencyUnit(stateData?.sourceCurrencyCode)}을 환전하려면
           <br />
           계좌 비밀번호를 입력해주세요
         </p>

@@ -19,7 +19,7 @@ const AutoCurrencyExchangeRateOfCreateTravelBox = () => {
 
   const handleNext = () => {
     dispatch(setExchangeTargetRate({ transactionBalance: 0, targetRate: exchangeRate }));
-    navigate("/travelbox/create/auto/exchange/amount");
+    navigate("/travelbox/create/auto/exchange/amount", { state: { exchangeType: location.state.exchangeType } });
   };
 
   useEffect(() => {
@@ -53,7 +53,7 @@ const AutoCurrencyExchangeRateOfCreateTravelBox = () => {
             exchangeRateBack={exchangeRateBack}
             setExchangeRateBack={setExchangeRateBack}
           />
-          <ExchangeRateForecast setExchangeRateFront={setExchangeRateFront} setExchangeRateBack={setExchangeRateBack} />
+          <ExchangeRateForecast setExchangeRateFront={setExchangeRateFront} setExchangeRateBack={setExchangeRateBack} currencyCode={location.state.currencyCode} />
         </div>
       </div>
 

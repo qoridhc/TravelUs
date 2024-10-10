@@ -96,6 +96,7 @@ import ExpenditureSettlementGroupDetail from "./pages/account/meetingAccount/exp
 import CreateAccountBookInfo from "./pages/accountBook/CreateAccountBookInfo";
 import AutoCurrencyExchangeAmountOfCreateTravelBox from "./pages/travelBox/AutoCurrencyExchangeAmountOfCreateTravelBox";
 import CompletedOfCreateAutoExchange from "./pages/travelBox/CompletedOfCreateAutoExchange";
+import CurrentAutoExchangeInfo from "./pages/travelBox/CurrentAutoExchangeInfo";
 
 function App() {
   return (
@@ -195,6 +196,9 @@ function App() {
             element={<AutoCurrencyExchangeAmountOfCreateTravelBox />}
           />
           <Route path="/travelbox/create/auto/exchange/completed/:type" element={<CompletedOfCreateAutoExchange />} />
+
+          {/* 외화저금통 자동환전 정보 */}
+          <Route path="/travelbox/detail/auto/exchange/:groupId" element={<CurrentAutoExchangeInfo />} />
 
           {/* 외화저금통 해지 */}
           <Route path="/travelbox/delete/:accountNo/:groupId" element={<DeleteTravelBox />} />
