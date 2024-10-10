@@ -3,7 +3,7 @@ import { BsDot } from "react-icons/bs";
 import { currencyTypeList } from "../../types/exchange";
 
 interface Props {
-  currency: string;
+  currencyCode: string;
   exchangeRateFront: number;
   setExchangeRateFront: (num: number) => void;
   exchangeRateBack: number;
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const ExchangeRateInputMui = ({
-  currency,
+  currencyCode,
   exchangeRateFront,
   setExchangeRateFront,
   exchangeRateBack,
@@ -34,7 +34,6 @@ const ExchangeRateInputMui = ({
     if (value === "" || /^\d+$/.test(value)) {
       setExchangeRateFront(Number(value));
     }
-    console.log(value)
   };
 
   return (
@@ -43,7 +42,7 @@ const ExchangeRateInputMui = ({
         <label className="text-[#565656]" htmlFor="">
           희망 환율
         </label>
-        <p>{currencyTypeList.find((item) => item.value === currency)?.text}</p>
+        <p>{currencyTypeList.find((item) => item.value === currencyCode)?.text}</p>
       </div>
 
       <div className="text-xl flex justify-between space-x-3">

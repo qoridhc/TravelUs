@@ -28,7 +28,7 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
   const handleNext = () => {
     if (type === 0) {
       navigate("/travelbox/create/auto/exchange/rate", {
-        state: { currency: location.state.currency, nextPath: `/meetingaccount/${meetingAccountInfo.groupId}` },
+        state: { currencyCode: location.state.currencyCode, nextPath: `/meetingaccount/${meetingAccountInfo.groupId}` },
       });
     } else if (type === 1) {
       changeExchangeMode("NOW");
