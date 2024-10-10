@@ -54,7 +54,6 @@ const AutoCurrencyExchangeRateOfCreateTravelBox = () => {
             setExchangeRateBack={setExchangeRateBack}
           />
           <ExchangeRateForecast setExchangeRateFront={setExchangeRateFront} setExchangeRateBack={setExchangeRateBack} />
-          {/* <ExchangeAmmountInput exchangeAmount={exchangeAmount} setExchangeAmount={setExchangeAmount} /> */}
         </div>
       </div>
 
