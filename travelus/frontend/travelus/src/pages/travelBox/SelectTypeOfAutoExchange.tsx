@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { setTravelboxInfo } from "../../redux/meetingAccountSlice";
 import { IoPerson } from "react-icons/io5";
+import { accountApi } from "../../api/account";
 
 const SelectTypeOfAutoExchange: React.FC = (props) => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
   const dispatch = useDispatch();
   const travelboxInfo = useSelector((state: RootState) => state.meetingAccount.travelboxInfo);
   const [type, setType] = useState<number | null>(null);
+  const groupId = 1;
   const guideData = [
     {
       text: ["사용자 설정", "자동환전", "환율, 금액을 직접 선택해 자동환전해요"],
@@ -33,16 +35,32 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
     if (type === 0) {
       navigate("/travelbox/create/auto/exchange/rate", { state: { currency: location.state.currency } });
     } else if (type === 1) {
-      navigate("/");
+      changeExchangeMode();
     } else {
-      navigate(`/travelbox/transaction/${location.state.accountNo}/detail`, {
-        state: { currencyCode: location.state.currencyCode },
+      navigate(`/travelbox/create/auto/exchange/completed/NONE`, {
+        state: { nextPath: `/meetingaccount/${groupId}` },
       });
     }
   };
 
   const handleSelectType = (type: number) => {
     setType(type);
+  };
+
+  const changeExchangeMode = async () => {
+    const data = {
+      groupId: groupId,
+      exchangeType: "NOW",
+    };
+
+    try {
+      const response = await accountApi.fetchChangeExchangeMode(data);
+      if (response.status === 200) {
+        navigate("/travelbox/create/auto/exchange/completed/NOW");
+      }
+    } catch (error) {
+      console.log("accountApi의 fetchChangeExchangeMode : ", error);
+    }
   };
 
   return (
