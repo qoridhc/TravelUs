@@ -12,6 +12,7 @@ interface LocationState {
   sourceCurrencyCode: string;
   targetCurrencyCode: string;
   transactionBalance: number;
+  groupId: number;
 }
 
 const AccountPasswordInput = () => {
@@ -75,6 +76,7 @@ const AccountPasswordInput = () => {
           sourceAmount: stateData.transactionBalance,
           targetAmount: targetTransactionAmount,
           transactionSummary: exchangeSummary,
+          groupId: stateData.groupId,
         },
       });
     } catch (error: any) {

@@ -39,7 +39,7 @@ const MeetingAccountExchange: React.FC = () => {
   const [krwAmount, setKrwAmount] = useState<string>("");
   const [foreignAmount, setForeignAmount] = useState<string>("");
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState<boolean>(false);
-
+  const [isLoading, setIsLoading] = useState(true);
   const [adjustedKrwAmount, setAdjustedKrwAmount] = useState<string>("");
 
   const [isAmountValid, setIsAmountValid] = useState(true);
@@ -58,13 +58,14 @@ const MeetingAccountExchange: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
-        const [joined, created, rates] = await Promise.all([
-          accountApi.fetchJoinedMeetingAccount(),
+        const [created, rates] = await Promise.all([
+          // accountApi.fetchJoinedMeetingAccount(), 모임주만 환전 및 재환전 가능
           accountApi.fetchCreatedMeetingAccount(),
           exchangeRateApi.getExchangeRates(),
         ]);
-        const allAccounts = [...joined, ...created].filter((account) =>
+        const allAccounts = [...created].filter((account) =>
           account.moneyBoxDtoList.some((box) => box.currencyCode !== "KRW")
         );
         setAccounts(allAccounts);
@@ -86,10 +87,17 @@ const MeetingAccountExchange: React.FC = () => {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
   }, [location]);
+  console.log(selectedAccount);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   // 숫자를 세 자리마다 쉼표로 구분하여 표시
   const formatCurrency = (amount: number) => {
@@ -213,6 +221,7 @@ const MeetingAccountExchange: React.FC = () => {
         sourceCurrencyCode: "KRW",
         targetCurrencyCode: foreignCurrency.currencyCode,
         transactionBalance: cleanedKrwAmount,
+        groupId: selectedAccount.groupId,
       },
     });
 
