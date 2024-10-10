@@ -10,6 +10,7 @@ import { AiFillSmile } from "react-icons/ai";
 import { IoPerson } from "react-icons/io5";
 import { IoIosListBox } from "react-icons/io";
 import { RiHandCoinFill } from "react-icons/ri";
+import { RiExchangeDollarLine } from "react-icons/ri";
 import Loading from "../../../components/loading/Loading";
 
 interface MeetingAccountManagementProps {
@@ -138,6 +139,23 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
                 </div>
               </div>
             </div>
+
+            {account.moneyBoxDtos.length > 1 && (
+              <div
+                onClick={() => {
+                  navigate(`/`);
+                }}
+                className="flex items-center space-x-4">
+                <RiExchangeDollarLine className="text-3xl text-[#27995a]" />
+                <div className="w-full flex justify-between">
+                  <p className="text-zinc-500">자동환전</p>
+                  <div className="flex items-center">
+                    <p className="text-[#0471E9]">상세보기</p>
+                    <MdKeyboardArrowRight className="text-2xl text-zinc-600" />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
