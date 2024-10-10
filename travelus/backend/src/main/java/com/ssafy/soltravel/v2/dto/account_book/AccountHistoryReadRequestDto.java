@@ -2,6 +2,7 @@ package com.ssafy.soltravel.v2.dto.account_book;
 
 import com.ssafy.soltravel.v2.domain.Enum.OrderByType;
 import com.ssafy.soltravel.v2.domain.Enum.TransactionType;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,7 @@ public class AccountHistoryReadRequestDto {
   @Schema(description = "조회할 거래의 종료 날짜", example = "2024-08-31")
   private String endDate;
 
+  @Hidden
   @Schema(description = "거래 유형 (M:입금, D:출금, A:전체)", example = "A")
   private String transactionType;
 
