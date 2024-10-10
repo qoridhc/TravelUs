@@ -23,4 +23,12 @@ public class DateUtil {
     return date.plusDays(1).format(formatter);
   }
 
+  public static LocalDateTime parseTransactionAt(String dateString) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-ddTHH:mm");
+    if(dateString.length() == 10) {
+      dateString.concat("T00:00");
+    }
+    return LocalDateTime.parse(dateString, formatter);
+  }
+
 }
