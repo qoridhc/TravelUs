@@ -15,10 +15,10 @@ interface LocationState {
 
 const currencyNameMapping: { [key: string]: string } = {
   KRW: "원",
-  USD: "달러",
-  JPY: "엔",
-  TWD: "대만 달러",
-  EUR: "유로",
+  // USD: "달러",
+  // JPY: "엔",
+  // TWD: "대만 달러",
+  // EUR: "유로",
 };
 
 // 숫자 포맷팅 함수
@@ -51,7 +51,7 @@ const ExchangeCompletion: React.FC = () => {
 
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000); // 2초 동안 로딩 화면 표시
+    }, 1000); // 1초 동안 로딩 화면 표시
 
     return () => clearTimeout(timer);
   }, [state, navigate]);
@@ -104,9 +104,7 @@ const ExchangeCompletion: React.FC = () => {
 
         <div className="flex justify-between">
           <p className="text-gray-500 text-sm mb-1">적용 환율</p>
-          <p className="text-lg">
-            {extractRate} {getLocalCurrencyName(targetCurrencyCode)}
-          </p>
+          <p className="text-lg">{extractRate} 원</p>
         </div>
       </div>
 
