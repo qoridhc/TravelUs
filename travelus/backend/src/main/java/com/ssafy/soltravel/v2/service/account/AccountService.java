@@ -15,7 +15,6 @@ import com.ssafy.soltravel.v2.dto.account.request.InquireAccountListRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.PasswordValidateRequestDto;
 import com.ssafy.soltravel.v2.dto.account.response.DeleteAccountResponseDto;
 import com.ssafy.soltravel.v2.dto.account.response.PasswordValidateResponseDto;
-import com.ssafy.soltravel.v2.dto.moneyBox.DeleteMoneyBoxResponseDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.response.AddMoneyBoxResponseDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.response.DeleteMoneyBoxResponseDto;
