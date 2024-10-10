@@ -39,6 +39,7 @@ const MeetingAccountExchange: React.FC = () => {
   const [foreignAmount, setForeignAmount] = useState<string>("");
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState<boolean>(false);
   const [isFullExchange, setIsFullExchange] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,6 +87,10 @@ const MeetingAccountExchange: React.FC = () => {
       setKrwAmount("0");
     }
   }, [isFullExchange]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   // 숫자를 세 자리마다 쉼표로 구분하여 표시
   const formatCurrency = (amount: number) => {
