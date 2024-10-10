@@ -69,7 +69,7 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
     if (accountNo === "") return;
 
     fetchAccountBookInfo();
-  }, [accountNo]);
+  }, [accountNo, firstDate, lastDate]);
 
   if ((accountNo !== "" && isLoading) || !monthlyTransaction) {
     <Loading />;

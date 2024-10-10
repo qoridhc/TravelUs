@@ -108,7 +108,9 @@ const CreateAccountBookInfo = () => {
     console.log(data);
     try {
       const response = await accountBookApi.createAccountBook(data);
-      console.log(response);
+      if (response.status === 200) {
+        navigate("/accountbookdetail", { state: { accountNo } });
+      }
     } catch (error) {
       console.log("accountBookApi의 createAccountBook : ", error);
     }
