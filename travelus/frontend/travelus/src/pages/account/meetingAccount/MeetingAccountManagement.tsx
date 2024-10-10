@@ -21,25 +21,27 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
   const navigate = useNavigate();
   const { id } = useParams();
   const numId = Number(id);
+  const [isLoading, setIsLoading] = useState(false);
   const [accountInfo, setAccountInfo] = useState<MeetingAccountInfo | null>(null);
   const [account, setAccount] = useState<MeetingAccountDetailInfo | null>(null);
+  const [exchangeType, setExchangeType] = useState<string | null>(null);
 
-  useEffect(() => {
-    // 해당 모임 조회 API 호출
-    const fetchSpecificMeetingAccount = async () => {
-      try {
-        const response = await accountApi.fetchSpecificMeetingAccount(numId);
-        if (response.status === 200) {
-          setAccountInfo(response.data);
-          fetchSpecificAccountInfo(response.data.groupAccountNo);
-        }
-      } catch (error) {
-        console.error("모임 조회 에러", error);
+  // 해당 모임 조회 API 호출
+  const fetchSpecificMeetingAccount = async () => {
+    try {
+      setIsLoading(true);
+      const response = await accountApi.fetchSpecificMeetingAccount(numId);
+      if (response.status === 200) {
+        setAccountInfo(response.data);
+        setExchangeType(response.data.exchangeType);
+        fetchSpecificAccountInfo(response.data.groupAccountNo);
       }
-    };
-
-    fetchSpecificMeetingAccount();
-  }, [id]);
+    } catch (error) {
+      console.error("모임 조회 에러", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // 특정 모임 통장 조회 API 호출
   const fetchSpecificAccountInfo = async (groupAccountNo: string) => {
@@ -51,7 +53,11 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
     }
   };
 
-  if (!account || !accountInfo) {
+  useEffect(() => {
+    fetchSpecificMeetingAccount();
+  }, [id]);
+
+  if (isLoading || !account || !accountInfo) {
     return <Loading />;
   }
 
@@ -143,7 +149,16 @@ const MeetingAccountManagement: React.FC<MeetingAccountManagementProps> = () => 
             {account.moneyBoxDtos.length > 1 && (
               <div
                 onClick={() => {
-                  navigate(`/`);
+                  exchangeType
+                    ? navigate(`/travelbox/detail/auto/exchange/${id}`, {
+                        state: { currencyCode: account.moneyBoxDtos[1].currencyCode },
+                      })
+                    : navigate("/travelbox/create/type", {
+                        state: {
+                          currencyCode: account.moneyBoxDtos[1].currencyCode,
+                          groupId: id,
+                        },
+                      });
                 }}
                 className="flex items-center space-x-4">
                 <RiExchangeDollarLine className="text-3xl text-[#27995a]" />

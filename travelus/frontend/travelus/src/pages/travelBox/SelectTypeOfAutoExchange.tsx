@@ -4,12 +4,15 @@ import { useLocation, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { accountApi } from "../../api/account";
+import { setTravelboxInfo } from "../../redux/meetingAccountSlice";
 
 const SelectTypeOfAutoExchange: React.FC = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const [type, setType] = useState<number | null>(null);
-  const meetingAccountInfo = useSelector((state: RootState) => state.meetingAccount.meetingAccounInfo);
+
+  const travelboxInfo = useSelector((state: RootState) => state.meetingAccount.travelboxInfo);
   const guideData = [
     {
       text: ["사용자 설정", "자동환전", "환율, 금액을 직접 선택해 자동환전해요"],
@@ -27,15 +30,17 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
 
   const handleNext = () => {
     if (type === 0) {
+      const updatedTravelboxInfo = { ...travelboxInfo, currencyCode: location.state.currencyCode };
+      dispatch(setTravelboxInfo(updatedTravelboxInfo));
       navigate("/travelbox/create/auto/exchange/rate", {
-        state: { currencyCode: location.state.currencyCode, nextPath: `/meetingaccount/${meetingAccountInfo.groupId}` },
+        state: { currencyCode: location.state.currencyCode, nextPath: `/meetingaccount/${location.state.groupId}` },
       });
     } else if (type === 1) {
       changeExchangeMode("NOW");
     } else {
       changeExchangeMode("NONE");
       navigate(`/travelbox/create/auto/exchange/completed/NONE`, {
-        state: { nextPath: `/meetingaccount/${meetingAccountInfo.groupId}` },
+        state: { nextPath: `/meetingaccount/${location.state.groupId}` },
       });
     }
   };
@@ -45,10 +50,10 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
   };
 
   const changeExchangeMode = async (type: string) => {
-    if (meetingAccountInfo.groupId === undefined) return;
+    if (location.state.groupId === undefined) return;
 
     const data = {
-      groupId: meetingAccountInfo.groupId,
+      groupId: location.state.groupId,
       exchangeType: type,
     };
 
@@ -56,7 +61,7 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
       const response = await accountApi.fetchChangeExchangeMode(data);
       if (response.status === 200) {
         navigate(`/travelbox/create/auto/exchange/completed/${type}`, {
-          state: { nextPath: `/meetingaccount/${meetingAccountInfo.groupId}` },
+          state: { nextPath: `/meetingaccount/${location.state.groupId}` },
         });
       }
     } catch (error) {
@@ -69,8 +74,11 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
       <div className="grid gap-14">
         <div className="flex items-center">
           <IoIosArrowBack
-            onClick={() => {navigate("/")}}
-            className="text-2xl" />
+            onClick={() => {
+              navigate("/");
+            }}
+            className="text-2xl"
+          />
         </div>
 
         <div className="grid gap-10">

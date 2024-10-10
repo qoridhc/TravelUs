@@ -8,7 +8,6 @@ import ExchangeAmmountInput from "../../components/travelBox/ExchangeAmmountInpu
 
 const AutoCurrencyExchangeAmountOfCreateTravelBox = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useDispatch();
   const [exchangeAmount, setExchangeAmount] = useState(0);
   const exchangeTargetInfo = useSelector((state: RootState) => state.meetingAccount.exchangeTargetInfo);
