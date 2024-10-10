@@ -11,27 +11,44 @@ export interface getAccountBookDayQuery {
 }
 
 export interface DayHistory {
-  totalExpenditure : number;
-  totalIncome: number;
+  totalExpenditureForeign : number;
+  totalExpenditureKRW: number;
+  totalIncomeForeign : number;
+  totalIncomeKRW: number;
 }
 
 export interface DayHistoryDetail {
-  amount: string;
-  transactionType: string;
-  transactionAt: string;
-  balance: string;
   store: string;
-}
-
-export interface BuyItemInfo {
-  item: string;
-  price: number;
-  quantity: number
+  payeeName: string;
+  address: string;
+  transactionSummary: string;
+  paid: number;
+  currency: string;
+  transactionAt: string;
+  items: BuyItemInfo[];
 }
 
 export interface DayHistoryCreateInfo {
   accountNo: string;
   store: string;
   paid: number;
-  items: Array<BuyItemInfo>;
+  transactionAt: string;
+  address: string;
+  items: BuyItemInfo[];
+  currency: string;
+}
+
+export interface ReceiptInfo {
+  store: string;
+  paid: number;
+  transactionAt: string;
+  address: string;
+  currency: string;
+  items: BuyItemInfo[];
+}
+
+export interface BuyItemInfo {
+  item: string;
+  price: number;
+  quantity: number;
 }
