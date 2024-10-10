@@ -58,6 +58,7 @@ const PasswordOfCreateMeetingAccount = () => {
       transactionBalance: exchangeTargetInfo.transactionBalance,
       targetRate: exchangeTargetInfo.targetRate,
       dueDate: "2024-10-30",
+      accountPassword: password,
     };
     try {
       const response = await exchangeRateApi.postExchangeTargetRate(targetRate);
@@ -67,6 +68,14 @@ const PasswordOfCreateMeetingAccount = () => {
         });
       }
     } catch (error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response && axiosError.response.data && axiosError.response.data) {
+        const responseData = axiosError.response.data as AxiosErrorResponseData;
+        if (responseData.message === "ACCOUNT_PASSWORD_INVALID") {
+          setPassword("");
+          alert("비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
+        }
+      }
       console.log("exchangeRateApi의 postExchangeTargetRate : ", error);
     }
   };
