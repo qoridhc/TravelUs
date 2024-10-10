@@ -76,7 +76,7 @@ const ExchangeRateForecast = ({ setExchangeRateFront, setExchangeRateBack }: Pro
   };
 
   const handleSelect = (rate: number, percent: number) => {
-    const rateSplit = String(rate).split(".");
+    const rateSplit = String(rate).split(".n");
     setExchangeRateFront(Number(rateSplit[0]));
     setExchangeRateBack(Number(rateSplit[1]));
     setSelectPercent(percent);

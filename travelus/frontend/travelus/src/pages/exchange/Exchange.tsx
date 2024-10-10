@@ -113,7 +113,7 @@ const MeetingAccountExchange: React.FC = () => {
   };
 
   const formatNumber = (value: number, currencyCode: string): string => {
-    if (currencyCode === "KRW") {
+    if (currencyCode === "KRW" || currencyCode === "JPY" || currencyCode === "TWD") {
       return Math.round(value).toLocaleString("ko-KR");
     } else {
       return value.toLocaleString("ko-KR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -149,11 +149,11 @@ const MeetingAccountExchange: React.FC = () => {
 
   const handleForeignChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/[^0-9.]/g, "");
+    const foreignCurrency = getForeignCurrency()!;
     const value = Number(rawValue).toLocaleString();
     setForeignAmount(value);
 
     if (rawValue && getForeignCurrency()) {
-      const foreignCurrency = getForeignCurrency()!;
       const rateInfo = exchangeRates.find((rate) => rate.currencyCode === foreignCurrency.currencyCode);
       if (rateInfo) {
         let calculatedKRW: number;
