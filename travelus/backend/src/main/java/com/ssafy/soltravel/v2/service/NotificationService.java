@@ -181,19 +181,21 @@ public class NotificationService {
         switch (requestDto.getTransactionType()) {
             case D -> {
                 title = "입금 완료";
-                message = String.format("입금 금액: %s%s이 입금되었습니다.", formattedAmount, requestDto.getCurrencyCode().getCurrencyName());
+                message = String.format("입금 금액: %s %s이 입금되었습니다.", formattedAmount, requestDto.getCurrencyCode());
             }
             case W -> {
                 title = "출금 완료";
-                message = String.format("출금 금액: %s%s이 출금되었습니다.", formattedAmount, requestDto.getCurrencyCode());
+                message = String.format("출금 금액: %s %s이 출금되었습니다.", formattedAmount, requestDto.getCurrencyCode());
             }
             case SD -> {
                 title = "정산 입금 완료";
-                message = String.format("정산 입금 금액: %s%s이 입금되었습니다.", formattedAmount, requestDto.getCurrencyCode());
+                message = String.format("정산 입금 금액: %s %s이 입금되었습니다.", formattedAmount,
+                    requestDto.getCurrencyCode());
             }
             case SW -> {
                 title = "정산 출금 완료";
-                message = String.format("정산 출금 금액: %s%s이 출금되었습니다.", formattedAmount, requestDto.getCurrencyCode());
+                message = String.format("정산 출금 금액: %s %s이 출금되었습니다.", formattedAmount,
+                    requestDto.getCurrencyCode());
             }
             default -> {
                 throw new IllegalArgumentException("지원되지 않는 트랜잭션 타입입니다.");
