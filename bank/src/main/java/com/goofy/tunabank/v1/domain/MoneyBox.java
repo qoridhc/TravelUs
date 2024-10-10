@@ -65,7 +65,7 @@ public class MoneyBox {
         MoneyBox moneyBox = MoneyBox.builder()
             .account(account)
             .currency(currency)
-            .balance(100000000.0)  // 초기 잔액 0
+            .balance(500000.0)
             .createdAt(LocalDateTime.now())
             .updatedAt(LocalDateTime.now())
             .status("ACTIVE")
