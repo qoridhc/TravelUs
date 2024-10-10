@@ -7,6 +7,8 @@ import { accountApi } from "../../api/account";
 import Loading from "../../components/loading/Loading";
 import { AutoExchangeInfo } from "../../types/account";
 import { setMeetingAccountInfo } from "../../redux/meetingAccountSlice";
+import { RiExchangeDollarLine } from "react-icons/ri";
+import { FaCoins } from "react-icons/fa";
 
 const CurrentAutoExchangeInfo = () => {
   const navigate = useNavigate();
@@ -154,9 +156,23 @@ const CurrentAutoExchangeInfo = () => {
                     </div>
 
                     {type === "AUTO" ? (
-                      <div className="text-lg font-semibold tracking-wide">
-                        <p>희망 환율 : {autoExchangeInfo?.rate}원</p>
-                        <p>환전 금액 : {formatCurrency(Number(autoExchangeInfo?.amount))}원</p>
+                      <div className="text-right text-lg tracking-wide text-zinc-600 space-y-1">
+                        <div className="flex justify-between">
+                          <div className="flex items-center space-x-2">
+                            <RiExchangeDollarLine className="text-2xl text-[#27995a]" />
+                            <p>설정 희망환율</p>
+                          </div>
+                          <p className="font-semibold text-zinc-700">{autoExchangeInfo?.rate}원</p>
+                        </div>
+                        <div className="flex justify-between">
+                          <div className="flex items-center space-x-3">
+                            <FaCoins className="text-xl text-[#ffd753]" />
+                            <p>자동환전 금액</p>
+                          </div>
+                          <p className="font-semibold text-zinc-700">
+                            {formatCurrency(Number(autoExchangeInfo?.amount))}원
+                          </p>
+                        </div>
                       </div>
                     ) : (
                       <></>
