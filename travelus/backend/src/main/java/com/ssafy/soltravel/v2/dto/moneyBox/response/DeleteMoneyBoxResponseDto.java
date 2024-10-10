@@ -1,4 +1,4 @@
-package com.ssafy.soltravel.v2.dto.moneyBox;
+package com.ssafy.soltravel.v2.dto.moneyBox.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
