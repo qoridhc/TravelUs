@@ -63,7 +63,13 @@ const NotificationList: React.FC<NotificationListProps> = (props) => {
     }
   };
 
-  const navigateToDetail = async (type: string, accountNo: string, notificationId: number, settlementId?: string) => {
+  const navigateToDetail = async (
+    type: string,
+    accountNo: string,
+    notificationId: number,
+    groupId?: number,
+    currencyCode?: string
+  ) => {
     try {
       const response = await notificationApi.deleteSpecificNotification(notificationId);
     } catch (error) {
@@ -75,7 +81,7 @@ const NotificationList: React.FC<NotificationListProps> = (props) => {
         navigate(`/settlement/expenditure/list/NOT_COMPLETED`);
         break;
       case "E":
-        navigate(`/travelbox/transaction/${accountNo}/notification`);
+        navigate(`/travelbox/transaction/${accountNo}/notification?groupId=${groupId}&currencyCode=${currencyCode}`);
         break;
       case "GT":
         navigate(`/meetingtransaction/${accountNo}/notification`);
@@ -106,12 +112,13 @@ const NotificationList: React.FC<NotificationListProps> = (props) => {
             notificationList.map((notification) => (
               <div
                 onClick={() =>
-                  notification.settlementId
+                  notification.notificationType === "E"
                     ? navigateToDetail(
                         notification.notificationType,
                         notification.accountNo,
                         notification.notificationId,
-                        notification.settlementId
+                        notification.groupId,
+                        notification.currencyCode
                       )
                     : navigateToDetail(
                         notification.notificationType,
