@@ -14,7 +14,6 @@ const AccountBookDetail = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [accountNo, setAccountNo] = useState<string>(location.state && location.state.accountNo);
   const [meetingAccountList, setMeetingAccountList] = useState<MeetingAccountInfo[] | null>(null);
-  console.log(location.state && location.state.accountNo);
 
   const fetchGroupList = async () => {
     try {
@@ -50,7 +49,6 @@ const AccountBookDetail = () => {
           <DropdownInput meetingAccountList={meetingAccountList} accountNo={accountNo} setAccountNo={setAccountNo} />
 
           <AccountBookCalendar accountNo={accountNo} />
-          <AccountBookDayDetail />
         </div>
       </div>
     </div>

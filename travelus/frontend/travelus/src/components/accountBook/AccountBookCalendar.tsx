@@ -2,12 +2,13 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { endOfMonth, format, startOfMonth } from "date-fns";
+import { endOfMonth, format, parseISO, startOfMonth } from "date-fns";
 import "../../css/calendar.css";
 import AccountBookDetailModal from "./AccountBookDetailModal";
 import Loading from "../loading/Loading";
 import { accountBookApi } from "../../api/accountBook";
-import { DayHistory } from "../../types/accountBook";
+import { DayHistory, DayHistoryDetail } from "../../types/accountBook";
+import { currencyTypeList } from "../../types/exchange";
 
 interface Props {
   accountNo: string;
@@ -21,6 +22,7 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
   const [monthlyTransaction, setMonthlyTransaction] = useState<DayHistory[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dayHistoryDetail, setDayHistoryDetail] = useState<DayHistoryDetail[] | null>(null);
 
   const handleActiveStartDateChange = (activeStartDate: Date) => {
     const firstDay = startOfMonth(activeStartDate);
@@ -33,7 +35,7 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
     if (accountNo === "") return;
 
     setIsModalOpen(true);
-    setSelectedDate(format(date, "yyyyMMdd"));
+    setSelectedDate(format(date, "yyyy-MM-dd"));
   };
 
   const fetchAccountBookInfo = async () => {
@@ -57,6 +59,42 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
     }
   };
 
+  const fetchDateDetailInfo = async () => {
+    console.log(accountNo, " ", selectedDate);
+    if (accountNo === "" || selectedDate === "") return;
+
+    try {
+      setIsLoading(true);
+      const response = await accountBookApi.fetchAccountBookDayInfo(accountNo, selectedDate, "A");
+      console.log(response);
+
+      // Sort by 'transactionAt' in descending order
+      const sortedData = response.data.sort((a: DayHistoryDetail, b: DayHistoryDetail) => {
+        return new Date(b.transactionAt).getTime() - new Date(a.transactionAt).getTime();
+      });
+
+      setDayHistoryDetail(sortedData);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleModalToggle = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if ((e.target as Element).classList.contains("modal")) {
+      handleModalToggle();
+    }
+  };
+
+  useEffect(() => {
+    fetchDateDetailInfo();
+  }, [selectedDate]);
+
   useEffect(() => {
     const today = new Date();
     const firstDay = startOfMonth(today);
@@ -71,7 +109,7 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
     fetchAccountBookInfo();
   }, [accountNo, firstDate, lastDate]);
 
-  if ((accountNo !== "" && isLoading) || !monthlyTransaction) {
+  if ((accountNo !== "" && isLoading) || !monthlyTransaction || !dayHistoryDetail) {
     <Loading />;
   }
 
@@ -119,12 +157,56 @@ const AccountBookCalendar = ({ accountNo }: Props) => {
         </button>
       )}
 
-      <AccountBookDetailModal
+      {/* 일자별 거래 내역 */}
+      {dayHistoryDetail && (
+        <div className="w-full py-3 grid gap-3">
+          {dayHistoryDetail.length > 0 ? (
+            <>
+              <p className="text-zinc-700">총 {dayHistoryDetail.length}건</p>
+
+              <hr className="border border-zinc-400" />
+
+              <div className="grid gap-3">
+                {dayHistoryDetail.map((item, index) => (
+                  <div key={index} className="p-3 bg-white rounded-lg flex flex-col space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div className="flex flex-col justify-center">
+                        {item.store === "" ? (
+                          <p className="font-semibold">모임통장 이체</p>
+                        ) : (
+                          <p className="font-semibold">{item.store}</p>
+                        )}
+                        <p className="text-sm tracking-wider">{format(parseISO(item.transactionAt), "HH:mm")}</p>
+                      </div>
+                      <p className={`font-semibold flex justify-end ${item.store === "" ? "" : "text-[#4880EE]"}`}>
+                        {item.store === ""
+                          ? `- ${parseFloat(String(item.paid)).toLocaleString()}`
+                          : `${parseFloat(String(item.paid)).toLocaleString()}`}
+                        {item.currency === "KRW"
+                          ? "원"
+                          : currencyTypeList.find((temp) => temp.value === item.currency)?.text.slice(-2, -1)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-zinc-700">총 {dayHistoryDetail.length}건</p>
+              <hr className="border border-zinc-400" />
+              <p className="mt-5 text-center text-zinc-500">내역이 없습니다.</p>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* <AccountBookDetailModal
         accountNo={accountNo}
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         selectedDate={selectedDate}
-      />
+      /> */}
     </div>
   );
 };
