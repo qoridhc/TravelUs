@@ -5,24 +5,26 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.soltravel.v1.dto.user.UserDetailDto;
 import com.ssafy.soltravel.v2.common.BankHeader;
+import com.ssafy.soltravel.v2.domain.TravelGroup;
 import com.ssafy.soltravel.v2.domain.User;
 import com.ssafy.soltravel.v2.dto.account.AccountDto;
 import com.ssafy.soltravel.v2.dto.account.request.AddMoneyBoxRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.CreateAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.DeleteAccountRequestDto;
 import com.ssafy.soltravel.v2.dto.account.request.InquireAccountListRequestDto;
-import com.ssafy.soltravel.v2.dto.account.response.DeleteAccountResponseDto;
-import com.ssafy.soltravel.v2.dto.moneyBox.DeleteMoneyBoxResponseDto;
 import com.ssafy.soltravel.v2.dto.account.request.PasswordValidateRequestDto;
+import com.ssafy.soltravel.v2.dto.account.response.DeleteAccountResponseDto;
 import com.ssafy.soltravel.v2.dto.account.response.PasswordValidateResponseDto;
 import com.ssafy.soltravel.v2.dto.moneyBox.MoneyBoxDto;
+import com.ssafy.soltravel.v2.dto.moneyBox.response.AddMoneyBoxResponseDto;
+import com.ssafy.soltravel.v2.dto.moneyBox.response.DeleteMoneyBoxResponseDto;
 import com.ssafy.soltravel.v2.exception.user.UserNotFoundException;
 import com.ssafy.soltravel.v2.mapper.AccountMapper;
 import com.ssafy.soltravel.v2.repository.GeneralAccountRepository;
+import com.ssafy.soltravel.v2.repository.GroupRepository;
 import com.ssafy.soltravel.v2.repository.ParticipantRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.service.WebClientService;
-import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +53,8 @@ public class AccountService {
     private final SecurityUtil securityUtil;
 
     private final String BASE_URL = "/accounts/";
+    //    private final GroupService groupService;
+    private final GroupRepository groupRepository;
 
     // 신규 계좌 생성
     public AccountDto createGeneralAccount(
@@ -171,7 +175,7 @@ public class AccountService {
     }
 
     // 계좌 신규 머니박스 추가
-    public List<MoneyBoxDto> addMoneyBox(AddMoneyBoxRequestDto requestDto) {
+    public AddMoneyBoxResponseDto addMoneyBox(AddMoneyBoxRequestDto requestDto) {
 
         User user = securityUtil.getUserByToken();
 
@@ -182,9 +186,7 @@ public class AccountService {
         Map<String, Object> body = new HashMap<>();
 
         body.put("Header", header);
-        body.put("accountNo", requestDto.getAccountNo());
-        body.put("currencyCode", requestDto.getCurrencyCode());
-        body.put("accountPassword", requestDto.getAccountPassword());
+        body.putAll(objectMapper.convertValue(requestDto, Map.class));
 
         // 머니박스 추가
         ResponseEntity<Map<String, Object>> response = webClientService.sendRequest(API_URL, body);
@@ -197,8 +199,9 @@ public class AccountService {
             new TypeReference<List<MoneyBoxDto>>() {
             });
 
-        // 변환된 리스트를 반환하거나, 다른 로직에 사용
-        return moneyBoxDtos;
+        TravelGroup group = groupRepository.findByGroupAccountNo(requestDto.getAccountNo());
+
+        return new AddMoneyBoxResponseDto(group.getGroupId(), moneyBoxDtos);
     }
 
     public PasswordValidateResponseDto validatePassword(PasswordValidateRequestDto requestDto) {
@@ -218,12 +221,9 @@ public class AccountService {
         Object recObject = response.getBody().get("REC");
         PasswordValidateResponseDto responseDto = objectMapper.convertValue(recObject, PasswordValidateResponseDto.class);
 
-
-        LogUtil.info("recObject: " , recObject);
-        LogUtil.info("responseDto: " , responseDto);
         return responseDto;
     }
-    
+
     // 머니박스 삭제
     public DeleteMoneyBoxResponseDto deleteMoneyBox(AddMoneyBoxRequestDto requestDto) {
 
@@ -246,16 +246,13 @@ public class AccountService {
         // REC 데이터를 MoneyBoxDto 리스트로 변환
         DeleteMoneyBoxResponseDto responseDto = objectMapper.convertValue(recObject, DeleteMoneyBoxResponseDto.class);
 
-        LogUtil.info("responseDto: " + responseDto);
-        LogUtil.info("responseDto: " + responseDto);
-
         // 변환된 리스트를 반환하거나, 다른 로직에 사용
         return responseDto;
 
     }
 
 
-    // 머니박스 삭제
+    // 계좌 삭제
     public DeleteAccountResponseDto deleteAccount(DeleteAccountRequestDto requestDto) {
 
         User user = securityUtil.getUserByToken();
@@ -274,12 +271,8 @@ public class AccountService {
         // WebClient 응답에서 REC 부분을 가져오기
         Map<String, Object> recObject = (Map<String, Object>) response.getBody().get("REC");
 
-        LogUtil.info("rec", recObject);
-
         // REC 데이터를 DeleteAccountResponseDto로 변환
         DeleteAccountResponseDto responseDto = objectMapper.convertValue(recObject, DeleteAccountResponseDto.class);
-
-        LogUtil.info("responseDto: " + responseDto);
 
         // 변환된 리스트를 반환하거나, 다른 로직에 사용
         return responseDto;

@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { accountApi } from "../../../api/account";
+import { userApi } from "../../../api/user";
 import { useDispatch, useSelector } from "react-redux";
+import { ParticipantInfo } from "../../../types/meetingAccount";
 import { RootState } from "../../../redux/store";
+import { setCurrentFooterMenu } from "../../../redux/accountSlice";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/free-mode";
@@ -16,13 +19,18 @@ import { FiPlus } from "react-icons/fi";
 import { MeetingAccountInfo, MeetingAccountDetailInfo } from "../../../types/account";
 import { setTravelboxInfo } from "../../../redux/meetingAccountSlice";
 import Loading from "../../../components/loading/Loading";
+import { is } from "date-fns/locale";
+import { set } from "date-fns";
 
 const MeetingAccountDetail = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
+  const [userId, setUserId] = useState<number | null>(null);
   const [meeting, setMeeting] = useState<MeetingAccountInfo | null>(null);
   const [account, setAccount] = useState<MeetingAccountDetailInfo | null>(null);
+  const [memberList, setMemberList] = useState<ParticipantInfo[] | null>(null);
+  const [isUserMaster, setIsUserMaster] = useState(false);
 
   const handlleCreateTravelbox = () => {
     if (!account?.accountNo) return;
@@ -45,6 +53,7 @@ const MeetingAccountDetail = () => {
         const meetingData = response.data;
 
         setMeeting(meetingData);
+        setMemberList(meetingData.participants);
 
         // 모임 조회 성공 시, 바로 통장 정보 조회
         if (meetingData?.groupAccountNo) {
@@ -72,10 +81,29 @@ const MeetingAccountDetail = () => {
   useEffect(() => {
     if (id) {
       fetchSpecificMeetingAccount();
+      fetchUser();
     }
   }, [id]);
 
-  const [loading, setLoading] = useState<boolean>(true);
+  // 모임 참여자가 userId로 본인인지 확인
+  const fetchUser = async () => {
+    try {
+      const response = await userApi.fetchUser();
+      if (response.status === 200) {
+        const myId = response.data.userId;
+        setUserId(myId);
+      }
+    } catch (error) {
+      console.error("유저 정보 조회 에러", error);
+    }
+  };
+
+  useEffect(() => {
+    if (memberList && userId) {
+      const currentUser = memberList.find((member) => member.userId === userId);
+      setIsUserMaster(currentUser?.master || false);
+    }
+  }, [memberList, userId]);
 
   // 숫자를 세 자리마다 쉼표로 구분하여 표시
   const formatCurrency = (amount: number) => {
@@ -142,7 +170,7 @@ const MeetingAccountDetail = () => {
     return <span className={containerClasses}>{IconComponent}</span>;
   };
 
-  if (!account && !meeting) {
+  if (!account || !meeting || !userId || !memberList) {
     return <Loading />;
   }
 
@@ -176,6 +204,7 @@ const MeetingAccountDetail = () => {
             <div className="flex justify-between items-center">
               <GoHome
                 onClick={() => {
+                  dispatch(setCurrentFooterMenu("홈"));
                   navigate("/");
                 }}
                 className="text-2xl text-zinc-600 cursor-pointer"
@@ -239,23 +268,25 @@ const MeetingAccountDetail = () => {
                 }
               </div>
               {account.moneyBoxDtos.length > 1 ? (
-                <div className="flex justify-between">
+                <div className="w-full flex justify-between space-x-3">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/meeting/${meeting.groupId}/fill/setmoney`);
                     }}
-                    className="w-[10.5rem] h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
+                    className="w-full h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
                     채우기
                   </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleExchange("KRW");
-                    }}
-                    className="w-[10.5rem] h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
-                    환전
-                  </button>
+                  {isUserMaster && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleExchange("KRW");
+                      }}
+                      className="w-full h-11 rounded-lg bg-[#1429A0] text-white font-semibold">
+                      환전
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div className="flex justify-between">
@@ -290,7 +321,7 @@ const MeetingAccountDetail = () => {
                         <span>{account.moneyBoxDtos[1].currencyCode}</span>
                       </p>
                     </div>
-                    <div className="flex justify-between">
+                    {isUserMaster && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -299,7 +330,7 @@ const MeetingAccountDetail = () => {
                         className="w-full h-11 rounded-lg bg-[#D8E3FF] text-[#026CE1] font-semibold">
                         재환전
                       </button>
-                    </div>
+                    )}
                   </>
                 ) : (
                   <></>

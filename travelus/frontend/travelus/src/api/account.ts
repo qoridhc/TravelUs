@@ -1,6 +1,6 @@
 
 import api from "../lib/axios";
-import { AccountInfo, MeetingAccountInfo, AccountParticipants, GeneralAccountCreate, MeetingAccountCreate, MeetingAccountUpdateInfo, AccountPassword } from "../types/account";
+import { AccountInfo, MeetingAccountInfo, AccountParticipants, GeneralAccountCreate, MeetingAccountCreate, MeetingAccountUpdateInfo, AccountPassword, ExchangeMode } from "../types/account";
 import { AccountHistoryRequest } from "../types/accountHistory";
 import { NewParticipant, TravelboxInfo, TravelboxDeleteInfo } from "../types/meetingAccount";
 
@@ -117,4 +117,9 @@ export const accountApi = {
   deleteParticipantId: (participantId: number) => {
     return api.delete(`/groups/participants/${participantId}`);
   },
+
+  // 환전 모드 변경
+  fetchChangeExchangeMode: (data: ExchangeMode) => {
+    return api.put(`/exchange/mode`, data);
+  }, 
 };

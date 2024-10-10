@@ -235,55 +235,35 @@ const MainPage = () => {
           )}
 
           {/* 환율 표시 부분 */}
-          <div className="w-full p-6 flex flex-col space-y-2 rounded-xl bg-white shadow-md">
-            <div className="flex items-center space-x-1" onClick={() => navigateExchangeRate()}>
+          <div
+            className="w-full p-6 flex flex-col space-y-2 rounded-xl bg-white shadow-md"
+            onClick={() => navigateExchangeRate()}>
+            <div className="flex items-center space-x-1">
               <p className="text-md font-semibold flex justify-start">환율</p>
               <IoIosArrowForward className="text-[#565656]" />
             </div>
             <div className="flex justify-end">
               <p className="text-sm text-zinc-400">매매기준율 {getLatestUpdateTime()} </p>
             </div>
-            <div
-              ref={scrollContainerRef}
-              className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory"
-              style={{
-                scrollSnapType: "x mandatory",
-                scrollBehavior: "smooth",
-                WebkitOverflowScrolling: "touch",
-              }}>
+            <div className="flex justify-between items-center">
               {CURRENCY_CODES.map((code, index) => (
-                <div key={code} className="flex-none w-1/3 snap-start" style={{ scrollSnapAlign: "start" }}>
+                <React.Fragment key={code}>
+                  {index > 0 && <div className="w-[0.8px] h-14 bg-gray-300"></div>}
                   <div
-                    className="w-full p-1 flex flex-col justify-center items-center space-y-2 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleCurrencyClick(code)}
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        handleCurrencyClick(code);
-                      }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCurrencyClick(code)
                     }}
-                    tabIndex={0}
-                    role="button"
-                    aria-label={`View exchange rate details for ${code}`}>
+                    className="w-full p-1 flex flex-col justify-center items-center space-y-2">
                     <div className="flex justify-center items-center space-x-1">
                       <img className="w-6 h-4 rounded-sm" src={`/assets/flag/flagOf${code}.png`} alt={code} />
-                      <p>{currencyNames[code]}</p>
+                      <p className="text-sm">{currencyNames[code]}</p>
                     </div>
                     <p className="text-lg font-semibold">{getExchangeRate(code)}</p>
                   </div>
-                  {index < CURRENCY_CODES.length - 1 && (
-                    <div className="w-[0.8px] h-14 bg-gray-300 absolute right-0 top-1/2 transform -translate-y-1/2"></div>
-                  )}
-                </div>
+                </React.Fragment>
               ))}
             </div>
-            {/* <button
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate("/exchange/foreign-currency");
-              }}
-              className="h-10 rounded-md bg-[#1429A0] text-white font-semibold text-sm">
-              환전하기
-            </button> */}
           </div>
         </div>
 
@@ -326,7 +306,7 @@ const MainPage = () => {
             onClick={() => {
               navigate("/settlement/expenditure/list/NOT_COMPLETED");
             }}>
-            <img className="w-12" src="/assets/creditCardIcon.png" alt="카드아이콘" />
+            <img className="w-12" src="/assets/settlementIcon.png" alt="정산아이콘" />
             <div>
               <p className="font-semibold">
                 빠르게

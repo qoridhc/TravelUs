@@ -8,7 +8,8 @@ import { accountApi } from "../../../../api/account";
 import SecurityNumberKeyboard from "../../../../components/common/SecurityNumberKeyboard";
 import { AxiosError } from "axios";
 import { AxiosErrorResponseData } from "../../../../types/axiosError";
-import { MeetingAccountInfo } from "../../../../types/account";
+import { MeetingAccountInfo } from "../../../../types/account"
+import { IoMdClose } from "react-icons/io";
 
 interface TransferPasswordProps {
   // Define the props for your component here
@@ -101,7 +102,14 @@ const FillPassword: React.FC<TransferPasswordProps> = (props) => {
   };
 
   return (
-    <div className="h-full grid grid-rows-[2fr_1fr]">
+    <div className="h-full grid grid-rows-[0.2fr_2fr_1fr]">
+      <div
+        onClick={() => {
+          navigate(`/meeting/${groupId}/fill/setmoney`);
+        }}
+        className="p-4">
+        <IoMdClose className="text-3xl" />
+      </div>
       <div className="flex flex-col justify-center items-center space-y-10">
         <p className="text-xl text-center font-medium leading-tight">
           <br />
