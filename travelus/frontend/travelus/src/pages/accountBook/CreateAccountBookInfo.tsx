@@ -183,7 +183,7 @@ const CreateAccountBookInfo = () => {
   }
 
   return (
-    <div className="h-full pb-8 flex flex-col justify-between items-end">
+    <div className="w-full h-full pb-8 flex flex-col justify-between">
       <div>
         <div className="p-5 bg-white flex items-center sticky top-0 z-50">
           <IoIosArrowBack className="text-2xl" onClick={() => navigate("/accountbookdetail")} />
