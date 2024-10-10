@@ -85,6 +85,11 @@ public class AccountService {
 
         // 계좌 최초 생성 시 KRW 머니박스 기본 생성
         MoneyBox moneyBox = MoneyBox.createMoneyBox(account, currency);
+
+        if (account.getAccountType() == AccountType.G) {
+            moneyBox.setBalance(0.0);
+        }
+
         account.addMoneyBox(moneyBox);
 
         accountRepository.save(account);
@@ -163,8 +168,8 @@ public class AccountService {
             .orElseThrow(() -> new InvalidAccountNoException(requestDto.getAccountNo()));
 
         if (!passwordEncoder.matches(requestDto.getAccountPassword(), account.getAccountPassword())) {
-      throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
-    }
+            throw new InvalidAccountPasswordException(requestDto.getAccountPassword());
+        }
 
         if (!account.getAccountType().equals(AccountType.G)) {
             throw new InvalidGroupAccountIdException();
@@ -180,6 +185,8 @@ public class AccountService {
         Currency currency = currencyRepository.findByCurrencyCode(requestDto.getCurrencyCode());
 
         MoneyBox moneyBox = MoneyBox.createMoneyBox(account, currency);
+
+        moneyBox.setBalance(0.0);
 
         account.getMoneyBoxes().add(moneyBox);
 
