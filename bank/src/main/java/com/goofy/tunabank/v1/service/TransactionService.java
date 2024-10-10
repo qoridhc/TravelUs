@@ -104,7 +104,7 @@ public class TransactionService {
    * 입금 및 출금(원화, 외화)
    */
   @Transactional
-  public TransactionResponseDto processTransaction(TransactionRequestDto requestDto) {
+  public TransactionResponseDto processTransaction(TransactionRequestDto requestDto, boolean isEncrypted) {
 
     String accountNo = requestDto.getAccountNo();
     CurrencyType currencyCode = requestDto.getCurrencyCode();
@@ -114,8 +114,7 @@ public class TransactionService {
     User user = userService.findUserByHeader();
     validateUserAccess(user, moneyBox);
 
-    //비밀번호 검증
-    validatePassword(requestDto.getAccountPassword(), accountNo, false);
+    validatePassword(requestDto.getAccountPassword(), accountNo, isEncrypted);
 
     TransactionType transactionType = requestDto.getTransactionType();
     double amount = requestDto.getTransactionBalance();
@@ -178,10 +177,13 @@ public class TransactionService {
   /**
    * 정산 입출금
    */
-  public TransactionResponseDto processAutoSettlement(TransactionRequestDto requestDto) {
+  public TransactionResponseDto processAutoSettlement(TransactionRequestDto requestDto, boolean isEncrypted) {
 
-    requestDto.setAccountPassword(getPassword(requestDto.getAccountNo()));
-    return processTransaction(requestDto);
+    if (isEncrypted)// 암호화된비밀번호임
+    {
+      requestDto.setAccountPassword(getPassword(requestDto.getAccountNo()));
+    }
+    return processTransaction(requestDto, isEncrypted);
   }
 
 

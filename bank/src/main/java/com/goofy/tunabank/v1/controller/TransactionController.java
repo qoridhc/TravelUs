@@ -32,7 +32,7 @@ public class TransactionController {
   public ResponseEntity<RecWrapper<TransactionResponseDto>> deposit(
       @RequestBody TransactionRequestDto requestDto) {
 
-    TransactionResponseDto response = transactionService.processTransaction(requestDto);
+    TransactionResponseDto response = transactionService.processTransaction(requestDto, false);
     return ResponseEntity.ok(new RecWrapper<>(response));
   }
 
@@ -43,7 +43,7 @@ public class TransactionController {
   public ResponseEntity<RecWrapper<TransactionResponseDto>> withdrawal(
       @RequestBody TransactionRequestDto requestDto) {
 
-    TransactionResponseDto response = transactionService.processTransaction(requestDto);
+    TransactionResponseDto response = transactionService.processTransaction(requestDto, false);
     return ResponseEntity.ok(new RecWrapper<>(response));
   }
 
@@ -88,7 +88,7 @@ public class TransactionController {
   public ResponseEntity<RecWrapper<?>> transferBetweenMoneyBoxes(
       @RequestBody TransferMBRequestDto requestDto) {
 
-    List<TransactionResponseDto> response = transactionService.processMoneyBoxTransfer(requestDto,false);
+    List<TransactionResponseDto> response = transactionService.processMoneyBoxTransfer(requestDto, false);
     return ResponseEntity.ok(new RecWrapper<>(response));
   }
 
@@ -110,7 +110,7 @@ public class TransactionController {
   public ResponseEntity<RecWrapper<TransactionResponseDto>> settlementDepositAuto(
       @RequestBody TransactionRequestDto requestDto) {
 
-    TransactionResponseDto response = transactionService.processAutoSettlement(requestDto);
+    TransactionResponseDto response = transactionService.processAutoSettlement(requestDto, true);
     return ResponseEntity.ok(new RecWrapper<>(response));
   }
 
@@ -121,7 +121,7 @@ public class TransactionController {
   public ResponseEntity<RecWrapper<TransactionResponseDto>> settlementWithdrawalAuto(
       @RequestBody TransactionRequestDto requestDto) {
 
-    TransactionResponseDto response = transactionService.processAutoSettlement(requestDto);
+    TransactionResponseDto response = transactionService.processAutoSettlement(requestDto, false);
     return ResponseEntity.ok(new RecWrapper<>(response));
   }
 
