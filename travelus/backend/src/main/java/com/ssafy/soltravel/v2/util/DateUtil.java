@@ -24,11 +24,14 @@ public class DateUtil {
   }
 
   public static LocalDateTime parseTransactionAt(String dateString) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-ddTHH:mm");
-    if(dateString.length() == 10) {
-      dateString.concat("T00:00");
-    }
-    return LocalDateTime.parse(dateString, formatter);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    String date = switch (dateString.length()) {
+      case 10 -> dateString.concat("T00:00:00");
+      case 16 -> dateString.concat(":00");
+      default -> dateString;
+    };
+    LogUtil.info("날짜", date);
+    return LocalDateTime.parse(date, formatter);
   }
 
 }
