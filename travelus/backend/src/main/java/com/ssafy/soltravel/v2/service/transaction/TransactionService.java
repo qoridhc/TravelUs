@@ -65,6 +65,7 @@ public class TransactionService {
   /**
    * 입금
    */
+  @Transactional
   public ResponseEntity<TransactionResponseDto> postAccountDeposit(
       TransactionRequestDto requestDto, long userId) {
 
@@ -78,6 +79,7 @@ public class TransactionService {
   /**
    * 출금
    */
+  @Transactional
   public ResponseEntity<TransactionResponseDto> postAccountWithdrawal(
       TransactionRequestDto requestDto, long userId) {
 
@@ -92,6 +94,7 @@ public class TransactionService {
   /**
    * 일반 이체
    */
+  @Transactional
   public ResponseEntity<List<TransferHistoryResponseDto>> postGeneralTransfer(
       TransferRequestDto requestDto) {
 
@@ -101,6 +104,7 @@ public class TransactionService {
   /**
    * 머니 박스 이체
    */
+  @Transactional
   public ResponseEntity<List<TransferHistoryResponseDto>> postMoneyBoxTransfer(
       MoneyBoxTransferRequestDto requestDto, boolean isAuto, long userId) {
 
@@ -110,7 +114,8 @@ public class TransactionService {
   /**
    * 입출금 공통 요청 처리 메서드
    */
-  private ResponseEntity<TransactionResponseDto> processTransaction(String apiName,
+  @Transactional
+  public ResponseEntity<TransactionResponseDto> processTransaction(String apiName,
       TransactionRequestDto requestDto, boolean isSettlement, long userId) {
 
     String API_URL = BASE_URL;
@@ -156,6 +161,7 @@ public class TransactionService {
   /**
    * 이체 요청 처리 메서드
    */
+  @Transactional
   public ResponseEntity<List<TransferHistoryResponseDto>> processTransfer(String apiName,
       TransferRequestDto requestDto) {
 
@@ -234,6 +240,7 @@ public class TransactionService {
   /**
    * 머니박스 이체 요청 처리 메서드
    */
+  @Transactional
   public ResponseEntity<List<TransferHistoryResponseDto>> processMoneyBoxTransfer(
       String apiName,
       MoneyBoxTransferRequestDto requestDto,
@@ -284,6 +291,7 @@ public class TransactionService {
   /**
    * 거래 내역 목록 조회
    */
+  @Transactional
   public ResponseEntity<Page<HistoryResponseDto>> getHistoryList(
       TransactionHistoryListRequestDto requestDto) {
 
@@ -350,6 +358,7 @@ public class TransactionService {
   /**
    * 거래 내역 단건 조회
    */
+  @Transactional
   public ResponseEntity<HistoryResponseDto> getHistory(
       TransactionHistoryRequestDto requestDto) {
 
