@@ -326,7 +326,7 @@ const MainPage = () => {
             onClick={() => {
               navigate("/settlement/expenditure/list/NOT_COMPLETED");
             }}>
-            <img className="w-12" src="/assets/creditCardIcon.png" alt="카드아이콘" />
+            <img className="w-12" src="/assets/settlementIcon.png" alt="정산아이콘" />
             <div>
               <p className="font-semibold">
                 빠르게

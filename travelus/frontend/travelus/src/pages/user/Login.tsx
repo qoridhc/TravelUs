@@ -2,10 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { userApi } from "../../api/user";
 import { initializeFcmAndRegisterToken } from "../../utils/notificationUtils";
+import { format, addDays } from "date-fns"; // 날짜 계산을 위한 라이브러리
+import PwaPrompt from "../../components/pwa/PwaPrompt";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPwaPrompt, setShowPwaPrompt] = useState(false); // PWA 설치 안내 모달 상태
+  const [hideForToday, setHideForToday] = useState(false); // "오늘 하루 열지 않기" 상태
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -15,6 +20,11 @@ const Login = () => {
     if (token) {
       console.log("token: ", token);
       navigate("/");
+    }
+
+    const pwaPromptDismissed = localStorage.getItem("pwaPromptDismissed");
+    if (!pwaPromptDismissed || new Date(pwaPromptDismissed) < new Date()) {
+      setShowPwaPrompt(true); // PWA 설치 안내 모달 표시
     }
   }, []);
 
@@ -52,6 +62,14 @@ const Login = () => {
       console.error("Error creating user:", error);
       alert("아이디 또는 비밀번호가 틀렸습니다.");
     }
+  };
+
+  const handlePwaDismiss = () => {
+    if (hideForToday) {
+      const tomorrow = addDays(new Date(), 1);
+      localStorage.setItem("pwaPromptDismissed", format(tomorrow, "yyyy-MM-dd")); // 오늘 하루 열지 않기
+    }
+    setShowPwaPrompt(false);
   };
 
   return (
@@ -119,6 +137,14 @@ const Login = () => {
           </button>
         </div>
       </div>
+
+      {/* PWA 설치 안내 모달 */}
+      <PwaPrompt
+        showPwaPrompt={showPwaPrompt}
+        hideForToday={hideForToday}
+        setHideForToday={setHideForToday}
+        handlePwaDismiss={handlePwaDismiss}
+      />
     </div>
   );
 };
