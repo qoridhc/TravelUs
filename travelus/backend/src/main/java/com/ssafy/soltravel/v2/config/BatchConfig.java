@@ -129,9 +129,18 @@ public class BatchConfig {
 
                 User user = group.getParticipants().get(0).getUser();
 
+                LogUtil.info("user", user.getUserId());
+
                 AccountDto accountDto = accountService.getByAccountNo(group.getGroupAccountNo(), user);
 
-                MoneyBoxDto moneyBoxDto = accountDto.getMoneyBoxDtos().get(1);
+                List<MoneyBoxDto> moneyBoxDtos = accountDto.getMoneyBoxDtos();
+
+                MoneyBoxDto moneyBoxDto = null;
+
+                if (moneyBoxDtos.size() > 1) {
+                    moneyBoxDto = moneyBoxDtos.get(1);
+
+                }
 
                 if (moneyBoxDto != null && moneyBoxDto.getBalance() == 0) {
 
