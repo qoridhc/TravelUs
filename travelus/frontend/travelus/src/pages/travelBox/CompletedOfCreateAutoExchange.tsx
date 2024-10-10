@@ -13,7 +13,7 @@ const CompletedOfCreateAutoExchange = () => {
           <img className="w-20 aspect-1" src="/assets/confirmIcon.png" alt="확인아이콘" />
 
           <div className="text-2xl flex flex-col justify-center">
-            <div className="flex">
+            <div className="flex justify-center">
               {type === "NOW" ? (
                 <>
                   <p className="text-[#1429A0] font-semibold">즉시 자동환전</p>

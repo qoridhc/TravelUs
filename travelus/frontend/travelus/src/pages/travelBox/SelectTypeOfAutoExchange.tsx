@@ -31,8 +31,9 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
         state: { currency: location.state.currency, nextPath: `/meetingaccount/${meetingAccountInfo.groupId}` },
       });
     } else if (type === 1) {
-      changeExchangeMode();
+      changeExchangeMode("NOW");
     } else {
+      changeExchangeMode("NONE");
       navigate(`/travelbox/create/auto/exchange/completed/NONE`, {
         state: { nextPath: `/meetingaccount/${meetingAccountInfo.groupId}` },
       });
@@ -43,18 +44,18 @@ const SelectTypeOfAutoExchange: React.FC = (props) => {
     setType(type);
   };
 
-  const changeExchangeMode = async () => {
+  const changeExchangeMode = async (type: string) => {
     if (meetingAccountInfo.groupId === undefined) return;
 
     const data = {
       groupId: meetingAccountInfo.groupId,
-      exchangeType: "NOW",
+      exchangeType: type,
     };
 
     try {
       const response = await accountApi.fetchChangeExchangeMode(data);
       if (response.status === 200) {
-        navigate("/travelbox/create/auto/exchange/completed/NOW", {
+        navigate(`/travelbox/create/auto/exchange/completed/${type}`, {
           state: { nextPath: `/meetingaccount/${meetingAccountInfo.groupId}` },
         });
       }
