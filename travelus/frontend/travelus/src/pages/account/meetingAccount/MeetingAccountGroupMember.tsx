@@ -6,6 +6,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { MeetingAccountInfo } from "../../../types/account";
 import { ParticipantInfo } from "../../../types/meetingAccount";
+import Loading from "../../../components/loading/Loading";
 
 const MeetingAccountGroupMember = () => {
   const navigate = useNavigate();
@@ -89,19 +90,19 @@ const MeetingAccountGroupMember = () => {
     }
   }, [groupCode]);
 
-  // useEffect(() => {
-  //   if (memberList) {
-  //     const storedUserId = localStorage.getItem("userId");
-  //     setParticipantId(memberList.find((member) => member.userId === Number(storedUserId))?.participantId ?? null);
-  //   }
-  // }, [memberList]);
-
   useEffect(() => {
     if (memberList && userId) {
+      const storedUserId = localStorage.getItem("userId");
+      setParticipantId(memberList.find((member) => member.userId === Number(storedUserId))?.participantId ?? null);
+
       const currentUser = memberList.find((member) => member.userId === userId);
       setIsUserMaster(currentUser?.master || false);
     }
   }, [memberList, userId]);
+
+  if (!accountInfo && !memberList) {
+    return <Loading />;
+  }
 
   return (
     <div className="h-full flex flex-col justify-between">

@@ -95,6 +95,7 @@ import ExpenditureSettlementGroupList from "./pages/account/meetingAccount/expen
 import ExpenditureSettlementGroupDetail from "./pages/account/meetingAccount/expenditureSettlement/ExpenditureSettlementGroupDetail";
 import CreateAccountBookInfo from "./pages/accountBook/CreateAccountBookInfo";
 import AutoCurrencyExchangeAmountOfCreateTravelBox from "./pages/travelBox/AutoCurrencyExchangeAmountOfCreateTravelBox";
+import CompletedOfCreateAutoExchange from "./pages/travelBox/CompletedOfCreateAutoExchange";
 
 function App() {
   return (
@@ -189,7 +190,11 @@ function App() {
           <Route path="/travelbox/create/currency" element={<CurrencyInfoOfCreateTravelBox />} />
           <Route path="/travelbox/create/type" element={<SelectTypeOfAutoExchange />} />
           <Route path="/travelbox/create/auto/exchange/rate" element={<AutoCurrencyExchangeRateOfCreateTravelBox />} />
-          <Route path="/travelbox/create/auto/exchange/amount" element={<AutoCurrencyExchangeAmountOfCreateTravelBox />} />
+          <Route
+            path="/travelbox/create/auto/exchange/amount"
+            element={<AutoCurrencyExchangeAmountOfCreateTravelBox />}
+          />
+          <Route path="/travelbox/create/auto/exchange/completed/:type" element={<CompletedOfCreateAutoExchange />} />
 
           {/* 외화저금통 해지 */}
           <Route path="/travelbox/delete/:accountNo/:groupId" element={<DeleteTravelBox />} />

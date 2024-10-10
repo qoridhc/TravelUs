@@ -4,6 +4,7 @@ import com.ssafy.soltravel.v1.domain.ForeignAccount;
 import com.ssafy.soltravel.v2.domain.Enum.CashTransactionType;
 import com.ssafy.soltravel.v2.domain.Enum.CurrencyType;
 import com.ssafy.soltravel.v2.dto.account_book.AccountHistorySaveRequestDto;
+import com.ssafy.soltravel.v2.util.DateUtil;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -67,7 +68,7 @@ public class CashHistory {
     cashHistory.store = requestDto.getStore();
     cashHistory.amount = requestDto.getPaid();
     cashHistory.transactionType = CashTransactionType.P;
-    cashHistory.transactionAt = requestDto.getTransactionAt();
+    cashHistory.transactionAt = DateUtil.parseTransactionAt(requestDto.getTransactionAt());
     cashHistory.currency = CurrencyType.valueOf(requestDto.getCurrency());
     cashHistory.address = requestDto.getAddress();
     cashHistory.accountNo = requestDto.getAccountNo();

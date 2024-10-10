@@ -8,13 +8,14 @@ import com.ssafy.soltravel.v2.domain.Enum.TransferType;
 import com.ssafy.soltravel.v2.domain.TargetRate;
 import com.ssafy.soltravel.v2.domain.TravelGroup;
 import com.ssafy.soltravel.v2.dto.ResponseDto;
+import com.ssafy.soltravel.v2.dto.account.request.PasswordValidateRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeModeUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateCacheDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateRegisterRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.ExchangeRateResponseDto;
 import com.ssafy.soltravel.v2.dto.exchange.TargetRateUpdateRequestDto;
 import com.ssafy.soltravel.v2.dto.exchange.targetAccountDto;
-import com.ssafy.soltravel.v2.dto.moneyBox.BalanceResponseDto;
+import com.ssafy.soltravel.v2.dto.moneyBox.response.BalanceResponseDto;
 import com.ssafy.soltravel.v2.dto.targetRate.TargetRateDto;
 import com.ssafy.soltravel.v2.dto.transaction.request.MoneyBoxTransferRequestDto;
 import com.ssafy.soltravel.v2.dto.transaction.response.TransferHistoryResponseDto;
@@ -112,12 +113,16 @@ public class ExchangeService {
   @Transactional
   public ResponseDto setPreferenceRate(ExchangeRateRegisterRequestDto dto, boolean isUpdate, long targetId) {
 
+    long groupId = dto.getGroupId();
+    TravelGroup group = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException(groupId));
+
+    //TODO:비밀번호 검증
+    accountService.validatePassword(new PasswordValidateRequestDto(group.getGroupAccountNo(), dto.getAccountPassword()));
+
     CurrencyType currencyCode = dto.getCurrencyCode();
     double targetRate = BigDecimal.valueOf(dto.getTargetRate()).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
     if (!isUpdate) {
-      long groupId = dto.getGroupId();
-      TravelGroup group = groupRepository.findById(groupId).orElseThrow(() -> new GroupNotFoundException(groupId));
 
       Double amount = dto.getTransactionBalance() != null ? dto.getTransactionBalance() : -1.0;
       TargetRate target = targetRateRepository.save(TargetRate.createTargetRate(amount, targetRate, group));
@@ -159,7 +164,8 @@ public class ExchangeService {
     targetRate.setAmount(requestDto.getTransactionBalance());
     targetRateRepository.save(targetRate);
 
-    setPreferenceRate(new ExchangeRateRegisterRequestDto(groupId, getCurrencyType(requestDto.getCurrencyCode()),
+    setPreferenceRate(new ExchangeRateRegisterRequestDto(groupId, requestDto.getAccountPassword(),
+        getCurrencyType(requestDto.getCurrencyCode()),
         requestDto.getTransactionBalance(), requestDto.getTargetRate(), requestDto.getDueDate()), true, targetRate.getId());
 
     return new ResponseDto();
@@ -204,12 +210,14 @@ public class ExchangeService {
           CurrencyType.KRW, getCurrencyType(currencyCode), dto.getAmount());
 
       try {
-        List<TransferHistoryResponseDto> transferHistoryResponseDtos = transactionService.postMoneyBoxTransfer(requestDto, true,
+        List<TransferHistoryResponseDto> transferHistoryResponseDtos = transactionService.postMoneyBoxTransfer(requestDto,
+            true,
             dto.getUserId()).getBody();
 
         removePreferenceRateFromRedis(currencyCode, dto.getTargetId());
 
-        LogUtil.info("자동환전 성공. 환전 신청 원화: %s, 적용 환율: %s, 환전된 금액: %s ", transferHistoryResponseDtos.get(0).getTransactionAmount(),
+        LogUtil.info("자동환전 성공. 환전 신청 원화: %s, 적용 환율: %s, 환전된 금액: %s ",
+            transferHistoryResponseDtos.get(0).getTransactionAmount(),
             transferHistoryResponseDtos.get(1).getTransactionSummary(),
             transferHistoryResponseDtos.get(1).getTransactionAmount());
 
@@ -222,7 +230,8 @@ public class ExchangeService {
       } catch (WebClientResponseException e) {
         //잔액부족시
         if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
-          LogUtil.error("자동환전 실패. 계좌 번호: {}, 사용자 ID: {}, 에러: INSUFFICIENT_BALANCE", dto.getAccountNo(), dto.getUserId());
+          LogUtil.error("자동환전 실패. 계좌 번호: {}, 사용자 ID: {}, 에러: INSUFFICIENT_BALANCE", dto.getAccountNo(),
+              dto.getUserId());
 
         } else {
           LogUtil.error("자동환전 실패. 계좌 번호: {}, 사용자 ID: {}, 에러: {}", dto.getAccountNo(), dto.getUserId(), e.getMessage());

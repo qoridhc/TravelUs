@@ -47,14 +47,13 @@ const AutoCurrencyExchangeRateOfCreateTravelBox = () => {
           </div>
 
           <ExchangeRateInputMui
-            currency={location.state.currency}
+            currencyCode={location.state.currencyCode}
             exchangeRateFront={exchangeRateFront}
             setExchangeRateFront={setExchangeRateFront}
             exchangeRateBack={exchangeRateBack}
             setExchangeRateBack={setExchangeRateBack}
           />
           <ExchangeRateForecast setExchangeRateFront={setExchangeRateFront} setExchangeRateBack={setExchangeRateBack} />
-          {/* <ExchangeAmmountInput exchangeAmount={exchangeAmount} setExchangeAmount={setExchangeAmount} /> */}
         </div>
       </div>
 

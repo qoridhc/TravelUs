@@ -10,6 +10,9 @@ public class TargetRateUpdateRequestDto {
   @Schema(description = "모임 id", example = "1")
   private Long groupId;
 
+  @Schema(description = "계좌 비밀번호", example = "1234")
+  private String accountPassword;
+
   @Schema(description = "환전할 통화 코드", example = "USD")
   private String currencyCode;
 

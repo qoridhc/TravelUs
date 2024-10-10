@@ -221,3 +221,9 @@ export interface AccountPassword {
   accountNo: string;
   accountPassword: string;
 }
+
+// 환전 모드 변경
+export interface ExchangeMode {
+  groupId: number;
+  exchangeType: string;
+}

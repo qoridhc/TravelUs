@@ -1,4 +1,4 @@
-package com.ssafy.soltravel.v2.dto.moneyBox;
+package com.ssafy.soltravel.v2.dto.moneyBox.response;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,5 +7,5 @@ import lombok.NoArgsConstructor;
 @Data
 public class BalanceResponseDto {
 
-  String balance;
+    String balance;
 }
