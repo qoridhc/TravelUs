@@ -5,7 +5,6 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushNotification;
 import com.ssafy.soltravel.v1.dto.user.UserDetailDto;
-import com.ssafy.soltravel.v1.util.LogUtil;
 import com.ssafy.soltravel.v2.domain.BillingHistoryDetail;
 import com.ssafy.soltravel.v2.domain.Enum.AccountType;
 import com.ssafy.soltravel.v2.domain.Enum.NotificationType;
@@ -32,6 +31,7 @@ import com.ssafy.soltravel.v2.repository.NotificationRepository;
 import com.ssafy.soltravel.v2.repository.UserRepository;
 import com.ssafy.soltravel.v2.repository.redis.FcmTokenRepository;
 import com.ssafy.soltravel.v2.service.account.AccountService;
+import com.ssafy.soltravel.v2.util.LogUtil;
 import com.ssafy.soltravel.v2.util.SecurityUtil;
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -175,28 +175,32 @@ public class NotificationService {
         String message;
         String formattedAmount = df.format(requestDto.getTransactionBalance());
 
+        LogUtil.info("TransactionRequestDto", requestDto);
+
         // 트랜잭션 타입에 따라 switch-case로 알림 제목 및 메시지 설정
         switch (requestDto.getTransactionType()) {
             case D -> {
                 title = "입금 완료";
-                message = String.format("입금 금액: %s원이 입금되었습니다.", formattedAmount);
+                message = String.format("입금 금액: %s%s이 입금되었습니다.", formattedAmount, requestDto.getCurrencyCode().getCurrencyName());
             }
             case W -> {
                 title = "출금 완료";
-                message = String.format("출금 금액: %s원이 출금되었습니다.", formattedAmount);
+                message = String.format("출금 금액: %s%s이 출금되었습니다.", formattedAmount, requestDto.getCurrencyCode());
             }
             case SD -> {
                 title = "정산 입금 완료";
-                message = String.format("정산 입금 금액: %s원이 입금되었습니다.", formattedAmount);
+                message = String.format("정산 입금 금액: %s%s이 입금되었습니다.", formattedAmount, requestDto.getCurrencyCode());
             }
             case SW -> {
                 title = "정산 출금 완료";
-                message = String.format("정산 출금 금액: %s원이 출금되었습니다.", formattedAmount);
+                message = String.format("정산 출금 금액: %s%s이 출금되었습니다.", formattedAmount, requestDto.getCurrencyCode());
             }
             default -> {
                 throw new IllegalArgumentException("지원되지 않는 트랜잭션 타입입니다.");
             }
         }
+
+        LogUtil.info("message", message);
 
         AccountDto accountDto = accountService.getByAccountNo(requestDto.getAccountNo());
 
@@ -204,7 +208,7 @@ public class NotificationService {
 
         TravelGroup group = null;
 
-        if (accountDto.getAccountType().equals(AccountType.G)) {
+        if (accountDto.getAccountType() == AccountType.G) {
             title = "모임통장 " + title;
             message = "모임통장 " + message;
             notificationType = NotificationType.GT;
@@ -212,15 +216,15 @@ public class NotificationService {
             group = groupRepository.findByGroupAccountNo(requestDto.getAccountNo());
         }
 
-        // 알림 전송을 위한 Dto 생성 및 전송
-        PushNotificationRequestDto notificationRequestDto = PushNotificationRequestDto.createDto(
-            userId,
-            notificationType,
-            title,
-            message,
-            requestDto.getAccountNo(),
-            (group != null) ? group.getGroupId() : null
-        );
+        PushNotificationRequestDto notificationRequestDto = PushNotificationRequestDto.builder()
+            .targetUserId(userId)
+            .notificationType(notificationType)
+            .title(title)
+            .message(message)
+            .accountNo(requestDto.getAccountNo())
+            .groupId((group != null) ? group.getGroupId() : null)
+            .currencyType(requestDto.getCurrencyCode())
+            .build();
 
         return pushNotification(notificationRequestDto);
     }
