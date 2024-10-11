@@ -2,7 +2,7 @@
 
 ### AI 기술 기반의 해외여행 모임통장 서비스
 
-(mainimage) 
+![main](/uploads/e4f48c8869bfd1deca335ff2eb480928/main.png)
 
 - 배포 링크: https://j11d209.p.ssafy.io
 - 모바일 기반의 PWA를 적용한 어플리케이션이기 때문에 모바일 환경에서 사용을 권장합니다.
@@ -63,7 +63,7 @@
 
 ## :closed_book:시스템 아키텍처
 
-(architecture)
+![architecture](/uploads/9f6becf0d109aca7d95f6a25625ba843/architecture.png)
 
 ## :file_folder: 기술 스택
 
@@ -127,52 +127,55 @@
 
 ## :pencil: ERD
 
-(erdimage)
+![GOOFY](/uploads/3c6cf605a81e7f6c3d6ac3086799106f/GOOFY.png)
 
 ## :tv: 구현 화면
 
 #### :one: 회원가입 및 로그인
 - 회원가입
-(회원가입 이미지)
-(휴대폰 인증 이미지)
-(주소 입력)
+![회원가입](/uploads/0169a87efa790bef9bb02ea20af73fed/회원가입.png)
+![주소_입력](/uploads/55079de8794d6c86403bc9af26f87bb9/주소_입력.png)
 - 로그인
-(로그인 이미지)
+![로그인](/uploads/ee26a2916ac9f1d5ba2b7f4d40b8340f/로그인.gif)
 
 #### :two: 메인 페이지
-(최초 입장 메인)
+![최초_입장_메인](/uploads/8d5903dbed6c43a4705c09686ab3c69f/최초_입장_메인.gif)
 
 #### :three: 통장 개설
 ##### 입출금 통장 개설
-(입출금 통장 개설)
+![입출금_통장_개설](/uploads/c2740b45868212324f37b14bf2732da4/입출금_통장_개설.gif)
 
 ##### 모임 통장 개설
-(모임 통장 개설)
+![모임_통장_개설](/uploads/d1693dd06ed5c2091c4ae0229b34dcf6/모임_통장_개설.gif)
 
 ##### 외화저금통 생성
-(외화 저금통 개설)
+![외화저금통_생성](/uploads/4873ce568957a5308af4b22bb00cba18/외화저금통_생성.gif)
 
 ### :four: 이체 관련
 #### 모임 통장 입금
-(모임통장 입금)
+![모임_통장_입금](/uploads/dfa795c152cfeefb707d401ef741e4ae/모임_통장_입금.gif)
 
 #### 외화로 환전하기
-(외화로 환전하기)
+![외화로_환전하기](/uploads/fdd205ddb907c90a1253d0dfd45b2ec2/외화로_환전하기.gif)
 
 #### 원화로 환전하기
-(원화로 환전)
+![원화로_환전하기](/uploads/1a43f48d7f0bf869a2aa3df6ee509934/원화로_환전하기.gif)
 
 ### :five: 카드 신청
-(카드 신청)
+![카드_신청](/uploads/fa8775c155dbb144394575abfee21974/카드_신청.gif)
 
-### :six: 환율 및 환율 예측 조회
-(환율 및 환율 예측 조회)
+### :six: 모임원 관리 페이지
+![관리_페이지](/uploads/58745c6cbe0dafb4f9178451bc14f845/관리_페이지.gif)
 
-### :seven: 머니로그 사용
-(머니 로그 사용)
+### :seven: 환율 및 환율 예측 조회
+![환율_및_환율_예측_조회](/uploads/4ae3b68e9364eb4cca3a127e2f122783/환율_및_환율_예측_조회.gif)
 
-### :eight: 정산하기
-(정산하기 사진 필요)
+### :eight: 머니로그 사용
+![머니_로그_사용](/uploads/7274466c8b12a04e4ea2393b74d1f35d/머니_로그_사용.gif)
+
+### :nine: 정산하기
+
 
 # :+1: 멤버
-(멤버 사진)
+![멤버_사진_1](/uploads/454613d331645a3029e41475996643c2/멤버_사진_1.png)
+![멤버_사진_2](/uploads/18c54f3036129511550c3a23d14e245c/멤버_사진_2.png)
