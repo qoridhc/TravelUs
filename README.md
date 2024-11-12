@@ -2,7 +2,7 @@
 
 ### AI 기술 기반의 해외여행 모임통장 서비스
 
-![main](/uploads/e4f48c8869bfd1deca335ff2eb480928/main.png)
+![1](https://github.com/user-attachments/assets/e1b6c7c8-692e-4063-a38c-87fe935ea47b)
 
 - 배포 링크: https://j11d209.p.ssafy.io
 - 모바일 기반의 PWA를 적용한 어플리케이션이기 때문에 모바일 환경에서 사용을 권장합니다.
@@ -63,7 +63,7 @@
 
 ## :closed_book:시스템 아키텍처
 
-![architecture](/uploads/9f6becf0d109aca7d95f6a25625ba843/architecture.png)
+![2](https://github.com/user-attachments/assets/dfdf6e58-e5d8-4e0b-8575-2d660079ca85)
 
 ## :file_folder: 기술 스택
 
@@ -127,55 +127,54 @@
 
 ## :pencil: ERD
 
-![GOOFY](/uploads/3c6cf605a81e7f6c3d6ac3086799106f/GOOFY.png)
+![3](https://github.com/user-attachments/assets/a07f0771-c016-4cb5-b595-24363fe1b8ed)
 
 ## :tv: 구현 화면
 
 #### :one: 회원가입 및 로그인
 - 회원가입
-![회원가입](/uploads/0169a87efa790bef9bb02ea20af73fed/회원가입.png)
-![주소_입력](/uploads/55079de8794d6c86403bc9af26f87bb9/주소_입력.png)
+![4](https://github.com/user-attachments/assets/7a92ea41-1093-499e-9d84-1745e5f8620a)
+![5](https://github.com/user-attachments/assets/dc77b48d-e287-4b0a-9e61-9f219e98d376)
 - 로그인
-![로그인](/uploads/ee26a2916ac9f1d5ba2b7f4d40b8340f/로그인.gif)
+![6](https://github.com/user-attachments/assets/c9b99c36-5fdc-431d-9fc2-5486b3c6dba6)
 
 #### :two: 메인 페이지
-![최초_입장_메인](/uploads/8d5903dbed6c43a4705c09686ab3c69f/최초_입장_메인.gif)
+![7](https://github.com/user-attachments/assets/cc93bbc0-5038-4520-9205-736c499bd1cf)
 
 #### :three: 통장 개설
 ##### 입출금 통장 개설
-![입출금_통장_개설](/uploads/c2740b45868212324f37b14bf2732da4/입출금_통장_개설.gif)
+![8](https://github.com/user-attachments/assets/8a2f25ca-660f-4f9e-9bf1-7b2918911291)
 
 ##### 모임 통장 개설
-![모임_통장_개설](/uploads/d1693dd06ed5c2091c4ae0229b34dcf6/모임_통장_개설.gif)
+![9](https://github.com/user-attachments/assets/d2f85459-5192-4ba3-b609-1b214b56da14)
 
 ##### 외화저금통 생성
-![외화저금통_생성](/uploads/4873ce568957a5308af4b22bb00cba18/외화저금통_생성.gif)
+![10](https://github.com/user-attachments/assets/72318124-4ebf-4ada-a4ea-69c15e03d23e)
 
 ### :four: 이체 관련
 #### 모임 통장 입금
-![모임_통장_입금](/uploads/dfa795c152cfeefb707d401ef741e4ae/모임_통장_입금.gif)
+![11](https://github.com/user-attachments/assets/42bd5817-4d9f-4655-9454-01a681483762)
 
 #### 외화로 환전하기
-![외화로_환전하기](/uploads/fdd205ddb907c90a1253d0dfd45b2ec2/외화로_환전하기.gif)
+![12](https://github.com/user-attachments/assets/5c57899d-5480-4b45-8b89-529cb61ee3a3)
 
 #### 원화로 환전하기
-![원화로_환전하기](/uploads/1a43f48d7f0bf869a2aa3df6ee509934/원화로_환전하기.gif)
+![13](https://github.com/user-attachments/assets/42bc8457-32c6-48d2-ac4f-62859f4fdbd2)
 
 ### :five: 카드 신청
-![카드_신청](/uploads/fa8775c155dbb144394575abfee21974/카드_신청.gif)
+![14](https://github.com/user-attachments/assets/b89e0571-0d38-4cc6-8ff6-e45b6fd46040)
 
 ### :six: 모임원 관리 페이지
-![관리_페이지](/uploads/58745c6cbe0dafb4f9178451bc14f845/관리_페이지.gif)
-
+![15](https://github.com/user-attachments/assets/81ce62e1-eebc-4893-a8e7-8005ed7d2c5b)
 ### :seven: 환율 및 환율 예측 조회
-![환율_및_환율_예측_조회](/uploads/4ae3b68e9364eb4cca3a127e2f122783/환율_및_환율_예측_조회.gif)
+![16](https://github.com/user-attachments/assets/daad1412-c8fa-4354-a0ca-7e2c3bb0f384)
 
 ### :eight: 머니로그 사용
-![머니_로그_사용](/uploads/7274466c8b12a04e4ea2393b74d1f35d/머니_로그_사용.gif)
+![17](https://github.com/user-attachments/assets/2ffe432a-735b-4f83-acf9-d590cf4ffef0)
 
 ### :nine: 정산하기
 
 
 # :+1: 멤버
-![멤버_사진_1](/uploads/454613d331645a3029e41475996643c2/멤버_사진_1.png)
-![멤버_사진_2](/uploads/18c54f3036129511550c3a23d14e245c/멤버_사진_2.png)
+![18](https://github.com/user-attachments/assets/346c1db3-bd0e-4d6e-866b-db85475518fc)
+![19](https://github.com/user-attachments/assets/a6b4f641-fb23-4ebf-85c4-30b45d3ffbfd)
